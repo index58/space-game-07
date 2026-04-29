@@ -1,7 +1,12 @@
 import * as Phaser from "phaser";
 import { ASSET_KEYS, ASSET_PATHS } from "../data/assets";
 import { STATIC_OBJECTS, createInitialShipState } from "../data/prototypeObjects";
-import { INITIAL_ZOOM, rotationToPilotScreen, worldToPilotScreen } from "../domain/camera";
+import {
+  INITIAL_ZOOM,
+  getPilotBackgroundTransform,
+  rotationToPilotScreen,
+  worldToPilotScreen,
+} from "../domain/camera";
 import { stepShipPhysics } from "../domain/physics";
 import type { ShipState, SimObject } from "../domain/types";
 import { DebugOverlay } from "./DebugOverlay";
@@ -30,7 +35,7 @@ export class GameScene extends Phaser.Scene {
     this.ship = createInitialShipState();
     this.background = this.add
       .tileSprite(0, 0, this.scale.width, this.scale.height, ASSET_KEYS.background)
-      .setOrigin(0);
+      .setOrigin(0.5);
     this.shipSprite = this.add.image(0, 0, ASSET_KEYS.shipBat).setOrigin(0.5);
     this.staticSprites = STATIC_OBJECTS.map((object) => ({
       object,
@@ -50,7 +55,7 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, deltaMs: number): void {
     // Ограничиваем шаг, чтобы после паузы вкладки физика не делала огромный скачок.
     const dtSeconds = Math.min(deltaMs / 1000, 0.05);
-    const input = this.inputController.consumeShipInput();
+    const input = this.inputController.consumeShipInput(dtSeconds);
 
     this.zoom = this.inputController.getZoom();
     this.ship = stepShipPhysics(this.ship, input, dtSeconds);
@@ -61,13 +66,30 @@ export class GameScene extends Phaser.Scene {
   private renderWorld(): void {
     const viewportWidth = this.scale.width;
     const viewportHeight = this.scale.height;
+    const camera = {
+      shipPosition: this.ship.position,
+      shipRotation: this.ship.rotation,
+      zoom: this.zoom,
+      viewportWidth,
+      viewportHeight,
+    };
 
-    this.background.setSize(viewportWidth, viewportHeight);
-    this.background.tilePositionX = this.ship.position.x * this.zoom;
-    this.background.tilePositionY = -this.ship.position.y * this.zoom;
+    this.renderBackground(camera);
 
     this.renderShip(viewportWidth, viewportHeight);
     this.renderStaticObjects(viewportWidth, viewportHeight);
+  }
+
+  private renderBackground(camera: Parameters<typeof getPilotBackgroundTransform>[0]): void {
+    const transform = getPilotBackgroundTransform(camera);
+
+    this.background.setPosition(transform.position.x, transform.position.y);
+    this.background.setSize(transform.size, transform.size);
+    this.background.setRotation(transform.rotation);
+    this.background.setScale(transform.scale);
+    this.background.setTileScale(transform.tileScale, transform.tileScale);
+    this.background.tilePositionX = transform.tilePositionX;
+    this.background.tilePositionY = transform.tilePositionY;
   }
 
   private renderShip(viewportWidth: number, viewportHeight: number): void {

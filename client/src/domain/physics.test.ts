@@ -21,7 +21,7 @@ describe("ship physics", () => {
     const next = stepShipPhysics(createInitialShipState(), { ...idle, thrustForward: true }, 1);
 
     expect(next.velocity.x).toBeCloseTo(0);
-    expect(next.velocity.y).toBeCloseTo(8.13069147656849);
+    expect(next.velocity.y).toBeCloseTo(162.61382953137096);
   });
 
   it("тормозит линейную и угловую скорость только когда нет тяги", () => {
@@ -35,5 +35,18 @@ describe("ship physics", () => {
 
     expect(next.velocity.x).toBeLessThan(10);
     expect(next.angularVelocity).toBe(0);
+  });
+
+  it("не отключает линейное автоторможение при вращении мышью", () => {
+    const ship = {
+      ...createInitialShipState(),
+      velocity: { x: 200, y: 0 },
+      angularVelocity: 0,
+    };
+
+    const next = stepShipPhysics(ship, { ...idle, turnClockwise: true }, 0.05);
+
+    expect(next.velocity.x).toBeLessThan(200);
+    expect(next.angularVelocity).toBeGreaterThan(0);
   });
 });

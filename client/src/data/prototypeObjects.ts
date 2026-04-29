@@ -4,7 +4,7 @@ import type { CosmicObjectModel, ShipState, SimObject } from "../domain/types";
 // Временная конфигурация прототипа взята из старого shared/data/cosmic_object_models.json.
 const TEXTURE_SCALE = 4;
 const MASS_SCALE = 1000;
-const THRUST_SCALE = 10_000_000;
+const THRUST_SCALE = 200_000_000;
 const TORQUE_SCALE = 1000;
 
 export const SHIP_BAT: CosmicObjectModel = {

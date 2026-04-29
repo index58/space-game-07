@@ -1,9 +1,11 @@
 import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
 import type { ShipInput } from "../domain/physics";
+import { MouseTurnImpulse, toShipInput } from "./inputState";
 
 export class InputController {
   private readonly keys: Record<string, boolean> = {};
   private mouseDeltaX = 0;
+  private readonly mouseTurnImpulse = new MouseTurnImpulse();
   private zoom = INITIAL_ZOOM;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
@@ -38,19 +40,20 @@ export class InputController {
     return this.zoom;
   }
 
-  consumeShipInput(): ShipInput {
+  consumeShipInput(dtSeconds: number): ShipInput {
     // Pointer Lock отдаёт относительное движение мыши; после кадра накопление сбрасывается.
-    const turnClockwise = this.mouseDeltaX > 0;
-    const turnCounterClockwise = this.mouseDeltaX < 0;
+    const isPointerLocked = document.pointerLockElement === this.canvas;
+
+    if (!isPointerLocked) {
+      this.mouseTurnImpulse.clear();
+    } else {
+      this.mouseTurnImpulse.addMouseDelta(this.mouseDeltaX);
+    }
+
+    const input = toShipInput(isPointerLocked, this.keys, 0);
+    const turnInput = this.mouseTurnImpulse.consume(dtSeconds);
     this.mouseDeltaX = 0;
 
-    return {
-      thrustForward: Boolean(this.keys.KeyW),
-      thrustBackward: Boolean(this.keys.KeyS),
-      thrustLeft: Boolean(this.keys.KeyA),
-      thrustRight: Boolean(this.keys.KeyD),
-      turnClockwise,
-      turnCounterClockwise,
-    };
+    return { ...input, ...turnInput };
   }
 }

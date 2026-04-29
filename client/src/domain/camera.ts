@@ -8,9 +8,20 @@ export type PilotCamera = {
   viewportHeight: number;
 };
 
+export type PilotBackgroundTransform = {
+  position: WorldVector;
+  size: number;
+  rotation: number;
+  scale: number;
+  tileScale: number;
+  tilePositionX: number;
+  tilePositionY: number;
+};
+
 export const MIN_ZOOM = 0.01;
 export const MAX_ZOOM = 100;
 export const INITIAL_ZOOM = 4;
+export const BACKGROUND_TEXTURE_SCALE = 2;
 
 export const clampZoom = (zoom: number): number => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom));
 
@@ -41,3 +52,26 @@ export const worldToPilotScreen = (worldPosition: WorldVector, camera: PilotCame
 
 export const rotationToPilotScreen = (objectRotation: number, shipRotation: number): number =>
   objectRotation - shipRotation;
+
+export const getPilotBackgroundTransform = (camera: PilotCamera): PilotBackgroundTransform => {
+  const shipScreen = getPilotShipScreenPosition(camera.viewportWidth, camera.viewportHeight);
+  const maxDistanceToViewportCorner = Math.max(
+    Math.hypot(shipScreen.x, shipScreen.y),
+    Math.hypot(camera.viewportWidth - shipScreen.x, shipScreen.y),
+    Math.hypot(shipScreen.x, camera.viewportHeight - shipScreen.y),
+    Math.hypot(camera.viewportWidth - shipScreen.x, camera.viewportHeight - shipScreen.y),
+  );
+  const displaySize = maxDistanceToViewportCorner * 2;
+  const size = displaySize / camera.zoom;
+
+  // TileSprite хранит тайлы в локальных координатах, поэтому компенсируем центрирование через половину размера.
+  return {
+    position: shipScreen,
+    size,
+    rotation: -camera.shipRotation,
+    scale: camera.zoom,
+    tileScale: 1 / BACKGROUND_TEXTURE_SCALE,
+    tilePositionX: (camera.shipPosition.x - size / 2) * BACKGROUND_TEXTURE_SCALE,
+    tilePositionY: (-camera.shipPosition.y - size / 2) * BACKGROUND_TEXTURE_SCALE,
+  };
+};
