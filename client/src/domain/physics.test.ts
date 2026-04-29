@@ -109,4 +109,52 @@ describe("ship physics", () => {
     expect(next.velocity.x).toBeLessThan(200);
     expect(next.angularVelocity).toBeGreaterThan(0);
   });
+
+  it("автоматически тормозит поперечную скорость при активной продольной тяге", () => {
+    const ship = {
+      ...createInitialShipState(),
+      velocity: { x: 100, y: 0 },
+    };
+
+    const next = stepShipPhysics(ship, { ...idle, thrustForward: true }, 0.1);
+
+    expect(next.velocity.x).toBeLessThan(100);
+    expect(next.velocity.y).toBeGreaterThan(0);
+  });
+
+  it("автоматически тормозит продольную скорость при активной поперечной тяге", () => {
+    const ship = {
+      ...createInitialShipState(),
+      velocity: { x: 0, y: 100 },
+    };
+
+    const next = stepShipPhysics(ship, { ...idle, thrustRight: true }, 0.1);
+
+    expect(next.velocity.x).toBeGreaterThan(0);
+    expect(next.velocity.y).toBeLessThan(100);
+  });
+
+  it("не автотормозит продольную ось при одновременных W и S", () => {
+    const ship = {
+      ...createInitialShipState(),
+      velocity: { x: 0, y: 100 },
+    };
+
+    const next = stepShipPhysics(ship, { ...idle, thrustForward: true, thrustBackward: true }, 0.1);
+
+    expect(next.velocity.x).toBeCloseTo(0);
+    expect(next.velocity.y).toBeCloseTo(100);
+  });
+
+  it("не автотормозит поперечную ось при одновременных A и D", () => {
+    const ship = {
+      ...createInitialShipState(),
+      velocity: { x: 100, y: 0 },
+    };
+
+    const next = stepShipPhysics(ship, { ...idle, thrustLeft: true, thrustRight: true }, 0.1);
+
+    expect(next.velocity.x).toBeCloseTo(100);
+    expect(next.velocity.y).toBeCloseTo(0);
+  });
 });

@@ -67,6 +67,9 @@ export const hasLinearThrust = (input: ShipInput): boolean =>
   input.thrustLeft ||
   input.thrustRight;
 
+const getProjection = (vector: WorldVector, axis: WorldVector): number =>
+  vector.x * axis.x + vector.y * axis.y;
+
 const getAngularAcceleration = (ship: ShipState): number =>
   ship.model.torqueNm / getMomentOfInertia(ship);
 
@@ -117,28 +120,22 @@ export const stepShipPhysics = (
 ): ShipState => {
   const forward = getForwardVector(ship.rotation);
   const right = getRightVector(ship.rotation);
+  const hasAlongControl = input.thrustForward || input.thrustBackward;
+  const hasAcrossControl = input.thrustLeft || input.thrustRight;
   const along = (input.thrustForward ? 1 : 0) - (input.thrustBackward ? 1 : 0);
   const across = (input.thrustRight ? 1 : 0) - (input.thrustLeft ? 1 : 0);
+  const linearAcceleration = ship.model.thrustN / ship.model.massKg;
 
-  let velocityX = ship.velocity.x;
-  let velocityY = ship.velocity.y;
+  // Скорость раскладывается по локальным осям, чтобы автоторможение одной оси не мешало ручной тяге другой оси.
+  const alongVelocity = hasAlongControl
+    ? getProjection(ship.velocity, forward) + along * linearAcceleration * dtSeconds
+    : brakeValue(getProjection(ship.velocity, forward), linearAcceleration, dtSeconds);
+  const acrossVelocity = hasAcrossControl
+    ? getProjection(ship.velocity, right) + across * linearAcceleration * dtSeconds
+    : brakeValue(getProjection(ship.velocity, right), linearAcceleration, dtSeconds);
 
-  if (hasLinearThrust(input)) {
-    const forceX = forward.x * along * ship.model.thrustN + right.x * across * ship.model.thrustN;
-    const forceY = forward.y * along * ship.model.thrustN + right.y * across * ship.model.thrustN;
-
-    velocityX += (forceX / ship.model.massKg) * dtSeconds;
-    velocityY += (forceY / ship.model.massKg) * dtSeconds;
-  } else {
-    const speed = Math.hypot(velocityX, velocityY);
-
-    if (speed > EPSILON) {
-      const brakeDelta = Math.min((ship.model.thrustN / ship.model.massKg) * dtSeconds, speed);
-
-      velocityX -= (velocityX / speed) * brakeDelta;
-      velocityY -= (velocityY / speed) * brakeDelta;
-    }
-  }
+  let velocityX = forward.x * alongVelocity + right.x * acrossVelocity;
+  let velocityY = forward.y * alongVelocity + right.y * acrossVelocity;
 
   const limitedVelocity = clampVectorLength(velocityX, velocityY, ship.model.maxSpeedMps);
   velocityX = limitedVelocity.x;
