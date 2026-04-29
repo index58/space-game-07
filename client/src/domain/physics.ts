@@ -90,10 +90,12 @@ const getAngularAcceleration = (ship: ShipState): number =>
 const stepAngularVelocityToTarget = (
   ship: ShipState,
   targetRotation: number,
+  targetRotationSpeed: number,
   dtSeconds: number,
 ): { rotation: number; angularVelocity: number } => {
   const angularAcceleration = getAngularAcceleration(ship);
   const angleError = targetRotation - ship.rotation;
+  const isTargetRotationStopped = Math.abs(targetRotationSpeed) <= EPSILON;
 
   if (Math.abs(angleError) <= ANGLE_EPSILON) {
     const angularVelocity = brakeValue(
@@ -113,14 +115,6 @@ const stepAngularVelocityToTarget = (
   const maxVelocityDelta = angularAcceleration * dtSeconds;
   const velocityTowardTarget = ship.angularVelocity * directionToTarget;
 
-  // Если корабль почти у цели и скорость не ведет к ней, завершаем микрокоррекцию без обратного разгона.
-  if (velocityTowardTarget < 0 && distanceToTarget <= maxVelocityDelta * dtSeconds) {
-    return {
-      rotation: targetRotation,
-      angularVelocity: 0,
-    };
-  }
-
   const safeSpeed = Math.max(
     0,
     Math.sqrt(maxVelocityDelta ** 2 + 2 * angularAcceleration * distanceToTarget) - maxVelocityDelta,
@@ -135,8 +129,8 @@ const stepAngularVelocityToTarget = (
   const remainingAngleError = targetRotation - rotation;
   const crossedTarget = Math.sign(remainingAngleError) !== directionToTarget || remainingAngleError === 0;
 
-  // Защита от редких состояний, где корабль уже подошел к цели быстрее, чем может затормозить.
-  if (crossedTarget) {
+  // Обнуляем угловую скорость у цели только когда целевой угол сейчас не двигается.
+  if (isTargetRotationStopped && crossedTarget) {
     return {
       rotation: targetRotation,
       angularVelocity: 0,
@@ -178,7 +172,8 @@ export const stepShipPhysics = (
   velocityY = limitedVelocity.y;
 
   const targetRotation = ship.targetRotation + input.targetRotationDelta;
-  const angularStep = stepAngularVelocityToTarget(ship, targetRotation, dtSeconds);
+  const targetRotationSpeed = dtSeconds > 0 ? input.targetRotationDelta / dtSeconds : 0;
+  const angularStep = stepAngularVelocityToTarget(ship, targetRotation, targetRotationSpeed, dtSeconds);
 
   return {
     ...ship,

@@ -102,18 +102,6 @@ func TestStepShipStopsRotationAtTargetWithoutOvershoot(t *testing.T) {
 	closeTo(t, next.AngularVelocity, 0)
 }
 
-func TestStepShipBrakesAngularVelocityWithoutReverseAccelerationNearTarget(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
-	ship.Rotation = 0.011
-	ship.TargetRotation = 0.01
-	ship.AngularVelocity = 0.01
-
-	next := physics.StepShip(ship, idleInput(), 0.05)
-
-	closeTo(t, next.Rotation, 0.01)
-	closeTo(t, next.AngularVelocity, 0)
-}
-
 func TestStepShipReducesAngularVelocityBeforeFinalStopAtTarget(t *testing.T) {
 	dtSeconds := 0.05
 	ship := game.NewPlayerShip(1, game.WorldVector{})
@@ -139,6 +127,19 @@ func TestStepShipReducesAngularVelocityBeforeFinalStopAtTarget(t *testing.T) {
 	if angularVelocityBeforeStop > maxAngularVelocityChange+0.000001 {
 		t.Fatalf("got angular velocity before stop %v, want at most %v", angularVelocityBeforeStop, maxAngularVelocityChange)
 	}
+}
+
+func TestStepShipDoesNotZeroAngularVelocityWhileTargetRotationIsMoving(t *testing.T) {
+	dtSeconds := 0.05
+	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship.Rotation = 0
+	ship.TargetRotation = 0.01
+	ship.AngularVelocity = 1
+	maxAngularVelocityChange := ship.Model.TorqueNm / physics.MomentOfInertia(ship) * dtSeconds
+
+	next := physics.StepShip(ship, game.ShipInput{TargetRotationDelta: 0.005}, dtSeconds)
+
+	closeTo(t, next.AngularVelocity, 1-maxAngularVelocityChange)
 }
 
 func TestStepShipClampsAngularVelocityToModelMaximum(t *testing.T) {

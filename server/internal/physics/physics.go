@@ -86,9 +86,10 @@ func angularAcceleration(ship game.WorldObject) float64 {
 	return ship.Model.TorqueNm / MomentOfInertia(ship)
 }
 
-func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, dtSeconds float64) (float64, float64) {
+func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, targetRotationSpeed float64, dtSeconds float64) (float64, float64) {
 	acceleration := angularAcceleration(ship)
 	angleError := targetRotation - ship.Rotation
+	isTargetRotationStopped := math.Abs(targetRotationSpeed) <= Epsilon
 
 	if math.Abs(angleError) <= angleEpsilon {
 		angularVelocity := brakeValue(ship.AngularVelocity, acceleration, dtSeconds)
@@ -105,11 +106,6 @@ func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, 
 	maxVelocityDelta := acceleration * dtSeconds
 	velocityTowardTarget := ship.AngularVelocity * directionToTarget
 
-	// Если корабль почти у цели и скорость не ведет к ней, завершаем микрокоррекцию без обратного разгона.
-	if velocityTowardTarget < 0 && distanceToTarget <= maxVelocityDelta*dtSeconds {
-		return targetRotation, 0
-	}
-
 	safeSpeed := math.Max(
 		0,
 		math.Sqrt(maxVelocityDelta*maxVelocityDelta+2*acceleration*distanceToTarget)-maxVelocityDelta,
@@ -125,8 +121,8 @@ func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, 
 	remainingAngleError := targetRotation - rotation
 	crossedTarget := math.Copysign(1, remainingAngleError) != directionToTarget || remainingAngleError == 0
 
-	// Защита от редких состояний, где корабль уже подошел к цели быстрее, чем может затормозить.
-	if crossedTarget {
+	// Обнуляем угловую скорость у цели только когда целевой угол сейчас не двигается.
+	if isTargetRotationStopped && crossedTarget {
 		return targetRotation, 0
 	}
 
@@ -172,7 +168,11 @@ func StepShip(ship game.WorldObject, input game.ShipInput, dtSeconds float64) ga
 	velocityY := forward.Y*alongVelocity + right.Y*acrossVelocity
 	limitedVelocity := clampVectorLength(velocityX, velocityY, ship.Model.MaxSpeedMps)
 	targetRotation := ship.TargetRotation + input.TargetRotationDelta
-	rotation, angularVelocity := stepAngularVelocityToTarget(ship, targetRotation, dtSeconds)
+	targetRotationSpeed := 0.0
+	if dtSeconds > 0 {
+		targetRotationSpeed = input.TargetRotationDelta / dtSeconds
+	}
+	rotation, angularVelocity := stepAngularVelocityToTarget(ship, targetRotation, targetRotationSpeed, dtSeconds)
 
 	ship.Position = game.WorldVector{
 		X: ship.Position.X + limitedVelocity.X*dtSeconds,
