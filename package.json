@@ -1,0 +1,9 @@
+{
+  "name": "space-game-07",
+  "private": true,
+  "scripts": {
+    "dev": "npm.cmd --prefix client run dev -- --port 5173 --strictPort",
+    "build": "npm.cmd --prefix client run build",
+    "test": "npm.cmd --prefix client test"
+  }
+}
