@@ -101,12 +101,19 @@ func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, 
 		torqueDirection = -currentDirection
 	}
 
-	angularVelocity := clampAbsoluteValue(
-		ship.AngularVelocity+torqueDirection*acceleration*dtSeconds,
-		ship.Model.MaxAngularSpeedRadPerSecond,
-	)
+	rawAngularVelocity := ship.AngularVelocity + torqueDirection*acceleration*dtSeconds
+	isAngularVelocityClamped := math.Abs(rawAngularVelocity) > ship.Model.MaxAngularSpeedRadPerSecond
+	angularVelocity := clampAbsoluteValue(rawAngularVelocity, ship.Model.MaxAngularSpeedRadPerSecond)
+	rotation := ship.Rotation + angularVelocity*dtSeconds
+	remainingAngleError := targetRotation - rotation
+	crossedTarget := math.Copysign(1, remainingAngleError) != directionToTarget || remainingAngleError == 0
 
-	return ship.Rotation + angularVelocity*dtSeconds, angularVelocity
+	// Если доступного момента хватает дойти до цели за текущий шаг, фиксируем угол без обратного разгона.
+	if !isAngularVelocityClamped && crossedTarget {
+		return targetRotation, 0
+	}
+
+	return rotation, angularVelocity
 }
 
 func StepShip(ship game.WorldObject, input game.ShipInput, dtSeconds float64) game.WorldObject {

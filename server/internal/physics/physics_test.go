@@ -90,6 +90,30 @@ func TestStepShipBrakesAngularVelocityNearTargetRotation(t *testing.T) {
 	closeTo(t, next.Rotation, 1)
 }
 
+func TestStepShipStopsRotationAtTargetWithoutOvershoot(t *testing.T) {
+	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship.Rotation = 0
+	ship.TargetRotation = 0.01
+	ship.AngularVelocity = 1
+
+	next := physics.StepShip(ship, idleInput(), 0.05)
+
+	closeTo(t, next.Rotation, 0.01)
+	closeTo(t, next.AngularVelocity, 0)
+}
+
+func TestStepShipBrakesAngularVelocityWithoutReverseAccelerationNearTarget(t *testing.T) {
+	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship.Rotation = 0.011
+	ship.TargetRotation = 0.01
+	ship.AngularVelocity = 0.01
+
+	next := physics.StepShip(ship, idleInput(), 0.05)
+
+	closeTo(t, next.Rotation, 0.01)
+	closeTo(t, next.AngularVelocity, 0)
+}
+
 func TestStepShipClampsAngularVelocityToModelMaximum(t *testing.T) {
 	ship := game.NewPlayerShip(1, game.WorldVector{})
 	ship.TargetRotation = 2

@@ -72,6 +72,34 @@ describe("ship physics", () => {
     expect(next.rotation).toBeCloseTo(1);
   });
 
+  it("останавливает поворот на целевом угле без перескока", () => {
+    const ship = {
+      ...createInitialShipState(),
+      rotation: 0,
+      targetRotation: 0.01,
+      angularVelocity: 1,
+    };
+
+    const next = stepShipPhysics(ship, idle, 0.05);
+
+    expect(next.rotation).toBeCloseTo(0.01);
+    expect(next.angularVelocity).toBe(0);
+  });
+
+  it("гасит угловую скорость без разгона обратно при малой ошибке угла", () => {
+    const ship = {
+      ...createInitialShipState(),
+      rotation: 0.011,
+      targetRotation: 0.01,
+      angularVelocity: 0.01,
+    };
+
+    const next = stepShipPhysics(ship, idle, 0.05);
+
+    expect(next.rotation).toBeCloseTo(0.01);
+    expect(next.angularVelocity).toBe(0);
+  });
+
   it("ограничивает угловую скорость максимумом модели", () => {
     const ship = {
       ...createInitialShipState(),

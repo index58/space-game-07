@@ -102,13 +102,23 @@ const stepAngularVelocityToTarget = (
     currentDirection === directionToTarget &&
     stoppingDistance >= Math.abs(angleError);
   const torqueDirection = shouldBrake ? -currentDirection : directionToTarget;
-  const angularVelocity = clampAbsoluteValue(
-    ship.angularVelocity + torqueDirection * angularAcceleration * dtSeconds,
-    ship.model.maxAngularSpeedRadPerSecond,
-  );
+  const rawAngularVelocity = ship.angularVelocity + torqueDirection * angularAcceleration * dtSeconds;
+  const isAngularVelocityClamped = Math.abs(rawAngularVelocity) > ship.model.maxAngularSpeedRadPerSecond;
+  const angularVelocity = clampAbsoluteValue(rawAngularVelocity, ship.model.maxAngularSpeedRadPerSecond);
+  const rotation = ship.rotation + angularVelocity * dtSeconds;
+  const remainingAngleError = targetRotation - rotation;
+  const crossedTarget = Math.sign(remainingAngleError) !== directionToTarget || remainingAngleError === 0;
+
+  // Если доступного момента хватает дойти до цели за текущий шаг, фиксируем угол без обратного разгона.
+  if (!isAngularVelocityClamped && crossedTarget) {
+    return {
+      rotation: targetRotation,
+      angularVelocity: 0,
+    };
+  }
 
   return {
-    rotation: ship.rotation + angularVelocity * dtSeconds,
+    rotation,
     angularVelocity,
   };
 };
