@@ -1,5 +1,5 @@
 import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
-import type { ShipInput } from "../domain/physics";
+import type { ClientInputState } from "../network/protocol";
 import { toShipInput } from "./inputState";
 
 export class InputController {
@@ -7,7 +7,10 @@ export class InputController {
   private mouseDeltaX = 0;
   private zoom = INITIAL_ZOOM;
 
-  constructor(private readonly canvas: HTMLCanvasElement) {
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
+    private readonly canRequestPointerLock: () => boolean = () => true,
+  ) {
     window.addEventListener("keydown", (event) => {
       this.keys[event.code] = true;
     });
@@ -31,6 +34,10 @@ export class InputController {
     );
 
     this.canvas.addEventListener("click", () => {
+      if (!this.canRequestPointerLock()) {
+        return;
+      }
+
       void this.canvas.requestPointerLock();
     });
   }
@@ -39,7 +46,7 @@ export class InputController {
     return this.zoom;
   }
 
-  consumeShipInput(): ShipInput {
+  consumeShipInput(): ClientInputState {
     // Pointer Lock отдает относительное движение мыши; после кадра накопление сбрасывается.
     const isPointerLocked = document.pointerLockElement === this.canvas;
     const input = toShipInput(isPointerLocked, this.keys, this.mouseDeltaX);

@@ -1,6 +1,10 @@
 import * as Phaser from "phaser";
 import { ASSET_KEYS, ASSET_PATHS } from "../data/assets";
-import { STATIC_OBJECTS, createInitialShipState } from "../data/prototypeObjects";
+import {
+  ASTEROID_0002,
+  SHIP_BAT,
+  STATION_TINY_CRUMB,
+} from "../data/prototypeObjects";
 import {
   INITIAL_ZOOM,
   getViewportZoomScale,
@@ -8,18 +12,25 @@ import {
   rotationToPilotScreen,
   worldToPilotScreen,
 } from "../domain/camera";
-import { stepShipPhysics } from "../domain/physics";
-import type { ShipState, SimObject } from "../domain/types";
+import type { CosmicObjectModel } from "../domain/types";
+import { GameClient } from "../network/GameClient";
+import type { ConnectionStatus, SnapshotObject } from "../network/protocol";
 import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
 
+const MODELS_BY_ACRONYM: Record<string, CosmicObjectModel> = {
+  [SHIP_BAT.acronym]: SHIP_BAT,
+  [ASTEROID_0002.acronym]: ASTEROID_0002,
+  [STATION_TINY_CRUMB.acronym]: STATION_TINY_CRUMB,
+};
+
 export class GameScene extends Phaser.Scene {
-  private ship!: ShipState;
-  private shipSprite!: Phaser.GameObjects.Image;
-  private staticSprites: Array<{ object: SimObject; sprite: Phaser.GameObjects.Image }> = [];
+  private objectSprites = new Map<number, Phaser.GameObjects.Image>();
   private background!: Phaser.GameObjects.TileSprite;
   private inputController!: InputController;
   private debugOverlay!: DebugOverlay;
+  private gameClient!: GameClient;
+  private waitingText!: Phaser.GameObjects.Text;
   private zoomLevel = INITIAL_ZOOM;
   private zoomScale = getViewportZoomScale(INITIAL_ZOOM, 1000);
 
@@ -34,15 +45,16 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.ship = createInitialShipState();
     this.background = this.add
       .tileSprite(0, 0, this.scale.width, this.scale.height, ASSET_KEYS.background)
       .setOrigin(0.5);
-    this.shipSprite = this.add.image(0, 0, ASSET_KEYS.shipBat).setOrigin(0.5);
-    this.staticSprites = STATIC_OBJECTS.map((object) => ({
-      object,
-      sprite: this.add.image(0, 0, object.model.textureKey).setOrigin(0.5),
-    }));
+    this.waitingText = this.add
+      .text(this.scale.width / 2, this.scale.height / 2, "Ожидание подключения к серверу", {
+        color: "#d8f3ff",
+        fontFamily: "Consolas, monospace",
+        fontSize: "18px",
+      })
+      .setOrigin(0.5);
 
     const overlay = document.getElementById("debug-overlay");
 
@@ -50,28 +62,62 @@ export class GameScene extends Phaser.Scene {
       throw new Error("debug-overlay element not found");
     }
 
-    this.inputController = new InputController(this.game.canvas);
+    this.gameClient = new GameClient();
+    this.inputController = new InputController(
+      this.game.canvas,
+      () => this.gameClient.getStatus() === "connected",
+    );
     this.debugOverlay = new DebugOverlay(overlay);
   }
 
-  update(_time: number, deltaMs: number): void {
-    // Ограничиваем шаг, чтобы после паузы вкладки физика не делала огромный скачок.
-    const dtSeconds = Math.min(deltaMs / 1000, 0.05);
+  update(_time: number, _deltaMs: number): void {
     const input = this.inputController.consumeShipInput();
-
+    this.gameClient.setInput(input);
     this.zoomLevel = this.inputController.getZoom();
-    this.ship = stepShipPhysics(this.ship, input, dtSeconds);
-    this.renderWorld();
-    this.debugOverlay.update(this.ship, this.game.loop.actualFps, this.zoomScale);
+
+    const status = this.gameClient.getStatus();
+    const snapshot = this.gameClient.getLatestSnapshot();
+    const selfObject = snapshot?.objects.find((object) => object.id === snapshot.selfObjectId) ?? null;
+
+    this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
+
+    if (status !== "connected" || !snapshot || !selfObject) {
+      this.renderWaiting(status);
+      this.debugOverlay.update(status, null, this.game.loop.actualFps, this.zoomScale);
+      return;
+    }
+
+    this.waitingText.setVisible(false);
+    this.renderWorld(snapshot.objects, selfObject);
+    this.debugOverlay.update(status, selfObject, this.game.loop.actualFps, this.zoomScale);
   }
 
-  private renderWorld(): void {
+  private renderWaiting(status: ConnectionStatus): void {
+    this.waitingText.setVisible(true);
+    this.waitingText.setPosition(this.scale.width / 2, this.scale.height / 2);
+    this.waitingText.setText(
+      status === "connecting" ? "Подключение к серверу" : "Ожидание подключения к серверу",
+    );
+
+    this.renderBackground({
+      shipPosition: { x: 0, y: 0 },
+      shipRotation: 0,
+      zoom: this.zoomScale,
+      viewportWidth: this.scale.width,
+      viewportHeight: this.scale.height,
+    });
+
+    for (const sprite of this.objectSprites.values()) {
+      sprite.setVisible(false);
+    }
+  }
+
+  private renderWorld(objects: SnapshotObject[], selfObject: SnapshotObject): void {
     const viewportWidth = this.scale.width;
     const viewportHeight = this.scale.height;
-    this.zoomScale = getViewportZoomScale(this.zoomLevel, viewportHeight);
     const camera = {
-      shipPosition: this.ship.position,
-      shipRotation: this.ship.rotation,
+      shipPosition: { x: selfObject.x, y: selfObject.y },
+      shipRotation: selfObject.rotation,
       zoom: this.zoomScale,
       viewportWidth,
       viewportHeight,
@@ -79,8 +125,29 @@ export class GameScene extends Phaser.Scene {
 
     this.renderBackground(camera);
 
-    this.renderShip(viewportWidth, viewportHeight);
-    this.renderStaticObjects(viewportWidth, viewportHeight);
+    const activeObjectIds = new Set<number>();
+    for (const object of objects) {
+      activeObjectIds.add(object.id);
+      const model = MODELS_BY_ACRONYM[object.modelAcronym];
+      if (!model) {
+        continue;
+      }
+
+      const sprite = this.getOrCreateObjectSprite(object, model);
+      const screen = worldToPilotScreen({ x: object.x, y: object.y }, camera);
+
+      sprite.setVisible(true);
+      sprite.setPosition(screen.x, screen.y);
+      sprite.setRotation(object.id === selfObject.id ? 0 : rotationToPilotScreen(object.rotation, selfObject.rotation));
+      sprite.setScale(this.zoomScale / model.textureScale);
+    }
+
+    for (const [objectId, sprite] of this.objectSprites) {
+      if (!activeObjectIds.has(objectId)) {
+        sprite.destroy();
+        this.objectSprites.delete(objectId);
+      }
+    }
   }
 
   private renderBackground(camera: Parameters<typeof getPilotBackgroundTransform>[0]): void {
@@ -95,33 +162,18 @@ export class GameScene extends Phaser.Scene {
     this.background.tilePositionY = transform.tilePositionY;
   }
 
-  private renderShip(viewportWidth: number, viewportHeight: number): void {
-    const shipScreen = worldToPilotScreen(this.ship.position, {
-      shipPosition: this.ship.position,
-      shipRotation: this.ship.rotation,
-      zoom: this.zoomScale,
-      viewportWidth,
-      viewportHeight,
-    });
-
-    this.shipSprite.setPosition(shipScreen.x, shipScreen.y);
-    this.shipSprite.setRotation(0);
-    this.shipSprite.setScale(this.zoomScale / this.ship.model.textureScale);
-  }
-
-  private renderStaticObjects(viewportWidth: number, viewportHeight: number): void {
-    for (const item of this.staticSprites) {
-      const screen = worldToPilotScreen(item.object.position, {
-        shipPosition: this.ship.position,
-        shipRotation: this.ship.rotation,
-        zoom: this.zoomScale,
-        viewportWidth,
-        viewportHeight,
-      });
-
-      item.sprite.setPosition(screen.x, screen.y);
-      item.sprite.setRotation(rotationToPilotScreen(item.object.rotation, this.ship.rotation));
-      item.sprite.setScale(this.zoomScale / item.object.model.textureScale);
+  private getOrCreateObjectSprite(
+    object: SnapshotObject,
+    model: CosmicObjectModel,
+  ): Phaser.GameObjects.Image {
+    const existing = this.objectSprites.get(object.id);
+    if (existing) {
+      return existing;
     }
+
+    const sprite = this.add.image(0, 0, model.textureKey).setOrigin(0.5);
+    this.objectSprites.set(object.id, sprite);
+
+    return sprite;
   }
 }

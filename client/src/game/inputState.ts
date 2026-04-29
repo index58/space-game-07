@@ -1,10 +1,10 @@
-import type { ShipInput } from "../domain/physics";
+import type { ClientInputState } from "../network/protocol";
 
 export type KeyState = Record<string, boolean>;
 
 export const MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL = 0.0025;
 
-export const emptyShipInput = (): ShipInput => ({
+export const emptyShipInput = (): ClientInputState => ({
   thrustForward: false,
   thrustBackward: false,
   thrustLeft: false,
@@ -16,12 +16,12 @@ export const toShipInput = (
   isPointerLocked: boolean,
   keys: KeyState,
   mouseDeltaX: number,
-): ShipInput => {
+): ClientInputState => {
   if (!isPointerLocked) {
     return emptyShipInput();
   }
 
-  // Мышь задает изменение целевого угла, а поворотные двигатели догоняют эту цель в физике.
+  // Мышь задает изменение целевого угла, а поворотные двигатели догоняют эту цель на сервере.
   return {
     thrustForward: Boolean(keys.KeyW),
     thrustBackward: Boolean(keys.KeyS),

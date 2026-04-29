@@ -1,19 +1,36 @@
-import type { ShipState } from "../domain/types";
 import { formatNumber } from "../domain/format";
+import type { ConnectionStatus, SnapshotObject } from "../network/protocol";
 
-// Overlay намеренно остаётся DOM-слоем, чтобы не смешивать отладочный UI с игровым canvas.
+// Overlay намеренно остается DOM-слоем, чтобы не смешивать отладочный UI с игровым canvas.
 export class DebugOverlay {
   constructor(private readonly element: HTMLElement) {}
 
-  update(ship: ShipState, fps: number, zoom: number): void {
-    const speed = Math.hypot(ship.velocity.x, ship.velocity.y);
+  update(
+    status: ConnectionStatus,
+    selfObject: SnapshotObject | null,
+    fps: number,
+    zoom: number,
+  ): void {
+    if (!selfObject) {
+      this.element.textContent = [
+        `Status: ${status}`,
+        "Ожидание подключения к серверу",
+        `Zoom: ${formatNumber(zoom, 2)}`,
+        `FPS: ${formatNumber(fps, 0)}`,
+      ].join("\n");
+      return;
+    }
+
+    const speed = Math.hypot(selfObject.velocityX, selfObject.velocityY);
 
     this.element.textContent = [
-      `X: ${formatNumber(ship.position.x)} м`,
-      `Y: ${formatNumber(ship.position.y)} м`,
+      `Status: ${status}`,
+      `Self ID: ${selfObject.id}`,
+      `X: ${formatNumber(selfObject.x)} м`,
+      `Y: ${formatNumber(selfObject.y)} м`,
       `Скорость: ${formatNumber(speed)} м/с`,
-      `Угол: ${formatNumber(ship.rotation, 4)} рад`,
-      `Угл. скорость: ${formatNumber(ship.angularVelocity, 4)} рад/с`,
+      `Угол: ${formatNumber(selfObject.rotation, 4)} рад`,
+      `Угл. скорость: ${formatNumber(selfObject.angularVelocity, 4)} рад/с`,
       `Zoom: ${formatNumber(zoom, 2)}`,
       `FPS: ${formatNumber(fps, 0)}`,
     ].join("\n");

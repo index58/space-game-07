@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "npm.cmd --prefix client run dev -- --port 5173 --strictPort",
     "build": "npm.cmd --prefix client run build",
-    "test": "npm.cmd --prefix client test"
+    "test": "npm.cmd --prefix client test",
+    "server:test": "powershell -NoProfile -Command \"Set-Location server; go test ./...\"",
+    "server:build": "powershell -NoProfile -Command \"Set-Location server; go build ./app/space-game-server\""
   }
 }
