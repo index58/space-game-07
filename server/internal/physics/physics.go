@@ -61,7 +61,21 @@ func clampVectorLength(x float64, y float64, maxLength float64) game.WorldVector
 }
 
 func clampAbsoluteValue(value float64, maxAbsoluteValue float64) float64 {
+	if math.Abs(value) <= Epsilon {
+		return 0
+	}
+
 	return math.Copysign(math.Min(math.Abs(value), maxAbsoluteValue), value)
+}
+
+func moveToward(value float64, target float64, maxDelta float64) float64 {
+	delta := target - value
+
+	if math.Abs(delta) <= maxDelta {
+		return target
+	}
+
+	return value + math.Copysign(maxDelta, delta)
 }
 
 func projection(vector game.WorldVector, axis game.WorldVector) float64 {
@@ -87,29 +101,32 @@ func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, 
 	}
 
 	directionToTarget := math.Copysign(1, angleError)
-	currentDirection := math.Copysign(1, ship.AngularVelocity)
-	if ship.AngularVelocity == 0 {
-		currentDirection = 0
+	distanceToTarget := math.Abs(angleError)
+	maxVelocityDelta := acceleration * dtSeconds
+	velocityTowardTarget := ship.AngularVelocity * directionToTarget
+
+	// Если корабль почти у цели и скорость не ведет к ней, завершаем микрокоррекцию без обратного разгона.
+	if velocityTowardTarget < 0 && distanceToTarget <= maxVelocityDelta*dtSeconds {
+		return targetRotation, 0
 	}
 
-	stoppingDistance := ship.AngularVelocity * ship.AngularVelocity / (2 * acceleration)
-	shouldBrake := currentDirection != 0 &&
-		currentDirection == directionToTarget &&
-		stoppingDistance >= math.Abs(angleError)
-	torqueDirection := directionToTarget
-	if shouldBrake {
-		torqueDirection = -currentDirection
+	safeSpeed := math.Max(
+		0,
+		math.Sqrt(maxVelocityDelta*maxVelocityDelta+2*acceleration*distanceToTarget)-maxVelocityDelta,
+	)
+	desiredSpeed := math.Min(safeSpeed, ship.Model.MaxAngularSpeedRadPerSecond)
+	if velocityTowardTarget < 0 {
+		desiredSpeed = 0
 	}
-
-	rawAngularVelocity := ship.AngularVelocity + torqueDirection*acceleration*dtSeconds
-	isAngularVelocityClamped := math.Abs(rawAngularVelocity) > ship.Model.MaxAngularSpeedRadPerSecond
+	desiredAngularVelocity := directionToTarget * desiredSpeed
+	rawAngularVelocity := moveToward(ship.AngularVelocity, desiredAngularVelocity, maxVelocityDelta)
 	angularVelocity := clampAbsoluteValue(rawAngularVelocity, ship.Model.MaxAngularSpeedRadPerSecond)
 	rotation := ship.Rotation + angularVelocity*dtSeconds
 	remainingAngleError := targetRotation - rotation
 	crossedTarget := math.Copysign(1, remainingAngleError) != directionToTarget || remainingAngleError == 0
 
-	// Если доступного момента хватает дойти до цели за текущий шаг, фиксируем угол без обратного разгона.
-	if !isAngularVelocityClamped && crossedTarget {
+	// Защита от редких состояний, где корабль уже подошел к цели быстрее, чем может затормозить.
+	if crossedTarget {
 		return targetRotation, 0
 	}
 

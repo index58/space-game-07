@@ -57,8 +57,22 @@ const clampVectorLength = (x: number, y: number, maxLength: number): WorldVector
 };
 
 const clampAbsoluteValue = (value: number, maxAbsoluteValue: number): number => {
+  if (Math.abs(value) <= EPSILON) {
+    return 0;
+  }
+
   // Сохраняем знак скорости, но не даем модулю превысить максимум модели.
   return Math.sign(value) * Math.min(Math.abs(value), maxAbsoluteValue);
+};
+
+const moveToward = (value: number, target: number, maxDelta: number): number => {
+  const delta = target - value;
+
+  if (Math.abs(delta) <= maxDelta) {
+    return target;
+  }
+
+  return value + Math.sign(delta) * maxDelta;
 };
 
 export const hasLinearThrust = (input: ShipInput): boolean =>
@@ -95,22 +109,34 @@ const stepAngularVelocityToTarget = (
   }
 
   const directionToTarget = Math.sign(angleError);
-  const currentDirection = Math.sign(ship.angularVelocity);
-  const stoppingDistance = ship.angularVelocity ** 2 / (2 * angularAcceleration);
-  const shouldBrake =
-    currentDirection !== 0 &&
-    currentDirection === directionToTarget &&
-    stoppingDistance >= Math.abs(angleError);
-  const torqueDirection = shouldBrake ? -currentDirection : directionToTarget;
-  const rawAngularVelocity = ship.angularVelocity + torqueDirection * angularAcceleration * dtSeconds;
-  const isAngularVelocityClamped = Math.abs(rawAngularVelocity) > ship.model.maxAngularSpeedRadPerSecond;
+  const distanceToTarget = Math.abs(angleError);
+  const maxVelocityDelta = angularAcceleration * dtSeconds;
+  const velocityTowardTarget = ship.angularVelocity * directionToTarget;
+
+  // Если корабль почти у цели и скорость не ведет к ней, завершаем микрокоррекцию без обратного разгона.
+  if (velocityTowardTarget < 0 && distanceToTarget <= maxVelocityDelta * dtSeconds) {
+    return {
+      rotation: targetRotation,
+      angularVelocity: 0,
+    };
+  }
+
+  const safeSpeed = Math.max(
+    0,
+    Math.sqrt(maxVelocityDelta ** 2 + 2 * angularAcceleration * distanceToTarget) - maxVelocityDelta,
+  );
+  const desiredSpeed = velocityTowardTarget < 0
+    ? 0
+    : Math.min(safeSpeed, ship.model.maxAngularSpeedRadPerSecond);
+  const desiredAngularVelocity = directionToTarget * desiredSpeed;
+  const rawAngularVelocity = moveToward(ship.angularVelocity, desiredAngularVelocity, maxVelocityDelta);
   const angularVelocity = clampAbsoluteValue(rawAngularVelocity, ship.model.maxAngularSpeedRadPerSecond);
   const rotation = ship.rotation + angularVelocity * dtSeconds;
   const remainingAngleError = targetRotation - rotation;
   const crossedTarget = Math.sign(remainingAngleError) !== directionToTarget || remainingAngleError === 0;
 
-  // Если доступного момента хватает дойти до цели за текущий шаг, фиксируем угол без обратного разгона.
-  if (!isAngularVelocityClamped && crossedTarget) {
+  // Защита от редких состояний, где корабль уже подошел к цели быстрее, чем может затормозить.
+  if (crossedTarget) {
     return {
       rotation: targetRotation,
       angularVelocity: 0,

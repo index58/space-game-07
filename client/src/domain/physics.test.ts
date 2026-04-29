@@ -100,10 +100,35 @@ describe("ship physics", () => {
     expect(next.angularVelocity).toBe(0);
   });
 
+  it("снижает угловую скорость перед финальной остановкой у целевого угла", () => {
+    const dtSeconds = 0.05;
+    const ship = {
+      ...createInitialShipState(),
+      targetRotation: 0.5,
+    };
+    const maxAngularVelocityChange = (ship.model.torqueNm / getMomentOfInertia(ship)) * dtSeconds;
+    let current = ship;
+    let angularVelocityBeforeStop = 0;
+
+    for (let step = 0; step < 100; step++) {
+      const next = stepShipPhysics(current, idle, dtSeconds);
+
+      if (next.angularVelocity === 0 && next.rotation === next.targetRotation) {
+        angularVelocityBeforeStop = Math.abs(current.angularVelocity);
+        break;
+      }
+
+      current = next;
+    }
+
+    expect(angularVelocityBeforeStop).toBeGreaterThan(0);
+    expect(angularVelocityBeforeStop).toBeLessThanOrEqual(maxAngularVelocityChange + 0.000001);
+  });
+
   it("ограничивает угловую скорость максимумом модели", () => {
     const ship = {
       ...createInitialShipState(),
-      targetRotation: 2,
+      targetRotation: 100,
     };
 
     const next = stepShipPhysics(ship, idle, 10);
