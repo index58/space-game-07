@@ -1,0 +1,25 @@
+/* Клиент первого прототипа всегда занимает всё окно браузера. */
+html,
+body,
+#game-root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+#debug-overlay {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  min-width: 260px;
+  padding: 8px 10px;
+  font: 12px/1.4 Consolas, monospace;
+  color: #d8f3ff;
+  background: rgba(0, 8, 16, 0.78);
+  border: 1px solid rgba(130, 210, 255, 0.35);
+  pointer-events: none;
+  white-space: pre;
+}
