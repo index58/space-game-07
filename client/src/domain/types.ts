@@ -37,4 +37,6 @@ export type SimObject = {
 export type ShipState = SimObject & {
   velocity: WorldVector;
   angularVelocity: number;
+  // Целевой угол хранится отдельно, чтобы мышь задавала намерение пилота, а двигатели догоняли его физикой.
+  targetRotation: number;
 };

@@ -73,6 +73,7 @@ export const createInitialShipState = (): ShipState => ({
   velocity: { x: 0, y: 0 },
   rotation: 0,
   angularVelocity: 0,
+  targetRotation: 0,
 });
 
 export const STATIC_OBJECTS: SimObject[] = [

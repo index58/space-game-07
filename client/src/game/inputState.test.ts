@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { MOUSE_TURN_IMPULSE_SECONDS, MouseTurnImpulse, toShipInput } from "./inputState";
+import { MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL, toShipInput } from "./inputState";
 
 // Эти тесты фиксируют границу между заблокированным системным курсором и игровым вводом.
 describe("toShipInput", () => {
-  it("не отдаёт управление кораблю без Pointer Lock", () => {
+  it("не отдает управление кораблю без Pointer Lock", () => {
     const input = toShipInput(false, { KeyW: true }, 10);
 
     expect(input).toEqual({
@@ -11,24 +11,25 @@ describe("toShipInput", () => {
       thrustBackward: false,
       thrustLeft: false,
       thrustRight: false,
-      turnClockwise: false,
-      turnCounterClockwise: false,
+      targetRotationDelta: 0,
     });
   });
 
-  it("начинает поворот при любом ненулевом сдвиге мыши", () => {
-    expect(toShipInput(true, {}, Number.EPSILON).turnClockwise).toBe(true);
-    expect(toShipInput(true, {}, -Number.EPSILON).turnCounterClockwise).toBe(true);
+  it("сохраняет линейный ввод клавиш при Pointer Lock", () => {
+    const input = toShipInput(true, { KeyW: true, KeyA: true }, 0);
+
+    expect(input.thrustForward).toBe(true);
+    expect(input.thrustLeft).toBe(true);
+    expect(input.targetRotationDelta).toBe(0);
   });
 
-  it("держит поворот от одиночного сдвига мыши ровно 50 миллисекунд", () => {
-    const impulse = new MouseTurnImpulse();
-
-    impulse.addMouseDelta(1);
-
-    expect(impulse.consume(0.016).turnClockwise).toBe(true);
-    expect(impulse.consume(0.016).turnClockwise).toBe(true);
-    expect(impulse.consume(MOUSE_TURN_IMPULSE_SECONDS - 0.032).turnClockwise).toBe(true);
-    expect(impulse.consume(Number.EPSILON).turnClockwise).toBe(false);
+  it("превращает сдвиг мыши в изменение целевого угла", () => {
+    expect(MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL).toBe(0.0025);
+    expect(toShipInput(true, {}, 3).targetRotationDelta).toBeCloseTo(
+      3 * MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL,
+    );
+    expect(toShipInput(true, {}, -2).targetRotationDelta).toBeCloseTo(
+      -2 * MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL,
+    );
   });
 });

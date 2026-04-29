@@ -2,14 +2,13 @@ import { describe, expect, it } from "vitest";
 import { createInitialShipState } from "../data/prototypeObjects";
 import { getMomentOfInertia, stepShipPhysics, type ShipInput } from "./physics";
 
-// Пустой ввод нужен для проверки автоматического торможения без активной тяги.
+// Пустой ввод нужен для проверки автоматического торможения без активной линейной тяги.
 const idle: ShipInput = {
   thrustForward: false,
   thrustBackward: false,
   thrustLeft: false,
   thrustRight: false,
-  turnClockwise: false,
-  turnCounterClockwise: false,
+  targetRotationDelta: 0,
 };
 
 describe("ship physics", () => {
@@ -30,13 +29,61 @@ describe("ship physics", () => {
     expect(Math.hypot(next.velocity.x, next.velocity.y)).toBeCloseTo(497);
   });
 
+  it("обновляет целевой угол от ввода мыши", () => {
+    const next = stepShipPhysics(createInitialShipState(), { ...idle, targetRotationDelta: 0.25 }, 0.016);
+
+    expect(next.targetRotation).toBeCloseTo(0.25);
+  });
+
+  it("начинает вращение к целевому углу", () => {
+    const ship = {
+      ...createInitialShipState(),
+      targetRotation: 1,
+    };
+
+    const next = stepShipPhysics(ship, idle, 0.05);
+
+    expect(next.angularVelocity).toBeGreaterThan(0);
+  });
+
+  it("не нормализует ошибку угла через границу -pi/pi", () => {
+    const ship = {
+      ...createInitialShipState(),
+      rotation: Math.PI - 0.1,
+      targetRotation: -Math.PI + 0.1,
+    };
+
+    const next = stepShipPhysics(ship, idle, 0.05);
+
+    expect(next.angularVelocity).toBeLessThan(0);
+  });
+
+  it("гасит угловую скорость возле целевого угла", () => {
+    const ship = {
+      ...createInitialShipState(),
+      rotation: 1,
+      targetRotation: 1,
+      angularVelocity: 0.1,
+    };
+
+    const next = stepShipPhysics(ship, idle, 1);
+
+    expect(next.angularVelocity).toBe(0);
+    expect(next.rotation).toBeCloseTo(1);
+  });
+
   it("ограничивает угловую скорость максимумом модели", () => {
-    const next = stepShipPhysics(createInitialShipState(), { ...idle, turnClockwise: true }, 10);
+    const ship = {
+      ...createInitialShipState(),
+      targetRotation: 2,
+    };
+
+    const next = stepShipPhysics(ship, idle, 10);
 
     expect(next.angularVelocity).toBeCloseTo(3);
   });
 
-  it("тормозит линейную и угловую скорость только когда нет тяги", () => {
+  it("тормозит линейную и угловую скорость когда цель уже достигнута", () => {
     const ship = {
       ...createInitialShipState(),
       velocity: { x: 10, y: 0 },
@@ -49,14 +96,15 @@ describe("ship physics", () => {
     expect(next.angularVelocity).toBe(0);
   });
 
-  it("не отключает линейное автоторможение при вращении мышью", () => {
+  it("не отключает линейное автоторможение при движении к целевому углу", () => {
     const ship = {
       ...createInitialShipState(),
       velocity: { x: 200, y: 0 },
       angularVelocity: 0,
+      targetRotation: 1,
     };
 
-    const next = stepShipPhysics(ship, { ...idle, turnClockwise: true }, 0.05);
+    const next = stepShipPhysics(ship, idle, 0.05);
 
     expect(next.velocity.x).toBeLessThan(200);
     expect(next.angularVelocity).toBeGreaterThan(0);

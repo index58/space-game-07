@@ -57,7 +57,7 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, deltaMs: number): void {
     // Ограничиваем шаг, чтобы после паузы вкладки физика не делала огромный скачок.
     const dtSeconds = Math.min(deltaMs / 1000, 0.05);
-    const input = this.inputController.consumeShipInput(dtSeconds);
+    const input = this.inputController.consumeShipInput();
 
     this.zoomLevel = this.inputController.getZoom();
     this.ship = stepShipPhysics(this.ship, input, dtSeconds);

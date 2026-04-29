@@ -5,11 +5,11 @@ export type ShipInput = {
   thrustBackward: boolean;
   thrustLeft: boolean;
   thrustRight: boolean;
-  turnClockwise: boolean;
-  turnCounterClockwise: boolean;
+  targetRotationDelta: number;
 };
 
 export const EPSILON = 0.000001;
+const ANGLE_EPSILON = 0.0001;
 
 export const getBodySizeMeters = (model: ShipState["model"]) => ({
   width: model.textureBodyWidth / model.textureScale,
@@ -67,8 +67,48 @@ export const hasLinearThrust = (input: ShipInput): boolean =>
   input.thrustLeft ||
   input.thrustRight;
 
-export const hasAngularThrust = (input: ShipInput): boolean =>
-  input.turnClockwise || input.turnCounterClockwise;
+const getAngularAcceleration = (ship: ShipState): number =>
+  ship.model.torqueNm / getMomentOfInertia(ship);
+
+const stepAngularVelocityToTarget = (
+  ship: ShipState,
+  targetRotation: number,
+  dtSeconds: number,
+): { rotation: number; angularVelocity: number } => {
+  const angularAcceleration = getAngularAcceleration(ship);
+  const angleError = targetRotation - ship.rotation;
+
+  if (Math.abs(angleError) <= ANGLE_EPSILON) {
+    const angularVelocity = brakeValue(
+      ship.angularVelocity,
+      angularAcceleration,
+      dtSeconds,
+    );
+
+    return {
+      rotation: angularVelocity === 0 ? targetRotation : ship.rotation + angularVelocity * dtSeconds,
+      angularVelocity,
+    };
+  }
+
+  const directionToTarget = Math.sign(angleError);
+  const currentDirection = Math.sign(ship.angularVelocity);
+  const stoppingDistance = ship.angularVelocity ** 2 / (2 * angularAcceleration);
+  const shouldBrake =
+    currentDirection !== 0 &&
+    currentDirection === directionToTarget &&
+    stoppingDistance >= Math.abs(angleError);
+  const torqueDirection = shouldBrake ? -currentDirection : directionToTarget;
+  const angularVelocity = clampAbsoluteValue(
+    ship.angularVelocity + torqueDirection * angularAcceleration * dtSeconds,
+    ship.model.maxAngularSpeedRadPerSecond,
+  );
+
+  return {
+    rotation: ship.rotation + angularVelocity * dtSeconds,
+    angularVelocity,
+  };
+};
 
 export const stepShipPhysics = (
   ship: ShipState,
@@ -79,11 +119,9 @@ export const stepShipPhysics = (
   const right = getRightVector(ship.rotation);
   const along = (input.thrustForward ? 1 : 0) - (input.thrustBackward ? 1 : 0);
   const across = (input.thrustRight ? 1 : 0) - (input.thrustLeft ? 1 : 0);
-  const torqueDirection = (input.turnClockwise ? 1 : 0) - (input.turnCounterClockwise ? 1 : 0);
 
   let velocityX = ship.velocity.x;
   let velocityY = ship.velocity.y;
-  let angularVelocity = ship.angularVelocity;
 
   if (hasLinearThrust(input)) {
     const forceX = forward.x * along * ship.model.thrustN + right.x * across * ship.model.thrustN;
@@ -106,20 +144,8 @@ export const stepShipPhysics = (
   velocityX = limitedVelocity.x;
   velocityY = limitedVelocity.y;
 
-  if (hasAngularThrust(input)) {
-    angularVelocity += (torqueDirection * ship.model.torqueNm / getMomentOfInertia(ship)) * dtSeconds;
-  } else {
-    angularVelocity = brakeValue(
-      angularVelocity,
-      ship.model.torqueNm / getMomentOfInertia(ship),
-      dtSeconds,
-    );
-  }
-
-  angularVelocity = clampAbsoluteValue(
-    angularVelocity,
-    ship.model.maxAngularSpeedRadPerSecond,
-  );
+  const targetRotation = ship.targetRotation + input.targetRotationDelta;
+  const angularStep = stepAngularVelocityToTarget(ship, targetRotation, dtSeconds);
 
   return {
     ...ship,
@@ -128,7 +154,8 @@ export const stepShipPhysics = (
       y: ship.position.y + velocityY * dtSeconds,
     },
     velocity: { x: velocityX, y: velocityY },
-    rotation: ship.rotation + angularVelocity * dtSeconds,
-    angularVelocity,
+    rotation: angularStep.rotation,
+    angularVelocity: angularStep.angularVelocity,
+    targetRotation,
   };
 };
