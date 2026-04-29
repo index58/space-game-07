@@ -3,6 +3,7 @@ import {
   INITIAL_ZOOM,
   BACKGROUND_TEXTURE_SCALE,
   clampZoom,
+  getViewportZoomScale,
   getPilotBackgroundTransform,
   getPilotShipScreenPosition,
   rotationToPilotScreen,
@@ -21,18 +22,24 @@ describe("pilot camera", () => {
       {
         shipPosition: { x: 0, y: 0 },
         shipRotation: 0,
-        zoom: INITIAL_ZOOM,
+        zoom: getViewportZoomScale(INITIAL_ZOOM, 800),
         viewportWidth: 1200,
         viewportHeight: 800,
       },
     );
 
-    expect(point).toEqual({ x: 600, y: 200 });
+    expect(point).toEqual({ x: 600, y: 520 });
   });
 
-  it("ограничивает zoom диапазоном 0.01..100", () => {
-    expect(clampZoom(0)).toBe(0.01);
+  it("ограничивает уровень zoom диапазоном -100..100", () => {
+    expect(clampZoom(-1000)).toBe(-100);
+    expect(clampZoom(0)).toBe(0);
     expect(clampZoom(1000)).toBe(100);
+  });
+
+  it("привязывает нулевой zoom к высоте экрана в 1000 метров", () => {
+    expect(getViewportZoomScale(0, 1000)).toBe(1);
+    expect(getViewportZoomScale(0, 800)).toBe(0.8);
   });
 
   it("оставляет корабль носом вверх через относительный поворот", () => {
@@ -40,17 +47,18 @@ describe("pilot camera", () => {
   });
 
   it("держит звёздный фон в той же системе координат, что и мир", () => {
+    const zoomScale = getViewportZoomScale(INITIAL_ZOOM, 800);
     const transform = getPilotBackgroundTransform({
       shipPosition: { x: 100, y: 50 },
       shipRotation: Math.PI / 2,
-      zoom: INITIAL_ZOOM,
+      zoom: zoomScale,
       viewportWidth: 1200,
       viewportHeight: 800,
     });
 
     expect(transform.position).toEqual({ x: 600, y: 600 });
     expect(transform.rotation).toBeCloseTo(-Math.PI / 2);
-    expect(transform.scale).toBe(INITIAL_ZOOM);
+    expect(transform.scale).toBe(zoomScale);
     expect(BACKGROUND_TEXTURE_SCALE).toBe(2);
     expect(transform.tileScale).toBe(1 / BACKGROUND_TEXTURE_SCALE);
     expect(transform.tilePositionX).toBeCloseTo((100 - transform.size / 2) * BACKGROUND_TEXTURE_SCALE);

@@ -26,7 +26,7 @@ export class InputController {
     window.addEventListener(
       "wheel",
       (event) => {
-        this.zoom = clampZoom(this.zoom * (event.deltaY > 0 ? 0.9 : 1.1));
+        this.zoom = clampZoom(this.zoom + (event.deltaY > 0 ? -1 : 1));
       },
       { passive: true },
     );

@@ -3,6 +3,7 @@ import { ASSET_KEYS, ASSET_PATHS } from "../data/assets";
 import { STATIC_OBJECTS, createInitialShipState } from "../data/prototypeObjects";
 import {
   INITIAL_ZOOM,
+  getViewportZoomScale,
   getPilotBackgroundTransform,
   rotationToPilotScreen,
   worldToPilotScreen,
@@ -19,7 +20,8 @@ export class GameScene extends Phaser.Scene {
   private background!: Phaser.GameObjects.TileSprite;
   private inputController!: InputController;
   private debugOverlay!: DebugOverlay;
-  private zoom = INITIAL_ZOOM;
+  private zoomLevel = INITIAL_ZOOM;
+  private zoomScale = getViewportZoomScale(INITIAL_ZOOM, 1000);
 
   constructor() {
     super("GameScene");
@@ -57,19 +59,20 @@ export class GameScene extends Phaser.Scene {
     const dtSeconds = Math.min(deltaMs / 1000, 0.05);
     const input = this.inputController.consumeShipInput(dtSeconds);
 
-    this.zoom = this.inputController.getZoom();
+    this.zoomLevel = this.inputController.getZoom();
     this.ship = stepShipPhysics(this.ship, input, dtSeconds);
     this.renderWorld();
-    this.debugOverlay.update(this.ship, this.game.loop.actualFps, this.zoom);
+    this.debugOverlay.update(this.ship, this.game.loop.actualFps, this.zoomScale);
   }
 
   private renderWorld(): void {
     const viewportWidth = this.scale.width;
     const viewportHeight = this.scale.height;
+    this.zoomScale = getViewportZoomScale(this.zoomLevel, viewportHeight);
     const camera = {
       shipPosition: this.ship.position,
       shipRotation: this.ship.rotation,
-      zoom: this.zoom,
+      zoom: this.zoomScale,
       viewportWidth,
       viewportHeight,
     };
@@ -96,14 +99,14 @@ export class GameScene extends Phaser.Scene {
     const shipScreen = worldToPilotScreen(this.ship.position, {
       shipPosition: this.ship.position,
       shipRotation: this.ship.rotation,
-      zoom: this.zoom,
+      zoom: this.zoomScale,
       viewportWidth,
       viewportHeight,
     });
 
     this.shipSprite.setPosition(shipScreen.x, shipScreen.y);
     this.shipSprite.setRotation(0);
-    this.shipSprite.setScale(this.zoom / this.ship.model.textureScale);
+    this.shipSprite.setScale(this.zoomScale / this.ship.model.textureScale);
   }
 
   private renderStaticObjects(viewportWidth: number, viewportHeight: number): void {
@@ -111,14 +114,14 @@ export class GameScene extends Phaser.Scene {
       const screen = worldToPilotScreen(item.object.position, {
         shipPosition: this.ship.position,
         shipRotation: this.ship.rotation,
-        zoom: this.zoom,
+        zoom: this.zoomScale,
         viewportWidth,
         viewportHeight,
       });
 
       item.sprite.setPosition(screen.x, screen.y);
       item.sprite.setRotation(rotationToPilotScreen(item.object.rotation, this.ship.rotation));
-      item.sprite.setScale(this.zoom / item.object.model.textureScale);
+      item.sprite.setScale(this.zoomScale / item.object.model.textureScale);
     }
   }
 }

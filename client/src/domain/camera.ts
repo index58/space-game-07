@@ -18,12 +18,17 @@ export type PilotBackgroundTransform = {
   tilePositionY: number;
 };
 
-export const MIN_ZOOM = 0.01;
+export const MIN_ZOOM = -100;
 export const MAX_ZOOM = 100;
-export const INITIAL_ZOOM = 4;
+export const INITIAL_ZOOM = 0;
 export const BACKGROUND_TEXTURE_SCALE = 2;
+export const BASE_VIEWPORT_HEIGHT_METERS = 1000;
+export const ZOOM_STEP_FACTOR = 1.1;
 
 export const clampZoom = (zoom: number): number => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom));
+
+export const getViewportZoomScale = (zoom: number, viewportHeight: number): number =>
+  (viewportHeight / BASE_VIEWPORT_HEIGHT_METERS) * ZOOM_STEP_FACTOR ** zoom;
 
 export const getPilotShipScreenPosition = (
   viewportWidth: number,
