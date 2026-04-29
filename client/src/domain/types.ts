@@ -21,7 +21,11 @@ export type CosmicObjectModel = {
   textureScale: number;
   massKg: number;
   thrustN: number;
+  // Максимальная линейная скорость объекта в метрах в секунду из старого JSON.
+  maxSpeedMps: number;
   torqueNm: number;
+  // Максимальная угловая скорость объекта в радианах в секунду из старого JSON.
+  maxAngularSpeedRadPerSecond: number;
 };
 
 export type SimObject = {

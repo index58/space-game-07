@@ -24,6 +24,18 @@ describe("ship physics", () => {
     expect(next.velocity.y).toBeCloseTo(162.61382953137096);
   });
 
+  it("ограничивает линейную скорость максимумом модели", () => {
+    const next = stepShipPhysics(createInitialShipState(), { ...idle, thrustForward: true }, 10);
+
+    expect(Math.hypot(next.velocity.x, next.velocity.y)).toBeCloseTo(497);
+  });
+
+  it("ограничивает угловую скорость максимумом модели", () => {
+    const next = stepShipPhysics(createInitialShipState(), { ...idle, turnClockwise: true }, 10);
+
+    expect(next.angularVelocity).toBeCloseTo(3);
+  });
+
   it("тормозит линейную и угловую скорость только когда нет тяги", () => {
     const ship = {
       ...createInitialShipState(),

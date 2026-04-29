@@ -43,6 +43,24 @@ const brakeValue = (value: number, acceleration: number, dtSeconds: number): num
   return value - Math.sign(value) * delta;
 };
 
+const clampVectorLength = (x: number, y: number, maxLength: number): WorldVector => {
+  const length = Math.hypot(x, y);
+
+  // Ограничиваем только превышение, чтобы не менять направление и малые скорости.
+  if (length <= maxLength || length <= EPSILON) {
+    return { x, y };
+  }
+
+  const scale = maxLength / length;
+
+  return { x: x * scale, y: y * scale };
+};
+
+const clampAbsoluteValue = (value: number, maxAbsoluteValue: number): number => {
+  // Сохраняем знак скорости, но не даем модулю превысить максимум модели.
+  return Math.sign(value) * Math.min(Math.abs(value), maxAbsoluteValue);
+};
+
 export const hasLinearThrust = (input: ShipInput): boolean =>
   input.thrustForward ||
   input.thrustBackward ||
@@ -84,6 +102,10 @@ export const stepShipPhysics = (
     }
   }
 
+  const limitedVelocity = clampVectorLength(velocityX, velocityY, ship.model.maxSpeedMps);
+  velocityX = limitedVelocity.x;
+  velocityY = limitedVelocity.y;
+
   if (hasAngularThrust(input)) {
     angularVelocity += (torqueDirection * ship.model.torqueNm / getMomentOfInertia(ship)) * dtSeconds;
   } else {
@@ -93,6 +115,11 @@ export const stepShipPhysics = (
       dtSeconds,
     );
   }
+
+  angularVelocity = clampAbsoluteValue(
+    angularVelocity,
+    ship.model.maxAngularSpeedRadPerSecond,
+  );
 
   return {
     ...ship,

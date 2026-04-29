@@ -22,7 +22,9 @@ export const SHIP_BAT: CosmicObjectModel = {
   textureScale: TEXTURE_SCALE,
   massKg: 7.92 * MASS_SCALE,
   thrustN: 0.006439507649442245 * THRUST_SCALE,
+  maxSpeedMps: 497,
   torqueNm: 653.5649999999999 * TORQUE_SCALE,
+  maxAngularSpeedRadPerSecond: 3,
 };
 
 export const ASTEROID_0002: CosmicObjectModel = {
@@ -40,7 +42,9 @@ export const ASTEROID_0002: CosmicObjectModel = {
   textureScale: TEXTURE_SCALE,
   massKg: 629.532 * MASS_SCALE,
   thrustN: 0,
+  maxSpeedMps: 475,
   torqueNm: 0,
+  maxAngularSpeedRadPerSecond: 3,
 };
 
 export const STATION_TINY_CRUMB: CosmicObjectModel = {
@@ -58,7 +62,9 @@ export const STATION_TINY_CRUMB: CosmicObjectModel = {
   textureScale: TEXTURE_SCALE,
   massKg: 185.625 * MASS_SCALE,
   thrustN: 0,
+  maxSpeedMps: 486,
   torqueNm: 0,
+  maxAngularSpeedRadPerSecond: 3,
 };
 
 export const createInitialShipState = (): ShipState => ({
