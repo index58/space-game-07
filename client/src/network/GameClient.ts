@@ -78,7 +78,11 @@ export class GameClient {
   }
 
   setInput(input: ClientInputState): void {
-    this.latestInput = input;
+    this.latestInput = {
+      ...input,
+      // Угловая дельта мыши приходит каждый кадр рендера, поэтому копим ее до сетевой отправки.
+      targetRotationDelta: this.latestInput.targetRotationDelta + input.targetRotationDelta,
+    };
   }
 
   destroy(): void {
@@ -174,6 +178,12 @@ export class GameClient {
     };
 
     this.socket.send(JSON.stringify(message));
+
+    // После успешной отправки оставляем последние состояния клавиш, но начинаем новую угловую дельту.
+    this.latestInput = {
+      ...this.latestInput,
+      targetRotationDelta: 0,
+    };
   }
 
   private clearReconnectTimer(): void {

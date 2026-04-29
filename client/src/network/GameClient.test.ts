@@ -112,6 +112,49 @@ describe("GameClient", () => {
     vi.useRealTimers();
   });
 
+  it("accumulates target rotation delta between input sends", () => {
+    vi.useFakeTimers();
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    client.setInput({ ...emptyInput(), thrustForward: true, targetRotationDelta: 0.1 });
+    client.setInput({ ...emptyInput(), thrustRight: true, targetRotationDelta: 0.2 });
+    client.setInput({ ...emptyInput(), thrustRight: true, targetRotationDelta: -0.05 });
+    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000);
+
+    const firstMessage = JSON.parse(socket.sent[0]) as ClientInputState & { type: "input"; seq: number };
+    expect(firstMessage).toEqual({
+      type: "input",
+      seq: 1,
+      thrustForward: false,
+      thrustBackward: false,
+      thrustLeft: false,
+      thrustRight: true,
+      targetRotationDelta: firstMessage.targetRotationDelta,
+    });
+    expect(firstMessage.targetRotationDelta).toBeCloseTo(0.25);
+
+    expect(JSON.parse(socket.sent[1])).toEqual({
+      type: "input",
+      seq: 2,
+      thrustForward: false,
+      thrustBackward: false,
+      thrustLeft: false,
+      thrustRight: true,
+      targetRotationDelta: 0,
+    });
+
+    client.destroy();
+    vi.useRealTimers();
+  });
+
   it("moves to waiting status after close", () => {
     vi.useFakeTimers();
     FakeWebSocket.instances = [];
