@@ -17,7 +17,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("loaded %d accounts from data", len(serverData.Accounts.Items))
+	log.Printf("loaded %d accounts and %d characters from data", len(serverData.Accounts.Items), len(serverData.Characters.Items))
 
 	gameWorld := world.New(time.Now().UnixNano())
 	hub := transport.NewHub(gameWorld)

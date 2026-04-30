@@ -7,10 +7,12 @@ import (
 )
 
 const accountsFileName = "Accounts.json"
+const charactersFileName = "Characters.json"
 
 // ServerData объединяет данные сервера, загружаемые из JSON-файлов при старте.
 type ServerData struct {
-	Accounts *data.Accounts
+	Accounts   *data.Accounts
+	Characters *data.Characters
 }
 
 // LoadServerData загружает все JSON-файлы данных сервера из указанного рабочего каталога.
@@ -20,7 +22,13 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		return nil, err
 	}
 
+	characters := data.NewCharacters()
+	if err := characters.LoadFromFile(filepath.Join(workingDirectory, "data", charactersFileName)); err != nil {
+		return nil, err
+	}
+
 	return &ServerData{
-		Accounts: accounts,
+		Accounts:   accounts,
+		Characters: characters,
 	}, nil
 }
