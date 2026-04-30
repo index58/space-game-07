@@ -3,7 +3,6 @@ package world
 import (
 	"path/filepath"
 	"sort"
-	"strings"
 	"sync"
 
 	"space-game-07-server/internal/data"
@@ -13,21 +12,21 @@ import (
 
 // Собирает все загруженные справочники и игровые сущности, нужные миру.
 type Data struct {
-	Accounts           *data.Accounts
-	Characters         *data.Characters
-	CosmicObjects      *data.CosmicObjects
-	CosmicObjectTypes  *data.CosmicObjectTypes
-	CosmicObjectModels *data.CosmicObjectModels
-	Itemtypes          *data.Itemtypes
+	Accounts           *data.Accounts           // Учетные записи, доступные игровой симуляции.
+	Characters         *data.Characters         // Персонажи, доступные игровой симуляции.
+	CosmicObjects      *data.CosmicObjects      // Экземпляры объектов, которые участвуют в мире.
+	CosmicObjectTypes  *data.CosmicObjectTypes  // Справочник типов объектов для правил мира.
+	CosmicObjectModels *data.CosmicObjectModels // Справочник моделей объектов для физики и отображения.
+	Itemtypes          *data.Itemtypes          // Справочник типов предметов для серверной логики.
 }
 
 // Управляет подключенными аккаунтами, входами игроков и пошаговой симуляцией объектов.
 type World struct {
-	mu               sync.Mutex
-	tick             int64
-	data             Data
-	accountObjectIDs map[int64]int64
-	inputs           map[int64]game.ShipInput
+	mu               sync.Mutex               // Защищает изменяемое состояние мира от параллельных горутин.
+	tick             int64                    // Номер последнего выполненного шага симуляции.
+	data             Data                     // Справочники и игровые сущности, которыми управляет мир.
+	accountObjectIDs map[int64]int64          // Связь подключенных аккаунтов с управляемыми объектами.
+	inputs           map[int64]game.ShipInput // Последний принятый ввод для каждого подключенного аккаунта.
 }
 
 // Создает мир поверх уже загруженных серверных данных.
@@ -163,17 +162,13 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		return objectIDs[left] < objectIDs[right]
 	})
 
-	objects := make([]game.SnapshotObject, 0, len(objectIDs))
+	objects := make([]data.CosmicObject, 0, len(objectIDs))
 	for _, objectID := range objectIDs {
 		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
 		if !ok {
 			continue
 		}
-		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
-		if !ok {
-			continue
-		}
-		objects = append(objects, world.snapshotObjectLocked(cosmicObject, model))
+		objects = append(objects, *cosmicObject)
 	}
 
 	return game.Snapshot{
@@ -182,31 +177,4 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		SelfObjectID: selfObjectID,
 		Objects:      objects,
 	}
-}
-
-// Переводит объект данных в сетевой DTO без промежуточной игровой модели.
-func (world *World) snapshotObjectLocked(cosmicObject *data.CosmicObject, model *data.CosmicObjectModel) game.SnapshotObject {
-	return game.SnapshotObject{
-		ID:              cosmicObject.ID,
-		ModelAcronym:    model.Acronym,
-		Kind:            world.objectKindLocked(model),
-		TextureScale:    model.TextureScale,
-		X:               cosmicObject.X,
-		Y:               cosmicObject.Y,
-		VelocityX:       cosmicObject.VelocityX,
-		VelocityY:       cosmicObject.VelocityY,
-		Rotation:        cosmicObject.Rotation,
-		AngularVelocity: cosmicObject.AngularSpeed,
-		TargetRotation:  cosmicObject.TargetRotation,
-	}
-}
-
-// Возвращает клиентскую категорию объекта из справочника типов.
-func (world *World) objectKindLocked(model *data.CosmicObjectModel) string {
-	cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
-	if !ok {
-		return ""
-	}
-
-	return strings.ToLower(cosmicObjectType.Acronym)
 }

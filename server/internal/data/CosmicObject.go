@@ -10,50 +10,50 @@ import (
 
 // Хранит данные одного космического объекта игрового мира.
 type CosmicObject struct {
-	ID                     int64   `json:"ID"`
-	Title                  string  `json:"Title"`
-	CosmicObjectModelID    int64   `json:"CosmicObjectModelID"`
-	OwnerCharacterID       int64   `json:"OwnerCharacterID"`
-	OwnerNpcClanID         int64   `json:"OwnerNpcClanID"`
-	CreatorCharacterID     int64   `json:"CreatorCharacterID"`
-	Mass                   float64 `json:"Mass"`
-	Capacity               float64 `json:"Capacity"`
-	MaxArmor               float64 `json:"MaxArmor"`
-	MaxSpeed               float64 `json:"MaxSpeed"`
-	MaxAngularSpeed        float64 `json:"MaxAngularSpeed"`
-	X                      float64 `json:"X"`
-	Y                      float64 `json:"Y"`
-	Rotation               float64 `json:"Rotation"`
-	Armor                  float64 `json:"Armor"`
-	MaxAlongForce          float64 `json:"MaxAlongForce"`
-	MaxAcrossForce         float64 `json:"MaxAcrossForce"`
-	MaxTorque              float64 `json:"MaxTorque"`
-	GeneratingPower        float64 `json:"GeneratingPower"`
-	ConsumingPower         float64 `json:"ConsumingPower"`
-	AlongForce             float64 `json:"AlongForce"`
-	AcrossForce            float64 `json:"AcrossForce"`
-	Torque                 float64 `json:"Torque"`
-	Enabled                bool    `json:"Enabled"`
-	LastReceivedDamageTime int64   `json:"LastReceivedDamageTime"`
-	Anchored               bool    `json:"Anchored"`
-	Complexity             float64 `json:"Complexity"`
-	OccupiedVolume         float64 `json:"OccupiedVolume"`
-	MaxFuel                float64 `json:"MaxFuel"`
-	Fuel                   float64 `json:"Fuel"`
-	Speed                  float64 `json:"Speed"`
-	VelocityX              float64 `json:"VelocityX"`
-	VelocityY              float64 `json:"VelocityY"`
-	AngularSpeed           float64 `json:"AngularSpeed"`
-	TargetRotation         float64 `json:"TargetRotation"`
+	ID                     int64   `json:"ID"`                     // Уникальный числовой идентификатор записи.
+	Title                  string  `json:"Title"`                  // Пользовательское название объекта в игровом мире.
+	CosmicObjectModelID    int64   `json:"CosmicObjectModelID"`    // Модель, от которой взяты базовые характеристики и графика.
+	OwnerCharacterID       int64   `json:"OwnerCharacterID"`       // Персонаж-владелец, если объект принадлежит игроку.
+	OwnerNpcClanID         int64   `json:"OwnerNpcClanID"`         // NPC-клан-владелец, если объект не принадлежит персонажу.
+	CreatorCharacterID     int64   `json:"CreatorCharacterID"`     // Персонаж, создавший объект.
+	Mass                   float64 `json:"Mass"`                   // Текущая суммарная масса объекта и содержимого.
+	Capacity               float64 `json:"Capacity"`               // Максимальный объем оборудования или содержимого.
+	MaxArmor               float64 `json:"MaxArmor"`               // Верхняя граница прочности брони.
+	MaxSpeed               float64 `json:"MaxSpeed"`               // Максимальная линейная скорость в метрах за секунду.
+	MaxAngularSpeed        float64 `json:"MaxAngularSpeed"`        // Максимальная угловая скорость в радианах за секунду.
+	X                      float64 `json:"X"`                      // Горизонтальная координата положения в мире.
+	Y                      float64 `json:"Y"`                      // Вертикальная координата положения в мире.
+	Rotation               float64 `json:"Rotation"`               // Текущий угол поворота в радианах без нормализации.
+	Armor                  float64 `json:"Armor"`                  // Текущее количество единиц брони.
+	MaxAlongForce          float64 `json:"MaxAlongForce"`          // Доступная продольная сила тяги.
+	MaxAcrossForce         float64 `json:"MaxAcrossForce"`         // Доступная поперечная сила тяги.
+	MaxTorque              float64 `json:"MaxTorque"`              // Доступный крутящий момент.
+	GeneratingPower        float64 `json:"GeneratingPower"`        // Суммарная вырабатываемая мощность оборудования.
+	ConsumingPower         float64 `json:"ConsumingPower"`         // Суммарная потребляемая мощность оборудования.
+	AlongForce             float64 `json:"AlongForce"`             // Фактически примененная продольная тяга на текущем шаге.
+	AcrossForce            float64 `json:"AcrossForce"`            // Фактически примененная поперечная тяга на текущем шаге.
+	Torque                 float64 `json:"Torque"`                 // Фактически примененный крутящий момент на текущем шаге.
+	Enabled                bool    `json:"Enabled"`                // Разрешает объекту работать и участвовать в симуляции.
+	LastReceivedDamageTime int64   `json:"LastReceivedDamageTime"` // Время последнего получения урона для боевых и ремонтных правил.
+	Anchored               bool    `json:"Anchored"`               // Запрещает физическое перемещение объекта.
+	Complexity             float64 `json:"Complexity"`             // Сложность устройства для производства и оценки стоимости.
+	OccupiedVolume         float64 `json:"OccupiedVolume"`         // Объем, уже занятый содержимым или оборудованием.
+	MaxFuel                float64 `json:"MaxFuel"`                // Максимальный запас топлива.
+	Fuel                   float64 `json:"Fuel"`                   // Текущий запас топлива.
+	Speed                  float64 `json:"Speed"`                  // Текущая длина вектора скорости.
+	VelocityX              float64 `json:"VelocityX"`              // Горизонтальная компонента текущей скорости.
+	VelocityY              float64 `json:"VelocityY"`              // Вертикальная компонента текущей скорости.
+	AngularSpeed           float64 `json:"AngularSpeed"`           // Текущая угловая скорость в радианах за секунду.
+	TargetRotation         float64 `json:"TargetRotation"`         // Угол, к которому автоматика поворота ведет объект.
 }
 
 // Хранит космические объекты и быстрые индексы по связанным объектам.
 type CosmicObjects struct {
-	MaxID int64                   `json:"MaxID"`
-	Items map[int64]*CosmicObject `json:"Items"`
+	MaxID int64                   `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*CosmicObject `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByCosmicObjectModelID map[int64]map[int64]*CosmicObject `json:"-"`
-	ByOwnerCharacterID    map[int64]map[int64]*CosmicObject `json:"-"`
+	ByCosmicObjectModelID map[int64]map[int64]*CosmicObject `json:"-"` // Быстрый поиск объектов по модели.
+	ByOwnerCharacterID    map[int64]map[int64]*CosmicObject `json:"-"` // Быстрый поиск объектов по персонажу-владельцу.
 }
 
 // Создаёт пустое хранилище космических объектов с подготовленными индексами.

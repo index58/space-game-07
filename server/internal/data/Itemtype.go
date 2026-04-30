@@ -9,24 +9,24 @@ import (
 
 // Хранит данные одного типа предмета.
 type Itemtype struct {
-	ID                    int64  `json:"ID"`
-	TitleRu               string `json:"TitleRu"`
-	TitleEn               string `json:"TitleEn"`
-	Acronym               string `json:"Acronym"`
-	IsEquipmentForShip    bool   `json:"IsEquipmentForShip"`
-	IsEquipmentForStation bool   `json:"IsEquipmentForStation"`
-	IsPilotInstrument     bool   `json:"IsPilotInstrument"`
-	CountMustBeInteger    bool   `json:"CountMustBeInteger"`
+	ID                    int64  `json:"ID"`                    // Уникальный числовой идентификатор записи.
+	TitleRu               string `json:"TitleRu"`               // Русское название для интерфейса и данных.
+	TitleEn               string `json:"TitleEn"`               // Английское название для интерфейса и данных.
+	Acronym               string `json:"Acronym"`               // Неизменяемый строковый идентификатор для логики и ссылок.
+	IsEquipmentForShip    bool   `json:"IsEquipmentForShip"`    // Разрешает устанавливать предмет этого типа на корабль.
+	IsEquipmentForStation bool   `json:"IsEquipmentForStation"` // Разрешает устанавливать предмет этого типа на станцию.
+	IsPilotInstrument     bool   `json:"IsPilotInstrument"`     // Разрешает назначать предмет этого типа в панель пилота.
+	CountMustBeInteger    bool   `json:"CountMustBeInteger"`    // Требует хранить количество только целыми единицами.
 }
 
 // Хранит типы предметов и быстрые индексы по уникальным полям.
 type Itemtypes struct {
-	MaxID int64               `json:"MaxID"`
-	Items map[int64]*Itemtype `json:"Items"`
+	MaxID int64               `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*Itemtype `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByTitleRu map[string]*Itemtype `json:"-"`
-	ByTitleEn map[string]*Itemtype `json:"-"`
-	ByAcronym map[string]*Itemtype `json:"-"`
+	ByTitleRu map[string]*Itemtype `json:"-"` // Быстрый поиск записи по русскому названию.
+	ByTitleEn map[string]*Itemtype `json:"-"` // Быстрый поиск записи по английскому названию.
+	ByAcronym map[string]*Itemtype `json:"-"` // Быстрый поиск записи по акрониму.
 }
 
 // Создаёт пустое хранилище типов предметов с подготовленными индексами.

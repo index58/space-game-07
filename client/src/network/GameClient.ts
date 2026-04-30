@@ -7,21 +7,33 @@
 
 // Позволяет тестам подменять браузерный WebSocket простой заглушкой.
 type WebSocketLike = {
+  // Обработчик успешного открытия соединения.
   onopen: ((event?: unknown) => void) | null;
+  // Обработчик закрытия соединения.
   onclose: ((event?: unknown) => void) | null;
+  // Обработчик сетевой ошибки.
   onerror: ((event?: unknown) => void) | null;
+  // Обработчик входящего текстового сообщения.
   onmessage: ((event: { data: string }) => void) | null;
+  // Отправляет текстовый пакет на сервер.
   send(payload: string): void;
+  // Закрывает соединение со стороны клиента.
   close(): void;
 };
 
 // Настраивает адрес сервера, учетную запись и тайминги сетевого клиента.
 export type GameClientOptions = {
+  // Полный WebSocket-адрес сервера.
   url?: string;
+  // Секрет авторизации аккаунта.
   token?: string;
+  // Запасной локальный никнейм, если секрет не найден.
   accountNickname?: string;
+  // Задержка перед повторным подключением.
   reconnectDelayMs?: number;
+  // Период отправки ввода на сервер.
   inputIntervalMs?: number;
+  // Фабрика соединений для тестов и нестандартных окружений.
   socketFactory?: (url: string) => WebSocketLike;
 };
 
@@ -112,17 +124,29 @@ const isSnapshotMessage = (message: unknown): message is SnapshotMessage => {
 
 // Держит WebSocket-соединение, переподключение и периодическую отправку ввода.
 export class GameClient {
+  // Адрес подключения с уже добавленными параметрами авторизации.
   private readonly url: string;
+  // Задержка перед следующей попыткой соединения.
   private readonly reconnectDelayMs: number;
+  // Период отправки последнего ввода на сервер.
   private readonly inputIntervalMs: number;
+  // Фабрика сокета, позволяющая подменять транспорт в тестах.
   private readonly socketFactory: (url: string) => WebSocketLike;
+  // Текущее активное соединение, если оно открыто или открывается.
   private socket: WebSocketLike | null = null;
+  // Состояние соединения для сцены и отладочного слоя.
   private status: ConnectionStatus = "connecting";
+  // Последний валидный снимок мира от сервера.
   private latestSnapshot: SnapshotMessage | null = null;
+  // Последнее состояние управления, готовое к отправке.
   private latestInput: ClientInputState = emptyInput();
+  // Последний выданный порядковый номер пакета ввода.
   private seq = 0;
+  // Таймер отложенного переподключения.
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  // Таймер периодической отправки ввода.
   private inputTimer: ReturnType<typeof setInterval> | null = null;
+  // Флаг окончательного уничтожения клиента.
   private destroyed = false;
 
   // Конструктор сразу начинает подключение, потому что сцена ожидает живой поток снимков.

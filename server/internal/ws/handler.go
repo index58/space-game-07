@@ -10,9 +10,9 @@ import (
 
 // Авторизует WebSocket-запросы и передает успешные подключения в Hub.
 type Handler struct {
-	hub      *Hub
-	accounts *data.Accounts
-	upgrader websocket.Upgrader
+	hub      *Hub               // Диспетчер, которому передаются успешные подключения.
+	accounts *data.Accounts     // Хранилище аккаунтов для проверки авторизации.
+	upgrader websocket.Upgrader // Настройки повышения HTTP-запроса до WebSocket.
 }
 
 // Настраивает обработчик с локальными origin-правилами для браузерного клиента.

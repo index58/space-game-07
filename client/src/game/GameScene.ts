@@ -1,5 +1,10 @@
 ﻿import * as Phaser from "phaser";
-import { ASSET_KEYS, ASSET_PATHS } from "../data/assets";
+import {
+  ASSET_KEY_BY_COSMIC_OBJECT_MODEL_ID,
+  ASSET_KEYS,
+  ASSET_PATHS,
+  TEXTURE_SCALE_BY_COSMIC_OBJECT_MODEL_ID,
+} from "../data/assets";
 import {
   INITIAL_ZOOM,
   getViewportZoomScale,
@@ -8,19 +13,27 @@ import {
   worldToPilotScreen,
 } from "../domain/camera";
 import { GameClient } from "../network/GameClient";
-import type { ConnectionStatus, SnapshotObject } from "../network/protocol";
+import type { ConnectionStatus, CosmicObject } from "../network/protocol";
 import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
 
 // Связывает Phaser-отрисовку, сетевой клиент, ввод и отладочный DOM-слой.
 export class GameScene extends Phaser.Scene {
+  // Спрайты объектов, переиспользуемые между серверными снимками.
   private objectSprites = new Map<number, Phaser.GameObjects.Image>();
+  // Тайловое изображение космоса под всеми объектами.
   private background!: Phaser.GameObjects.TileSprite;
+  // Контроллер клавиатуры, мыши и захвата указателя.
   private inputController!: InputController;
+  // DOM-слой с диагностикой текущего состояния.
   private debugOverlay!: DebugOverlay;
+  // Сетевой клиент для получения снимков и отправки ввода.
   private gameClient!: GameClient;
+  // Текст ожидания, показанный до появления валидного снимка.
   private waitingText!: Phaser.GameObjects.Text;
+  // Дискретный пользовательский уровень приближения.
   private zoomLevel = INITIAL_ZOOM;
+  // Рассчитанный масштаб мира в пикселях на метр.
   private zoomScale = getViewportZoomScale(INITIAL_ZOOM, 1000);
 
   constructor() {
@@ -69,7 +82,7 @@ export class GameScene extends Phaser.Scene {
 
     const status = this.gameClient.getStatus();
     const snapshot = this.gameClient.getLatestSnapshot();
-    const selfObject = snapshot?.objects.find((object) => object.id === snapshot.selfObjectId) ?? null;
+    const selfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
 
@@ -106,12 +119,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Размещает все объекты в экранных координатах камеры пилота.
-  private renderWorld(objects: SnapshotObject[], selfObject: SnapshotObject): void {
+  private renderWorld(objects: CosmicObject[], selfObject: CosmicObject): void {
     const viewportWidth = this.scale.width;
     const viewportHeight = this.scale.height;
     const camera = {
-      shipPosition: { x: selfObject.x, y: selfObject.y },
-      shipRotation: selfObject.rotation,
+      shipPosition: { x: selfObject.X, y: selfObject.Y },
+      shipRotation: selfObject.Rotation,
       zoom: this.zoomScale,
       viewportWidth,
       viewportHeight,
@@ -121,16 +134,16 @@ export class GameScene extends Phaser.Scene {
 
     const activeObjectIds = new Set<number>();
     for (const object of objects) {
-      activeObjectIds.add(object.id);
+      activeObjectIds.add(object.ID);
 
       const sprite = this.getOrCreateObjectSprite(object);
-      const screen = worldToPilotScreen({ x: object.x, y: object.y }, camera);
+      const screen = worldToPilotScreen({ x: object.X, y: object.Y }, camera);
 
       sprite.setVisible(true);
       sprite.setPosition(screen.x, screen.y);
       // Корабль игрока всегда смотрит вверх экрана, остальные объекты вращаются относительно него.
-      sprite.setRotation(object.id === selfObject.id ? 0 : rotationToPilotScreen(object.rotation, selfObject.rotation));
-      sprite.setScale(this.zoomScale / object.textureScale);
+      sprite.setRotation(object.ID === selfObject.ID ? 0 : rotationToPilotScreen(object.Rotation, selfObject.Rotation));
+      sprite.setScale(this.zoomScale / this.textureScaleForObject(object));
     }
 
     for (const [objectId, sprite] of this.objectSprites) {
@@ -156,21 +169,26 @@ export class GameScene extends Phaser.Scene {
 
   // Переиспользует спрайты между снимками, чтобы не создавать их каждый кадр.
   private getOrCreateObjectSprite(
-    object: SnapshotObject,
+    object: CosmicObject,
   ): Phaser.GameObjects.Image {
-    const existing = this.objectSprites.get(object.id);
+    const existing = this.objectSprites.get(object.ID);
     if (existing) {
       return existing;
     }
 
     const sprite = this.add.image(0, 0, this.textureKeyForObject(object)).setOrigin(0.5);
-    this.objectSprites.set(object.id, sprite);
+    this.objectSprites.set(object.ID, sprite);
 
     return sprite;
   }
 
-  // Строит ключ ассета из категории объекта и акронима модели.
-  private textureKeyForObject(object: SnapshotObject): string {
-    return `world.${object.kind}.${object.modelAcronym}`;
+  // Возвращает ключ ассета по ID модели из серверных данных.
+  private textureKeyForObject(object: CosmicObject): string {
+    return ASSET_KEY_BY_COSMIC_OBJECT_MODEL_ID[object.CosmicObjectModelID] ?? ASSET_KEYS.shipBat;
+  }
+
+  // Возвращает масштаб текстуры по ID модели из серверных данных.
+  private textureScaleForObject(object: CosmicObject): number {
+    return TEXTURE_SCALE_BY_COSMIC_OBJECT_MODEL_ID[object.CosmicObjectModelID] ?? 4;
   }
 }

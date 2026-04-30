@@ -18,24 +18,24 @@ const (
 
 // Хранит данные одного аккаунта игрового мира.
 type Account struct {
-	ID                 int64     `json:"ID"`
-	Email              string    `json:"Email"`
-	Nickname           string    `json:"Nickname"`
-	PasswordHash       string    `json:"PasswordHash"`
-	Token              string    `json:"Token"`
-	RegistrationTime   time.Time `json:"RegistrationTime"`
-	CurrentCharacterID int64     `json:"CurrentCharacterID"`
+	ID                 int64     `json:"ID"`                 // Уникальный числовой идентификатор записи.
+	Email              string    `json:"Email"`              // Адрес электронной почты для входа и восстановления доступа.
+	Nickname           string    `json:"Nickname"`           // Отображаемое имя игрока в игровом мире.
+	PasswordHash       string    `json:"PasswordHash"`       // Хеш пароля без хранения исходного секрета.
+	Token              string    `json:"Token"`              // Секрет для автоматической авторизации клиента.
+	RegistrationTime   time.Time `json:"RegistrationTime"`   // Момент создания учетной записи.
+	CurrentCharacterID int64     `json:"CurrentCharacterID"` // Активный персонаж, которым сейчас играет аккаунт.
 }
 
 // Хранит аккаунты и быстрые индексы для поиска по уникальным полям.
 type Accounts struct {
-	MaxID int64              `json:"MaxID"`
-	Items map[int64]*Account `json:"Items"`
+	MaxID int64              `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*Account `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByEmail              map[string]*Account `json:"-"`
-	ByNickname           map[string]*Account `json:"-"`
-	ByToken              map[string]*Account `json:"-"`
-	ByCurrentCharacterID map[int64]*Account  `json:"-"`
+	ByEmail              map[string]*Account `json:"-"` // Быстрый поиск записи по адресу электронной почты.
+	ByNickname           map[string]*Account `json:"-"` // Быстрый поиск записи по имени игрока.
+	ByToken              map[string]*Account `json:"-"` // Быстрый поиск записи по секрету авторизации.
+	ByCurrentCharacterID map[int64]*Account  `json:"-"` // Быстрый поиск записи по активному персонажу.
 }
 
 // Создаёт пустое хранилище аккаунтов с подготовленными индексами.

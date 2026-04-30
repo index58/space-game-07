@@ -10,19 +10,19 @@ import (
 
 // Хранит одно WebSocket-подключение и служебные каналы записи.
 type Client struct {
-	connection *websocket.Conn
-	accountID  int64
-	objectID   int64
-	send       chan []byte
-	done       chan struct{}
-	closeOnce  sync.Once
+	connection *websocket.Conn // Активное сетевое соединение с браузером.
+	accountID  int64           // Подключенный аккаунт, которому принадлежит соединение.
+	objectID   int64           // Объект мира, которым управляет подключенный аккаунт.
+	send       chan []byte     // Очередь исходящих сообщений для отдельной горутины записи.
+	done       chan struct{}   // Сигнал завершения чтения, записи и очистки соединения.
+	closeOnce  sync.Once       // Защита от повторного закрытия служебного канала.
 }
 
 // Координирует все активные WebSocket-клиенты вокруг одного игрового мира.
 type Hub struct {
-	mu      sync.Mutex
-	world   *world.World
-	clients map[*Client]struct{}
+	mu      sync.Mutex           // Защищает набор активных клиентов.
+	world   *world.World         // Игровой мир, получающий ввод и отдающий снимки.
+	clients map[*Client]struct{} // Набор текущих WebSocket-подключений.
 }
 
 // Создает пустой диспетчер подключений для указанного мира.

@@ -11,14 +11,14 @@ import (
 )
 
 // Ищет объект в снимке мира по ID, чтобы тесты не зависели от порядка массива.
-func findSnapshotObject(snapshot game.Snapshot, objectID int64) (game.SnapshotObject, bool) {
+func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (data.CosmicObject, bool) {
 	for _, object := range snapshot.Objects {
 		if object.ID == objectID {
 			return object, true
 		}
 	}
 
-	return game.SnapshotObject{}, false
+	return data.CosmicObject{}, false
 }
 
 // Собирает минимальный игровой мир с кораблем, астероидом и станцией.
@@ -110,7 +110,7 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
 	snapshot := gameWorld.Tick(1.0 / 30.0)
-	object, ok := findSnapshotObject(snapshot, objectID)
+	object, ok := findCosmicObjectInSnapshot(snapshot, objectID)
 	if !ok {
 		t.Fatalf("object %v not found in snapshot", objectID)
 	}
@@ -133,7 +133,7 @@ func TestDisconnectAccountDoesNotDeleteStoredShip(t *testing.T) {
 	gameWorld.DisconnectAccount(1)
 	snapshot := gameWorld.Tick(1.0 / 30.0)
 
-	if _, ok := findSnapshotObject(snapshot, objectID); !ok {
+	if _, ok := findCosmicObjectInSnapshot(snapshot, objectID); !ok {
 		t.Fatalf("object %v was removed after disconnect", objectID)
 	}
 }
@@ -142,19 +142,19 @@ func TestSnapshotContainsObjectsLoadedFromData(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 
 	snapshot := gameWorld.Tick(1.0 / 30.0)
-	models := map[string]bool{}
+	models := map[int64]bool{}
 	for _, object := range snapshot.Objects {
-		models[object.ModelAcronym] = true
+		models[object.CosmicObjectModelID] = true
 	}
 
-	if !models["ship_bat"] {
-		t.Fatalf("snapshot does not contain ship_bat")
+	if !models[1] {
+		t.Fatalf("snapshot does not contain model 1")
 	}
-	if !models["asteroid_0002"] {
-		t.Fatalf("snapshot does not contain asteroid_0002")
+	if !models[2] {
+		t.Fatalf("snapshot does not contain model 2")
 	}
-	if !models["station_tiny_crumb"] {
-		t.Fatalf("snapshot does not contain station_tiny_crumb")
+	if !models[3] {
+		t.Fatalf("snapshot does not contain model 3")
 	}
 }
 

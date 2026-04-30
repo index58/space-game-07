@@ -3,41 +3,108 @@ export type ConnectionStatus = "connecting" | "connected" | "waiting";
 
 // Хранит последний пользовательский ввод, еще не упакованный в сетевое сообщение.
 export type ClientInputState = {
+  // Запрос продольной тяги вперед.
   thrustForward: boolean;
+  // Запрос продольной тяги назад.
   thrustBackward: boolean;
+  // Запрос поперечной тяги влево.
   thrustLeft: boolean;
+  // Запрос поперечной тяги вправо.
   thrustRight: boolean;
+  // Изменение целевого угла поворота с прошлого пакета.
   targetRotationDelta: number;
 };
 
 // Добавляет к вводу тип сообщения и порядковый номер для серверного протокола.
 export type ClientInputMessage = ClientInputState & {
+  // Вид сообщения, по которому сервер отличает ввод от других пакетов.
   type: "input";
+  // Порядковый номер отправленного пакета.
   seq: number;
 };
 
-// Повторяет серверные категории объектов, от которых зависит выбор текстуры.
-export type SnapshotObjectKind = "ship" | "asteroid" | "station";
-
-// Описывает один объект из серверного снимка мира.
-export type SnapshotObject = {
-  id: number;
-  modelAcronym: string;
-  kind: SnapshotObjectKind;
-  textureScale: number;
-  x: number;
-  y: number;
-  velocityX: number;
-  velocityY: number;
-  rotation: number;
-  angularVelocity: number;
-  targetRotation: number;
+// Повторяет серверный формат хранения одного космического объекта.
+export type CosmicObject = {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Пользовательское название объекта в игровом мире.
+  Title: string;
+  // Модель, от которой взяты базовые характеристики и графика.
+  CosmicObjectModelID: number;
+  // Персонаж-владелец, если объект принадлежит игроку.
+  OwnerCharacterID: number;
+  // NPC-клан-владелец, если объект не принадлежит персонажу.
+  OwnerNpcClanID: number;
+  // Персонаж, создавший объект.
+  CreatorCharacterID: number;
+  // Текущая суммарная масса объекта и содержимого.
+  Mass: number;
+  // Максимальный объем оборудования или содержимого.
+  Capacity: number;
+  // Верхняя граница прочности брони.
+  MaxArmor: number;
+  // Максимальная линейная скорость в метрах за секунду.
+  MaxSpeed: number;
+  // Максимальная угловая скорость в радианах за секунду.
+  MaxAngularSpeed: number;
+  // Горизонтальная координата положения в мире.
+  X: number;
+  // Вертикальная координата положения в мире.
+  Y: number;
+  // Текущий угол поворота в радианах без нормализации.
+  Rotation: number;
+  // Текущее количество единиц брони.
+  Armor: number;
+  // Доступная продольная сила тяги.
+  MaxAlongForce: number;
+  // Доступная поперечная сила тяги.
+  MaxAcrossForce: number;
+  // Доступный крутящий момент.
+  MaxTorque: number;
+  // Суммарная вырабатываемая мощность оборудования.
+  GeneratingPower: number;
+  // Суммарная потребляемая мощность оборудования.
+  ConsumingPower: number;
+  // Фактически примененная продольная тяга на текущем шаге.
+  AlongForce: number;
+  // Фактически примененная поперечная тяга на текущем шаге.
+  AcrossForce: number;
+  // Фактически примененный крутящий момент на текущем шаге.
+  Torque: number;
+  // Разрешает объекту работать и участвовать в симуляции.
+  Enabled: boolean;
+  // Время последнего получения урона для боевых и ремонтных правил.
+  LastReceivedDamageTime: number;
+  // Запрещает физическое перемещение объекта.
+  Anchored: boolean;
+  // Сложность устройства для производства и оценки стоимости.
+  Complexity: number;
+  // Объем, уже занятый содержимым или оборудованием.
+  OccupiedVolume: number;
+  // Максимальный запас топлива.
+  MaxFuel: number;
+  // Текущий запас топлива.
+  Fuel: number;
+  // Текущая длина вектора скорости.
+  Speed: number;
+  // Горизонтальная компонента текущей скорости.
+  VelocityX: number;
+  // Вертикальная компонента текущей скорости.
+  VelocityY: number;
+  // Текущая угловая скорость в радианах за секунду.
+  AngularSpeed: number;
+  // Угол, к которому автоматика поворота ведет объект.
+  TargetRotation: number;
 };
 
 // Является полным состоянием мира, которое сервер регулярно отправляет клиенту.
 export type SnapshotMessage = {
+  // Вид сообщения, по которому клиент отличает снимок от других пакетов.
   type: "snapshot";
+  // Номер шага симуляции, на котором сделан снимок.
   tick: number;
+  // Управляемый объект получателя снимка.
   selfObjectId: number;
-  objects: SnapshotObject[];
+  // Объекты мира, видимые клиенту в текущем снимке.
+  objects: CosmicObject[];
 };

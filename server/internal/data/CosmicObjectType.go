@@ -9,23 +9,23 @@ import (
 
 // Хранит данные одного типа космического объекта.
 type CosmicObjectType struct {
-	ID                 int64  `json:"ID"`
-	TitleRu            string `json:"TitleRu"`
-	TitleEn            string `json:"TitleEn"`
-	Acronym            string `json:"Acronym"`
-	CharacterLocatable bool   `json:"CharacterLocatable"`
-	Movable            bool   `json:"Movable"`
-	Rotatable          bool   `json:"Rotatable"`
+	ID                 int64  `json:"ID"`                 // Уникальный числовой идентификатор записи.
+	TitleRu            string `json:"TitleRu"`            // Русское название для интерфейса и данных.
+	TitleEn            string `json:"TitleEn"`            // Английское название для интерфейса и данных.
+	Acronym            string `json:"Acronym"`            // Неизменяемый строковый идентификатор для логики и ссылок.
+	CharacterLocatable bool   `json:"CharacterLocatable"` // Может ли персонаж находиться внутри объекта этого типа.
+	Movable            bool   `json:"Movable"`            // Может ли объект этого типа менять положение в мире.
+	Rotatable          bool   `json:"Rotatable"`          // Может ли объект этого типа менять угол поворота.
 }
 
 // Хранит типы космических объектов и быстрые индексы по уникальным полям.
 type CosmicObjectTypes struct {
-	MaxID int64                       `json:"MaxID"`
-	Items map[int64]*CosmicObjectType `json:"Items"`
+	MaxID int64                       `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*CosmicObjectType `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByTitleRu map[string]*CosmicObjectType `json:"-"`
-	ByTitleEn map[string]*CosmicObjectType `json:"-"`
-	ByAcronym map[string]*CosmicObjectType `json:"-"`
+	ByTitleRu map[string]*CosmicObjectType `json:"-"` // Быстрый поиск записи по русскому названию.
+	ByTitleEn map[string]*CosmicObjectType `json:"-"` // Быстрый поиск записи по английскому названию.
+	ByAcronym map[string]*CosmicObjectType `json:"-"` // Быстрый поиск записи по акрониму.
 }
 
 // Создаёт пустое хранилище типов космических объектов с подготовленными индексами.

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 	transport "space-game-07-server/internal/ws"
 )
@@ -46,19 +47,17 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		Type:         "snapshot",
 		Tick:         123,
 		SelfObjectID: 7,
-		Objects: []game.SnapshotObject{
+		Objects: []data.CosmicObject{
 			{
-				ID:              7,
-				ModelAcronym:    "ship_bat",
-				Kind:            "ship",
-				TextureScale:    4,
-				X:               10.5,
-				Y:               -3.2,
-				VelocityX:       1.1,
-				VelocityY:       0.4,
-				Rotation:        0.2,
-				AngularVelocity: 0.01,
-				TargetRotation:  0.25,
+				ID:                  7,
+				CosmicObjectModelID: 1,
+				X:                   10.5,
+				Y:                   -3.2,
+				VelocityX:           1.1,
+				VelocityY:           0.4,
+				Rotation:            0.2,
+				AngularSpeed:        0.01,
+				TargetRotation:      0.25,
 			},
 		},
 	}
@@ -70,15 +69,24 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 	jsonText := string(payload)
 	for _, field := range []string{
 		`"selfObjectId":7`,
-		`"modelAcronym":"ship_bat"`,
-		`"textureScale":4`,
-		`"velocityX":1.1`,
-		`"velocityY":0.4`,
-		`"angularVelocity":0.01`,
-		`"targetRotation":0.25`,
+		`"CosmicObjectModelID":1`,
+		`"VelocityX":1.1`,
+		`"VelocityY":0.4`,
+		`"AngularSpeed":0.01`,
+		`"TargetRotation":0.25`,
 	} {
 		if !strings.Contains(jsonText, field) {
 			t.Fatalf("encoded snapshot %s does not contain %s", jsonText, field)
+		}
+	}
+	for _, removedField := range []string{
+		`"modelAcronym"`,
+		`"textureScale"`,
+		`"angularVelocity"`,
+		`"targetRotation"`,
+	} {
+		if strings.Contains(jsonText, removedField) {
+			t.Fatalf("encoded snapshot %s still contains removed field %s", jsonText, removedField)
 		}
 	}
 

@@ -11,19 +11,19 @@ import (
 
 // Хранит данные одного персонажа игрового мира.
 type Character struct {
-	ID                     int64     `json:"ID"`
-	AccountID              int64     `json:"AccountID"`
-	CreationTime           time.Time `json:"CreationTime"`
-	Balance                int64     `json:"Balance"`
-	LocationCosmicObjectID int64     `json:"LocationCosmicObjectID"`
+	ID                     int64     `json:"ID"`                     // Уникальный числовой идентификатор записи.
+	AccountID              int64     `json:"AccountID"`              // Учетная запись, которой принадлежит персонаж.
+	CreationTime           time.Time `json:"CreationTime"`           // Момент создания персонажа.
+	Balance                int64     `json:"Balance"`                // Количество денежных единиц на счете персонажа.
+	LocationCosmicObjectID int64     `json:"LocationCosmicObjectID"` // Космический объект, на котором персонаж находится сейчас.
 }
 
 // Хранит персонажей и быстрые индексы для поиска по связанным объектам.
 type Characters struct {
-	MaxID int64                `json:"MaxID"`
-	Items map[int64]*Character `json:"Items"`
+	MaxID int64                `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*Character `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByAccountID map[int64]map[int64]*Character `json:"-"`
+	ByAccountID map[int64]map[int64]*Character `json:"-"` // Быстрый поиск всех персонажей указанной учетной записи.
 }
 
 // Создаёт пустое хранилище персонажей с подготовленными индексами.

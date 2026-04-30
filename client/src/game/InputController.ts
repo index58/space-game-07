@@ -4,12 +4,17 @@ import { toShipInput } from "./inputState";
 
 // Изолирует браузерные события ввода от игровой сцены.
 export class InputController {
+  // Текущее состояние клавиш по DOM-кодам.
   private readonly keys: Record<string, boolean> = {};
+  // Накопленное горизонтальное движение мыши между кадрами.
   private mouseDeltaX = 0;
+  // Дискретный пользовательский уровень приближения.
   private zoom = INITIAL_ZOOM;
 
   constructor(
+    // Игровой canvas, который получает захват указателя.
     private readonly canvas: HTMLCanvasElement,
+    // Проверка готовности сцены к захвату мыши.
     private readonly canRequestPointerLock: () => boolean = () => true,
   ) {
     // Состояние клавиш хранится непрерывно, потому что сетевой ввод отправляется реже кадров браузера.

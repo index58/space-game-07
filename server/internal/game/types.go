@@ -1,41 +1,28 @@
 package game
 
+import "space-game-07-server/internal/data"
+
 // Хранит двумерную координату или скорость в метрах игрового мира.
 type WorldVector struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+	X float64 `json:"x"` // Горизонтальная координата или компонента вектора.
+	Y float64 `json:"y"` // Вертикальная координата или компонента вектора.
 }
 
 // Описывает один сетевой пакет управления кораблем от клиента.
 type ShipInput struct {
-	Type                string  `json:"type,omitempty"`
-	Seq                 int64   `json:"seq,omitempty"`
-	ThrustForward       bool    `json:"thrustForward"`
-	ThrustBackward      bool    `json:"thrustBackward"`
-	ThrustLeft          bool    `json:"thrustLeft"`
-	ThrustRight         bool    `json:"thrustRight"`
-	TargetRotationDelta float64 `json:"targetRotationDelta"`
-}
-
-// Содержит состояние одного объекта в снимке мира, отправляемом клиенту.
-type SnapshotObject struct {
-	ID              int64   `json:"id"`
-	ModelAcronym    string  `json:"modelAcronym"`
-	Kind            string  `json:"kind"`
-	TextureScale    float64 `json:"textureScale"`
-	X               float64 `json:"x"`
-	Y               float64 `json:"y"`
-	VelocityX       float64 `json:"velocityX"`
-	VelocityY       float64 `json:"velocityY"`
-	Rotation        float64 `json:"rotation"`
-	AngularVelocity float64 `json:"angularVelocity"`
-	TargetRotation  float64 `json:"targetRotation"`
+	Type                string  `json:"type,omitempty"`      // Вид сетевого сообщения от клиента.
+	Seq                 int64   `json:"seq,omitempty"`       // Порядковый номер пакета управления.
+	ThrustForward       bool    `json:"thrustForward"`       // Запрос продольной тяги вперед.
+	ThrustBackward      bool    `json:"thrustBackward"`      // Запрос продольной тяги назад.
+	ThrustLeft          bool    `json:"thrustLeft"`          // Запрос поперечной тяги влево.
+	ThrustRight         bool    `json:"thrustRight"`         // Запрос поперечной тяги вправо.
+	TargetRotationDelta float64 `json:"targetRotationDelta"` // Изменение целевого угла поворота за пакет.
 }
 
 // Содержит полный серверный снимок мира на конкретном тике.
 type Snapshot struct {
-	Type         string           `json:"type"`
-	Tick         int64            `json:"tick"`
-	SelfObjectID int64            `json:"selfObjectId"`
-	Objects      []SnapshotObject `json:"objects"`
+	Type         string              `json:"type"`         // Вид сетевого сообщения со снимком мира.
+	Tick         int64               `json:"tick"`         // Номер шага симуляции, на котором сделан снимок.
+	SelfObjectID int64               `json:"selfObjectId"` // Управляемый объект получателя снимка.
+	Objects      []data.CosmicObject `json:"objects"`      // Объекты мира, видимые клиенту в текущем снимке.
 }

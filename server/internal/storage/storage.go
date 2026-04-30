@@ -15,12 +15,12 @@ const itemtypesFileName = "Itemtypes.json"
 
 // Объединяет данные сервера, загружаемые из JSON-файлов при старте.
 type ServerData struct {
-	Accounts           *data.Accounts
-	Characters         *data.Characters
-	CosmicObjects      *data.CosmicObjects
-	CosmicObjectTypes  *data.CosmicObjectTypes
-	CosmicObjectModels *data.CosmicObjectModels
-	Itemtypes          *data.Itemtypes
+	Accounts           *data.Accounts           // Загруженные учетные записи игроков.
+	Characters         *data.Characters         // Загруженные персонажи игроков.
+	CosmicObjects      *data.CosmicObjects      // Загруженные экземпляры объектов мира.
+	CosmicObjectTypes  *data.CosmicObjectTypes  // Загруженный справочник типов космических объектов.
+	CosmicObjectModels *data.CosmicObjectModels // Загруженный справочник моделей космических объектов.
+	Itemtypes          *data.Itemtypes          // Загруженный справочник типов предметов.
 }
 
 // Загружает все JSON-файлы данных сервера из указанного рабочего каталога.

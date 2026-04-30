@@ -12,38 +12,38 @@ const defaultCosmicObjectModelTextureScale = 4
 
 // Хранит данные одной модели космического объекта.
 type CosmicObjectModel struct {
-	ID                 int64   `json:"ID"`
-	TitleRu            string  `json:"TitleRu"`
-	TitleEn            string  `json:"TitleEn"`
-	Acronym            string  `json:"Acronym"`
-	IconFilePath       string  `json:"IconFilePath"`
-	TextureFilePath    string  `json:"TextureFilePath"`
-	TextureWidth       int64   `json:"TextureWidth"`
-	TextureHeight      int64   `json:"TextureHeight"`
-	TextureBodyOriginX int64   `json:"TextureBodyOriginX"`
-	TextureBodyOriginY int64   `json:"TextureBodyOriginY"`
-	TextureBodyWidth   int64   `json:"TextureBodyWidth"`
-	TextureBodyLength  int64   `json:"TextureBodyLength"`
-	TextureScale       float64 `json:"TextureScale"`
-	CosmicObjectTypeID int64   `json:"CosmicObjectTypeID"`
-	Mass               float64 `json:"Mass"`
-	Capacity           float64 `json:"Capacity"`
-	MaxArmor           float64 `json:"MaxArmor"`
-	MaxSpeed           float64 `json:"MaxSpeed"`
-	MaxAngularSpeed    float64 `json:"MaxAngularSpeed"`
-	Complexity         float64 `json:"Complexity"`
-	BodyLength         float64 `json:"BodyLength"`
-	BodyWidth          float64 `json:"BodyWidth"`
+	ID                 int64   `json:"ID"`                 // Уникальный числовой идентификатор записи.
+	TitleRu            string  `json:"TitleRu"`            // Русское название для интерфейса и данных.
+	TitleEn            string  `json:"TitleEn"`            // Английское название для интерфейса и данных.
+	Acronym            string  `json:"Acronym"`            // Неизменяемый строковый идентификатор для логики и ссылок.
+	IconFilePath       string  `json:"IconFilePath"`       // Путь к маленькому изображению модели в интерфейсе.
+	TextureFilePath    string  `json:"TextureFilePath"`    // Путь к основной текстуре объекта в игровом мире.
+	TextureWidth       int64   `json:"TextureWidth"`       // Полная ширина текстуры в пикселях.
+	TextureHeight      int64   `json:"TextureHeight"`      // Полная высота текстуры в пикселях.
+	TextureBodyOriginX int64   `json:"TextureBodyOriginX"` // Горизонтальное смещение физического тела внутри текстуры.
+	TextureBodyOriginY int64   `json:"TextureBodyOriginY"` // Вертикальное смещение физического тела внутри текстуры.
+	TextureBodyWidth   int64   `json:"TextureBodyWidth"`   // Ширина физического тела на текстуре в пикселях.
+	TextureBodyLength  int64   `json:"TextureBodyLength"`  // Длина физического тела на текстуре в пикселях.
+	TextureScale       float64 `json:"TextureScale"`       // Количество пикселей текстуры на один метр мира.
+	CosmicObjectTypeID int64   `json:"CosmicObjectTypeID"` // Тип объекта, к которому относится модель.
+	Mass               float64 `json:"Mass"`               // Базовая масса экземпляра этой модели.
+	Capacity           float64 `json:"Capacity"`           // Базовый доступный объем для оборудования или содержимого.
+	MaxArmor           float64 `json:"MaxArmor"`           // Базовый максимум брони.
+	MaxSpeed           float64 `json:"MaxSpeed"`           // Базовая максимальная линейная скорость.
+	MaxAngularSpeed    float64 `json:"MaxAngularSpeed"`    // Базовая максимальная угловая скорость.
+	Complexity         float64 `json:"Complexity"`         // Сложность производства и оценки стоимости модели.
+	BodyLength         float64 `json:"BodyLength"`         // Рассчитанная длина физического тела в метрах.
+	BodyWidth          float64 `json:"BodyWidth"`          // Рассчитанная ширина физического тела в метрах.
 }
 
 // Хранит модели космических объектов и быстрые индексы по уникальным полям.
 type CosmicObjectModels struct {
-	MaxID int64                        `json:"MaxID"`
-	Items map[int64]*CosmicObjectModel `json:"Items"`
+	MaxID int64                        `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*CosmicObjectModel `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByTitleRu map[string]*CosmicObjectModel `json:"-"`
-	ByTitleEn map[string]*CosmicObjectModel `json:"-"`
-	ByAcronym map[string]*CosmicObjectModel `json:"-"`
+	ByTitleRu map[string]*CosmicObjectModel `json:"-"` // Быстрый поиск записи по русскому названию.
+	ByTitleEn map[string]*CosmicObjectModel `json:"-"` // Быстрый поиск записи по английскому названию.
+	ByAcronym map[string]*CosmicObjectModel `json:"-"` // Быстрый поиск записи по акрониму.
 }
 
 // Создаёт пустое хранилище моделей космических объектов с подготовленными индексами.
@@ -256,20 +256,20 @@ func (cosmicObjectModels *CosmicObjectModels) prepareCalculatedFields(cosmicObje
 }
 
 type legacyCosmicObjectModel struct {
-	TextureFilePath      string  `json:"TextureFilePath"`
-	TextureWidth         int64   `json:"TextureWidth"`
-	TextureHeight        int64   `json:"TextureHeight"`
-	TextureObjectOriginX int64   `json:"TextureObjectOriginX"`
-	TextureObjectOriginY int64   `json:"TextureObjectOriginY"`
-	TextureObjectWidth   int64   `json:"TextureObjectWidth"`
-	TextureObjectLength  int64   `json:"TextureObjectLength"`
-	CosmicObjectType     string  `json:"CosmicObjectType"`
-	TitleRu              string  `json:"TitleRu"`
-	TitleEn              string  `json:"TitleEn"`
-	Acronym              string  `json:"Acronym"`
-	Mass                 float64 `json:"Mass"`
-	MaxSpeed             float64 `json:"MaxSpeed"`
-	MaxAngularSpeed      float64 `json:"MaxAngularSpeed"`
+	TextureFilePath      string  `json:"TextureFilePath"`      // Путь к основной текстуре в старом формате данных.
+	TextureWidth         int64   `json:"TextureWidth"`         // Полная ширина текстуры в пикселях в старом формате.
+	TextureHeight        int64   `json:"TextureHeight"`        // Полная высота текстуры в пикселях в старом формате.
+	TextureObjectOriginX int64   `json:"TextureObjectOriginX"` // Горизонтальное смещение тела в старом формате.
+	TextureObjectOriginY int64   `json:"TextureObjectOriginY"` // Вертикальное смещение тела в старом формате.
+	TextureObjectWidth   int64   `json:"TextureObjectWidth"`   // Ширина тела в пикселях в старом формате.
+	TextureObjectLength  int64   `json:"TextureObjectLength"`  // Длина тела в пикселях в старом формате.
+	CosmicObjectType     string  `json:"CosmicObjectType"`     // Строковое имя типа из старого JSON.
+	TitleRu              string  `json:"TitleRu"`              // Русское название из старого JSON.
+	TitleEn              string  `json:"TitleEn"`              // Английское название из старого JSON.
+	Acronym              string  `json:"Acronym"`              // Акроним из старого JSON.
+	Mass                 float64 `json:"Mass"`                 // Базовая масса из старого JSON.
+	MaxSpeed             float64 `json:"MaxSpeed"`             // Максимальная линейная скорость из старого JSON.
+	MaxAngularSpeed      float64 `json:"MaxAngularSpeed"`      // Максимальная угловая скорость из старого JSON.
 }
 
 // Конвертирует старый JSON моделей в текущую структуру данных.
