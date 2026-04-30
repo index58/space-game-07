@@ -8,11 +8,13 @@ import (
 
 const accountsFileName = "Accounts.json"
 const charactersFileName = "Characters.json"
+const cosmicObjectTypesFileName = "CosmicObjectTypes.json"
 
 // ServerData объединяет данные сервера, загружаемые из JSON-файлов при старте.
 type ServerData struct {
-	Accounts   *data.Accounts
-	Characters *data.Characters
+	Accounts          *data.Accounts
+	Characters        *data.Characters
+	CosmicObjectTypes *data.CosmicObjectTypes
 }
 
 // LoadServerData загружает все JSON-файлы данных сервера из указанного рабочего каталога.
@@ -27,8 +29,14 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		return nil, err
 	}
 
+	cosmicObjectTypes := data.NewCosmicObjectTypes()
+	if err := cosmicObjectTypes.LoadFromFile(filepath.Join(workingDirectory, "data", cosmicObjectTypesFileName)); err != nil {
+		return nil, err
+	}
+
 	return &ServerData{
-		Accounts:   accounts,
-		Characters: characters,
+		Accounts:          accounts,
+		Characters:        characters,
+		CosmicObjectTypes: cosmicObjectTypes,
 	}, nil
 }

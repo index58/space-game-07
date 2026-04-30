@@ -33,6 +33,9 @@ func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dataDirectory, "Characters.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+		t.Fatalf("WriteFile returned error: %v", err)
+	}
 
 	serverData, err := LoadServerData(workingDirectory)
 	if err != nil {
@@ -62,6 +65,9 @@ func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 		t.Fatalf("Mkdir returned error: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(dataDirectory, "Accounts.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+		t.Fatalf("WriteFile returned error: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
 
@@ -95,6 +101,51 @@ func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	}
 }
 
+func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
+	workingDirectory := t.TempDir()
+	dataDirectory := filepath.Join(workingDirectory, "data")
+	if err := os.Mkdir(dataDirectory, 0o700); err != nil {
+		t.Fatalf("Mkdir returned error: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dataDirectory, "Accounts.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+		t.Fatalf("WriteFile returned error: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dataDirectory, "Characters.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+		t.Fatalf("WriteFile returned error: %v", err)
+	}
+
+	content := []byte(`{
+  "MaxID": 1,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "TitleRu": "Корабль",
+      "TitleEn": "Ship",
+      "Acronym": "Ship",
+      "CharacterLocatable": true,
+      "Movable": true,
+      "Rotatable": true
+    }
+  }
+}`)
+	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectTypes.json"), content, 0o600); err != nil {
+		t.Fatalf("WriteFile returned error: %v", err)
+	}
+
+	serverData, err := LoadServerData(workingDirectory)
+	if err != nil {
+		t.Fatalf("LoadServerData returned error: %v", err)
+	}
+
+	cosmicObjectType, ok := serverData.CosmicObjectTypes.GetByAcronym("Ship")
+	if !ok {
+		t.Fatal("cosmic object type is not available by acronym")
+	}
+	if cosmicObjectType.TitleRu != "Корабль" {
+		t.Fatalf("cosmic object type TitleRu = %q, want Корабль", cosmicObjectType.TitleRu)
+	}
+}
+
 func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	serverData, err := LoadServerData(filepath.Join("..", ".."))
 	if err != nil {
@@ -106,5 +157,8 @@ func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	}
 	if serverData.Characters == nil {
 		t.Fatal("repository Characters.json was not loaded")
+	}
+	if _, ok := serverData.CosmicObjectTypes.GetByAcronym("Ship"); !ok {
+		t.Fatal("repository CosmicObjectTypes.json does not contain Ship")
 	}
 }
