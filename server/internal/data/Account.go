@@ -18,19 +18,19 @@ const (
 
 // Account хранит данные одного аккаунта игрового мира.
 type Account struct {
-	ID                 int64     `json:"id"`
-	Email              string    `json:"email"`
-	Nickname           string    `json:"nickname"`
-	PasswordHash       string    `json:"passwordHash"`
-	Token              string    `json:"token"`
-	RegistrationTime   time.Time `json:"registrationTime"`
-	CurrentCharacterID int64     `json:"currentCharacterId"`
+	ID                 int64     `json:"ID"`
+	Email              string    `json:"Email"`
+	Nickname           string    `json:"Nickname"`
+	PasswordHash       string    `json:"PasswordHash"`
+	Token              string    `json:"Token"`
+	RegistrationTime   time.Time `json:"RegistrationTime"`
+	CurrentCharacterID int64     `json:"CurrentCharacterID"`
 }
 
 // Accounts хранит аккаунты и быстрые индексы для поиска по уникальным полям.
 type Accounts struct {
-	MaxID int64              `json:"maxId"`
-	Items map[int64]*Account `json:"items"`
+	MaxID int64              `json:"MaxID"`
+	Items map[int64]*Account `json:"Items"`
 
 	ByEmail              map[string]*Account `json:"-"`
 	ByNickname           map[string]*Account `json:"-"`

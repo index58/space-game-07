@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -194,6 +195,36 @@ func TestAccountsSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 	if byEmail, ok := loaded.GetByEmail(account.Email); !ok || byEmail != loadedAccount {
 		t.Fatal("loaded email index is not rebuilt")
+	}
+}
+
+func TestAccountsJSONKeysMatchGoFieldNames(t *testing.T) {
+	accounts := NewAccounts()
+	if _, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"}); err != nil {
+		t.Fatalf("Add returned error: %v", err)
+	}
+
+	content, err := json.Marshal(accounts)
+	if err != nil {
+		t.Fatalf("Marshal returned error: %v", err)
+	}
+	text := string(content)
+
+	expectedKeys := []string{
+		`"MaxID"`,
+		`"Items"`,
+		`"ID"`,
+		`"Email"`,
+		`"Nickname"`,
+		`"PasswordHash"`,
+		`"Token"`,
+		`"RegistrationTime"`,
+		`"CurrentCharacterID"`,
+	}
+	for _, expectedKey := range expectedKeys {
+		if !strings.Contains(text, expectedKey) {
+			t.Fatalf("JSON %s does not contain key %s", text, expectedKey)
+		}
 	}
 }
 

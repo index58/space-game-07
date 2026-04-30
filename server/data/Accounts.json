@@ -1,0 +1,14 @@
+{
+  "MaxID": 1,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "Email": "index@email.net",
+      "Nickname": "index",
+      "PasswordHash": "sha256$95121270071834fde6e1351dbb4a9b9c$d5e06d9f607a15fffb025ba064e7f9f6f1378ba4232a23b925c4c8e20f1d3ab7",
+      "Token": "f1aeafa5e338b85b6247dbb8bcb49b37e8d90b452299aa27a24276d000e8c73c",
+      "RegistrationTime": "2026-04-30T18:13:48.8712091+03:00",
+      "CurrentCharacterID": 0
+    }
+  }
+}

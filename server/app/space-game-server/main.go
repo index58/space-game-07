@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"space-game-07-server/internal/storage"
 	"space-game-07-server/internal/world"
 	transport "space-game-07-server/internal/ws"
 )
@@ -12,6 +13,12 @@ import (
 const tickRate = 30
 
 func main() {
+	serverData, err := storage.LoadServerData(".")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("loaded %d accounts from data", len(serverData.Accounts.Items))
+
 	gameWorld := world.New(time.Now().UnixNano())
 	hub := transport.NewHub(gameWorld)
 	handler := transport.NewHandler(hub)
