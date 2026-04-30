@@ -1,0 +1,175 @@
+{
+  "MaxID": 17,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "TitleRu": "Оружие",
+      "TitleEn": "Weapon",
+      "Acronym": "Weapon",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "2": {
+      "ID": 2,
+      "TitleRu": "Радар",
+      "TitleEn": "Radar",
+      "Acronym": "Radar",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "3": {
+      "ID": 3,
+      "TitleRu": "Бур",
+      "TitleEn": "Drill",
+      "Acronym": "Drill",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "4": {
+      "ID": 4,
+      "TitleRu": "Сборщик лута",
+      "TitleEn": "Loot Collector",
+      "Acronym": "LootCollector",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "5": {
+      "ID": 5,
+      "TitleRu": "Сканер",
+      "TitleEn": "Scaner",
+      "Acronym": "Scaner",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "6": {
+      "ID": 6,
+      "TitleRu": "Турель",
+      "TitleEn": "Turel",
+      "Acronym": "Turel",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "7": {
+      "ID": 7,
+      "TitleRu": "Двигатель",
+      "TitleEn": "Thruster",
+      "Acronym": "Thruster",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "8": {
+      "ID": 8,
+      "TitleRu": "Генератор",
+      "TitleEn": "Generator",
+      "Acronym": "Generator",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "9": {
+      "ID": 9,
+      "TitleRu": "Контейнер",
+      "TitleEn": "Container",
+      "Acronym": "Container",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "10": {
+      "ID": 10,
+      "TitleRu": "Топливный бак",
+      "TitleEn": "Fuel Tank",
+      "Acronym": "FuelTank",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "11": {
+      "ID": 11,
+      "TitleRu": "Конструктор",
+      "TitleEn": "Constructor",
+      "Acronym": "Constructor",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "12": {
+      "ID": 12,
+      "TitleRu": "Деконструктор",
+      "TitleEn": "Deconstructor",
+      "Acronym": "Deconstructor",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "13": {
+      "ID": 13,
+      "TitleRu": "Робот",
+      "TitleEn": "Robot",
+      "Acronym": "Robot",
+      "IsEquipmentForShip": false,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "14": {
+      "ID": 14,
+      "TitleRu": "Бронеплита",
+      "TitleEn": "Armor Plate",
+      "Acronym": "ArmorPlate",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "15": {
+      "ID": 15,
+      "TitleRu": "Маяк",
+      "TitleEn": "Beacon",
+      "Acronym": "Beacon",
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
+      "IsPilotInstrument": true,
+      "CountMustBeInteger": true
+    },
+    "16": {
+      "ID": 16,
+      "TitleRu": "Запчасть",
+      "TitleEn": "Spare Part",
+      "Acronym": "SparePart",
+      "IsEquipmentForShip": false,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
+    },
+    "17": {
+      "ID": 17,
+      "TitleRu": "Ресурс",
+      "TitleEn": "Resource",
+      "Acronym": "Resource",
+      "IsEquipmentForShip": false,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": false
+    }
+  }
+}

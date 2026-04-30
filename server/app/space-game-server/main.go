@@ -18,10 +18,11 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf(
-		"loaded %d accounts, %d characters and %d cosmic object types from data",
+		"loaded %d accounts, %d characters, %d cosmic object types and %d itemtypes from data",
 		len(serverData.Accounts.Items),
 		len(serverData.Characters.Items),
 		len(serverData.CosmicObjectTypes.Items),
+		len(serverData.Itemtypes.Items),
 	)
 
 	gameWorld := world.New(time.Now().UnixNano())
