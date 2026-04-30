@@ -2,7 +2,7 @@
 import type { ClientInputState } from "../network/protocol";
 import { toShipInput } from "./inputState";
 
-// изолирует браузерные события ввода от игровой сцены.
+// Изолирует браузерные события ввода от игровой сцены.
 export class InputController {
   private readonly keys: Record<string, boolean> = {};
   private mouseDeltaX = 0;
@@ -46,12 +46,12 @@ export class InputController {
     });
   }
 
-  // возвращает пользовательский уровень зума без пересчета в пиксели.
+  // Возвращает пользовательский уровень зума без пересчета в пиксели.
   getZoom(): number {
     return this.zoom;
   }
 
-  // отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.
+  // Отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.
   consumeShipInput(): ClientInputState {
     // Захват указателя отдает относительное движение мыши; после кадра накопление сбрасывается.
     const isPointerLocked = document.pointerLockElement === this.canvas;

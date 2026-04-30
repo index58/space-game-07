@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// хранит данные одного персонажа игрового мира.
+// Хранит данные одного персонажа игрового мира.
 type Character struct {
 	ID                     int64     `json:"ID"`
 	AccountID              int64     `json:"AccountID"`
@@ -18,7 +18,7 @@ type Character struct {
 	LocationCosmicObjectID int64     `json:"LocationCosmicObjectID"`
 }
 
-// хранит персонажей и быстрые индексы для поиска по связанным объектам.
+// Хранит персонажей и быстрые индексы для поиска по связанным объектам.
 type Characters struct {
 	MaxID int64                `json:"MaxID"`
 	Items map[int64]*Character `json:"Items"`
@@ -26,14 +26,14 @@ type Characters struct {
 	ByAccountID map[int64]map[int64]*Character `json:"-"`
 }
 
-// создаёт пустое хранилище персонажей с подготовленными индексами.
+// Создаёт пустое хранилище персонажей с подготовленными индексами.
 func NewCharacters() *Characters {
 	characters := &Characters{}
 	characters.ensureMaps()
 	return characters
 }
 
-// добавляет нового персонажа, назначает новый ID и время создания.
+// Добавляет нового персонажа, назначает новый ID и время создания.
 func (characters *Characters) Add(character *Character) (*Character, error) {
 	if character == nil {
 		return nil, errors.New("character is nil")
@@ -54,14 +54,14 @@ func (characters *Characters) Add(character *Character) (*Character, error) {
 	return character, nil
 }
 
-// возвращает персонажа по ID.
+// Возвращает персонажа по ID.
 func (characters *Characters) Get(id int64) (*Character, bool) {
 	characters.ensureMaps()
 	character, ok := characters.Items[id]
 	return character, ok
 }
 
-// удаляет персонажа и все его быстрые индексы.
+// Удаляет персонажа и все его быстрые индексы.
 func (characters *Characters) Delete(id int64) bool {
 	characters.ensureMaps()
 	character, ok := characters.Items[id]
@@ -74,7 +74,7 @@ func (characters *Characters) Delete(id int64) bool {
 	return true
 }
 
-// возвращает персонажей указанного аккаунта в порядке возрастания ID.
+// Возвращает персонажей указанного аккаунта в порядке возрастания ID.
 func (characters *Characters) GetByAccountID(accountID int64) []*Character {
 	characters.ensureMaps()
 	indexItems := characters.ByAccountID[accountID]
@@ -97,7 +97,7 @@ func (characters *Characters) GetByAccountID(accountID int64) []*Character {
 	return result
 }
 
-// пересобирает быстрые индексы после загрузки из JSON.
+// Пересобирает быстрые индексы после загрузки из JSON.
 func (characters *Characters) RebuildIndexes() error {
 	characters.ensureItems()
 	characters.ByAccountID = make(map[int64]map[int64]*Character)
@@ -124,7 +124,7 @@ func (characters *Characters) RebuildIndexes() error {
 	return nil
 }
 
-// загружает персонажей из JSON-файла и пересобирает быстрые индексы.
+// Загружает персонажей из JSON-файла и пересобирает быстрые индексы.
 func (characters *Characters) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -143,7 +143,7 @@ func (characters *Characters) LoadFromFile(path string) error {
 	return nil
 }
 
-// сохраняет персонажей в JSON-файл без вспомогательных индексов.
+// Сохраняет персонажей в JSON-файл без вспомогательных индексов.
 func (characters *Characters) SaveToFile(path string) error {
 	characters.ensureMaps()
 	content, err := json.MarshalIndent(characters, "", "  ")
@@ -153,7 +153,7 @@ func (characters *Characters) SaveToFile(path string) error {
 	return os.WriteFile(path, content, 0o600)
 }
 
-// подготавливает основное хранилище и все индексы.
+// Подготавливает основное хранилище и все индексы.
 func (characters *Characters) ensureMaps() {
 	characters.ensureItems()
 	if characters.ByAccountID == nil {
@@ -161,14 +161,14 @@ func (characters *Characters) ensureMaps() {
 	}
 }
 
-// подготавливает основную map персонажей.
+// Подготавливает основную map персонажей.
 func (characters *Characters) ensureItems() {
 	if characters.Items == nil {
 		characters.Items = make(map[int64]*Character)
 	}
 }
 
-// проверяет обязательные поля персонажа.
+// Проверяет обязательные поля персонажа.
 func (characters *Characters) validateRequiredFields(character *Character) error {
 	if character.AccountID <= 0 {
 		return errors.New("account ID is empty")
@@ -176,7 +176,7 @@ func (characters *Characters) validateRequiredFields(character *Character) error
 	return nil
 }
 
-// добавляет персонажа во все быстрые индексы.
+// Добавляет персонажа во все быстрые индексы.
 func (characters *Characters) addIndexes(character *Character) {
 	if characters.ByAccountID[character.AccountID] == nil {
 		characters.ByAccountID[character.AccountID] = make(map[int64]*Character)
@@ -184,7 +184,7 @@ func (characters *Characters) addIndexes(character *Character) {
 	characters.ByAccountID[character.AccountID][character.ID] = character
 }
 
-// удаляет персонажа из всех быстрых индексов.
+// Удаляет персонажа из всех быстрых индексов.
 func (characters *Characters) deleteIndexes(character *Character) {
 	accountCharacters := characters.ByAccountID[character.AccountID]
 	if accountCharacters == nil {

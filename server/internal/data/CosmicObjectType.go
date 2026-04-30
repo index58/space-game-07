@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// хранит данные одного типа космического объекта.
+// Хранит данные одного типа космического объекта.
 type CosmicObjectType struct {
 	ID                 int64  `json:"ID"`
 	TitleRu            string `json:"TitleRu"`
@@ -18,7 +18,7 @@ type CosmicObjectType struct {
 	Rotatable          bool   `json:"Rotatable"`
 }
 
-// хранит типы космических объектов и быстрые индексы по уникальным полям.
+// Хранит типы космических объектов и быстрые индексы по уникальным полям.
 type CosmicObjectTypes struct {
 	MaxID int64                       `json:"MaxID"`
 	Items map[int64]*CosmicObjectType `json:"Items"`
@@ -28,14 +28,14 @@ type CosmicObjectTypes struct {
 	ByAcronym map[string]*CosmicObjectType `json:"-"`
 }
 
-// создаёт пустое хранилище типов космических объектов с подготовленными индексами.
+// Создаёт пустое хранилище типов космических объектов с подготовленными индексами.
 func NewCosmicObjectTypes() *CosmicObjectTypes {
 	cosmicObjectTypes := &CosmicObjectTypes{}
 	cosmicObjectTypes.ensureMaps()
 	return cosmicObjectTypes
 }
 
-// добавляет новый тип космического объекта и назначает новый ID.
+// Добавляет новый тип космического объекта и назначает новый ID.
 func (cosmicObjectTypes *CosmicObjectTypes) Add(cosmicObjectType *CosmicObjectType) (*CosmicObjectType, error) {
 	if cosmicObjectType == nil {
 		return nil, errors.New("cosmic object type is nil")
@@ -55,14 +55,14 @@ func (cosmicObjectTypes *CosmicObjectTypes) Add(cosmicObjectType *CosmicObjectTy
 	return cosmicObjectType, nil
 }
 
-// возвращает тип космического объекта по ID.
+// Возвращает тип космического объекта по ID.
 func (cosmicObjectTypes *CosmicObjectTypes) Get(id int64) (*CosmicObjectType, bool) {
 	cosmicObjectTypes.ensureMaps()
 	cosmicObjectType, ok := cosmicObjectTypes.Items[id]
 	return cosmicObjectType, ok
 }
 
-// удаляет тип космического объекта и все его быстрые индексы.
+// Удаляет тип космического объекта и все его быстрые индексы.
 func (cosmicObjectTypes *CosmicObjectTypes) Delete(id int64) bool {
 	cosmicObjectTypes.ensureMaps()
 	cosmicObjectType, ok := cosmicObjectTypes.Items[id]
@@ -75,28 +75,28 @@ func (cosmicObjectTypes *CosmicObjectTypes) Delete(id int64) bool {
 	return true
 }
 
-// возвращает тип космического объекта по уникальному русскому названию.
+// Возвращает тип космического объекта по уникальному русскому названию.
 func (cosmicObjectTypes *CosmicObjectTypes) GetByTitleRu(titleRu string) (*CosmicObjectType, bool) {
 	cosmicObjectTypes.ensureMaps()
 	cosmicObjectType, ok := cosmicObjectTypes.ByTitleRu[titleRu]
 	return cosmicObjectType, ok
 }
 
-// возвращает тип космического объекта по уникальному английскому названию.
+// Возвращает тип космического объекта по уникальному английскому названию.
 func (cosmicObjectTypes *CosmicObjectTypes) GetByTitleEn(titleEn string) (*CosmicObjectType, bool) {
 	cosmicObjectTypes.ensureMaps()
 	cosmicObjectType, ok := cosmicObjectTypes.ByTitleEn[titleEn]
 	return cosmicObjectType, ok
 }
 
-// возвращает тип космического объекта по уникальному акрониму.
+// Возвращает тип космического объекта по уникальному акрониму.
 func (cosmicObjectTypes *CosmicObjectTypes) GetByAcronym(acronym string) (*CosmicObjectType, bool) {
 	cosmicObjectTypes.ensureMaps()
 	cosmicObjectType, ok := cosmicObjectTypes.ByAcronym[acronym]
 	return cosmicObjectType, ok
 }
 
-// пересобирает быстрые индексы после загрузки из JSON.
+// Пересобирает быстрые индексы после загрузки из JSON.
 func (cosmicObjectTypes *CosmicObjectTypes) RebuildIndexes() error {
 	cosmicObjectTypes.ensureItems()
 	cosmicObjectTypes.ByTitleRu = make(map[string]*CosmicObjectType)
@@ -128,7 +128,7 @@ func (cosmicObjectTypes *CosmicObjectTypes) RebuildIndexes() error {
 	return nil
 }
 
-// загружает типы космических объектов из JSON-файла и пересобирает быстрые индексы.
+// Загружает типы космических объектов из JSON-файла и пересобирает быстрые индексы.
 func (cosmicObjectTypes *CosmicObjectTypes) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -147,7 +147,7 @@ func (cosmicObjectTypes *CosmicObjectTypes) LoadFromFile(path string) error {
 	return nil
 }
 
-// сохраняет типы космических объектов в JSON-файл без вспомогательных индексов.
+// Сохраняет типы космических объектов в JSON-файл без вспомогательных индексов.
 func (cosmicObjectTypes *CosmicObjectTypes) SaveToFile(path string) error {
 	cosmicObjectTypes.ensureMaps()
 	content, err := json.MarshalIndent(cosmicObjectTypes, "", "  ")
@@ -157,7 +157,7 @@ func (cosmicObjectTypes *CosmicObjectTypes) SaveToFile(path string) error {
 	return os.WriteFile(path, content, 0o600)
 }
 
-// подготавливает основное хранилище и все индексы.
+// Подготавливает основное хранилище и все индексы.
 func (cosmicObjectTypes *CosmicObjectTypes) ensureMaps() {
 	cosmicObjectTypes.ensureItems()
 	if cosmicObjectTypes.ByTitleRu == nil {
@@ -171,14 +171,14 @@ func (cosmicObjectTypes *CosmicObjectTypes) ensureMaps() {
 	}
 }
 
-// подготавливает основную map типов космических объектов.
+// Подготавливает основную map типов космических объектов.
 func (cosmicObjectTypes *CosmicObjectTypes) ensureItems() {
 	if cosmicObjectTypes.Items == nil {
 		cosmicObjectTypes.Items = make(map[int64]*CosmicObjectType)
 	}
 }
 
-// проверяет обязательные поля типа космического объекта.
+// Проверяет обязательные поля типа космического объекта.
 func (cosmicObjectTypes *CosmicObjectTypes) validateRequiredFields(cosmicObjectType *CosmicObjectType) error {
 	if cosmicObjectType.TitleRu == "" {
 		return errors.New("title ru is empty")
@@ -192,7 +192,7 @@ func (cosmicObjectTypes *CosmicObjectTypes) validateRequiredFields(cosmicObjectT
 	return nil
 }
 
-// проверяет уникальные поля перед добавлением в индексы.
+// Проверяет уникальные поля перед добавлением в индексы.
 func (cosmicObjectTypes *CosmicObjectTypes) ensureUniqueForNewType(cosmicObjectType *CosmicObjectType) error {
 	if existing, ok := cosmicObjectTypes.ByTitleRu[cosmicObjectType.TitleRu]; ok && existing.ID != cosmicObjectType.ID {
 		return fmt.Errorf("title ru %q already exists", cosmicObjectType.TitleRu)
@@ -206,14 +206,14 @@ func (cosmicObjectTypes *CosmicObjectTypes) ensureUniqueForNewType(cosmicObjectT
 	return nil
 }
 
-// добавляет тип космического объекта во все быстрые индексы.
+// Добавляет тип космического объекта во все быстрые индексы.
 func (cosmicObjectTypes *CosmicObjectTypes) addIndexes(cosmicObjectType *CosmicObjectType) {
 	cosmicObjectTypes.ByTitleRu[cosmicObjectType.TitleRu] = cosmicObjectType
 	cosmicObjectTypes.ByTitleEn[cosmicObjectType.TitleEn] = cosmicObjectType
 	cosmicObjectTypes.ByAcronym[cosmicObjectType.Acronym] = cosmicObjectType
 }
 
-// удаляет тип космического объекта из всех быстрых индексов.
+// Удаляет тип космического объекта из всех быстрых индексов.
 func (cosmicObjectTypes *CosmicObjectTypes) deleteIndexes(cosmicObjectType *CosmicObjectType) {
 	delete(cosmicObjectTypes.ByTitleRu, cosmicObjectType.TitleRu)
 	delete(cosmicObjectTypes.ByTitleEn, cosmicObjectType.TitleEn)

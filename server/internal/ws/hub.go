@@ -8,7 +8,7 @@ import (
 	"space-game-07-server/internal/world"
 )
 
-// хранит одно WebSocket-подключение и служебные каналы записи.
+// Хранит одно WebSocket-подключение и служебные каналы записи.
 type Client struct {
 	connection *websocket.Conn
 	accountID  int64
@@ -18,14 +18,14 @@ type Client struct {
 	closeOnce  sync.Once
 }
 
-// координирует все активные WebSocket-клиенты вокруг одного игрового мира.
+// Координирует все активные WebSocket-клиенты вокруг одного игрового мира.
 type Hub struct {
 	mu      sync.Mutex
 	world   *world.World
 	clients map[*Client]struct{}
 }
 
-// создает пустой диспетчер подключений для указанного мира.
+// Создает пустой диспетчер подключений для указанного мира.
 func NewHub(gameWorld *world.World) *Hub {
 	return &Hub{
 		world:   gameWorld,
@@ -33,7 +33,7 @@ func NewHub(gameWorld *world.World) *Hub {
 	}
 }
 
-// регистрирует новое подключение и запускает отдельные циклы чтения и записи.
+// Регистрирует новое подключение и запускает отдельные циклы чтения и записи.
 func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64) {
 	objectID, ok := hub.world.ConnectAccount(accountID)
 	if !ok {
@@ -57,7 +57,7 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64) {
 	go hub.writeLoop(client)
 }
 
-// отправляет снимок всем клиентам, подставляя каждому его собственный объект.
+// Отправляет снимок всем клиентам, подставляя каждому его собственный объект.
 func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 	hub.mu.Lock()
 	clients := make([]*Client, 0, len(hub.clients))
@@ -83,7 +83,7 @@ func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 	}
 }
 
-// принимает ввод от клиента и передает последний валидный пакет в мир.
+// Принимает ввод от клиента и передает последний валидный пакет в мир.
 func (hub *Hub) readLoop(client *Client) {
 	defer hub.removeClient(client)
 
@@ -102,7 +102,7 @@ func (hub *Hub) readLoop(client *Client) {
 	}
 }
 
-// пишет исходящие снимки в WebSocket, пока клиент не отключился.
+// Пишет исходящие снимки в WebSocket, пока клиент не отключился.
 func (hub *Hub) writeLoop(client *Client) {
 	defer hub.removeClient(client)
 
@@ -118,7 +118,7 @@ func (hub *Hub) writeLoop(client *Client) {
 	}
 }
 
-// идемпотентно закрывает подключение и очищает привязку аккаунта в мире.
+// Идемпотентно закрывает подключение и очищает привязку аккаунта в мире.
 func (hub *Hub) removeClient(client *Client) {
 	hub.mu.Lock()
 	if _, ok := hub.clients[client]; !ok {

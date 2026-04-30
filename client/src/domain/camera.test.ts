@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   INITIAL_ZOOM,
   BACKGROUND_TEXTURE_SCALE,

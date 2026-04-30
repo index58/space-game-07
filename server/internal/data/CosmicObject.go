@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-// хранит данные одного космического объекта игрового мира.
+// Хранит данные одного космического объекта игрового мира.
 type CosmicObject struct {
 	ID                     int64   `json:"ID"`
 	Title                  string  `json:"Title"`
@@ -44,7 +44,7 @@ type CosmicObject struct {
 	AngularSpeed           float64 `json:"AngularSpeed"`
 }
 
-// хранит космические объекты и быстрые индексы по связанным объектам.
+// Хранит космические объекты и быстрые индексы по связанным объектам.
 type CosmicObjects struct {
 	MaxID int64                   `json:"MaxID"`
 	Items map[int64]*CosmicObject `json:"Items"`
@@ -53,14 +53,14 @@ type CosmicObjects struct {
 	ByOwnerCharacterID    map[int64]map[int64]*CosmicObject `json:"-"`
 }
 
-// создаёт пустое хранилище космических объектов с подготовленными индексами.
+// Создаёт пустое хранилище космических объектов с подготовленными индексами.
 func NewCosmicObjects() *CosmicObjects {
 	cosmicObjects := &CosmicObjects{}
 	cosmicObjects.ensureMaps()
 	return cosmicObjects
 }
 
-// добавляет новый космический объект и назначает новый ID.
+// Добавляет новый космический объект и назначает новый ID.
 func (cosmicObjects *CosmicObjects) Add(cosmicObject *CosmicObject) (*CosmicObject, error) {
 	if cosmicObject == nil {
 		return nil, errors.New("cosmic object is nil")
@@ -77,14 +77,14 @@ func (cosmicObjects *CosmicObjects) Add(cosmicObject *CosmicObject) (*CosmicObje
 	return cosmicObject, nil
 }
 
-// возвращает космический объект по ID.
+// Возвращает космический объект по ID.
 func (cosmicObjects *CosmicObjects) Get(id int64) (*CosmicObject, bool) {
 	cosmicObjects.ensureMaps()
 	cosmicObject, ok := cosmicObjects.Items[id]
 	return cosmicObject, ok
 }
 
-// удаляет космический объект и все его быстрые индексы.
+// Удаляет космический объект и все его быстрые индексы.
 func (cosmicObjects *CosmicObjects) Delete(id int64) bool {
 	cosmicObjects.ensureMaps()
 	cosmicObject, ok := cosmicObjects.Items[id]
@@ -97,19 +97,19 @@ func (cosmicObjects *CosmicObjects) Delete(id int64) bool {
 	return true
 }
 
-// возвращает объекты указанной модели в порядке возрастания ID.
+// Возвращает объекты указанной модели в порядке возрастания ID.
 func (cosmicObjects *CosmicObjects) GetByCosmicObjectModelID(cosmicObjectModelID int64) []*CosmicObject {
 	cosmicObjects.ensureMaps()
 	return sortedCosmicObjects(cosmicObjects.ByCosmicObjectModelID[cosmicObjectModelID])
 }
 
-// возвращает объекты указанного владельца-персонажа в порядке возрастания ID.
+// Возвращает объекты указанного владельца-персонажа в порядке возрастания ID.
 func (cosmicObjects *CosmicObjects) GetByOwnerCharacterID(ownerCharacterID int64) []*CosmicObject {
 	cosmicObjects.ensureMaps()
 	return sortedCosmicObjects(cosmicObjects.ByOwnerCharacterID[ownerCharacterID])
 }
 
-// пересобирает быстрые индексы после загрузки из JSON.
+// Пересобирает быстрые индексы после загрузки из JSON.
 func (cosmicObjects *CosmicObjects) RebuildIndexes() error {
 	cosmicObjects.ensureItems()
 	cosmicObjects.ByCosmicObjectModelID = make(map[int64]map[int64]*CosmicObject)
@@ -137,7 +137,7 @@ func (cosmicObjects *CosmicObjects) RebuildIndexes() error {
 	return nil
 }
 
-// загружает космические объекты из JSON-файла и пересобирает быстрые индексы.
+// Загружает космические объекты из JSON-файла и пересобирает быстрые индексы.
 func (cosmicObjects *CosmicObjects) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -156,7 +156,7 @@ func (cosmicObjects *CosmicObjects) LoadFromFile(path string) error {
 	return nil
 }
 
-// сохраняет космические объекты в JSON-файл без вспомогательных индексов.
+// Сохраняет космические объекты в JSON-файл без вспомогательных индексов.
 func (cosmicObjects *CosmicObjects) SaveToFile(path string) error {
 	cosmicObjects.ensureMaps()
 	content, err := json.MarshalIndent(cosmicObjects, "", "  ")
@@ -166,7 +166,7 @@ func (cosmicObjects *CosmicObjects) SaveToFile(path string) error {
 	return os.WriteFile(path, content, 0o600)
 }
 
-// подготавливает основное хранилище и все индексы.
+// Подготавливает основное хранилище и все индексы.
 func (cosmicObjects *CosmicObjects) ensureMaps() {
 	cosmicObjects.ensureItems()
 	if cosmicObjects.ByCosmicObjectModelID == nil {
@@ -177,14 +177,14 @@ func (cosmicObjects *CosmicObjects) ensureMaps() {
 	}
 }
 
-// подготавливает основную map космических объектов.
+// Подготавливает основную map космических объектов.
 func (cosmicObjects *CosmicObjects) ensureItems() {
 	if cosmicObjects.Items == nil {
 		cosmicObjects.Items = make(map[int64]*CosmicObject)
 	}
 }
 
-// проверяет обязательные поля космического объекта.
+// Проверяет обязательные поля космического объекта.
 func (cosmicObjects *CosmicObjects) validateRequiredFields(cosmicObject *CosmicObject) error {
 	if cosmicObject.CosmicObjectModelID <= 0 {
 		return errors.New("cosmic object model ID is empty")
@@ -192,7 +192,7 @@ func (cosmicObjects *CosmicObjects) validateRequiredFields(cosmicObject *CosmicO
 	return nil
 }
 
-// добавляет космический объект во все быстрые индексы.
+// Добавляет космический объект во все быстрые индексы.
 func (cosmicObjects *CosmicObjects) addIndexes(cosmicObject *CosmicObject) {
 	addCosmicObjectIndex(cosmicObjects.ByCosmicObjectModelID, cosmicObject.CosmicObjectModelID, cosmicObject)
 	if cosmicObject.OwnerCharacterID > 0 {
@@ -200,7 +200,7 @@ func (cosmicObjects *CosmicObjects) addIndexes(cosmicObject *CosmicObject) {
 	}
 }
 
-// удаляет космический объект из всех быстрых индексов.
+// Удаляет космический объект из всех быстрых индексов.
 func (cosmicObjects *CosmicObjects) deleteIndexes(cosmicObject *CosmicObject) {
 	deleteCosmicObjectIndex(cosmicObjects.ByCosmicObjectModelID, cosmicObject.CosmicObjectModelID, cosmicObject.ID)
 	if cosmicObject.OwnerCharacterID > 0 {
@@ -208,7 +208,7 @@ func (cosmicObjects *CosmicObjects) deleteIndexes(cosmicObject *CosmicObject) {
 	}
 }
 
-// добавляет объект в неуникальный индекс.
+// Добавляет объект в неуникальный индекс.
 func addCosmicObjectIndex(index map[int64]map[int64]*CosmicObject, key int64, cosmicObject *CosmicObject) {
 	if index[key] == nil {
 		index[key] = make(map[int64]*CosmicObject)
@@ -216,7 +216,7 @@ func addCosmicObjectIndex(index map[int64]map[int64]*CosmicObject, key int64, co
 	index[key][cosmicObject.ID] = cosmicObject
 }
 
-// удаляет объект из неуникального индекса.
+// Удаляет объект из неуникального индекса.
 func deleteCosmicObjectIndex(index map[int64]map[int64]*CosmicObject, key int64, id int64) {
 	indexItems := index[key]
 	if indexItems == nil {
@@ -228,7 +228,7 @@ func deleteCosmicObjectIndex(index map[int64]map[int64]*CosmicObject, key int64,
 	}
 }
 
-// возвращает объекты индекса в стабильном порядке ID.
+// Возвращает объекты индекса в стабильном порядке ID.
 func sortedCosmicObjects(indexItems map[int64]*CosmicObject) []*CosmicObject {
 	if len(indexItems) == 0 {
 		return []*CosmicObject{}

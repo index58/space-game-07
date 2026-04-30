@@ -1,24 +1,24 @@
 package game
 
-// задает клиентскую категорию объекта, по которой выбираются ассеты и правила отображения.
+// Задает клиентскую категорию объекта, по которой выбираются ассеты и правила отображения.
 type ObjectKind string
 
 const (
-	// обозначает управляемые и неуправляемые корабли.
+	// Обозначает управляемые и неуправляемые корабли.
 	ObjectKindShip ObjectKind = "ship"
-	// обозначает астероиды и другие малые природные тела.
+	// Обозначает астероиды и другие малые природные тела.
 	ObjectKindAsteroid ObjectKind = "asteroid"
-	// обозначает станции и прочие неподвижные инфраструктурные объекты.
+	// Обозначает станции и прочие неподвижные инфраструктурные объекты.
 	ObjectKindStation ObjectKind = "station"
 )
 
-// хранит двумерную координату или скорость в метрах игрового мира.
+// Хранит двумерную координату или скорость в метрах игрового мира.
 type WorldVector struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 }
 
-// содержит нормализованные параметры модели, нужные симуляции и клиенту.
+// Содержит нормализованные параметры модели, нужные симуляции и клиенту.
 type CosmicObjectModel struct {
 	Acronym                     string
 	TitleRu                     string
@@ -39,7 +39,7 @@ type CosmicObjectModel struct {
 	MaxAngularSpeedRadPerSecond float64
 }
 
-// описывает один сетевой пакет управления кораблем от клиента.
+// Описывает один сетевой пакет управления кораблем от клиента.
 type ShipInput struct {
 	Type                string  `json:"type,omitempty"`
 	Seq                 int64   `json:"seq,omitempty"`
@@ -50,7 +50,7 @@ type ShipInput struct {
 	TargetRotationDelta float64 `json:"targetRotationDelta"`
 }
 
-// является рабочим представлением объекта внутри физической симуляции.
+// Является рабочим представлением объекта внутри физической симуляции.
 type WorldObject struct {
 	ID              int64
 	Model           CosmicObjectModel
@@ -61,7 +61,7 @@ type WorldObject struct {
 	TargetRotation  float64
 }
 
-// содержит состояние одного объекта в снимке мира, отправляемом клиенту.
+// Содержит состояние одного объекта в снимке мира, отправляемом клиенту.
 type SnapshotObject struct {
 	ID              int64      `json:"id"`
 	ModelAcronym    string     `json:"modelAcronym"`
@@ -76,7 +76,7 @@ type SnapshotObject struct {
 	TargetRotation  float64    `json:"targetRotation"`
 }
 
-// содержит полный серверный снимок мира на конкретном тике.
+// Содержит полный серверный снимок мира на конкретном тике.
 type Snapshot struct {
 	Type         string           `json:"type"`
 	Tick         int64            `json:"tick"`
@@ -84,7 +84,7 @@ type Snapshot struct {
 	Objects      []SnapshotObject `json:"objects"`
 }
 
-// преобразует рабочий объект симуляции в компактный сетевой DTO.
+// Преобразует рабочий объект симуляции в компактный сетевой DTO.
 func NewSnapshotObject(object WorldObject) SnapshotObject {
 	return SnapshotObject{
 		ID:              object.ID,

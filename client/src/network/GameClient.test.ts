@@ -2,7 +2,7 @@
 import { GameClient } from "./GameClient";
 import type { ClientInputState } from "./protocol";
 
-// имитирует браузерный сокет и дает тестам вручную дергать события соединения.
+// Имитирует браузерный сокет и дает тестам вручную дергать события соединения.
 class FakeWebSocket {
   static instances: FakeWebSocket[] = [];
 
@@ -27,7 +27,7 @@ class FakeWebSocket {
   }
 }
 
-// собирает нейтральный ввод, чтобы каждый тест явно менял только проверяемые поля.
+// Собирает нейтральный ввод, чтобы каждый тест явно менял только проверяемые поля.
 const emptyInput = (): ClientInputState => ({
   thrustForward: false,
   thrustBackward: false,

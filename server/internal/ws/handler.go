@@ -8,14 +8,14 @@ import (
 	"space-game-07-server/internal/data"
 )
 
-// авторизует WebSocket-запросы и передает успешные подключения в Hub.
+// Авторизует WebSocket-запросы и передает успешные подключения в Hub.
 type Handler struct {
 	hub      *Hub
 	accounts *data.Accounts
 	upgrader websocket.Upgrader
 }
 
-// настраивает обработчик с локальными origin-правилами для браузерного клиента.
+// Настраивает обработчик с локальными origin-правилами для браузерного клиента.
 func NewHandler(hub *Hub, accounts *data.Accounts) *Handler {
 	return &Handler{
 		hub:      hub,
@@ -31,7 +31,7 @@ func NewHandler(hub *Hub, accounts *data.Accounts) *Handler {
 	}
 }
 
-// проверяет аккаунт, повышает HTTP-запрос до WebSocket и регистрирует соединение.
+// Проверяет аккаунт, повышает HTTP-запрос до WebSocket и регистрирует соединение.
 func (handler *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	account, ok := handler.accountByRequestToken(request)
 	if !ok {
@@ -47,7 +47,7 @@ func (handler *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 	handler.hub.AddConnection(connection, account.ID)
 }
 
-// ищет аккаунт по токену, cookie или никнейму для локальной разработки.
+// Ищет аккаунт по токену, cookie или никнейму для локальной разработки.
 func (handler *Handler) accountByRequestToken(request *http.Request) (*data.Account, bool) {
 	token := request.URL.Query().Get("token")
 	if token == "" {

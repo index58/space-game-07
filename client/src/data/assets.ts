@@ -6,7 +6,7 @@ export const ASSET_KEYS = {
   stationTinyCrumb: "world.station.station_tiny_crumb",
 } as const;
 
-// связывает стабильные ключи Phaser с реальными файлами, отдаваемыми Vite из public.
+// Связывает стабильные ключи Phaser с реальными файлами, отдаваемыми Vite из public.
 export const ASSET_PATHS = {
   [ASSET_KEYS.background]: "/assets/world/backgrounds/space-background.jpg",
   [ASSET_KEYS.shipBat]: "/assets/world/cosmic-objects/ships/256x512/ship_256x512_0008.png",

@@ -1,12 +1,12 @@
 ﻿import type { ClientInputState } from "../network/protocol";
 
-// хранит текущее состояние клавиш по DOM-кодам KeyboardEvent.code.
+// Хранит текущее состояние клавиш по DOM-кодам KeyboardEvent.code.
 export type KeyState = Record<string, boolean>;
 
-// переводит движение мыши в изменение целевого угла корабля.
+// Переводит движение мыши в изменение целевого угла корабля.
 export const MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL = 0.0025;
 
-// возвращает безопасное управление без тяги, когда пилот не захватил мышь.
+// Возвращает безопасное управление без тяги, когда пилот не захватил мышь.
 export const emptyShipInput = (): ClientInputState => ({
   thrustForward: false,
   thrustBackward: false,
@@ -15,7 +15,7 @@ export const emptyShipInput = (): ClientInputState => ({
   targetRotationDelta: 0,
 });
 
-// собирает сетевой ввод из захвата мыши, WASD-клавиш и накопленной дельты мыши.
+// Собирает сетевой ввод из захвата мыши, WASD-клавиш и накопленной дельты мыши.
 export const toShipInput = (
   isPointerLocked: boolean,
   keys: KeyState,

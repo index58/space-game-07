@@ -1,6 +1,6 @@
 ﻿import type { WorldVector } from "./types";
 
-// описывает камеру пилота: корабль игрока является центром ориентации экрана.
+// Описывает камеру пилота: корабль игрока является центром ориентации экрана.
 export type PilotCamera = {
   shipPosition: WorldVector;
   shipRotation: number;
@@ -9,7 +9,7 @@ export type PilotCamera = {
   viewportHeight: number;
 };
 
-// содержит готовые параметры тайлового спрайта для бесшовного космического фона.
+// Содержит готовые параметры тайлового спрайта для бесшовного космического фона.
 export type PilotBackgroundTransform = {
   position: WorldVector;
   size: number;
@@ -24,21 +24,21 @@ export type PilotBackgroundTransform = {
 export const MIN_ZOOM = -100;
 export const MAX_ZOOM = 100;
 export const INITIAL_ZOOM = 0;
-// переводит мировые метры в координаты тайла фоновой текстуры.
+// Переводит мировые метры в координаты тайла фоновой текстуры.
 export const BACKGROUND_TEXTURE_SCALE = 2;
-// задает базовую высоту видимого мира при нулевом зуме.
+// Задает базовую высоту видимого мира при нулевом зуме.
 export const BASE_VIEWPORT_HEIGHT_METERS = 1000;
-// определяет множитель одного шага колесика мыши.
+// Определяет множитель одного шага колесика мыши.
 export const ZOOM_STEP_FACTOR = 1.1;
 
-// удерживает пользовательский зум в допустимых пределах.
+// Удерживает пользовательский зум в допустимых пределах.
 export const clampZoom = (zoom: number): number => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom));
 
-// переводит уровень зума в пиксели на метр с учетом высоты окна.
+// Переводит уровень зума в пиксели на метр с учетом высоты окна.
 export const getViewportZoomScale = (zoom: number, viewportHeight: number): number =>
   (viewportHeight / BASE_VIEWPORT_HEIGHT_METERS) * ZOOM_STEP_FACTOR ** zoom;
 
-// фиксирует корабль пилота ниже центра, оставляя больше обзора впереди.
+// Фиксирует корабль пилота ниже центра, оставляя больше обзора впереди.
 export const getPilotShipScreenPosition = (
   viewportWidth: number,
   viewportHeight: number,
@@ -47,7 +47,7 @@ export const getPilotShipScreenPosition = (
   y: viewportHeight * 0.75,
 });
 
-// переводит мировые координаты объекта в экранные координаты камеры пилота.
+// Переводит мировые координаты объекта в экранные координаты камеры пилота.
 export const worldToPilotScreen = (worldPosition: WorldVector, camera: PilotCamera): WorldVector => {
   const dx = worldPosition.x - camera.shipPosition.x;
   const dy = worldPosition.y - camera.shipPosition.y;
@@ -65,11 +65,11 @@ export const worldToPilotScreen = (worldPosition: WorldVector, camera: PilotCame
   };
 };
 
-// делает поворот объекта относительным к повороту корабля игрока.
+// Делает поворот объекта относительным к повороту корабля игрока.
 export const rotationToPilotScreen = (objectRotation: number, shipRotation: number): number =>
   objectRotation - shipRotation;
 
-// рассчитывает фон так, чтобы он всегда закрывал весь повернутый viewport.
+// Рассчитывает фон так, чтобы он всегда закрывал весь повернутый viewport.
 export const getPilotBackgroundTransform = (camera: PilotCamera): PilotBackgroundTransform => {
   const shipScreen = getPilotShipScreenPosition(camera.viewportWidth, camera.viewportHeight);
   const maxDistanceToViewportCorner = Math.max(

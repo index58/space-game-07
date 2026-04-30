@@ -16,7 +16,7 @@ const (
 	accountPasswordSaltByteCount = 16
 )
 
-// хранит данные одного аккаунта игрового мира.
+// Хранит данные одного аккаунта игрового мира.
 type Account struct {
 	ID                 int64     `json:"ID"`
 	Email              string    `json:"Email"`
@@ -27,7 +27,7 @@ type Account struct {
 	CurrentCharacterID int64     `json:"CurrentCharacterID"`
 }
 
-// хранит аккаунты и быстрые индексы для поиска по уникальным полям.
+// Хранит аккаунты и быстрые индексы для поиска по уникальным полям.
 type Accounts struct {
 	MaxID int64              `json:"MaxID"`
 	Items map[int64]*Account `json:"Items"`
@@ -38,14 +38,14 @@ type Accounts struct {
 	ByCurrentCharacterID map[int64]*Account  `json:"-"`
 }
 
-// создаёт пустое хранилище аккаунтов с подготовленными индексами.
+// Создаёт пустое хранилище аккаунтов с подготовленными индексами.
 func NewAccounts() *Accounts {
 	accounts := &Accounts{}
 	accounts.ensureMaps()
 	return accounts
 }
 
-// добавляет новый аккаунт, назначает новый ID и генерирует уникальный токен.
+// Добавляет новый аккаунт, назначает новый ID и генерирует уникальный токен.
 func (accounts *Accounts) Add(account *Account) (*Account, error) {
 	if account == nil {
 		return nil, errors.New("account is nil")
@@ -75,14 +75,14 @@ func (accounts *Accounts) Add(account *Account) (*Account, error) {
 	return account, nil
 }
 
-// возвращает аккаунт по ID.
+// Возвращает аккаунт по ID.
 func (accounts *Accounts) Get(id int64) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.Items[id]
 	return account, ok
 }
 
-// удаляет аккаунт и все его быстрые индексы.
+// Удаляет аккаунт и все его быстрые индексы.
 func (accounts *Accounts) Delete(id int64) bool {
 	accounts.ensureMaps()
 	account, ok := accounts.Items[id]
@@ -95,7 +95,7 @@ func (accounts *Accounts) Delete(id int64) bool {
 	return true
 }
 
-// меняет e-mail аккаунта и обновляет индекс уникальности.
+// Меняет e-mail аккаунта и обновляет индекс уникальности.
 func (accounts *Accounts) SetEmail(id int64, email string) error {
 	accounts.ensureMaps()
 	if email == "" {
@@ -116,7 +116,7 @@ func (accounts *Accounts) SetEmail(id int64, email string) error {
 	return nil
 }
 
-// меняет никнейм аккаунта и обновляет индекс уникальности.
+// Меняет никнейм аккаунта и обновляет индекс уникальности.
 func (accounts *Accounts) SetNickname(id int64, nickname string) error {
 	accounts.ensureMaps()
 	if nickname == "" {
@@ -137,7 +137,7 @@ func (accounts *Accounts) SetNickname(id int64, nickname string) error {
 	return nil
 }
 
-// хеширует пароль и сохраняет только хеш.
+// Хеширует пароль и сохраняет только хеш.
 func (accounts *Accounts) SetPassword(id int64, password string) error {
 	accounts.ensureMaps()
 	if password == "" {
@@ -157,7 +157,7 @@ func (accounts *Accounts) SetPassword(id int64, password string) error {
 	return nil
 }
 
-// создаёт новый уникальный токен аккаунта и обновляет индекс токенов.
+// Создаёт новый уникальный токен аккаунта и обновляет индекс токенов.
 func (accounts *Accounts) GenerateToken(id int64) (string, error) {
 	accounts.ensureMaps()
 	account, ok := accounts.Items[id]
@@ -176,28 +176,28 @@ func (accounts *Accounts) GenerateToken(id int64) (string, error) {
 	return token, nil
 }
 
-// возвращает аккаунт по уникальному e-mail.
+// Возвращает аккаунт по уникальному e-mail.
 func (accounts *Accounts) GetByEmail(email string) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByEmail[email]
 	return account, ok
 }
 
-// возвращает аккаунт по уникальному никнейму.
+// Возвращает аккаунт по уникальному никнейму.
 func (accounts *Accounts) GetByNickname(nickname string) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByNickname[nickname]
 	return account, ok
 }
 
-// возвращает аккаунт по уникальному токену.
+// Возвращает аккаунт по уникальному токену.
 func (accounts *Accounts) GetByToken(token string) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByToken[token]
 	return account, ok
 }
 
-// пересобирает быстрые индексы после загрузки из JSON.
+// Пересобирает быстрые индексы после загрузки из JSON.
 func (accounts *Accounts) RebuildIndexes() error {
 	accounts.ensureItems()
 	accounts.ByEmail = make(map[string]*Account)
@@ -230,7 +230,7 @@ func (accounts *Accounts) RebuildIndexes() error {
 	return nil
 }
 
-// загружает аккаунты из JSON-файла и пересобирает быстрые индексы.
+// Загружает аккаунты из JSON-файла и пересобирает быстрые индексы.
 func (accounts *Accounts) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -249,7 +249,7 @@ func (accounts *Accounts) LoadFromFile(path string) error {
 	return nil
 }
 
-// сохраняет аккаунты в JSON-файл без вспомогательных индексов.
+// Сохраняет аккаунты в JSON-файл без вспомогательных индексов.
 func (accounts *Accounts) SaveToFile(path string) error {
 	accounts.ensureMaps()
 	content, err := json.MarshalIndent(accounts, "", "  ")
@@ -259,7 +259,7 @@ func (accounts *Accounts) SaveToFile(path string) error {
 	return os.WriteFile(path, content, 0o600)
 }
 
-// подготавливает основное хранилище и все индексы.
+// Подготавливает основное хранилище и все индексы.
 func (accounts *Accounts) ensureMaps() {
 	accounts.ensureItems()
 	if accounts.ByEmail == nil {
@@ -276,14 +276,14 @@ func (accounts *Accounts) ensureMaps() {
 	}
 }
 
-// подготавливает основную map аккаунтов.
+// Подготавливает основную map аккаунтов.
 func (accounts *Accounts) ensureItems() {
 	if accounts.Items == nil {
 		accounts.Items = make(map[int64]*Account)
 	}
 }
 
-// проверяет обязательные поля аккаунта.
+// Проверяет обязательные поля аккаунта.
 func (accounts *Accounts) validateRequiredFields(account *Account) error {
 	if account.Email == "" {
 		return errors.New("email is empty")
@@ -297,7 +297,7 @@ func (accounts *Accounts) validateRequiredFields(account *Account) error {
 	return nil
 }
 
-// проверяет обязательные поля уже сохранённого аккаунта.
+// Проверяет обязательные поля уже сохранённого аккаунта.
 func (accounts *Accounts) validateStoredAccount(account *Account) error {
 	if err := accounts.validateRequiredFields(account); err != nil {
 		return err
@@ -308,7 +308,7 @@ func (accounts *Accounts) validateStoredAccount(account *Account) error {
 	return nil
 }
 
-// проверяет уникальные поля перед добавлением в индексы.
+// Проверяет уникальные поля перед добавлением в индексы.
 func (accounts *Accounts) ensureUniqueForNewAccount(account *Account) error {
 	if existing, ok := accounts.ByEmail[account.Email]; ok && existing.ID != account.ID {
 		return fmt.Errorf("email %q already exists", account.Email)
@@ -329,7 +329,7 @@ func (accounts *Accounts) ensureUniqueForNewAccount(account *Account) error {
 	return nil
 }
 
-// добавляет аккаунт во все быстрые индексы.
+// Добавляет аккаунт во все быстрые индексы.
 func (accounts *Accounts) addIndexes(account *Account) {
 	accounts.ByEmail[account.Email] = account
 	accounts.ByNickname[account.Nickname] = account
@@ -339,7 +339,7 @@ func (accounts *Accounts) addIndexes(account *Account) {
 	}
 }
 
-// удаляет аккаунт из всех быстрых индексов.
+// Удаляет аккаунт из всех быстрых индексов.
 func (accounts *Accounts) deleteIndexes(account *Account) {
 	delete(accounts.ByEmail, account.Email)
 	delete(accounts.ByNickname, account.Nickname)
@@ -349,7 +349,7 @@ func (accounts *Accounts) deleteIndexes(account *Account) {
 	}
 }
 
-// создаёт криптостойкий токен, которого ещё нет в индексе.
+// Создаёт криптостойкий токен, которого ещё нет в индексе.
 func (accounts *Accounts) generateUniqueToken() (string, error) {
 	for {
 		token, err := randomHex(accountTokenByteCount)
@@ -362,7 +362,7 @@ func (accounts *Accounts) generateUniqueToken() (string, error) {
 	}
 }
 
-// создаёт salted SHA-256 хеш пароля.
+// Создаёт salted SHA-256 хеш пароля.
 func hashAccountPassword(password string) (string, error) {
 	salt, err := randomHex(accountPasswordSaltByteCount)
 	if err != nil {
@@ -372,7 +372,7 @@ func hashAccountPassword(password string) (string, error) {
 	return "sha256$" + salt + "$" + hex.EncodeToString(sum[:]), nil
 }
 
-// возвращает криптостойкую случайную строку в hex-представлении.
+// Возвращает криптостойкую случайную строку в hex-представлении.
 func randomHex(byteCount int) (string, error) {
 	buffer := make([]byte, byteCount)
 	if _, err := rand.Read(buffer); err != nil {

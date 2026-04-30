@@ -7,13 +7,13 @@ import (
 )
 
 const (
-	// защищает вычисления от дрожания около нуля при работе с float64.
+	// Защищает вычисления от дрожания около нуля при работе с float64.
 	Epsilon = 0.000001
-	// задает допуск, при котором корабль считается почти повернутым к цели.
+	// Задает допуск, при котором корабль считается почти повернутым к цели.
 	angleEpsilon = 0.0001
 )
 
-// переводит пиксельный размер физического тела модели в метры мира.
+// Переводит пиксельный размер физического тела модели в метры мира.
 func BodySizeMeters(model game.CosmicObjectModel) game.WorldVector {
 	return game.WorldVector{
 		X: float64(model.TextureBodyWidth) / model.TextureScale,
@@ -21,14 +21,14 @@ func BodySizeMeters(model game.CosmicObjectModel) game.WorldVector {
 	}
 }
 
-// оценивает момент инерции корабля как прямоугольного тела.
+// Оценивает момент инерции корабля как прямоугольного тела.
 func MomentOfInertia(ship game.WorldObject) float64 {
 	body := BodySizeMeters(ship.Model)
 
 	return ship.Model.MassKg * (body.X*body.X + body.Y*body.Y) / 16
 }
 
-// возвращает локальную ось "вперед" для текущего угла корабля.
+// Возвращает локальную ось "вперед" для текущего угла корабля.
 func ForwardVector(rotation float64) game.WorldVector {
 	return game.WorldVector{
 		X: math.Sin(rotation),
@@ -36,7 +36,7 @@ func ForwardVector(rotation float64) game.WorldVector {
 	}
 }
 
-// возвращает локальную ось "вправо" для текущего угла корабля.
+// Возвращает локальную ось "вправо" для текущего угла корабля.
 func RightVector(rotation float64) game.WorldVector {
 	return game.WorldVector{
 		X: math.Cos(rotation),
@@ -44,7 +44,7 @@ func RightVector(rotation float64) game.WorldVector {
 	}
 }
 
-// уменьшает значение к нулю с заданным ускорением без смены знака.
+// Уменьшает значение к нулю с заданным ускорением без смены знака.
 func brakeValue(value float64, acceleration float64, dtSeconds float64) float64 {
 	delta := acceleration * dtSeconds
 
@@ -55,7 +55,7 @@ func brakeValue(value float64, acceleration float64, dtSeconds float64) float64 
 	return value - math.Copysign(delta, value)
 }
 
-// ограничивает длину вектора максимальной скоростью.
+// Ограничивает длину вектора максимальной скоростью.
 func clampVectorLength(x float64, y float64, maxLength float64) game.WorldVector {
 	length := math.Hypot(x, y)
 
@@ -68,7 +68,7 @@ func clampVectorLength(x float64, y float64, maxLength float64) game.WorldVector
 	return game.WorldVector{X: x * scale, Y: y * scale}
 }
 
-// ограничивает модуль скалярного значения и зануляет микродрожание.
+// Ограничивает модуль скалярного значения и зануляет микродрожание.
 func clampAbsoluteValue(value float64, maxAbsoluteValue float64) float64 {
 	if math.Abs(value) <= Epsilon {
 		return 0
@@ -77,7 +77,7 @@ func clampAbsoluteValue(value float64, maxAbsoluteValue float64) float64 {
 	return math.Copysign(math.Min(math.Abs(value), maxAbsoluteValue), value)
 }
 
-// двигает значение к цели не дальше разрешенной дельты за шаг.
+// Двигает значение к цели не дальше разрешенной дельты за шаг.
 func moveToward(value float64, target float64, maxDelta float64) float64 {
 	delta := target - value
 
@@ -88,17 +88,17 @@ func moveToward(value float64, target float64, maxDelta float64) float64 {
 	return value + math.Copysign(maxDelta, delta)
 }
 
-// возвращает скалярную проекцию вектора на заданную ось.
+// Возвращает скалярную проекцию вектора на заданную ось.
 func projection(vector game.WorldVector, axis game.WorldVector) float64 {
 	return vector.X*axis.X + vector.Y*axis.Y
 }
 
-// считает доступное угловое ускорение от крутящего момента модели.
+// Считает доступное угловое ускорение от крутящего момента модели.
 func angularAcceleration(ship game.WorldObject) float64 {
 	return ship.Model.TorqueNm / MomentOfInertia(ship)
 }
 
-// ведет угол к целевому так, чтобы успеть затормозить без перелета.
+// Ведет угол к целевому так, чтобы успеть затормозить без перелета.
 func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, targetRotationSpeed float64, dtSeconds float64) (float64, float64) {
 	acceleration := angularAcceleration(ship)
 	angleError := targetRotation - ship.Rotation
@@ -142,7 +142,7 @@ func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, 
 	return rotation, angularVelocity
 }
 
-// применяет вход пилота к кораблю и возвращает новое состояние после одного физического шага.
+// Применяет вход пилота к кораблю и возвращает новое состояние после одного физического шага.
 func StepShip(ship game.WorldObject, input game.ShipInput, dtSeconds float64) game.WorldObject {
 	forward := ForwardVector(ship.Rotation)
 	right := RightVector(ship.Rotation)

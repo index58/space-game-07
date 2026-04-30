@@ -13,7 +13,7 @@ const cosmicObjectTypesFileName = "CosmicObjectTypes.json"
 const cosmicObjectModelsFileName = "CosmicObjectModels.json"
 const itemtypesFileName = "Itemtypes.json"
 
-// объединяет данные сервера, загружаемые из JSON-файлов при старте.
+// Объединяет данные сервера, загружаемые из JSON-файлов при старте.
 type ServerData struct {
 	Accounts           *data.Accounts
 	Characters         *data.Characters
@@ -23,7 +23,7 @@ type ServerData struct {
 	Itemtypes          *data.Itemtypes
 }
 
-// загружает все JSON-файлы данных сервера из указанного рабочего каталога.
+// Загружает все JSON-файлы данных сервера из указанного рабочего каталога.
 func LoadServerData(workingDirectory string) (*ServerData, error) {
 	accounts := data.NewAccounts()
 	if err := accounts.LoadFromFile(filepath.Join(workingDirectory, "data", accountsFileName)); err != nil {

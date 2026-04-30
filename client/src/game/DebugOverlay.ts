@@ -1,11 +1,11 @@
 ﻿import { formatNumber } from "../domain/format";
 import type { ConnectionStatus, SnapshotObject } from "../network/protocol";
 
-// намеренно остается DOM-слоем, чтобы не смешивать отладочный UI с игровым canvas.
+// Намеренно остается DOM-слоем, чтобы не смешивать отладочный UI с игровым canvas.
 export class DebugOverlay {
   constructor(private readonly element: HTMLElement) {}
 
-  // перезаписывает текстовый отладочный блок последними сетевыми и физическими данными.
+  // Перезаписывает текстовый отладочный блок последними сетевыми и физическими данными.
   update(
     status: ConnectionStatus,
     selfObject: SnapshotObject | null,
