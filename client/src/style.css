@@ -10,6 +10,7 @@ body,
 }
 
 #debug-overlay {
+  /* Отладочная панель лежит поверх canvas и не перехватывает управление мышью. */
   position: fixed;
   top: 8px;
   left: 8px;

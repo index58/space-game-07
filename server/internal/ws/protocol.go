@@ -6,6 +6,7 @@ import (
 	"space-game-07-server/internal/game"
 )
 
+// разбирает клиентский JSON и пропускает только сообщения управления кораблем.
 func DecodeInputMessage(payload []byte) (game.ShipInput, bool) {
 	var input game.ShipInput
 	if err := json.Unmarshal(payload, &input); err != nil {
@@ -19,6 +20,7 @@ func DecodeInputMessage(payload []byte) (game.ShipInput, bool) {
 	return input, true
 }
 
+// сериализует снимок мира в формат WebSocket-сообщения.
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
 }

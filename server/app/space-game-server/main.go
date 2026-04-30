@@ -10,9 +10,11 @@ import (
 	transport "space-game-07-server/internal/ws"
 )
 
+// задает частоту серверной симуляции и отправки снимков клиентам.
 const tickRate = 30
 
 func main() {
+	// При старте сервер поднимает весь игровой мир из локальных JSON-файлов.
 	serverData, err := storage.LoadServerData(".")
 	if err != nil {
 		log.Fatal(err)
@@ -38,6 +40,7 @@ func main() {
 	hub := transport.NewHub(gameWorld)
 	handler := transport.NewHandler(hub, serverData.Accounts)
 
+	// Единственная HTTP-точка пока обслуживает WebSocket-протокол игрового клиента.
 	http.Handle("/ws", handler)
 
 	ticker := time.NewTicker(time.Second / tickRate)
@@ -47,6 +50,7 @@ func main() {
 
 	go func() {
 		for range ticker.C {
+			// Каждый тик двигает мир вперед и рассылает клиентам новый снимок.
 			snapshot := gameWorld.Tick(1.0 / tickRate)
 			hub.Broadcast(snapshot)
 		}
@@ -54,6 +58,7 @@ func main() {
 
 	go func() {
 		for range saveTicker.C {
+			// Периодическое сохранение фиксирует изменившиеся координаты и параметры объектов.
 			if err := gameWorld.SaveData("."); err != nil {
 				log.Printf("save server data: %v", err)
 			}

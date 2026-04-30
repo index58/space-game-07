@@ -1,10 +1,11 @@
-import type {
+﻿import type {
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
   SnapshotMessage,
 } from "./protocol";
 
+// позволяет тестам подменять браузерный WebSocket простой заглушкой.
 type WebSocketLike = {
   onopen: ((event?: unknown) => void) | null;
   onclose: ((event?: unknown) => void) | null;
@@ -14,6 +15,7 @@ type WebSocketLike = {
   close(): void;
 };
 
+// настраивает адрес сервера, учетную запись и тайминги сетевого клиента.
 export type GameClientOptions = {
   url?: string;
   token?: string;
@@ -27,6 +29,7 @@ const DEFAULT_URL = "ws://127.0.0.1:8080/ws";
 const DEFAULT_RECONNECT_DELAY_MS = 1000;
 const DEFAULT_INPUT_INTERVAL_MS = 1000 / 30;
 
+// возвращает нейтральное управление без тяги и поворота.
 const emptyInput = (): ClientInputState => ({
   thrustForward: false,
   thrustBackward: false,
@@ -35,6 +38,7 @@ const emptyInput = (): ClientInputState => ({
   targetRotationDelta: 0,
 });
 
+// достает значение cookie без зависимости от браузерных API в тестовой среде.
 const readCookie = (name: string): string | null => {
   if (typeof document === "undefined") {
     return null;
@@ -49,6 +53,7 @@ const readCookie = (name: string): string | null => {
   return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
 };
 
+// ищет токен сначала в localStorage, затем в cookie старого формата.
 const readStoredToken = (): string | null => {
   if (typeof localStorage !== "undefined") {
     const token = localStorage.getItem("accountToken");
@@ -60,6 +65,7 @@ const readStoredToken = (): string | null => {
   return readCookie("Token");
 };
 
+// дает локальный никнейм по умолчанию, чтобы прототип подключался без формы входа.
 const readStoredAccountNickname = (): string => {
   if (typeof localStorage !== "undefined") {
     const nickname = localStorage.getItem("accountNickname");
@@ -71,6 +77,7 @@ const readStoredAccountNickname = (): string => {
   return "index";
 };
 
+// добавляет query-параметр к URL, сохраняя уже существующую строку запроса.
 const withQueryParameter = (url: string, name: string, value: string | null): string => {
   if (!value) {
     return url;
@@ -80,6 +87,7 @@ const withQueryParameter = (url: string, name: string, value: string | null): st
   return `${url}${separator}${name}=${encodeURIComponent(value)}`;
 };
 
+// передает серверу токен или запасной никнейм локального аккаунта.
 const withAccountIdentity = (url: string, token: string | null, accountNickname: string): string => {
   if (token) {
     return withQueryParameter(url, "token", token);
@@ -88,6 +96,7 @@ const withAccountIdentity = (url: string, token: string | null, accountNickname:
   return withQueryParameter(url, "nickname", accountNickname);
 };
 
+// проверяет минимальный контракт снимка перед тем, как сцена начнет его рисовать.
 const isSnapshotMessage = (message: unknown): message is SnapshotMessage => {
   if (!message || typeof message !== "object") {
     return false;
@@ -101,6 +110,7 @@ const isSnapshotMessage = (message: unknown): message is SnapshotMessage => {
     Array.isArray(snapshot.objects);
 };
 
+// держит WebSocket-соединение, переподключение и периодическую отправку ввода.
 export class GameClient {
   private readonly url: string;
   private readonly reconnectDelayMs: number;
@@ -115,6 +125,7 @@ export class GameClient {
   private inputTimer: ReturnType<typeof setInterval> | null = null;
   private destroyed = false;
 
+  // Конструктор сразу начинает подключение, потому что сцена ожидает живой поток снимков.
   constructor(options: GameClientOptions = {}) {
     this.url = withAccountIdentity(
       options.url ?? DEFAULT_URL,
@@ -128,14 +139,17 @@ export class GameClient {
     this.connect();
   }
 
+  // нужен сцене для выбора между ожиданием и отрисовкой мира.
   getStatus(): ConnectionStatus {
     return this.status;
   }
 
+  // возвращает последний валидный снимок без копирования массивов объектов.
   getLatestSnapshot(): SnapshotMessage | null {
     return this.latestSnapshot;
   }
 
+  // обновляет состояние клавиш и накапливает относительный поворот мыши до отправки.
   setInput(input: ClientInputState): void {
     this.latestInput = {
       ...input,
@@ -144,6 +158,7 @@ export class GameClient {
     };
   }
 
+  // останавливает таймеры и закрывает сокет при уничтожении Phaser-сцены или теста.
   destroy(): void {
     this.destroyed = true;
     this.clearReconnectTimer();
@@ -154,6 +169,7 @@ export class GameClient {
     socket?.close();
   }
 
+  // создает новый WebSocket и привязывает обработчики к конкретному экземпляру сокета.
   private connect(): void {
     if (this.destroyed) {
       return;
@@ -185,6 +201,7 @@ export class GameClient {
     };
   }
 
+  // принимает только валидные снимки мира, остальные сообщения игнорируются.
   private handleMessage(data: string): void {
     let parsed: unknown;
 
@@ -199,6 +216,7 @@ export class GameClient {
     }
   }
 
+  // переводит клиента в ожидание и запускает отложенное переподключение.
   private handleDisconnected(socket: WebSocketLike): void {
     if (this.destroyed || this.socket !== socket) {
       return;
@@ -210,6 +228,7 @@ export class GameClient {
     this.scheduleReconnect();
   }
 
+  // планирует ровно одну попытку переподключения.
   private scheduleReconnect(): void {
     this.clearReconnectTimer();
     this.reconnectTimer = setTimeout(() => {
@@ -218,6 +237,7 @@ export class GameClient {
     }, this.reconnectDelayMs);
   }
 
+  // синхронизирует отправку ввода с серверной частотой симуляции.
   private startInputTimer(): void {
     this.clearInputTimer();
     this.inputTimer = setInterval(() => {
@@ -225,6 +245,7 @@ export class GameClient {
     }, this.inputIntervalMs);
   }
 
+  // сериализует последний ввод и очищает только накопленную дельту мыши.
   private sendInput(): void {
     if (this.status !== "connected" || !this.socket) {
       return;
@@ -245,6 +266,7 @@ export class GameClient {
     };
   }
 
+  // убирает отложенное переподключение при новом состоянии клиента.
   private clearReconnectTimer(): void {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
@@ -252,6 +274,7 @@ export class GameClient {
     }
   }
 
+  // останавливает отправку ввода, когда сокет уже не подключен.
   private clearInputTimer(): void {
     if (this.inputTimer) {
       clearInterval(this.inputTimer);

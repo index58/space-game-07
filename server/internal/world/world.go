@@ -13,6 +13,7 @@ import (
 
 const modelMassScale = 1000
 
+// собирает все загруженные справочники и игровые сущности, нужные миру.
 type Data struct {
 	Accounts           *data.Accounts
 	Characters         *data.Characters
@@ -22,11 +23,13 @@ type Data struct {
 	Itemtypes          *data.Itemtypes
 }
 
+// хранит состояние, которое участвует в симуляции, но пока не сериализуется в JSON-данные.
 type objectRuntime struct {
 	Velocity       game.WorldVector
 	TargetRotation float64
 }
 
+// управляет подключенными аккаунтами, входами игроков и пошаговой симуляцией объектов.
 type World struct {
 	mu               sync.Mutex
 	tick             int64
@@ -36,6 +39,7 @@ type World struct {
 	runtime          map[int64]objectRuntime
 }
 
+// создает мир поверх уже загруженных серверных данных.
 func New(seed int64, serverData Data) *World {
 	return &World{
 		data:             serverData,
@@ -45,6 +49,7 @@ func New(seed int64, serverData Data) *World {
 	}
 }
 
+// привязывает аккаунт к текущему объекту его персонажа и разрешает получать ввод.
 func (world *World) ConnectAccount(accountID int64) (int64, bool) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -68,6 +73,7 @@ func (world *World) ConnectAccount(accountID int64) (int64, bool) {
 	return character.LocationCosmicObjectID, true
 }
 
+// убирает активную привязку аккаунта и последний ввод игрока.
 func (world *World) DisconnectAccount(accountID int64) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -76,6 +82,7 @@ func (world *World) DisconnectAccount(accountID int64) {
 	delete(world.inputs, accountID)
 }
 
+// сохраняет последний пакет управления только для уже подключенного аккаунта.
 func (world *World) SetInput(accountID int64, input game.ShipInput) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -87,6 +94,7 @@ func (world *World) SetInput(accountID int64, input game.ShipInput) {
 	world.inputs[accountID] = input
 }
 
+// выполняет один шаг симуляции и возвращает общий снимок мира.
 func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -111,6 +119,7 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	return world.snapshotLocked(0)
 }
 
+// возвращает снимок мира с заполненным ID объекта текущего игрока.
 func (world *World) SnapshotForAccount(accountID int64) game.Snapshot {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -119,6 +128,7 @@ func (world *World) SnapshotForAccount(accountID int64) game.Snapshot {
 	return world.snapshotLocked(objectID)
 }
 
+// возвращает объект, которым сейчас управляет подключенный аккаунт.
 func (world *World) ObjectIDForAccount(accountID int64) (int64, bool) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -127,6 +137,7 @@ func (world *World) ObjectIDForAccount(accountID int64) (int64, bool) {
 	return objectID, ok
 }
 
+// сохраняет изменяемое состояние мира обратно в JSON-файлы сервера.
 func (world *World) SaveData(workingDirectory string) error {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -153,6 +164,7 @@ func (world *World) SaveData(workingDirectory string) error {
 	return nil
 }
 
+// собирает детерминированно отсортированный снимок; вызывается только под mutex.
 func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 	objectIDs := make([]int64, 0, len(world.data.CosmicObjects.Items))
 	for objectID := range world.data.CosmicObjects.Items {
@@ -183,6 +195,7 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 	}
 }
 
+// склеивает сохраненное JSON-состояние и runtime-поля в объект симуляции.
 func (world *World) gameObjectLocked(cosmicObject *data.CosmicObject) (game.WorldObject, bool) {
 	model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
 	if !ok {
@@ -201,6 +214,7 @@ func (world *World) gameObjectLocked(cosmicObject *data.CosmicObject) (game.Worl
 	}, true
 }
 
+// переводит модель из слоя данных в модель, понятную физике и клиенту.
 func (world *World) gameModelLocked(cosmicObject *data.CosmicObject, model *data.CosmicObjectModel) game.CosmicObjectModel {
 	kind := game.ObjectKindStation
 	if cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID); ok {
@@ -234,6 +248,7 @@ func (world *World) gameModelLocked(cosmicObject *data.CosmicObject, model *data
 	}
 }
 
+// записывает результат физики в постоянные поля и runtime-кэш объекта.
 func (world *World) saveObjectStateLocked(cosmicObject *data.CosmicObject, object game.WorldObject, input game.ShipInput) {
 	cosmicObject.X = object.Position.X
 	cosmicObject.Y = object.Position.Y
@@ -253,6 +268,7 @@ func (world *World) saveObjectStateLocked(cosmicObject *data.CosmicObject, objec
 	}
 }
 
+// переводит пару противоположных кнопок в силу по одной локальной оси.
 func axisForce(positive bool, negative bool, maxForce float64) float64 {
 	if positive == negative {
 		return 0
@@ -263,6 +279,7 @@ func axisForce(positive bool, negative bool, maxForce float64) float64 {
 	return -maxForce
 }
 
+// возвращает модуль скорости объекта для сохранения в данных.
 func objectVelocityLength(velocity game.WorldVector) float64 {
 	return math.Hypot(velocity.X, velocity.Y)
 }

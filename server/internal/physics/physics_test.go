@@ -8,10 +8,12 @@ import (
 	"space-game-07-server/internal/physics"
 )
 
+// возвращает пустой ввод для сценариев, где проверяется инерция или торможение.
 func idleInput() game.ShipInput {
 	return game.ShipInput{}
 }
 
+// создает корабль с устойчивыми параметрами, чтобы физические ожидания были воспроизводимыми.
 func testShip(id int64, position game.WorldVector) game.WorldObject {
 	return game.WorldObject{
 		ID:       id,
@@ -29,6 +31,7 @@ func testShip(id int64, position game.WorldVector) game.WorldObject {
 	}
 }
 
+// сравнивает float64 с малым допуском, потому что физика работает с дробными величинами.
 func closeTo(t *testing.T, actual float64, expected float64) {
 	t.Helper()
 

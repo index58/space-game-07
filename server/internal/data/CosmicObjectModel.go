@@ -10,7 +10,7 @@ import (
 
 const defaultCosmicObjectModelTextureScale = 4
 
-// CosmicObjectModel хранит данные одной модели космического объекта.
+// хранит данные одной модели космического объекта.
 type CosmicObjectModel struct {
 	ID                 int64   `json:"ID"`
 	TitleRu            string  `json:"TitleRu"`
@@ -36,7 +36,7 @@ type CosmicObjectModel struct {
 	BodyWidth          float64 `json:"BodyWidth"`
 }
 
-// CosmicObjectModels хранит модели космических объектов и быстрые индексы по уникальным полям.
+// хранит модели космических объектов и быстрые индексы по уникальным полям.
 type CosmicObjectModels struct {
 	MaxID int64                        `json:"MaxID"`
 	Items map[int64]*CosmicObjectModel `json:"Items"`
@@ -46,14 +46,14 @@ type CosmicObjectModels struct {
 	ByAcronym map[string]*CosmicObjectModel `json:"-"`
 }
 
-// NewCosmicObjectModels создаёт пустое хранилище моделей космических объектов с подготовленными индексами.
+// создаёт пустое хранилище моделей космических объектов с подготовленными индексами.
 func NewCosmicObjectModels() *CosmicObjectModels {
 	cosmicObjectModels := &CosmicObjectModels{}
 	cosmicObjectModels.ensureMaps()
 	return cosmicObjectModels
 }
 
-// Add добавляет новую модель космического объекта и назначает новый ID.
+// добавляет новую модель космического объекта и назначает новый ID.
 func (cosmicObjectModels *CosmicObjectModels) Add(cosmicObjectModel *CosmicObjectModel) (*CosmicObjectModel, error) {
 	if cosmicObjectModel == nil {
 		return nil, errors.New("cosmic object model is nil")
@@ -74,14 +74,14 @@ func (cosmicObjectModels *CosmicObjectModels) Add(cosmicObjectModel *CosmicObjec
 	return cosmicObjectModel, nil
 }
 
-// Get возвращает модель космического объекта по ID.
+// возвращает модель космического объекта по ID.
 func (cosmicObjectModels *CosmicObjectModels) Get(id int64) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.Items[id]
 	return cosmicObjectModel, ok
 }
 
-// Delete удаляет модель космического объекта и все её быстрые индексы.
+// удаляет модель космического объекта и все её быстрые индексы.
 func (cosmicObjectModels *CosmicObjectModels) Delete(id int64) bool {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.Items[id]
@@ -94,28 +94,28 @@ func (cosmicObjectModels *CosmicObjectModels) Delete(id int64) bool {
 	return true
 }
 
-// GetByTitleRu возвращает модель космического объекта по уникальному русскому названию.
+// возвращает модель космического объекта по уникальному русскому названию.
 func (cosmicObjectModels *CosmicObjectModels) GetByTitleRu(titleRu string) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.ByTitleRu[titleRu]
 	return cosmicObjectModel, ok
 }
 
-// GetByTitleEn возвращает модель космического объекта по уникальному английскому названию.
+// возвращает модель космического объекта по уникальному английскому названию.
 func (cosmicObjectModels *CosmicObjectModels) GetByTitleEn(titleEn string) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.ByTitleEn[titleEn]
 	return cosmicObjectModel, ok
 }
 
-// GetByAcronym возвращает модель космического объекта по уникальному акрониму.
+// возвращает модель космического объекта по уникальному акрониму.
 func (cosmicObjectModels *CosmicObjectModels) GetByAcronym(acronym string) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.ByAcronym[acronym]
 	return cosmicObjectModel, ok
 }
 
-// RebuildIndexes пересобирает быстрые индексы после загрузки из JSON.
+// пересобирает быстрые индексы после загрузки из JSON.
 func (cosmicObjectModels *CosmicObjectModels) RebuildIndexes() error {
 	cosmicObjectModels.ensureItems()
 	cosmicObjectModels.ByTitleRu = make(map[string]*CosmicObjectModel)
@@ -148,7 +148,7 @@ func (cosmicObjectModels *CosmicObjectModels) RebuildIndexes() error {
 	return nil
 }
 
-// LoadFromFile загружает модели космических объектов из JSON-файла и пересобирает быстрые индексы.
+// загружает модели космических объектов из JSON-файла и пересобирает быстрые индексы.
 func (cosmicObjectModels *CosmicObjectModels) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -167,7 +167,7 @@ func (cosmicObjectModels *CosmicObjectModels) LoadFromFile(path string) error {
 	return nil
 }
 
-// SaveToFile сохраняет модели космических объектов в JSON-файл без вспомогательных индексов.
+// сохраняет модели космических объектов в JSON-файл без вспомогательных индексов.
 func (cosmicObjectModels *CosmicObjectModels) SaveToFile(path string) error {
 	cosmicObjectModels.ensureMaps()
 	content, err := json.MarshalIndent(cosmicObjectModels, "", "  ")
@@ -177,7 +177,7 @@ func (cosmicObjectModels *CosmicObjectModels) SaveToFile(path string) error {
 	return os.WriteFile(path, content, 0o600)
 }
 
-// ensureMaps подготавливает основное хранилище и все индексы.
+// подготавливает основное хранилище и все индексы.
 func (cosmicObjectModels *CosmicObjectModels) ensureMaps() {
 	cosmicObjectModels.ensureItems()
 	if cosmicObjectModels.ByTitleRu == nil {
@@ -191,14 +191,14 @@ func (cosmicObjectModels *CosmicObjectModels) ensureMaps() {
 	}
 }
 
-// ensureItems подготавливает основную map моделей космических объектов.
+// подготавливает основную map моделей космических объектов.
 func (cosmicObjectModels *CosmicObjectModels) ensureItems() {
 	if cosmicObjectModels.Items == nil {
 		cosmicObjectModels.Items = make(map[int64]*CosmicObjectModel)
 	}
 }
 
-// validateRequiredFields проверяет обязательные поля модели космического объекта.
+// проверяет обязательные поля модели космического объекта.
 func (cosmicObjectModels *CosmicObjectModels) validateRequiredFields(cosmicObjectModel *CosmicObjectModel) error {
 	if cosmicObjectModel.TitleRu == "" {
 		return errors.New("title ru is empty")
@@ -218,7 +218,7 @@ func (cosmicObjectModels *CosmicObjectModels) validateRequiredFields(cosmicObjec
 	return nil
 }
 
-// ensureUniqueForNewModel проверяет уникальные поля перед добавлением в индексы.
+// проверяет уникальные поля перед добавлением в индексы.
 func (cosmicObjectModels *CosmicObjectModels) ensureUniqueForNewModel(cosmicObjectModel *CosmicObjectModel) error {
 	if existing, ok := cosmicObjectModels.ByTitleRu[cosmicObjectModel.TitleRu]; ok && existing.ID != cosmicObjectModel.ID {
 		return fmt.Errorf("title ru %q already exists", cosmicObjectModel.TitleRu)
@@ -232,21 +232,21 @@ func (cosmicObjectModels *CosmicObjectModels) ensureUniqueForNewModel(cosmicObje
 	return nil
 }
 
-// addIndexes добавляет модель космического объекта во все быстрые индексы.
+// добавляет модель космического объекта во все быстрые индексы.
 func (cosmicObjectModels *CosmicObjectModels) addIndexes(cosmicObjectModel *CosmicObjectModel) {
 	cosmicObjectModels.ByTitleRu[cosmicObjectModel.TitleRu] = cosmicObjectModel
 	cosmicObjectModels.ByTitleEn[cosmicObjectModel.TitleEn] = cosmicObjectModel
 	cosmicObjectModels.ByAcronym[cosmicObjectModel.Acronym] = cosmicObjectModel
 }
 
-// deleteIndexes удаляет модель космического объекта из всех быстрых индексов.
+// удаляет модель космического объекта из всех быстрых индексов.
 func (cosmicObjectModels *CosmicObjectModels) deleteIndexes(cosmicObjectModel *CosmicObjectModel) {
 	delete(cosmicObjectModels.ByTitleRu, cosmicObjectModel.TitleRu)
 	delete(cosmicObjectModels.ByTitleEn, cosmicObjectModel.TitleEn)
 	delete(cosmicObjectModels.ByAcronym, cosmicObjectModel.Acronym)
 }
 
-// prepareCalculatedFields выставляет значения по умолчанию и пересчитывает вычисляемые поля.
+// выставляет значения по умолчанию и пересчитывает вычисляемые поля.
 func (cosmicObjectModels *CosmicObjectModels) prepareCalculatedFields(cosmicObjectModel *CosmicObjectModel) {
 	if cosmicObjectModel.TextureScale == 0 {
 		cosmicObjectModel.TextureScale = defaultCosmicObjectModelTextureScale
@@ -272,7 +272,7 @@ type legacyCosmicObjectModel struct {
 	MaxAngularSpeed      float64 `json:"MaxAngularSpeed"`
 }
 
-// LoadCosmicObjectModelsFromLegacyFile конвертирует старый JSON моделей в текущую структуру данных.
+// конвертирует старый JSON моделей в текущую структуру данных.
 func LoadCosmicObjectModelsFromLegacyFile(path string, cosmicObjectTypes *CosmicObjectTypes) (*CosmicObjectModels, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -325,7 +325,7 @@ func LoadCosmicObjectModelsFromLegacyFile(path string, cosmicObjectTypes *Cosmic
 	return cosmicObjectModels, nil
 }
 
-// numberedLegacyTitle добавляет порядковый номер только к повторяющимся названиям.
+// добавляет порядковый номер только к повторяющимся названиям.
 func numberedLegacyTitle(title string, counts map[string]int, numbers map[string]int) string {
 	if counts[title] <= 1 {
 		return title
@@ -334,7 +334,7 @@ func numberedLegacyTitle(title string, counts map[string]int, numbers map[string
 	return title + " " + strconv.Itoa(numbers[title])
 }
 
-// legacyCosmicObjectTypeID сопоставляет строковый тип старого JSON с ID текущего справочника типов.
+// сопоставляет строковый тип старого JSON с ID текущего справочника типов.
 func legacyCosmicObjectTypeID(legacyType string, cosmicObjectTypes *CosmicObjectTypes) (int64, error) {
 	acronymByLegacyType := map[string]string{
 		"ship":     "Ship",

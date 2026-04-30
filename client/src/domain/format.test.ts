@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatNumber } from "./format";
 
-// Debug overlay должен получать предсказуемые строки независимо от текущей локали браузера.
+// Отладочная панель должна получать предсказуемые строки независимо от текущей локали браузера.
 describe("formatNumber", () => {
   it("форматирует конечные числа с заданной точностью", () => {
     expect(formatNumber(12.3456, 2)).toBe("12.35");

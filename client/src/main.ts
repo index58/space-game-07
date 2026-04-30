@@ -2,6 +2,7 @@ import * as Phaser from "phaser";
 import "./style.css";
 import { GameScene } from "./game/GameScene";
 
+// Phaser.Game является корневым объектом клиента и владеет canvas внутри #game-root.
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: "game-root",

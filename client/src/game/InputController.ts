@@ -1,7 +1,8 @@
-import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
+﻿import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
 import type { ClientInputState } from "../network/protocol";
 import { toShipInput } from "./inputState";
 
+// изолирует браузерные события ввода от игровой сцены.
 export class InputController {
   private readonly keys: Record<string, boolean> = {};
   private mouseDeltaX = 0;
@@ -11,6 +12,7 @@ export class InputController {
     private readonly canvas: HTMLCanvasElement,
     private readonly canRequestPointerLock: () => boolean = () => true,
   ) {
+    // Состояние клавиш хранится непрерывно, потому что сетевой ввод отправляется реже кадров браузера.
     window.addEventListener("keydown", (event) => {
       this.keys[event.code] = true;
     });
@@ -25,6 +27,7 @@ export class InputController {
       }
     });
 
+    // Колесо мыши меняет дискретный уровень зума, который затем переводится камерой в масштаб.
     window.addEventListener(
       "wheel",
       (event) => {
@@ -33,6 +36,7 @@ export class InputController {
       { passive: true },
     );
 
+    // Захват мыши включается только по клику и только когда клиент уже готов принимать управление.
     this.canvas.addEventListener("click", () => {
       if (!this.canRequestPointerLock()) {
         return;
@@ -42,12 +46,14 @@ export class InputController {
     });
   }
 
+  // возвращает пользовательский уровень зума без пересчета в пиксели.
   getZoom(): number {
     return this.zoom;
   }
 
+  // отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.
   consumeShipInput(): ClientInputState {
-    // Pointer Lock отдает относительное движение мыши; после кадра накопление сбрасывается.
+    // Захват указателя отдает относительное движение мыши; после кадра накопление сбрасывается.
     const isPointerLocked = document.pointerLockElement === this.canvas;
     const input = toShipInput(isPointerLocked, this.keys, this.mouseDeltaX);
     this.mouseDeltaX = 0;

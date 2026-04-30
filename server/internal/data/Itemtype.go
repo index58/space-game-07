@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// Itemtype хранит данные одного типа предмета.
+// хранит данные одного типа предмета.
 type Itemtype struct {
 	ID                    int64  `json:"ID"`
 	TitleRu               string `json:"TitleRu"`
@@ -19,7 +19,7 @@ type Itemtype struct {
 	CountMustBeInteger    bool   `json:"CountMustBeInteger"`
 }
 
-// Itemtypes хранит типы предметов и быстрые индексы по уникальным полям.
+// хранит типы предметов и быстрые индексы по уникальным полям.
 type Itemtypes struct {
 	MaxID int64               `json:"MaxID"`
 	Items map[int64]*Itemtype `json:"Items"`
@@ -29,14 +29,14 @@ type Itemtypes struct {
 	ByAcronym map[string]*Itemtype `json:"-"`
 }
 
-// NewItemtypes создаёт пустое хранилище типов предметов с подготовленными индексами.
+// создаёт пустое хранилище типов предметов с подготовленными индексами.
 func NewItemtypes() *Itemtypes {
 	itemtypes := &Itemtypes{}
 	itemtypes.ensureMaps()
 	return itemtypes
 }
 
-// Add добавляет новый тип предмета и назначает новый ID.
+// добавляет новый тип предмета и назначает новый ID.
 func (itemtypes *Itemtypes) Add(itemtype *Itemtype) (*Itemtype, error) {
 	if itemtype == nil {
 		return nil, errors.New("itemtype is nil")
@@ -56,14 +56,14 @@ func (itemtypes *Itemtypes) Add(itemtype *Itemtype) (*Itemtype, error) {
 	return itemtype, nil
 }
 
-// Get возвращает тип предмета по ID.
+// возвращает тип предмета по ID.
 func (itemtypes *Itemtypes) Get(id int64) (*Itemtype, bool) {
 	itemtypes.ensureMaps()
 	itemtype, ok := itemtypes.Items[id]
 	return itemtype, ok
 }
 
-// Delete удаляет тип предмета и все его быстрые индексы.
+// удаляет тип предмета и все его быстрые индексы.
 func (itemtypes *Itemtypes) Delete(id int64) bool {
 	itemtypes.ensureMaps()
 	itemtype, ok := itemtypes.Items[id]
@@ -76,28 +76,28 @@ func (itemtypes *Itemtypes) Delete(id int64) bool {
 	return true
 }
 
-// GetByTitleRu возвращает тип предмета по уникальному русскому названию.
+// возвращает тип предмета по уникальному русскому названию.
 func (itemtypes *Itemtypes) GetByTitleRu(titleRu string) (*Itemtype, bool) {
 	itemtypes.ensureMaps()
 	itemtype, ok := itemtypes.ByTitleRu[titleRu]
 	return itemtype, ok
 }
 
-// GetByTitleEn возвращает тип предмета по уникальному английскому названию.
+// возвращает тип предмета по уникальному английскому названию.
 func (itemtypes *Itemtypes) GetByTitleEn(titleEn string) (*Itemtype, bool) {
 	itemtypes.ensureMaps()
 	itemtype, ok := itemtypes.ByTitleEn[titleEn]
 	return itemtype, ok
 }
 
-// GetByAcronym возвращает тип предмета по уникальному акрониму.
+// возвращает тип предмета по уникальному акрониму.
 func (itemtypes *Itemtypes) GetByAcronym(acronym string) (*Itemtype, bool) {
 	itemtypes.ensureMaps()
 	itemtype, ok := itemtypes.ByAcronym[acronym]
 	return itemtype, ok
 }
 
-// RebuildIndexes пересобирает быстрые индексы после загрузки из JSON.
+// пересобирает быстрые индексы после загрузки из JSON.
 func (itemtypes *Itemtypes) RebuildIndexes() error {
 	itemtypes.ensureItems()
 	itemtypes.ByTitleRu = make(map[string]*Itemtype)
@@ -129,7 +129,7 @@ func (itemtypes *Itemtypes) RebuildIndexes() error {
 	return nil
 }
 
-// LoadFromFile загружает типы предметов из JSON-файла и пересобирает быстрые индексы.
+// загружает типы предметов из JSON-файла и пересобирает быстрые индексы.
 func (itemtypes *Itemtypes) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -148,7 +148,7 @@ func (itemtypes *Itemtypes) LoadFromFile(path string) error {
 	return nil
 }
 
-// SaveToFile сохраняет типы предметов в JSON-файл без вспомогательных индексов.
+// сохраняет типы предметов в JSON-файл без вспомогательных индексов.
 func (itemtypes *Itemtypes) SaveToFile(path string) error {
 	itemtypes.ensureMaps()
 	content, err := json.MarshalIndent(itemtypes, "", "  ")
@@ -158,7 +158,7 @@ func (itemtypes *Itemtypes) SaveToFile(path string) error {
 	return os.WriteFile(path, content, 0o600)
 }
 
-// ensureMaps подготавливает основное хранилище и все индексы.
+// подготавливает основное хранилище и все индексы.
 func (itemtypes *Itemtypes) ensureMaps() {
 	itemtypes.ensureItems()
 	if itemtypes.ByTitleRu == nil {
@@ -172,14 +172,14 @@ func (itemtypes *Itemtypes) ensureMaps() {
 	}
 }
 
-// ensureItems подготавливает основную map типов предметов.
+// подготавливает основную map типов предметов.
 func (itemtypes *Itemtypes) ensureItems() {
 	if itemtypes.Items == nil {
 		itemtypes.Items = make(map[int64]*Itemtype)
 	}
 }
 
-// validateRequiredFields проверяет обязательные поля типа предмета.
+// проверяет обязательные поля типа предмета.
 func (itemtypes *Itemtypes) validateRequiredFields(itemtype *Itemtype) error {
 	if itemtype.TitleRu == "" {
 		return errors.New("title ru is empty")
@@ -193,7 +193,7 @@ func (itemtypes *Itemtypes) validateRequiredFields(itemtype *Itemtype) error {
 	return nil
 }
 
-// ensureUniqueForNewType проверяет уникальные поля перед добавлением в индексы.
+// проверяет уникальные поля перед добавлением в индексы.
 func (itemtypes *Itemtypes) ensureUniqueForNewType(itemtype *Itemtype) error {
 	if existing, ok := itemtypes.ByTitleRu[itemtype.TitleRu]; ok && existing.ID != itemtype.ID {
 		return fmt.Errorf("title ru %q already exists", itemtype.TitleRu)
@@ -207,14 +207,14 @@ func (itemtypes *Itemtypes) ensureUniqueForNewType(itemtype *Itemtype) error {
 	return nil
 }
 
-// addIndexes добавляет тип предмета во все быстрые индексы.
+// добавляет тип предмета во все быстрые индексы.
 func (itemtypes *Itemtypes) addIndexes(itemtype *Itemtype) {
 	itemtypes.ByTitleRu[itemtype.TitleRu] = itemtype
 	itemtypes.ByTitleEn[itemtype.TitleEn] = itemtype
 	itemtypes.ByAcronym[itemtype.Acronym] = itemtype
 }
 
-// deleteIndexes удаляет тип предмета из всех быстрых индексов.
+// удаляет тип предмета из всех быстрых индексов.
 func (itemtypes *Itemtypes) deleteIndexes(itemtype *Itemtype) {
 	delete(itemtypes.ByTitleRu, itemtype.TitleRu)
 	delete(itemtypes.ByTitleEn, itemtype.TitleEn)

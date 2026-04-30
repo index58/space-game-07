@@ -3,7 +3,7 @@ import { MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL, toShipInput } from "./inputSta
 
 // Эти тесты фиксируют границу между заблокированным системным курсором и игровым вводом.
 describe("toShipInput", () => {
-  it("не отдает управление кораблю без Pointer Lock", () => {
+  it("не отдает управление кораблю без захвата указателя", () => {
     const input = toShipInput(false, { KeyW: true }, 10);
 
     expect(input).toEqual({
@@ -15,7 +15,7 @@ describe("toShipInput", () => {
     });
   });
 
-  it("сохраняет линейный ввод клавиш при Pointer Lock", () => {
+  it("сохраняет линейный ввод клавиш при захвате указателя", () => {
     const input = toShipInput(true, { KeyW: true, KeyA: true }, 0);
 
     expect(input.thrustForward).toBe(true);

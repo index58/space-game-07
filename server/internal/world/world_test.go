@@ -10,6 +10,7 @@ import (
 	"space-game-07-server/internal/world"
 )
 
+// ищет объект в снимке мира по ID, чтобы тесты не зависели от порядка массива.
 func findSnapshotObject(snapshot game.Snapshot, objectID int64) (game.SnapshotObject, bool) {
 	for _, object := range snapshot.Objects {
 		if object.ID == objectID {
@@ -20,6 +21,7 @@ func findSnapshotObject(snapshot game.Snapshot, objectID int64) (game.SnapshotOb
 	return game.SnapshotObject{}, false
 }
 
+// собирает минимальный игровой мир с кораблем, астероидом и станцией.
 func testWorldData(t *testing.T) world.Data {
 	t.Helper()
 

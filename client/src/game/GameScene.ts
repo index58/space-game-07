@@ -1,4 +1,4 @@
-import * as Phaser from "phaser";
+﻿import * as Phaser from "phaser";
 import { ASSET_KEYS, ASSET_PATHS } from "../data/assets";
 import {
   INITIAL_ZOOM,
@@ -12,6 +12,7 @@ import type { ConnectionStatus, SnapshotObject } from "../network/protocol";
 import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
 
+// связывает Phaser-отрисовку, сетевой клиент, ввод и отладочный DOM-слой.
 export class GameScene extends Phaser.Scene {
   private objectSprites = new Map<number, Phaser.GameObjects.Image>();
   private background!: Phaser.GameObjects.TileSprite;
@@ -26,12 +27,14 @@ export class GameScene extends Phaser.Scene {
     super("GameScene");
   }
 
+  // регистрирует все статические изображения до создания объектов сцены.
   preload(): void {
     for (const [key, path] of Object.entries(ASSET_PATHS)) {
       this.load.image(key, path);
     }
   }
 
+  // создает постоянные объекты сцены и подключает клиентские контроллеры.
   create(): void {
     this.background = this.add
       .tileSprite(0, 0, this.scale.width, this.scale.height, ASSET_KEYS.background)
@@ -58,6 +61,7 @@ export class GameScene extends Phaser.Scene {
     this.debugOverlay = new DebugOverlay(overlay);
   }
 
+  // каждый кадр отправляет свежий ввод и рисует последний серверный снимок мира.
   update(_time: number, _deltaMs: number): void {
     const input = this.inputController.consumeShipInput();
     this.gameClient.setInput(input);
@@ -80,6 +84,7 @@ export class GameScene extends Phaser.Scene {
     this.debugOverlay.update(status, selfObject, this.game.loop.actualFps, this.zoomScale);
   }
 
+  // показывает фон и статус, пока нет валидного снимка объекта игрока.
   private renderWaiting(status: ConnectionStatus): void {
     this.waitingText.setVisible(true);
     this.waitingText.setPosition(this.scale.width / 2, this.scale.height / 2);
@@ -100,6 +105,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // размещает все объекты в экранных координатах камеры пилота.
   private renderWorld(objects: SnapshotObject[], selfObject: SnapshotObject): void {
     const viewportWidth = this.scale.width;
     const viewportHeight = this.scale.height;
@@ -122,6 +128,7 @@ export class GameScene extends Phaser.Scene {
 
       sprite.setVisible(true);
       sprite.setPosition(screen.x, screen.y);
+      // Корабль игрока всегда смотрит вверх экрана, остальные объекты вращаются относительно него.
       sprite.setRotation(object.id === selfObject.id ? 0 : rotationToPilotScreen(object.rotation, selfObject.rotation));
       sprite.setScale(this.zoomScale / object.textureScale);
     }
@@ -134,6 +141,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // обновляет тайловый фон так, чтобы движение камеры выглядело непрерывным.
   private renderBackground(camera: Parameters<typeof getPilotBackgroundTransform>[0]): void {
     const transform = getPilotBackgroundTransform(camera);
 
@@ -146,6 +154,7 @@ export class GameScene extends Phaser.Scene {
     this.background.tilePositionY = transform.tilePositionY;
   }
 
+  // переиспользует спрайты между снимками, чтобы не создавать их каждый кадр.
   private getOrCreateObjectSprite(
     object: SnapshotObject,
   ): Phaser.GameObjects.Image {
@@ -160,6 +169,7 @@ export class GameScene extends Phaser.Scene {
     return sprite;
   }
 
+  // строит ключ ассета из категории объекта и акронима модели.
   private textureKeyForObject(object: SnapshotObject): string {
     return `world.${object.kind}.${object.modelAcronym}`;
   }
