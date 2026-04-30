@@ -18,9 +18,10 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf(
-		"loaded %d accounts, %d characters, %d cosmic object types, %d cosmic object models and %d itemtypes from data",
+		"loaded %d accounts, %d characters, %d cosmic objects, %d cosmic object types, %d cosmic object models and %d itemtypes from data",
 		len(serverData.Accounts.Items),
 		len(serverData.Characters.Items),
+		len(serverData.CosmicObjects.Items),
 		len(serverData.CosmicObjectTypes.Items),
 		len(serverData.CosmicObjectModels.Items),
 		len(serverData.Itemtypes.Items),

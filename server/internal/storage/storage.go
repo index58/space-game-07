@@ -8,6 +8,7 @@ import (
 
 const accountsFileName = "Accounts.json"
 const charactersFileName = "Characters.json"
+const cosmicObjectsFileName = "CosmicObjects.json"
 const cosmicObjectTypesFileName = "CosmicObjectTypes.json"
 const cosmicObjectModelsFileName = "CosmicObjectModels.json"
 const itemtypesFileName = "Itemtypes.json"
@@ -16,6 +17,7 @@ const itemtypesFileName = "Itemtypes.json"
 type ServerData struct {
 	Accounts           *data.Accounts
 	Characters         *data.Characters
+	CosmicObjects      *data.CosmicObjects
 	CosmicObjectTypes  *data.CosmicObjectTypes
 	CosmicObjectModels *data.CosmicObjectModels
 	Itemtypes          *data.Itemtypes
@@ -30,6 +32,11 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 
 	characters := data.NewCharacters()
 	if err := characters.LoadFromFile(filepath.Join(workingDirectory, "data", charactersFileName)); err != nil {
+		return nil, err
+	}
+
+	cosmicObjects := data.NewCosmicObjects()
+	if err := cosmicObjects.LoadFromFile(filepath.Join(workingDirectory, "data", cosmicObjectsFileName)); err != nil {
 		return nil, err
 	}
 
@@ -51,6 +58,7 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 	return &ServerData{
 		Accounts:           accounts,
 		Characters:         characters,
+		CosmicObjects:      cosmicObjects,
 		CosmicObjectTypes:  cosmicObjectTypes,
 		CosmicObjectModels: cosmicObjectModels,
 		Itemtypes:          itemtypes,
