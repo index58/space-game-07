@@ -2,6 +2,9 @@
 client/node_modules/
 client/dist/
 
-# Go server build artifacts.
+# Артефакты сборки Go-сервера.
 server/space-game-server
 server/space-game-server.exe
+
+# Локальные данные сервера.
+server/data/
