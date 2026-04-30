@@ -1,4 +1,12 @@
 {
-  "MaxID": 0,
-  "Items": {}
+  "MaxID": 1,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "AccountID": 1,
+      "CreationTime": "2026-04-30T20:30:09.6626402+03:00",
+      "Balance": 0,
+      "LocationCosmicObjectID": 0
+    }
+  }
 }
