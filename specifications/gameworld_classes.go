@@ -13,6 +13,7 @@ package data_structure
 import "time"
 
 // Аккаунт. Какой аккаунт есть в игре
+// Уникальные наборы свойств: (Email), (Nickname), (Token)
 type Account struct {
 	ID                 int64     // ID
 	Email              string    // E-mail
@@ -24,6 +25,7 @@ type Account struct {
 }
 
 // Чертёж. Документ необходимый для изготовления космических объектов указанной модели
+// Уникальные наборы свойств: (TitleRu), (TitleEn)
 type Blueprint struct {
 	ID                  int64  // ID
 	TitleRu             string // Название на русском
@@ -32,6 +34,7 @@ type Blueprint struct {
 }
 
 // Компонент чертежа. В каком чертеже какая модель предмета присутствует в качестве компонента
+// Уникальные наборы свойств: (BlueprintID, ComponentItemModelID)
 type BlueprintComponent struct {
 	ID                   int64   // ID
 	BlueprintID          int64   // Чертёж. ID чертежа
@@ -40,6 +43,7 @@ type BlueprintComponent struct {
 }
 
 // Персонаж. Какой персонаж есть в игре
+// Уникальные наборы свойств: -
 type Character struct {
 	ID                     int64     // ID
 	AccountID              int64     // Аккаунт. ID аккаунта, на котором находится этот персонаж
@@ -49,6 +53,7 @@ type Character struct {
 }
 
 // Чертёж персонажа. У какого персонажа какой чертёж изучен
+// Уникальные наборы свойств: (CharacterID, BlueprintID)
 type CharacterBlueprint struct {
 	ID          int64 // ID
 	CharacterID int64 // Персонаж. ID персонажа, у которого изучен указанный проект
@@ -56,6 +61,7 @@ type CharacterBlueprint struct {
 }
 
 // Схема персонажа. У какого персонажа какая схема изучена
+// Уникальные наборы свойств: (CharacterID, SchemaID)
 type CharacterSchema struct {
 	ID          int64 // ID
 	CharacterID int64 // Персонаж. ID персонажа, у которого изучена указанная схема
@@ -63,6 +69,7 @@ type CharacterSchema struct {
 }
 
 // Космический объект. Какой космический объект есть в игре
+// Уникальные наборы свойств: -
 type CosmicObject struct {
 	ID                     int64   // ID
 	Title                  string  // Название. Название этого космического объекта. При создании объекта название пустое. Игрок, являющийся владельцем этого объекта, при некоторых условиях может установить название.
@@ -99,6 +106,7 @@ type CosmicObject struct {
 }
 
 // Модель космического объекта. Какая модель космического объекта есть в игре
+// Уникальные наборы свойств: (TitleRu), (TitleEn), (Acronym)
 type CosmicObjectModel struct {
 	ID                 int64   // ID
 	TitleRu            string  // Название на русском
@@ -125,6 +133,7 @@ type CosmicObjectModel struct {
 }
 
 // Тип космического объекта. Корабль, Станция, Астероид, Лут, Снаряд, Луч
+// Уникальные наборы свойств: (TitleRu), (Acronym), (TitleEn)
 type CosmicObjectType struct {
 	ID                 int64  // ID
 	TitleRu            string // Название на русском
@@ -136,6 +145,7 @@ type CosmicObjectType struct {
 }
 
 // Группа оборудования. На каком космическом объекте сколько предметов какой модели под каким названием установлено в качестве оборудования
+// Уникальные наборы свойств: -
 type EquipmentGroup struct {
 	ID                    int64   // ID
 	CosmicObjectID        int64   // Космический объект. ID космического объекта, на котором установлено оборудование
@@ -149,6 +159,7 @@ type EquipmentGroup struct {
 }
 
 // Группа предметов. В какой группе оборудования сколько предметов какой модели содержится
+// Уникальные наборы свойств: (EquipmentID, ItemModelID)
 type ItemGroup struct {
 	ID          int64   // ID
 	EquipmentID int64   // Контейнер. ID оборудования, внутри которого находится предмет указанной модели
@@ -157,6 +168,7 @@ type ItemGroup struct {
 }
 
 // Модель предмета. Какая модель предмета есть в игре
+// Уникальные наборы свойств: (TitleRu), (TitleEn), (Acronym)
 type ItemModel struct {
 	ID                   int64   // ID
 	TitleRu              string  // Название на русском
@@ -187,6 +199,7 @@ type ItemModel struct {
 }
 
 // Тип предмета. Двигатель, Контейнер, Топливный бак, Оружие пилота, Турель, Робот, Запчасть, Ресурс,...
+// Уникальные наборы свойств: (TitleRu), (Acronym), (TitleEn)
 type Itemtype struct {
 	ID                    int64  // ID
 	TitleRu               string // Название на русском
@@ -199,6 +212,7 @@ type Itemtype struct {
 }
 
 // NPC-клан. Какой NPC-клан есть в игре
+// Уникальные наборы свойств: (TitleRu), (Acronym), (TitleEn)
 type NpcClan struct {
 	ID      int64  // ID
 	TitleRu string // Название на русском
@@ -207,6 +221,7 @@ type NpcClan struct {
 }
 
 // Схема. Документ, изучение которого необходимо для изготовления предметов указанной модели
+// Уникальные наборы свойств: (TitleRu), (TitleEn)
 type Schema struct {
 	ID          int64   // ID
 	TitleRu     string  // Название на русском
@@ -216,6 +231,7 @@ type Schema struct {
 }
 
 // Компонент схемы. В какой схеме какая модель предмета присутствует в качестве компонента
+// Уникальные наборы свойств: (SchemaID, ComponentItemModelID)
 type SchemaComponent struct {
 	ID                   int64   // ID
 	SchemaID             int64   // Схема. ID схемы
