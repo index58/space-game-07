@@ -18,6 +18,7 @@ type Account struct {
 	Email              string    // E-mail
 	Nickname           string    // Никнейм. Никнейм в игре
 	PasswordHash       string    // Хэш пароля. Значение по умолчанию = ''
+	Token              string    // Токен. Уникальный токен, по значению которого клиент автоматически получает доступ к аккаунту. Хранится у клиента в cookie
 	RegistrationTime   time.Time // Время регистрации. Значение по умолчанию = now()
 	CurrentCharacterID int64     // Действующий персонаж. ID действующего (текущего) персонажа
 }
