@@ -27,19 +27,36 @@ func main() {
 		len(serverData.Itemtypes.Items),
 	)
 
-	gameWorld := world.New(time.Now().UnixNano())
+	gameWorld := world.New(time.Now().UnixNano(), world.Data{
+		Accounts:           serverData.Accounts,
+		Characters:         serverData.Characters,
+		CosmicObjects:      serverData.CosmicObjects,
+		CosmicObjectTypes:  serverData.CosmicObjectTypes,
+		CosmicObjectModels: serverData.CosmicObjectModels,
+		Itemtypes:          serverData.Itemtypes,
+	})
 	hub := transport.NewHub(gameWorld)
-	handler := transport.NewHandler(hub)
+	handler := transport.NewHandler(hub, serverData.Accounts)
 
 	http.Handle("/ws", handler)
 
 	ticker := time.NewTicker(time.Second / tickRate)
 	defer ticker.Stop()
+	saveTicker := time.NewTicker(30 * time.Second)
+	defer saveTicker.Stop()
 
 	go func() {
 		for range ticker.C {
 			snapshot := gameWorld.Tick(1.0 / tickRate)
 			hub.Broadcast(snapshot)
+		}
+	}()
+
+	go func() {
+		for range saveTicker.C {
+			if err := gameWorld.SaveData("."); err != nil {
+				log.Printf("save server data: %v", err)
+			}
 		}
 	}()
 

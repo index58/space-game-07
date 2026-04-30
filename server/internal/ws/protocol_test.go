@@ -51,6 +51,7 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				ID:              7,
 				ModelAcronym:    "ship_bat",
 				Kind:            game.ObjectKindShip,
+				TextureScale:    4,
 				X:               10.5,
 				Y:               -3.2,
 				VelocityX:       1.1,
@@ -70,6 +71,7 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 	for _, field := range []string{
 		`"selfObjectId":7`,
 		`"modelAcronym":"ship_bat"`,
+		`"textureScale":4`,
 		`"velocityX":1.1`,
 		`"velocityY":0.4`,
 		`"angularVelocity":0.01`,

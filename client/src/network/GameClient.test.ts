@@ -60,6 +60,50 @@ describe("GameClient", () => {
     client.destroy();
   });
 
+  it("passes account token in websocket URL", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      token: "test token",
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+
+    expect(FakeWebSocket.instances[0].url).toBe("ws://127.0.0.1:8080/ws?token=test%20token");
+
+    client.destroy();
+  });
+
+  it("passes account nickname when token is empty", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      accountNickname: "index",
+      token: "",
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+
+    expect(FakeWebSocket.instances[0].url).toBe("ws://127.0.0.1:8080/ws?nickname=index");
+
+    client.destroy();
+  });
+
+  it("appends account token to websocket URL with existing query", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      url: "ws://127.0.0.1:8080/ws?debug=1",
+      token: "token",
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+
+    expect(FakeWebSocket.instances[0].url).toBe("ws://127.0.0.1:8080/ws?debug=1&token=token");
+
+    client.destroy();
+  });
+
   it("does not replace latest snapshot when JSON is invalid", () => {
     FakeWebSocket.instances = [];
     const client = new GameClient({

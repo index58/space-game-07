@@ -5,16 +5,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
+	"space-game-07-server/internal/data"
 )
 
 type Handler struct {
 	hub      *Hub
+	accounts *data.Accounts
 	upgrader websocket.Upgrader
 }
 
-func NewHandler(hub *Hub) *Handler {
+func NewHandler(hub *Hub, accounts *data.Accounts) *Handler {
 	return &Handler{
-		hub: hub,
+		hub:      hub,
+		accounts: accounts,
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(request *http.Request) bool {
 				origin := request.Header.Get("Origin")
@@ -27,10 +30,34 @@ func NewHandler(hub *Hub) *Handler {
 }
 
 func (handler *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	account, ok := handler.accountByRequestToken(request)
+	if !ok {
+		http.Error(writer, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	connection, err := handler.upgrader.Upgrade(writer, request, nil)
 	if err != nil {
 		return
 	}
 
-	handler.hub.AddConnection(connection)
+	handler.hub.AddConnection(connection, account.ID)
+}
+
+func (handler *Handler) accountByRequestToken(request *http.Request) (*data.Account, bool) {
+	token := request.URL.Query().Get("token")
+	if token == "" {
+		if cookie, err := request.Cookie("Token"); err == nil {
+			token = cookie.Value
+		}
+	}
+	if token != "" {
+		return handler.accounts.GetByToken(token)
+	}
+
+	nickname := request.URL.Query().Get("nickname")
+	if nickname == "" {
+		return nil, false
+	}
+	return handler.accounts.GetByNickname(nickname)
 }

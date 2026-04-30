@@ -2,143 +2,177 @@ package world
 
 import (
 	"math"
-	"math/rand"
+	"path/filepath"
 	"sort"
 	"sync"
 
+	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 	"space-game-07-server/internal/physics"
 )
 
-const spawnRadius = 500
+const modelMassScale = 1000
+
+type Data struct {
+	Accounts           *data.Accounts
+	Characters         *data.Characters
+	CosmicObjects      *data.CosmicObjects
+	CosmicObjectTypes  *data.CosmicObjectTypes
+	CosmicObjectModels *data.CosmicObjectModels
+	Itemtypes          *data.Itemtypes
+}
+
+type objectRuntime struct {
+	Velocity       game.WorldVector
+	TargetRotation float64
+}
 
 type World struct {
-	mu              sync.Mutex
-	nextPlayerID    int64
-	nextObjectID    int64
-	tick            int64
-	random          *rand.Rand
-	playerObjectIDs map[int64]int64
-	objects         map[int64]game.WorldObject
-	inputs          map[int64]game.ShipInput
-	staticObjects   map[int64]game.WorldObject
+	mu               sync.Mutex
+	tick             int64
+	data             Data
+	accountObjectIDs map[int64]int64
+	inputs           map[int64]game.ShipInput
+	runtime          map[int64]objectRuntime
 }
 
-func New(seed int64) *World {
-	staticObjects := map[int64]game.WorldObject{}
-	maxObjectID := int64(0)
-	for _, object := range game.StaticObjects() {
-		staticObjects[object.ID] = object
-		if object.ID > maxObjectID {
-			maxObjectID = object.ID
-		}
-	}
-
+func New(seed int64, serverData Data) *World {
 	return &World{
-		nextPlayerID:    1,
-		nextObjectID:    maxObjectID + 1,
-		random:          rand.New(rand.NewSource(seed)),
-		playerObjectIDs: map[int64]int64{},
-		objects:         map[int64]game.WorldObject{},
-		inputs:          map[int64]game.ShipInput{},
-		staticObjects:   staticObjects,
+		data:             serverData,
+		accountObjectIDs: map[int64]int64{},
+		inputs:           map[int64]game.ShipInput{},
+		runtime:          map[int64]objectRuntime{},
 	}
 }
 
-func (world *World) AddPlayer() (int64, int64) {
+func (world *World) ConnectAccount(accountID int64) (int64, bool) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
-	playerID := world.nextPlayerID
-	world.nextPlayerID++
-	objectID := world.nextObjectID
-	world.nextObjectID++
+	account, ok := world.data.Accounts.Get(accountID)
+	if !ok || account.CurrentCharacterID <= 0 {
+		return 0, false
+	}
 
-	ship := game.NewPlayerShip(objectID, world.randomSpawnPosition())
-	world.playerObjectIDs[playerID] = objectID
-	world.objects[objectID] = ship
-	world.inputs[playerID] = game.ShipInput{}
+	character, ok := world.data.Characters.Get(account.CurrentCharacterID)
+	if !ok || character.AccountID != account.ID || character.LocationCosmicObjectID <= 0 {
+		return 0, false
+	}
 
-	return playerID, objectID
+	if _, ok := world.data.CosmicObjects.Get(character.LocationCosmicObjectID); !ok {
+		return 0, false
+	}
+
+	world.accountObjectIDs[accountID] = character.LocationCosmicObjectID
+	world.inputs[accountID] = game.ShipInput{}
+	return character.LocationCosmicObjectID, true
 }
 
-func (world *World) RemovePlayer(playerID int64) {
+func (world *World) DisconnectAccount(accountID int64) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
-	objectID, ok := world.playerObjectIDs[playerID]
-	if !ok {
+	delete(world.accountObjectIDs, accountID)
+	delete(world.inputs, accountID)
+}
+
+func (world *World) SetInput(accountID int64, input game.ShipInput) {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	if _, ok := world.accountObjectIDs[accountID]; !ok {
 		return
 	}
 
-	delete(world.playerObjectIDs, playerID)
-	delete(world.objects, objectID)
-	delete(world.inputs, playerID)
-}
-
-func (world *World) SetInput(playerID int64, input game.ShipInput) {
-	world.mu.Lock()
-	defer world.mu.Unlock()
-
-	if _, ok := world.playerObjectIDs[playerID]; !ok {
-		return
-	}
-
-	world.inputs[playerID] = input
+	world.inputs[accountID] = input
 }
 
 func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
-	for playerID, objectID := range world.playerObjectIDs {
-		object, ok := world.objects[objectID]
+	for accountID, objectID := range world.accountObjectIDs {
+		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok || cosmicObject.Anchored || !cosmicObject.Enabled {
+			continue
+		}
+
+		runtimeObject, ok := world.gameObjectLocked(cosmicObject)
 		if !ok {
 			continue
 		}
 
-		world.objects[objectID] = physics.StepShip(object, world.inputs[playerID], dtSeconds)
+		input := world.inputs[accountID]
+		next := physics.StepShip(runtimeObject, input, dtSeconds)
+		world.saveObjectStateLocked(cosmicObject, next, input)
 	}
 
 	world.tick++
-
 	return world.snapshotLocked(0)
 }
 
-func (world *World) SnapshotForPlayer(selfObjectID int64) game.Snapshot {
+func (world *World) SnapshotForAccount(accountID int64) game.Snapshot {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
-	return world.snapshotLocked(selfObjectID)
+	objectID := world.accountObjectIDs[accountID]
+	return world.snapshotLocked(objectID)
 }
 
-func (world *World) ObjectIDForPlayer(playerID int64) (int64, bool) {
+func (world *World) ObjectIDForAccount(accountID int64) (int64, bool) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
-	objectID, ok := world.playerObjectIDs[playerID]
+	objectID, ok := world.accountObjectIDs[accountID]
 	return objectID, ok
 }
 
+func (world *World) SaveData(workingDirectory string) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	dataDirectory := filepath.Join(workingDirectory, "data")
+	if err := world.data.Accounts.SaveToFile(filepath.Join(dataDirectory, "Accounts.json")); err != nil {
+		return err
+	}
+	if err := world.data.Characters.SaveToFile(filepath.Join(dataDirectory, "Characters.json")); err != nil {
+		return err
+	}
+	if err := world.data.CosmicObjects.SaveToFile(filepath.Join(dataDirectory, "CosmicObjects.json")); err != nil {
+		return err
+	}
+	if err := world.data.CosmicObjectTypes.SaveToFile(filepath.Join(dataDirectory, "CosmicObjectTypes.json")); err != nil {
+		return err
+	}
+	if err := world.data.CosmicObjectModels.SaveToFile(filepath.Join(dataDirectory, "CosmicObjectModels.json")); err != nil {
+		return err
+	}
+	if world.data.Itemtypes != nil {
+		return world.data.Itemtypes.SaveToFile(filepath.Join(dataDirectory, "Itemtypes.json"))
+	}
+	return nil
+}
+
 func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
-	objectIDs := make([]int64, 0, len(world.objects)+len(world.staticObjects))
-	for objectID := range world.objects {
+	objectIDs := make([]int64, 0, len(world.data.CosmicObjects.Items))
+	for objectID := range world.data.CosmicObjects.Items {
 		objectIDs = append(objectIDs, objectID)
 	}
-	for objectID := range world.staticObjects {
-		objectIDs = append(objectIDs, objectID)
-	}
-	sort.Slice(objectIDs, func(i int, j int) bool {
-		return objectIDs[i] < objectIDs[j]
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
 	})
 
 	objects := make([]game.SnapshotObject, 0, len(objectIDs))
 	for _, objectID := range objectIDs {
-		if object, ok := world.objects[objectID]; ok {
-			objects = append(objects, game.NewSnapshotObject(object))
+		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok {
 			continue
 		}
-		objects = append(objects, game.NewSnapshotObject(world.staticObjects[objectID]))
+		runtimeObject, ok := world.gameObjectLocked(cosmicObject)
+		if !ok {
+			continue
+		}
+		objects = append(objects, game.NewSnapshotObject(runtimeObject))
 	}
 
 	return game.Snapshot{
@@ -149,12 +183,86 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 	}
 }
 
-func (world *World) randomSpawnPosition() game.WorldVector {
-	angle := world.random.Float64() * math.Pi * 2
-	radius := math.Sqrt(world.random.Float64()) * spawnRadius
-
-	return game.WorldVector{
-		X: math.Cos(angle) * radius,
-		Y: math.Sin(angle) * radius,
+func (world *World) gameObjectLocked(cosmicObject *data.CosmicObject) (game.WorldObject, bool) {
+	model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
+	if !ok {
+		return game.WorldObject{}, false
 	}
+
+	runtime := world.runtime[cosmicObject.ID]
+	return game.WorldObject{
+		ID:              cosmicObject.ID,
+		Model:           world.gameModelLocked(cosmicObject, model),
+		Position:        game.WorldVector{X: cosmicObject.X, Y: cosmicObject.Y},
+		Velocity:        runtime.Velocity,
+		Rotation:        cosmicObject.Rotation,
+		AngularVelocity: cosmicObject.AngularSpeed,
+		TargetRotation:  runtime.TargetRotation,
+	}, true
+}
+
+func (world *World) gameModelLocked(cosmicObject *data.CosmicObject, model *data.CosmicObjectModel) game.CosmicObjectModel {
+	kind := game.ObjectKindStation
+	if cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID); ok {
+		switch cosmicObjectType.Acronym {
+		case "Ship":
+			kind = game.ObjectKindShip
+		case "Asteroid":
+			kind = game.ObjectKindAsteroid
+		case "Station":
+			kind = game.ObjectKindStation
+		}
+	}
+
+	return game.CosmicObjectModel{
+		Acronym:                     model.Acronym,
+		TitleRu:                     model.TitleRu,
+		Kind:                        kind,
+		TexturePath:                 model.TextureFilePath,
+		TextureWidth:                model.TextureWidth,
+		TextureHeight:               model.TextureHeight,
+		TextureBodyOriginX:          model.TextureBodyOriginX,
+		TextureBodyOriginY:          model.TextureBodyOriginY,
+		TextureBodyWidth:            model.TextureBodyWidth,
+		TextureBodyLength:           model.TextureBodyLength,
+		TextureScale:                model.TextureScale,
+		MassKg:                      cosmicObject.Mass * modelMassScale,
+		ThrustN:                     cosmicObject.MaxAlongForce,
+		MaxSpeedMps:                 cosmicObject.MaxSpeed,
+		TorqueNm:                    cosmicObject.MaxTorque,
+		MaxAngularSpeedRadPerSecond: cosmicObject.MaxAngularSpeed,
+	}
+}
+
+func (world *World) saveObjectStateLocked(cosmicObject *data.CosmicObject, object game.WorldObject, input game.ShipInput) {
+	cosmicObject.X = object.Position.X
+	cosmicObject.Y = object.Position.Y
+	cosmicObject.Rotation = object.Rotation
+	cosmicObject.Speed = objectVelocityLength(object.Velocity)
+	cosmicObject.AngularSpeed = object.AngularVelocity
+	cosmicObject.AlongForce = axisForce(input.ThrustForward, input.ThrustBackward, cosmicObject.MaxAlongForce)
+	cosmicObject.AcrossForce = axisForce(input.ThrustRight, input.ThrustLeft, cosmicObject.MaxAcrossForce)
+	if input.TargetRotationDelta == 0 {
+		cosmicObject.Torque = 0
+	} else {
+		cosmicObject.Torque = object.Model.TorqueNm
+	}
+	world.runtime[cosmicObject.ID] = objectRuntime{
+		Velocity:       object.Velocity,
+		TargetRotation: object.TargetRotation,
+	}
+}
+
+func axisForce(positive bool, negative bool, maxForce float64) float64 {
+	if positive == negative {
+		return 0
+	}
+	if positive {
+		return maxForce
+	}
+	return -maxForce
+}
+
+func objectVelocityLength(velocity game.WorldVector) float64 {
+	return math.Hypot(velocity.X, velocity.Y)
 }

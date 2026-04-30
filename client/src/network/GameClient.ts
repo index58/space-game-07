@@ -16,6 +16,8 @@ type WebSocketLike = {
 
 export type GameClientOptions = {
   url?: string;
+  token?: string;
+  accountNickname?: string;
   reconnectDelayMs?: number;
   inputIntervalMs?: number;
   socketFactory?: (url: string) => WebSocketLike;
@@ -32,6 +34,59 @@ const emptyInput = (): ClientInputState => ({
   thrustRight: false,
   targetRotationDelta: 0,
 });
+
+const readCookie = (name: string): string | null => {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const prefix = `${name}=`;
+  const cookie = document.cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix));
+
+  return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+};
+
+const readStoredToken = (): string | null => {
+  if (typeof localStorage !== "undefined") {
+    const token = localStorage.getItem("accountToken");
+    if (token) {
+      return token;
+    }
+  }
+
+  return readCookie("Token");
+};
+
+const readStoredAccountNickname = (): string => {
+  if (typeof localStorage !== "undefined") {
+    const nickname = localStorage.getItem("accountNickname");
+    if (nickname) {
+      return nickname;
+    }
+  }
+
+  return "index";
+};
+
+const withQueryParameter = (url: string, name: string, value: string | null): string => {
+  if (!value) {
+    return url;
+  }
+
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}${name}=${encodeURIComponent(value)}`;
+};
+
+const withAccountIdentity = (url: string, token: string | null, accountNickname: string): string => {
+  if (token) {
+    return withQueryParameter(url, "token", token);
+  }
+
+  return withQueryParameter(url, "nickname", accountNickname);
+};
 
 const isSnapshotMessage = (message: unknown): message is SnapshotMessage => {
   if (!message || typeof message !== "object") {
@@ -61,7 +116,11 @@ export class GameClient {
   private destroyed = false;
 
   constructor(options: GameClientOptions = {}) {
-    this.url = options.url ?? DEFAULT_URL;
+    this.url = withAccountIdentity(
+      options.url ?? DEFAULT_URL,
+      options.token ?? readStoredToken(),
+      options.accountNickname ?? readStoredAccountNickname(),
+    );
     this.reconnectDelayMs = options.reconnectDelayMs ?? DEFAULT_RECONNECT_DELAY_MS;
     this.inputIntervalMs = options.inputIntervalMs ?? DEFAULT_INPUT_INTERVAL_MS;
     this.socketFactory = options.socketFactory ?? ((url) => new WebSocket(url) as unknown as WebSocketLike);

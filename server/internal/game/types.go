@@ -57,6 +57,7 @@ type SnapshotObject struct {
 	ID              int64      `json:"id"`
 	ModelAcronym    string     `json:"modelAcronym"`
 	Kind            ObjectKind `json:"kind"`
+	TextureScale    float64    `json:"textureScale"`
 	X               float64    `json:"x"`
 	Y               float64    `json:"y"`
 	VelocityX       float64    `json:"velocityX"`
@@ -78,6 +79,7 @@ func NewSnapshotObject(object WorldObject) SnapshotObject {
 		ID:              object.ID,
 		ModelAcronym:    object.Model.Acronym,
 		Kind:            object.Model.Kind,
+		TextureScale:    object.Model.TextureScale,
 		X:               object.Position.X,
 		Y:               object.Position.Y,
 		VelocityX:       object.Velocity.X,

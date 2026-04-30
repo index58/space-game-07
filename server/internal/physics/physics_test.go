@@ -12,6 +12,23 @@ func idleInput() game.ShipInput {
 	return game.ShipInput{}
 }
 
+func testShip(id int64, position game.WorldVector) game.WorldObject {
+	return game.WorldObject{
+		ID:       id,
+		Position: position,
+		Model: game.CosmicObjectModel{
+			TextureBodyWidth:            88,
+			TextureBodyLength:           90,
+			TextureScale:                4,
+			MassKg:                      7920,
+			ThrustN:                     1287901.529888449,
+			MaxSpeedMps:                 497,
+			TorqueNm:                    653565,
+			MaxAngularSpeedRadPerSecond: 3,
+		},
+	}
+}
+
 func closeTo(t *testing.T, actual float64, expected float64) {
 	t.Helper()
 
@@ -21,12 +38,12 @@ func closeTo(t *testing.T, actual float64, expected float64) {
 }
 
 func TestMomentOfInertiaUsesFilledEllipseApproximation(t *testing.T) {
-	closeTo(t, physics.MomentOfInertia(game.NewPlayerShip(1, game.WorldVector{})), 490173.75)
+	closeTo(t, physics.MomentOfInertia(testShip(1, game.WorldVector{})), 490173.75)
 }
 
 func TestStepShipAcceleratesForwardAlongPositiveYAtZeroRotation(t *testing.T) {
 	next := physics.StepShip(
-		game.NewPlayerShip(1, game.WorldVector{}),
+		testShip(1, game.WorldVector{}),
 		game.ShipInput{ThrustForward: true},
 		1,
 	)
@@ -37,7 +54,7 @@ func TestStepShipAcceleratesForwardAlongPositiveYAtZeroRotation(t *testing.T) {
 
 func TestStepShipClampsLinearVelocityToModelMaximum(t *testing.T) {
 	next := physics.StepShip(
-		game.NewPlayerShip(1, game.WorldVector{}),
+		testShip(1, game.WorldVector{}),
 		game.ShipInput{ThrustForward: true},
 		10,
 	)
@@ -47,7 +64,7 @@ func TestStepShipClampsLinearVelocityToModelMaximum(t *testing.T) {
 
 func TestStepShipUpdatesTargetRotationFromInput(t *testing.T) {
 	next := physics.StepShip(
-		game.NewPlayerShip(1, game.WorldVector{}),
+		testShip(1, game.WorldVector{}),
 		game.ShipInput{TargetRotationDelta: 0.25},
 		0.016,
 	)
@@ -56,7 +73,7 @@ func TestStepShipUpdatesTargetRotationFromInput(t *testing.T) {
 }
 
 func TestStepShipStartsRotatingTowardTargetRotation(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.TargetRotation = 1
 
 	next := physics.StepShip(ship, idleInput(), 0.05)
@@ -67,7 +84,7 @@ func TestStepShipStartsRotatingTowardTargetRotation(t *testing.T) {
 }
 
 func TestStepShipDoesNotNormalizeAngleErrorAcrossPiBoundary(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Rotation = math.Pi - 0.1
 	ship.TargetRotation = -math.Pi + 0.1
 
@@ -79,7 +96,7 @@ func TestStepShipDoesNotNormalizeAngleErrorAcrossPiBoundary(t *testing.T) {
 }
 
 func TestStepShipBrakesAngularVelocityNearTargetRotation(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Rotation = 1
 	ship.TargetRotation = 1
 	ship.AngularVelocity = 0.1
@@ -91,7 +108,7 @@ func TestStepShipBrakesAngularVelocityNearTargetRotation(t *testing.T) {
 }
 
 func TestStepShipStopsRotationAtTargetWithoutOvershoot(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Rotation = 0
 	ship.TargetRotation = 0.01
 	ship.AngularVelocity = 1
@@ -104,7 +121,7 @@ func TestStepShipStopsRotationAtTargetWithoutOvershoot(t *testing.T) {
 
 func TestStepShipReducesAngularVelocityBeforeFinalStopAtTarget(t *testing.T) {
 	dtSeconds := 0.05
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.TargetRotation = 0.5
 	maxAngularVelocityChange := ship.Model.TorqueNm / physics.MomentOfInertia(ship) * dtSeconds
 	current := ship
@@ -131,7 +148,7 @@ func TestStepShipReducesAngularVelocityBeforeFinalStopAtTarget(t *testing.T) {
 
 func TestStepShipDoesNotZeroAngularVelocityWhileTargetRotationIsMoving(t *testing.T) {
 	dtSeconds := 0.05
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Rotation = 0
 	ship.TargetRotation = 0.01
 	ship.AngularVelocity = 1
@@ -143,7 +160,7 @@ func TestStepShipDoesNotZeroAngularVelocityWhileTargetRotationIsMoving(t *testin
 }
 
 func TestStepShipClampsAngularVelocityToModelMaximum(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.TargetRotation = 100
 
 	next := physics.StepShip(ship, idleInput(), 10)
@@ -152,7 +169,7 @@ func TestStepShipClampsAngularVelocityToModelMaximum(t *testing.T) {
 }
 
 func TestStepShipBrakesLinearAndAngularVelocityWhenTargetReached(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Velocity = game.WorldVector{X: 10}
 	ship.AngularVelocity = 1
 
@@ -165,7 +182,7 @@ func TestStepShipBrakesLinearAndAngularVelocityWhenTargetReached(t *testing.T) {
 }
 
 func TestStepShipKeepsLinearBrakingWhileRotatingToTarget(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Velocity = game.WorldVector{X: 200}
 	ship.TargetRotation = 1
 
@@ -180,7 +197,7 @@ func TestStepShipKeepsLinearBrakingWhileRotatingToTarget(t *testing.T) {
 }
 
 func TestStepShipBrakesAcrossVelocityDuringAlongThrust(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Velocity = game.WorldVector{X: 100}
 
 	next := physics.StepShip(ship, game.ShipInput{ThrustForward: true}, 0.1)
@@ -194,7 +211,7 @@ func TestStepShipBrakesAcrossVelocityDuringAlongThrust(t *testing.T) {
 }
 
 func TestStepShipBrakesAlongVelocityDuringAcrossThrust(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Velocity = game.WorldVector{Y: 100}
 
 	next := physics.StepShip(ship, game.ShipInput{ThrustRight: true}, 0.1)
@@ -208,7 +225,7 @@ func TestStepShipBrakesAlongVelocityDuringAcrossThrust(t *testing.T) {
 }
 
 func TestStepShipDoesNotAutobrakeAlongAxisWhenForwardAndBackwardPressed(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Velocity = game.WorldVector{Y: 100}
 
 	next := physics.StepShip(ship, game.ShipInput{ThrustForward: true, ThrustBackward: true}, 0.1)
@@ -218,7 +235,7 @@ func TestStepShipDoesNotAutobrakeAlongAxisWhenForwardAndBackwardPressed(t *testi
 }
 
 func TestStepShipDoesNotAutobrakeAcrossAxisWhenLeftAndRightPressed(t *testing.T) {
-	ship := game.NewPlayerShip(1, game.WorldVector{})
+	ship := testShip(1, game.WorldVector{})
 	ship.Velocity = game.WorldVector{X: 100}
 
 	next := physics.StepShip(ship, game.ShipInput{ThrustLeft: true, ThrustRight: true}, 0.1)

@@ -1,28 +1,16 @@
 import * as Phaser from "phaser";
 import { ASSET_KEYS, ASSET_PATHS } from "../data/assets";
 import {
-  ASTEROID_0002,
-  SHIP_BAT,
-  STATION_TINY_CRUMB,
-} from "../data/prototypeObjects";
-import {
   INITIAL_ZOOM,
   getViewportZoomScale,
   getPilotBackgroundTransform,
   rotationToPilotScreen,
   worldToPilotScreen,
 } from "../domain/camera";
-import type { CosmicObjectModel } from "../domain/types";
 import { GameClient } from "../network/GameClient";
 import type { ConnectionStatus, SnapshotObject } from "../network/protocol";
 import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
-
-const MODELS_BY_ACRONYM: Record<string, CosmicObjectModel> = {
-  [SHIP_BAT.acronym]: SHIP_BAT,
-  [ASTEROID_0002.acronym]: ASTEROID_0002,
-  [STATION_TINY_CRUMB.acronym]: STATION_TINY_CRUMB,
-};
 
 export class GameScene extends Phaser.Scene {
   private objectSprites = new Map<number, Phaser.GameObjects.Image>();
@@ -128,18 +116,14 @@ export class GameScene extends Phaser.Scene {
     const activeObjectIds = new Set<number>();
     for (const object of objects) {
       activeObjectIds.add(object.id);
-      const model = MODELS_BY_ACRONYM[object.modelAcronym];
-      if (!model) {
-        continue;
-      }
 
-      const sprite = this.getOrCreateObjectSprite(object, model);
+      const sprite = this.getOrCreateObjectSprite(object);
       const screen = worldToPilotScreen({ x: object.x, y: object.y }, camera);
 
       sprite.setVisible(true);
       sprite.setPosition(screen.x, screen.y);
       sprite.setRotation(object.id === selfObject.id ? 0 : rotationToPilotScreen(object.rotation, selfObject.rotation));
-      sprite.setScale(this.zoomScale / model.textureScale);
+      sprite.setScale(this.zoomScale / object.textureScale);
     }
 
     for (const [objectId, sprite] of this.objectSprites) {
@@ -164,16 +148,19 @@ export class GameScene extends Phaser.Scene {
 
   private getOrCreateObjectSprite(
     object: SnapshotObject,
-    model: CosmicObjectModel,
   ): Phaser.GameObjects.Image {
     const existing = this.objectSprites.get(object.id);
     if (existing) {
       return existing;
     }
 
-    const sprite = this.add.image(0, 0, model.textureKey).setOrigin(0.5);
+    const sprite = this.add.image(0, 0, this.textureKeyForObject(object)).setOrigin(0.5);
     this.objectSprites.set(object.id, sprite);
 
     return sprite;
+  }
+
+  private textureKeyForObject(object: SnapshotObject): string {
+    return `world.${object.kind}.${object.modelAcronym}`;
   }
 }

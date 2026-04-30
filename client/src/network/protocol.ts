@@ -19,6 +19,7 @@ export type SnapshotObject = {
   id: number;
   modelAcronym: string;
   kind: SnapshotObjectKind;
+  textureScale: number;
   x: number;
   y: number;
   velocityX: number;

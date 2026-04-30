@@ -10,7 +10,7 @@ import (
 
 type Client struct {
 	connection *websocket.Conn
-	playerID   int64
+	accountID  int64
 	objectID   int64
 	send       chan []byte
 	done       chan struct{}
@@ -30,11 +30,16 @@ func NewHub(gameWorld *world.World) *Hub {
 	}
 }
 
-func (hub *Hub) AddConnection(connection *websocket.Conn) {
-	playerID, objectID := hub.world.AddPlayer()
+func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64) {
+	objectID, ok := hub.world.ConnectAccount(accountID)
+	if !ok {
+		_ = connection.Close()
+		return
+	}
+
 	client := &Client{
 		connection: connection,
-		playerID:   playerID,
+		accountID:  accountID,
 		objectID:   objectID,
 		send:       make(chan []byte, 8),
 		done:       make(chan struct{}),
@@ -87,7 +92,7 @@ func (hub *Hub) readLoop(client *Client) {
 			continue
 		}
 
-		hub.world.SetInput(client.playerID, input)
+		hub.world.SetInput(client.accountID, input)
 	}
 }
 
@@ -115,7 +120,7 @@ func (hub *Hub) removeClient(client *Client) {
 	delete(hub.clients, client)
 	hub.mu.Unlock()
 
-	hub.world.RemovePlayer(client.playerID)
+	hub.world.DisconnectAccount(client.accountID)
 	client.closeOnce.Do(func() {
 		close(client.done)
 	})
