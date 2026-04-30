@@ -50,7 +50,7 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 			{
 				ID:              7,
 				ModelAcronym:    "ship_bat",
-				Kind:            game.ObjectKindShip,
+				Kind:            "ship",
 				TextureScale:    4,
 				X:               10.5,
 				Y:               -3.2,

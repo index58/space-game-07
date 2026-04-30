@@ -136,6 +136,9 @@ func TestCosmicObjectsJSONKeysMatchGoFieldNames(t *testing.T) {
 		`"Mass"`,
 		`"MaxSpeed"`,
 		`"Enabled"`,
+		`"VelocityX"`,
+		`"VelocityY"`,
+		`"TargetRotation"`,
 		`"AngularSpeed"`,
 	}
 	for _, expectedKey := range expectedKeys {

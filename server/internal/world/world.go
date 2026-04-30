@@ -1,17 +1,15 @@
 package world
 
 import (
-	"math"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 
 	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 	"space-game-07-server/internal/physics"
 )
-
-const modelMassScale = 1000
 
 // Собирает все загруженные справочники и игровые сущности, нужные миру.
 type Data struct {
@@ -23,12 +21,6 @@ type Data struct {
 	Itemtypes          *data.Itemtypes
 }
 
-// Хранит состояние, которое участвует в симуляции, но пока не сериализуется в JSON-данные.
-type objectRuntime struct {
-	Velocity       game.WorldVector
-	TargetRotation float64
-}
-
 // Управляет подключенными аккаунтами, входами игроков и пошаговой симуляцией объектов.
 type World struct {
 	mu               sync.Mutex
@@ -36,7 +28,6 @@ type World struct {
 	data             Data
 	accountObjectIDs map[int64]int64
 	inputs           map[int64]game.ShipInput
-	runtime          map[int64]objectRuntime
 }
 
 // Создает мир поверх уже загруженных серверных данных.
@@ -45,7 +36,6 @@ func New(seed int64, serverData Data) *World {
 		data:             serverData,
 		accountObjectIDs: map[int64]int64{},
 		inputs:           map[int64]game.ShipInput{},
-		runtime:          map[int64]objectRuntime{},
 	}
 }
 
@@ -105,14 +95,13 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 			continue
 		}
 
-		runtimeObject, ok := world.gameObjectLocked(cosmicObject)
+		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
 		if !ok {
 			continue
 		}
 
-		input := world.inputs[accountID]
-		next := physics.StepShip(runtimeObject, input, dtSeconds)
-		world.saveObjectStateLocked(cosmicObject, next, input)
+		next := physics.StepShip(*cosmicObject, *model, world.inputs[accountID], dtSeconds)
+		*cosmicObject = next
 	}
 
 	world.tick++
@@ -180,11 +169,11 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		if !ok {
 			continue
 		}
-		runtimeObject, ok := world.gameObjectLocked(cosmicObject)
+		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
 		if !ok {
 			continue
 		}
-		objects = append(objects, game.NewSnapshotObject(runtimeObject))
+		objects = append(objects, world.snapshotObjectLocked(cosmicObject, model))
 	}
 
 	return game.Snapshot{
@@ -195,91 +184,29 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 	}
 }
 
-// Склеивает сохраненное JSON-состояние и runtime-поля в объект симуляции.
-func (world *World) gameObjectLocked(cosmicObject *data.CosmicObject) (game.WorldObject, bool) {
-	model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
-	if !ok {
-		return game.WorldObject{}, false
-	}
-
-	runtime := world.runtime[cosmicObject.ID]
-	return game.WorldObject{
+// Переводит объект данных в сетевой DTO без промежуточной игровой модели.
+func (world *World) snapshotObjectLocked(cosmicObject *data.CosmicObject, model *data.CosmicObjectModel) game.SnapshotObject {
+	return game.SnapshotObject{
 		ID:              cosmicObject.ID,
-		Model:           world.gameModelLocked(cosmicObject, model),
-		Position:        game.WorldVector{X: cosmicObject.X, Y: cosmicObject.Y},
-		Velocity:        runtime.Velocity,
+		ModelAcronym:    model.Acronym,
+		Kind:            world.objectKindLocked(model),
+		TextureScale:    model.TextureScale,
+		X:               cosmicObject.X,
+		Y:               cosmicObject.Y,
+		VelocityX:       cosmicObject.VelocityX,
+		VelocityY:       cosmicObject.VelocityY,
 		Rotation:        cosmicObject.Rotation,
 		AngularVelocity: cosmicObject.AngularSpeed,
-		TargetRotation:  runtime.TargetRotation,
-	}, true
-}
-
-// Переводит модель из слоя данных в модель, понятную физике и клиенту.
-func (world *World) gameModelLocked(cosmicObject *data.CosmicObject, model *data.CosmicObjectModel) game.CosmicObjectModel {
-	kind := game.ObjectKindStation
-	if cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID); ok {
-		switch cosmicObjectType.Acronym {
-		case "Ship":
-			kind = game.ObjectKindShip
-		case "Asteroid":
-			kind = game.ObjectKindAsteroid
-		case "Station":
-			kind = game.ObjectKindStation
-		}
-	}
-
-	return game.CosmicObjectModel{
-		Acronym:                     model.Acronym,
-		TitleRu:                     model.TitleRu,
-		Kind:                        kind,
-		TexturePath:                 model.TextureFilePath,
-		TextureWidth:                model.TextureWidth,
-		TextureHeight:               model.TextureHeight,
-		TextureBodyOriginX:          model.TextureBodyOriginX,
-		TextureBodyOriginY:          model.TextureBodyOriginY,
-		TextureBodyWidth:            model.TextureBodyWidth,
-		TextureBodyLength:           model.TextureBodyLength,
-		TextureScale:                model.TextureScale,
-		MassKg:                      cosmicObject.Mass * modelMassScale,
-		ThrustN:                     cosmicObject.MaxAlongForce,
-		MaxSpeedMps:                 cosmicObject.MaxSpeed,
-		TorqueNm:                    cosmicObject.MaxTorque,
-		MaxAngularSpeedRadPerSecond: cosmicObject.MaxAngularSpeed,
+		TargetRotation:  cosmicObject.TargetRotation,
 	}
 }
 
-// Записывает результат физики в постоянные поля и runtime-кэш объекта.
-func (world *World) saveObjectStateLocked(cosmicObject *data.CosmicObject, object game.WorldObject, input game.ShipInput) {
-	cosmicObject.X = object.Position.X
-	cosmicObject.Y = object.Position.Y
-	cosmicObject.Rotation = object.Rotation
-	cosmicObject.Speed = objectVelocityLength(object.Velocity)
-	cosmicObject.AngularSpeed = object.AngularVelocity
-	cosmicObject.AlongForce = axisForce(input.ThrustForward, input.ThrustBackward, cosmicObject.MaxAlongForce)
-	cosmicObject.AcrossForce = axisForce(input.ThrustRight, input.ThrustLeft, cosmicObject.MaxAcrossForce)
-	if input.TargetRotationDelta == 0 {
-		cosmicObject.Torque = 0
-	} else {
-		cosmicObject.Torque = object.Model.TorqueNm
+// Возвращает клиентскую категорию объекта из справочника типов.
+func (world *World) objectKindLocked(model *data.CosmicObjectModel) string {
+	cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
+	if !ok {
+		return ""
 	}
-	world.runtime[cosmicObject.ID] = objectRuntime{
-		Velocity:       object.Velocity,
-		TargetRotation: object.TargetRotation,
-	}
-}
 
-// Переводит пару противоположных кнопок в силу по одной локальной оси.
-func axisForce(positive bool, negative bool, maxForce float64) float64 {
-	if positive == negative {
-		return 0
-	}
-	if positive {
-		return maxForce
-	}
-	return -maxForce
-}
-
-// Возвращает модуль скорости объекта для сохранения в данных.
-func objectVelocityLength(velocity game.WorldVector) float64 {
-	return math.Hypot(velocity.X, velocity.Y)
+	return strings.ToLower(cosmicObjectType.Acronym)
 }

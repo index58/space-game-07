@@ -3,6 +3,7 @@ package physics
 import (
 	"math"
 
+	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 )
 
@@ -11,10 +12,12 @@ const (
 	Epsilon = 0.000001
 	// Задает допуск, при котором корабль считается почти повернутым к цели.
 	angleEpsilon = 0.0001
+	// Переводит массу из единиц данных в килограммы для физических формул.
+	objectMassScale = 1000
 )
 
 // Переводит пиксельный размер физического тела модели в метры мира.
-func BodySizeMeters(model game.CosmicObjectModel) game.WorldVector {
+func BodySizeMeters(model data.CosmicObjectModel) game.WorldVector {
 	return game.WorldVector{
 		X: float64(model.TextureBodyWidth) / model.TextureScale,
 		Y: float64(model.TextureBodyLength) / model.TextureScale,
@@ -22,10 +25,11 @@ func BodySizeMeters(model game.CosmicObjectModel) game.WorldVector {
 }
 
 // Оценивает момент инерции корабля как прямоугольного тела.
-func MomentOfInertia(ship game.WorldObject) float64 {
-	body := BodySizeMeters(ship.Model)
+func MomentOfInertia(cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
+	body := BodySizeMeters(model)
+	massKg := cosmicObject.Mass * objectMassScale
 
-	return ship.Model.MassKg * (body.X*body.X + body.Y*body.Y) / 16
+	return massKg * (body.X*body.X + body.Y*body.Y) / 16
 }
 
 // Возвращает локальную ось "вперед" для текущего угла корабля.
@@ -93,44 +97,44 @@ func projection(vector game.WorldVector, axis game.WorldVector) float64 {
 	return vector.X*axis.X + vector.Y*axis.Y
 }
 
-// Считает доступное угловое ускорение от крутящего момента модели.
-func angularAcceleration(ship game.WorldObject) float64 {
-	return ship.Model.TorqueNm / MomentOfInertia(ship)
+// Считает доступное угловое ускорение от крутящего момента объекта.
+func angularAcceleration(cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
+	return cosmicObject.MaxTorque / MomentOfInertia(cosmicObject, model)
 }
 
 // Ведет угол к целевому так, чтобы успеть затормозить без перелета.
-func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, targetRotationSpeed float64, dtSeconds float64) (float64, float64) {
-	acceleration := angularAcceleration(ship)
-	angleError := targetRotation - ship.Rotation
+func stepAngularVelocityToTarget(cosmicObject data.CosmicObject, model data.CosmicObjectModel, targetRotation float64, targetRotationSpeed float64, dtSeconds float64) (float64, float64) {
+	acceleration := angularAcceleration(cosmicObject, model)
+	angleError := targetRotation - cosmicObject.Rotation
 	isTargetRotationStopped := math.Abs(targetRotationSpeed) <= Epsilon
 
 	if math.Abs(angleError) <= angleEpsilon {
-		angularVelocity := brakeValue(ship.AngularVelocity, acceleration, dtSeconds)
+		angularVelocity := brakeValue(cosmicObject.AngularSpeed, acceleration, dtSeconds)
 
 		if angularVelocity == 0 {
 			return targetRotation, angularVelocity
 		}
 
-		return ship.Rotation + angularVelocity*dtSeconds, angularVelocity
+		return cosmicObject.Rotation + angularVelocity*dtSeconds, angularVelocity
 	}
 
 	directionToTarget := math.Copysign(1, angleError)
 	distanceToTarget := math.Abs(angleError)
 	maxVelocityDelta := acceleration * dtSeconds
-	velocityTowardTarget := ship.AngularVelocity * directionToTarget
+	velocityTowardTarget := cosmicObject.AngularSpeed * directionToTarget
 
 	safeSpeed := math.Max(
 		0,
 		math.Sqrt(maxVelocityDelta*maxVelocityDelta+2*acceleration*distanceToTarget)-maxVelocityDelta,
 	)
-	desiredSpeed := math.Min(safeSpeed, ship.Model.MaxAngularSpeedRadPerSecond)
+	desiredSpeed := math.Min(safeSpeed, cosmicObject.MaxAngularSpeed)
 	if velocityTowardTarget < 0 {
 		desiredSpeed = 0
 	}
 	desiredAngularVelocity := directionToTarget * desiredSpeed
-	rawAngularVelocity := moveToward(ship.AngularVelocity, desiredAngularVelocity, maxVelocityDelta)
-	angularVelocity := clampAbsoluteValue(rawAngularVelocity, ship.Model.MaxAngularSpeedRadPerSecond)
-	rotation := ship.Rotation + angularVelocity*dtSeconds
+	rawAngularVelocity := moveToward(cosmicObject.AngularSpeed, desiredAngularVelocity, maxVelocityDelta)
+	angularVelocity := clampAbsoluteValue(rawAngularVelocity, cosmicObject.MaxAngularSpeed)
+	rotation := cosmicObject.Rotation + angularVelocity*dtSeconds
 	remainingAngleError := targetRotation - rotation
 	crossedTarget := math.Copysign(1, remainingAngleError) != directionToTarget || remainingAngleError == 0
 
@@ -142,10 +146,10 @@ func stepAngularVelocityToTarget(ship game.WorldObject, targetRotation float64, 
 	return rotation, angularVelocity
 }
 
-// Применяет вход пилота к кораблю и возвращает новое состояние после одного физического шага.
-func StepShip(ship game.WorldObject, input game.ShipInput, dtSeconds float64) game.WorldObject {
-	forward := ForwardVector(ship.Rotation)
-	right := RightVector(ship.Rotation)
+// Применяет ввод пилота к объекту и возвращает новое состояние после одного физического шага.
+func StepShip(cosmicObject data.CosmicObject, model data.CosmicObjectModel, input game.ShipInput, dtSeconds float64) data.CosmicObject {
+	forward := ForwardVector(cosmicObject.Rotation)
+	right := RightVector(cosmicObject.Rotation)
 	hasAlongControl := input.ThrustForward || input.ThrustBackward
 	hasAcrossControl := input.ThrustLeft || input.ThrustRight
 	along := 0.0
@@ -163,39 +167,59 @@ func StepShip(ship game.WorldObject, input game.ShipInput, dtSeconds float64) ga
 		across--
 	}
 
-	linearAcceleration := ship.Model.ThrustN / ship.Model.MassKg
+	massKg := cosmicObject.Mass * objectMassScale
+	linearAcceleration := cosmicObject.MaxAlongForce / massKg
+	currentVelocity := game.WorldVector{X: cosmicObject.VelocityX, Y: cosmicObject.VelocityY}
 	alongVelocity := 0.0
 	if hasAlongControl {
-		alongVelocity = projection(ship.Velocity, forward) + along*linearAcceleration*dtSeconds
+		alongVelocity = projection(currentVelocity, forward) + along*linearAcceleration*dtSeconds
 	} else {
-		alongVelocity = brakeValue(projection(ship.Velocity, forward), linearAcceleration, dtSeconds)
+		alongVelocity = brakeValue(projection(currentVelocity, forward), linearAcceleration, dtSeconds)
 	}
 
 	acrossVelocity := 0.0
 	if hasAcrossControl {
-		acrossVelocity = projection(ship.Velocity, right) + across*linearAcceleration*dtSeconds
+		acrossVelocity = projection(currentVelocity, right) + across*linearAcceleration*dtSeconds
 	} else {
-		acrossVelocity = brakeValue(projection(ship.Velocity, right), linearAcceleration, dtSeconds)
+		acrossVelocity = brakeValue(projection(currentVelocity, right), linearAcceleration, dtSeconds)
 	}
 
 	velocityX := forward.X*alongVelocity + right.X*acrossVelocity
 	velocityY := forward.Y*alongVelocity + right.Y*acrossVelocity
-	limitedVelocity := clampVectorLength(velocityX, velocityY, ship.Model.MaxSpeedMps)
-	targetRotation := ship.TargetRotation + input.TargetRotationDelta
+	limitedVelocity := clampVectorLength(velocityX, velocityY, cosmicObject.MaxSpeed)
+	targetRotation := cosmicObject.TargetRotation + input.TargetRotationDelta
 	targetRotationSpeed := 0.0
 	if dtSeconds > 0 {
 		targetRotationSpeed = input.TargetRotationDelta / dtSeconds
 	}
-	rotation, angularVelocity := stepAngularVelocityToTarget(ship, targetRotation, targetRotationSpeed, dtSeconds)
+	rotation, angularVelocity := stepAngularVelocityToTarget(cosmicObject, model, targetRotation, targetRotationSpeed, dtSeconds)
 
-	ship.Position = game.WorldVector{
-		X: ship.Position.X + limitedVelocity.X*dtSeconds,
-		Y: ship.Position.Y + limitedVelocity.Y*dtSeconds,
+	cosmicObject.X += limitedVelocity.X * dtSeconds
+	cosmicObject.Y += limitedVelocity.Y * dtSeconds
+	cosmicObject.VelocityX = limitedVelocity.X
+	cosmicObject.VelocityY = limitedVelocity.Y
+	cosmicObject.Speed = math.Hypot(limitedVelocity.X, limitedVelocity.Y)
+	cosmicObject.Rotation = rotation
+	cosmicObject.AngularSpeed = angularVelocity
+	cosmicObject.TargetRotation = targetRotation
+	cosmicObject.AlongForce = axisForce(input.ThrustForward, input.ThrustBackward, cosmicObject.MaxAlongForce)
+	cosmicObject.AcrossForce = axisForce(input.ThrustRight, input.ThrustLeft, cosmicObject.MaxAcrossForce)
+	if input.TargetRotationDelta == 0 {
+		cosmicObject.Torque = 0
+	} else {
+		cosmicObject.Torque = cosmicObject.MaxTorque
 	}
-	ship.Velocity = limitedVelocity
-	ship.Rotation = rotation
-	ship.AngularVelocity = angularVelocity
-	ship.TargetRotation = targetRotation
 
-	return ship
+	return cosmicObject
+}
+
+// Переводит пару противоположных кнопок в силу по одной локальной оси.
+func axisForce(positive bool, negative bool, maxForce float64) float64 {
+	if positive == negative {
+		return 0
+	}
+	if positive {
+		return maxForce
+	}
+	return -maxForce
 }

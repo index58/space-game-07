@@ -41,7 +41,10 @@ type CosmicObject struct {
 	MaxFuel                float64 `json:"MaxFuel"`
 	Fuel                   float64 `json:"Fuel"`
 	Speed                  float64 `json:"Speed"`
+	VelocityX              float64 `json:"VelocityX"`
+	VelocityY              float64 `json:"VelocityY"`
 	AngularSpeed           float64 `json:"AngularSpeed"`
+	TargetRotation         float64 `json:"TargetRotation"`
 }
 
 // Хранит космические объекты и быстрые индексы по связанным объектам.
