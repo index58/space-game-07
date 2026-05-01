@@ -3,6 +3,7 @@
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
+  RandomShipMessage,
   SnapshotMessage,
 } from "./protocol";
 
@@ -182,6 +183,19 @@ export class GameClient {
       // Угловая дельта мыши приходит каждый кадр рендера, поэтому копим ее до сетевой отправки.
       targetRotationDelta: this.latestInput.targetRotationDelta + input.targetRotationDelta,
     };
+  }
+
+  // Отправляет одноразовую команду смены модели, не смешивая ее с потоковым управлением.
+  requestRandomShipChange(): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
+    const message: RandomShipMessage = {
+      type: "randomShip",
+    };
+
+    this.socket.send(JSON.stringify(message));
   }
 
   // Останавливает таймеры и закрывает сокет при уничтожении Phaser-сцены или теста.

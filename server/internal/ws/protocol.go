@@ -6,6 +6,10 @@ import (
 	"space-game-07-server/internal/game"
 )
 
+type clientMessageType struct {
+	Type string `json:"type"` // Вид входящего пакета для выбора серверного обработчика.
+}
+
 // Передает клиенту секрет, который нужно сохранить для следующих подключений.
 type AuthMessage struct {
 	Type  string `json:"type"`  // Вид пакета для отличия от снимков мира.
@@ -24,6 +28,16 @@ func DecodeInputMessage(payload []byte) (game.ShipInput, bool) {
 	}
 
 	return input, true
+}
+
+// Проверяет, что клиент прислал команду смены корабля.
+func DecodeRandomShipMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+
+	return message.Type == "randomShip"
 }
 
 // Сериализует снимок мира в формат WebSocket-сообщения.

@@ -199,6 +199,25 @@ describe("GameClient", () => {
     vi.useRealTimers();
   });
 
+  it("sends random ship command while connected", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    client.requestRandomShipChange();
+
+    expect(JSON.parse(socket.sent[0])).toEqual({
+      type: "randomShip",
+    });
+
+    client.destroy();
+  });
+
   it("accumulates target rotation delta between input sends", () => {
     vi.useFakeTimers();
     FakeWebSocket.instances = [];

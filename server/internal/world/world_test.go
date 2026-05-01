@@ -46,11 +46,12 @@ func testWorldData(t *testing.T) world.Data {
 		},
 	}
 	cosmicObjectModels := &data.CosmicObjectModels{
-		MaxID: 3,
+		MaxID: 4,
 		Items: map[int64]*data.CosmicObjectModel{
-			1: {ID: 1, TitleRu: "Корабль", TitleEn: "Ship", Acronym: "ship_bat", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 27, TextureBodyLength: 63},
+			1: {ID: 1, TitleRu: "Корабль", TitleEn: "Ship", Acronym: "ship_bat", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 27, TextureBodyLength: 63, Mass: 7.92, Capacity: 10, MaxArmor: 100, MaxSpeed: 497, MaxAngularSpeed: 3},
 			2: {ID: 2, TitleRu: "Астероид", TitleEn: "Asteroid", Acronym: "asteroid_0002", CosmicObjectTypeID: 3, TextureScale: 4, TextureBodyWidth: 30, TextureBodyLength: 30},
 			3: {ID: 3, TitleRu: "Станция", TitleEn: "Station", Acronym: "station_tiny_crumb", CosmicObjectTypeID: 2, TextureScale: 4, TextureBodyWidth: 30, TextureBodyLength: 30},
+			4: {ID: 4, TitleRu: "Новый корабль", TitleEn: "New Ship", Acronym: "ship_new", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 40, TextureBodyLength: 80, Mass: 12, Capacity: 20, MaxArmor: 150, MaxSpeed: 600, MaxAngularSpeed: 4},
 		},
 	}
 	cosmicObjects := &data.CosmicObjects{
@@ -120,6 +121,37 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 	if serverData.CosmicObjects.Items[1].Y <= 0 {
 		t.Fatalf("got stored Y %v, want positive", serverData.CosmicObjects.Items[1].Y)
+	}
+}
+
+func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	if !gameWorld.ChangeControlledShipToRandomModel(1) {
+		t.Fatalf("ship model was not changed")
+	}
+	snapshot := gameWorld.SnapshotForAccount(1)
+	object, ok := findCosmicObjectInSnapshot(snapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+
+	if object.CosmicObjectModelID != 4 {
+		t.Fatalf("got model %v, want another ship model 4", object.CosmicObjectModelID)
+	}
+	if object.Mass != 12 || object.Capacity != 20 || object.MaxArmor != 150 || object.MaxSpeed != 600 || object.MaxAngularSpeed != 4 {
+		t.Fatalf("ship stats were not copied from selected model: %+v", object)
+	}
+	if len(serverData.CosmicObjects.GetByCosmicObjectModelID(1)) != 0 {
+		t.Fatalf("old model index still contains changed object")
+	}
+	if len(serverData.CosmicObjects.GetByCosmicObjectModelID(4)) != 1 {
+		t.Fatalf("new model index does not contain changed object")
 	}
 }
 

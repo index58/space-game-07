@@ -10,6 +10,8 @@ export class InputController {
   private mouseDeltaX = 0;
   // Дискретный пользовательский уровень приближения.
   private zoom = INITIAL_ZOOM;
+  // Одноразовый запрос на смену модели корабля.
+  private randomShipChangeRequested = false;
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -19,6 +21,10 @@ export class InputController {
   ) {
     // Состояние клавиш хранится непрерывно, потому что сетевой ввод отправляется реже кадров браузера.
     window.addEventListener("keydown", (event) => {
+      if (event.code === "Backslash" && !this.keys[event.code]) {
+        this.randomShipChangeRequested = true;
+      }
+
       this.keys[event.code] = true;
     });
 
@@ -54,6 +60,13 @@ export class InputController {
   // Возвращает пользовательский уровень зума без пересчета в пиксели.
   getZoom(): number {
     return this.zoom;
+  }
+
+  // Возвращает дискретную команду один раз на одно нажатие клавиши.
+  consumeRandomShipChangeRequest(): boolean {
+    const requested = this.randomShipChangeRequested;
+    this.randomShipChangeRequested = false;
+    return requested;
   }
 
   // Отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.

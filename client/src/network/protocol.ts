@@ -23,6 +23,11 @@ export type ClientInputMessage = ClientInputState & {
   seq: number;
 };
 
+export type RandomShipMessage = {
+  // Вид команды, по которому сервер запускает смену модели корабля.
+  type: "randomShip";
+};
+
 // Передает клиенту секрет автоматически созданной учетной записи.
 export type AuthMessage = {
   // Вид сообщения, по которому клиент отличает авторизацию от снимка мира.

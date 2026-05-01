@@ -42,6 +42,18 @@ func TestDecodeInputMessageRejectsUnknownType(t *testing.T) {
 	}
 }
 
+func TestDecodeRandomShipMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeRandomShipMessage([]byte(`{"type":"randomShip"}`)) {
+		t.Fatalf("random ship message was not accepted")
+	}
+}
+
+func TestDecodeRandomShipMessageRejectsOtherTypes(t *testing.T) {
+	if transport.DecodeRandomShipMessage([]byte(`{"type":"input"}`)) {
+		t.Fatalf("input message was accepted as random ship command")
+	}
+}
+
 func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 	snapshot := game.Snapshot{
 		Type:         "snapshot",

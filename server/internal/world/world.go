@@ -2,6 +2,7 @@ package world
 
 import (
 	"fmt"
+	"math/rand"
 	"path/filepath"
 	"sort"
 	"sync"
@@ -36,6 +37,7 @@ type World struct {
 	data             Data                     // Справочники и игровые сущности, которыми управляет мир.
 	accountObjectIDs map[int64]int64          // Связь подключенных аккаунтов с управляемыми объектами.
 	inputs           map[int64]game.ShipInput // Последний принятый ввод для каждого подключенного аккаунта.
+	random           *rand.Rand               // Источник случайности для команд, воспроизводимых по начальному зерну.
 }
 
 // Создает мир поверх уже загруженных серверных данных.
@@ -44,6 +46,7 @@ func New(seed int64, serverData Data) *World {
 		data:             serverData,
 		accountObjectIDs: map[int64]int64{},
 		inputs:           map[int64]game.ShipInput{},
+		random:           rand.New(rand.NewSource(seed)),
 	}
 }
 
@@ -152,6 +155,56 @@ func (world *World) SetInput(accountID int64, input game.ShipInput) {
 	}
 
 	world.inputs[accountID] = input
+}
+
+// Меняет управляемый объект на другую случайную модель корабля из справочника.
+func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return false
+	}
+
+	cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+	if !ok {
+		return false
+	}
+
+	shipType, ok := world.data.CosmicObjectTypes.GetByAcronym("Ship")
+	if !ok {
+		return false
+	}
+
+	candidateIDs := make([]int64, 0)
+	for modelID, model := range world.data.CosmicObjectModels.Items {
+		if model.CosmicObjectTypeID == shipType.ID && modelID != cosmicObject.CosmicObjectModelID {
+			candidateIDs = append(candidateIDs, modelID)
+		}
+	}
+	if len(candidateIDs) == 0 {
+		return false
+	}
+	sort.Slice(candidateIDs, func(left int, right int) bool {
+		return candidateIDs[left] < candidateIDs[right]
+	})
+
+	model, ok := world.data.CosmicObjectModels.Get(candidateIDs[world.random.Intn(len(candidateIDs))])
+	if !ok {
+		return false
+	}
+
+	cosmicObject.Title = model.TitleRu
+	cosmicObject.CosmicObjectModelID = model.ID
+	cosmicObject.Mass = model.Mass
+	cosmicObject.Capacity = model.Capacity
+	cosmicObject.MaxArmor = model.MaxArmor
+	cosmicObject.Armor = model.MaxArmor
+	cosmicObject.MaxSpeed = model.MaxSpeed
+	cosmicObject.MaxAngularSpeed = model.MaxAngularSpeed
+
+	return world.data.CosmicObjects.RebuildIndexes() == nil
 }
 
 // Выполняет один шаг симуляции и возвращает общий снимок мира.

@@ -85,6 +85,9 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, _deltaMs: number): void {
     const input = this.inputController.consumeShipInput();
     this.gameClient?.setInput(input);
+    if (this.inputController.consumeRandomShipChangeRequest()) {
+      this.gameClient?.requestRandomShipChange();
+    }
     this.zoomLevel = this.inputController.getZoom();
 
     const status = this.gameClient?.getStatus() ?? "connecting";
@@ -180,14 +183,17 @@ export class GameScene extends Phaser.Scene {
 
   // Переиспользует спрайты между снимками, чтобы не создавать их каждый кадр.
   private getOrCreateObjectSprite(object: CosmicObject): Phaser.GameObjects.Image | null {
-    const existing = this.objectSprites.get(object.ID);
-    if (existing) {
-      return existing;
-    }
-
     const textureKey = this.textureKeyForObject(object);
     if (!textureKey) {
-      return null;
+      return this.objectSprites.get(object.ID) ?? null;
+    }
+
+    const existing = this.objectSprites.get(object.ID);
+    if (existing) {
+      if (existing.texture.key !== textureKey) {
+        existing.setTexture(textureKey);
+      }
+      return existing;
     }
 
     const sprite = this.add.image(0, 0, textureKey).setOrigin(0.5);

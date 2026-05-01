@@ -98,6 +98,9 @@ func (hub *Hub) readLoop(client *Client) {
 
 		input, ok := DecodeInputMessage(payload)
 		if !ok {
+			if DecodeRandomShipMessage(payload) {
+				hub.world.ChangeControlledShipToRandomModel(client.accountID)
+			}
 			continue
 		}
 
