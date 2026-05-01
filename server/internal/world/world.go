@@ -1,6 +1,7 @@
 package world
 
 import (
+	"fmt"
 	"path/filepath"
 	"sort"
 	"sync"
@@ -8,6 +9,14 @@ import (
 	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 	"space-game-07-server/internal/physics"
+)
+
+const (
+	defaultAccountEmailDomain = "auto.local"
+	defaultAccountPassword    = "auto"
+	defaultStarterShipAcronym = "ship_bat"
+	defaultStarterShipForce   = 1287901.529888449
+	defaultStarterShipTorque  = 653565
 )
 
 // Собирает все загруженные справочники и игровые сущности, нужные миру.
@@ -60,6 +69,68 @@ func (world *World) ConnectAccount(accountID int64) (int64, bool) {
 	world.accountObjectIDs[accountID] = character.LocationCosmicObjectID
 	world.inputs[accountID] = game.ShipInput{}
 	return character.LocationCosmicObjectID, true
+}
+
+// Создает учетную запись, персонажа и стартовый корабль для первого входа.
+func (world *World) CreateStarterAccount() (*data.Account, error) {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	model, ok := world.data.CosmicObjectModels.GetByAcronym(defaultStarterShipAcronym)
+	if !ok {
+		return nil, fmt.Errorf("starter ship model %q not found", defaultStarterShipAcronym)
+	}
+
+	nextAccountID := world.data.Accounts.MaxID + 1
+	account, err := world.data.Accounts.Add(&data.Account{
+		Email:        fmt.Sprintf("auto%d@%s", nextAccountID, defaultAccountEmailDomain),
+		Nickname:     fmt.Sprintf("Pilot%d", nextAccountID),
+		PasswordHash: defaultAccountPassword,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	character, err := world.data.Characters.Add(&data.Character{
+		AccountID: account.ID,
+	})
+	if err != nil {
+		world.data.Accounts.Delete(account.ID)
+		return nil, err
+	}
+
+	cosmicObject, err := world.data.CosmicObjects.Add(&data.CosmicObject{
+		Title:               model.TitleRu,
+		CosmicObjectModelID: model.ID,
+		OwnerCharacterID:    character.ID,
+		CreatorCharacterID:  character.ID,
+		Mass:                model.Mass,
+		Capacity:            model.Capacity,
+		MaxArmor:            model.MaxArmor,
+		MaxSpeed:            model.MaxSpeed,
+		MaxAngularSpeed:     model.MaxAngularSpeed,
+		Armor:               model.MaxArmor,
+		MaxAlongForce:       defaultStarterShipForce,
+		MaxAcrossForce:      defaultStarterShipForce,
+		MaxTorque:           defaultStarterShipTorque,
+		Enabled:             true,
+		TargetRotation:      0,
+	})
+	if err != nil {
+		world.data.Characters.Delete(character.ID)
+		world.data.Accounts.Delete(account.ID)
+		return nil, err
+	}
+
+	character.LocationCosmicObjectID = cosmicObject.ID
+	if err := world.data.Accounts.SetCurrentCharacter(account.ID, character.ID); err != nil {
+		world.data.CosmicObjects.Delete(cosmicObject.ID)
+		world.data.Characters.Delete(character.ID)
+		world.data.Accounts.Delete(account.ID)
+		return nil, err
+	}
+
+	return account, nil
 }
 
 // Убирает активную привязку аккаунта и последний ввод игрока.
@@ -123,6 +194,22 @@ func (world *World) ObjectIDForAccount(accountID int64) (int64, bool) {
 
 	objectID, ok := world.accountObjectIDs[accountID]
 	return objectID, ok
+}
+
+// Возвращает персонажа по идентификатору из защищенного состояния.
+func (world *World) CharacterByID(id int64) (*data.Character, bool) {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	return world.data.Characters.Get(id)
+}
+
+// Возвращает космический объект по идентификатору из защищенного состояния.
+func (world *World) CosmicObjectByID(id int64) (*data.CosmicObject, bool) {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	return world.data.CosmicObjects.Get(id)
 }
 
 // Сохраняет изменяемое состояние мира обратно в JSON-файлы сервера.

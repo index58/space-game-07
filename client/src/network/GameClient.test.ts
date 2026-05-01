@@ -36,6 +36,24 @@ const emptyInput = (): ClientInputState => ({
   targetRotationDelta: 0,
 });
 
+// Подменяет браузерное хранилище в среде Vitest.
+const installLocalStorage = (): Storage => {
+  const values = new Map<string, string>();
+  const storage = {
+    get length() {
+      return values.size;
+    },
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => Array.from(values.keys())[index] ?? null,
+    removeItem: (key: string) => values.delete(key),
+    setItem: (key: string, value: string) => values.set(key, value),
+  } as Storage;
+
+  vi.stubGlobal("localStorage", storage);
+  return storage;
+};
+
 describe("GameClient", () => {
   it("updates latest snapshot from a valid snapshot message", () => {
     FakeWebSocket.instances = [];
@@ -76,19 +94,42 @@ describe("GameClient", () => {
     client.destroy();
   });
 
-  it("passes account nickname when token is empty", () => {
+  it("connects without identity when token is empty", () => {
     FakeWebSocket.instances = [];
     const client = new GameClient({
-      accountNickname: "index",
       token: "",
       socketFactory: (url) => new FakeWebSocket(url),
       reconnectDelayMs: 1000,
       inputIntervalMs: 1000,
     });
 
-    expect(FakeWebSocket.instances[0].url).toBe("ws://127.0.0.1:8080/ws?nickname=index");
+    expect(FakeWebSocket.instances[0].url).toBe("ws://127.0.0.1:8080/ws");
 
     client.destroy();
+  });
+
+  it("stores account token from auth message", () => {
+    const storage = installLocalStorage();
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      token: "",
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({
+      data: JSON.stringify({
+        type: "auth",
+        token: "new-token",
+      }),
+    });
+
+    expect(storage.getItem("accountToken")).toBe("new-token");
+
+    client.destroy();
+    vi.unstubAllGlobals();
   });
 
   it("appends account token to websocket URL with existing query", () => {

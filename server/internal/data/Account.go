@@ -176,6 +176,30 @@ func (accounts *Accounts) GenerateToken(id int64) (string, error) {
 	return token, nil
 }
 
+// Меняет активного персонажа и поддерживает индекс уникальности.
+func (accounts *Accounts) SetCurrentCharacter(id int64, characterID int64) error {
+	accounts.ensureMaps()
+
+	account, ok := accounts.Items[id]
+	if !ok {
+		return fmt.Errorf("account with ID %d not found", id)
+	}
+	if characterID > 0 {
+		if existing, ok := accounts.ByCurrentCharacterID[characterID]; ok && existing.ID != id {
+			return fmt.Errorf("current character ID %d already exists", characterID)
+		}
+	}
+
+	if account.CurrentCharacterID > 0 {
+		delete(accounts.ByCurrentCharacterID, account.CurrentCharacterID)
+	}
+	account.CurrentCharacterID = characterID
+	if characterID > 0 {
+		accounts.ByCurrentCharacterID[characterID] = account
+	}
+	return nil
+}
+
 // Возвращает аккаунт по уникальному e-mail.
 func (accounts *Accounts) GetByEmail(email string) (*Account, bool) {
 	accounts.ensureMaps()
@@ -194,6 +218,13 @@ func (accounts *Accounts) GetByNickname(nickname string) (*Account, bool) {
 func (accounts *Accounts) GetByToken(token string) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByToken[token]
+	return account, ok
+}
+
+// Возвращает запись по активному персонажу.
+func (accounts *Accounts) GetByCurrentCharacterID(characterID int64) (*Account, bool) {
+	accounts.ensureMaps()
+	account, ok := accounts.ByCurrentCharacterID[characterID]
 	return account, ok
 }
 

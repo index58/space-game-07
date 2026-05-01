@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"space-game-07-server/internal/data"
+	"space-game-07-server/internal/world"
 )
 
 // Готовит индексированный набор аккаунтов для проверки авторизации обработчика.
@@ -33,12 +34,75 @@ func TestHandlerFindsAccountByToken(t *testing.T) {
 	}
 }
 
-func TestHandlerFindsAccountByNicknameWhenTokenIsEmpty(t *testing.T) {
+func TestHandlerRejectsUnknownToken(t *testing.T) {
 	handler := NewHandler(nil, testAccounts(t))
-	request := httptest.NewRequest("GET", "/ws?nickname=index", nil)
+	request := httptest.NewRequest("GET", "/ws?token=unknown", nil)
 
-	account, ok := handler.accountByRequestToken(request)
-	if !ok || account.Token != "token" {
-		t.Fatalf("account was not found by nickname")
+	result, err := handler.authorizeRequest(request)
+	if err == nil {
+		t.Fatal("unknown token was accepted")
 	}
+	if result.Account != nil || result.NewToken != "" {
+		t.Fatal("unknown token created or returned an account")
+	}
+}
+
+func TestHandlerCreatesStarterAccountWhenTokenIsMissing(t *testing.T) {
+	accounts := data.NewAccounts()
+	handler := NewHandler(NewHub(testWorld(t, accounts)), accounts)
+	request := httptest.NewRequest("GET", "/ws", nil)
+
+	result, err := handler.authorizeRequest(request)
+	if err != nil {
+		t.Fatalf("authorizeRequest returned error: %v", err)
+	}
+
+	if result.Account == nil {
+		t.Fatal("account was not created")
+	}
+	if result.NewToken == "" || result.NewToken != result.Account.Token {
+		t.Fatalf("new token = %q, account token = %q", result.NewToken, result.Account.Token)
+	}
+	if result.Account.CurrentCharacterID <= 0 {
+		t.Fatal("current character was not selected")
+	}
+
+	character, ok := handler.hub.world.CharacterByID(result.Account.CurrentCharacterID)
+	if !ok || character.AccountID != result.Account.ID {
+		t.Fatal("starter character does not belong to created account")
+	}
+	if character.LocationCosmicObjectID <= 0 {
+		t.Fatal("starter character has no location")
+	}
+
+	cosmicObject, ok := handler.hub.world.CosmicObjectByID(character.LocationCosmicObjectID)
+	if !ok || cosmicObject.OwnerCharacterID != character.ID {
+		t.Fatal("starter ship does not belong to created character")
+	}
+}
+
+func testWorld(t *testing.T, accounts *data.Accounts) *world.World {
+	t.Helper()
+
+	models := data.NewCosmicObjectModels()
+	if _, err := models.Add(&data.CosmicObjectModel{
+		TitleRu:            "Стартовый корабль",
+		TitleEn:            "Starter Ship",
+		Acronym:            "ship_bat",
+		TextureScale:       4,
+		CosmicObjectTypeID: 1,
+		Mass:               7920,
+		MaxArmor:           100,
+		MaxSpeed:           497,
+		MaxAngularSpeed:    3,
+	}); err != nil {
+		t.Fatalf("Add model returned error: %v", err)
+	}
+
+	return world.New(1, world.Data{
+		Accounts:           accounts,
+		Characters:         data.NewCharacters(),
+		CosmicObjects:      data.NewCosmicObjects(),
+		CosmicObjectModels: models,
+	})
 }

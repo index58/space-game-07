@@ -95,3 +95,20 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		t.Fatalf("decode snapshot: %v", err)
 	}
 }
+
+func TestEncodeAuthMessageSendsTokenBeforeSnapshots(t *testing.T) {
+	payload, err := transport.EncodeAuthMessage("secret-token")
+	if err != nil {
+		t.Fatalf("encode auth: %v", err)
+	}
+
+	jsonText := string(payload)
+	for _, field := range []string{
+		`"type":"auth"`,
+		`"token":"secret-token"`,
+	} {
+		if !strings.Contains(jsonText, field) {
+			t.Fatalf("encoded auth %s does not contain %s", jsonText, field)
+		}
+	}
+}

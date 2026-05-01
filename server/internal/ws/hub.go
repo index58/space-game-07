@@ -34,7 +34,7 @@ func NewHub(gameWorld *world.World) *Hub {
 }
 
 // Регистрирует новое подключение и запускает отдельные циклы чтения и записи.
-func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64) {
+func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initialMessages ...[]byte) {
 	objectID, ok := hub.world.ConnectAccount(accountID)
 	if !ok {
 		_ = connection.Close()
@@ -47,6 +47,9 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64) {
 		objectID:   objectID,
 		send:       make(chan []byte, 8),
 		done:       make(chan struct{}),
+	}
+	for _, payload := range initialMessages {
+		client.send <- payload
 	}
 
 	hub.mu.Lock()

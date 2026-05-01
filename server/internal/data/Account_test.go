@@ -138,6 +138,25 @@ func TestAccountsGenerateTokenReplacesTokenIndex(t *testing.T) {
 	}
 }
 
+func TestAccountsSetCurrentCharacterUpdatesIndex(t *testing.T) {
+	accounts := NewAccounts()
+	account, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"})
+	if err != nil {
+		t.Fatalf("Add returned error: %v", err)
+	}
+
+	if err := accounts.SetCurrentCharacter(account.ID, 10); err != nil {
+		t.Fatalf("SetCurrentCharacter returned error: %v", err)
+	}
+
+	if account.CurrentCharacterID != 10 {
+		t.Fatalf("CurrentCharacterID = %d, want 10", account.CurrentCharacterID)
+	}
+	if byCharacterID, ok := accounts.GetByCurrentCharacterID(10); !ok || byCharacterID != account {
+		t.Fatal("account is not indexed by current character")
+	}
+}
+
 func TestAccountsDeleteRemovesAccountAndIndexes(t *testing.T) {
 	accounts := NewAccounts()
 	account, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"})

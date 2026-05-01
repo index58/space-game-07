@@ -1,4 +1,5 @@
 ﻿import type {
+  AuthMessage,
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
@@ -27,8 +28,6 @@ export type GameClientOptions = {
   url?: string;
   // Секрет авторизации аккаунта.
   token?: string;
-  // Запасной локальный никнейм, если секрет не найден.
-  accountNickname?: string;
   // Задержка перед повторным подключением.
   reconnectDelayMs?: number;
   // Период отправки ввода на сервер.
@@ -77,18 +76,6 @@ const readStoredToken = (): string | null => {
   return readCookie("Token");
 };
 
-// Дает локальный никнейм по умолчанию, чтобы прототип подключался без формы входа.
-const readStoredAccountNickname = (): string => {
-  if (typeof localStorage !== "undefined") {
-    const nickname = localStorage.getItem("accountNickname");
-    if (nickname) {
-      return nickname;
-    }
-  }
-
-  return "index";
-};
-
 // Добавляет query-параметр к URL, сохраняя уже существующую строку запроса.
 const withQueryParameter = (url: string, name: string, value: string | null): string => {
   if (!value) {
@@ -99,13 +86,9 @@ const withQueryParameter = (url: string, name: string, value: string | null): st
   return `${url}${separator}${name}=${encodeURIComponent(value)}`;
 };
 
-// Передает серверу токен или запасной никнейм локального аккаунта.
-const withAccountIdentity = (url: string, token: string | null, accountNickname: string): string => {
-  if (token) {
-    return withQueryParameter(url, "token", token);
-  }
-
-  return withQueryParameter(url, "nickname", accountNickname);
+// Передает серверу сохраненный секрет или оставляет запрос гостевым.
+const withAccountIdentity = (url: string, token: string | null): string => {
+  return withQueryParameter(url, "token", token);
 };
 
 // Проверяет минимальный контракт снимка перед тем, как сцена начнет его рисовать.
@@ -120,6 +103,26 @@ const isSnapshotMessage = (message: unknown): message is SnapshotMessage => {
     typeof snapshot.tick === "number" &&
     typeof snapshot.selfObjectId === "number" &&
     Array.isArray(snapshot.objects);
+};
+
+// Проверяет пакет с секретом перед записью в браузерное хранилище.
+const isAuthMessage = (message: unknown): message is AuthMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const auth = message as AuthMessage;
+
+  return auth.type === "auth" && typeof auth.token === "string" && auth.token.length > 0;
+};
+
+// Сохраняет секрет, если окружение предоставляет браузерное хранилище.
+const storeAccountToken = (token: string): void => {
+  if (typeof localStorage === "undefined") {
+    return;
+  }
+
+  localStorage.setItem("accountToken", token);
 };
 
 // Держит WebSocket-соединение, переподключение и периодическую отправку ввода.
@@ -154,7 +157,6 @@ export class GameClient {
     this.url = withAccountIdentity(
       options.url ?? DEFAULT_URL,
       options.token ?? readStoredToken(),
-      options.accountNickname ?? readStoredAccountNickname(),
     );
     this.reconnectDelayMs = options.reconnectDelayMs ?? DEFAULT_RECONNECT_DELAY_MS;
     this.inputIntervalMs = options.inputIntervalMs ?? DEFAULT_INPUT_INTERVAL_MS;
@@ -232,6 +234,11 @@ export class GameClient {
     try {
       parsed = JSON.parse(data);
     } catch {
+      return;
+    }
+
+    if (isAuthMessage(parsed)) {
+      storeAccountToken(parsed.token);
       return;
     }
 

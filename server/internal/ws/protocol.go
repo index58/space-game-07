@@ -6,6 +6,12 @@ import (
 	"space-game-07-server/internal/game"
 )
 
+// Передает клиенту секрет, который нужно сохранить для следующих подключений.
+type AuthMessage struct {
+	Type  string `json:"type"`  // Вид пакета для отличия от снимков мира.
+	Token string `json:"token"` // Секрет созданной учетной записи.
+}
+
 // Разбирает клиентский JSON и пропускает только сообщения управления кораблем.
 func DecodeInputMessage(payload []byte) (game.ShipInput, bool) {
 	var input game.ShipInput
@@ -23,4 +29,12 @@ func DecodeInputMessage(payload []byte) (game.ShipInput, bool) {
 // Сериализует снимок мира в формат WebSocket-сообщения.
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
+}
+
+// Сериализует результат автоматической авторизации.
+func EncodeAuthMessage(token string) ([]byte, error) {
+	return json.Marshal(AuthMessage{
+		Type:  "auth",
+		Token: token,
+	})
 }
