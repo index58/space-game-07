@@ -16,14 +16,14 @@ export const ASSET_PATHS = {
 
 // Связывает ID модели из серверных данных с уже загруженным ключом текстуры.
 export const ASSET_KEY_BY_COSMIC_OBJECT_MODEL_ID: Record<number, string> = {
-  1: ASSET_KEYS.shipBat,
+  23: ASSET_KEYS.shipBat,
   2: ASSET_KEYS.asteroid0002,
-  3: ASSET_KEYS.stationTinyCrumb,
+  543: ASSET_KEYS.stationTinyCrumb,
 };
 
 // Повторяет масштаб текстуры из серверного справочника моделей для клиентского рендера.
 export const TEXTURE_SCALE_BY_COSMIC_OBJECT_MODEL_ID: Record<number, number> = {
-  1: 4,
+  23: 4,
   2: 4,
-  3: 4,
+  543: 4,
 };
