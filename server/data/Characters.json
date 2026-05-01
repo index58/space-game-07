@@ -1,0 +1,26 @@
+{
+  "MaxID": 3,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "AccountID": 1,
+      "CreationTime": "2026-04-30T20:30:09.6626402+03:00",
+      "Balance": 0,
+      "LocationCosmicObjectID": 1
+    },
+    "2": {
+      "ID": 2,
+      "AccountID": 2,
+      "CreationTime": "2026-05-01T17:41:25.2410329+03:00",
+      "Balance": 0,
+      "LocationCosmicObjectID": 4
+    },
+    "3": {
+      "ID": 3,
+      "AccountID": 3,
+      "CreationTime": "2026-05-01T17:44:24.0338044+03:00",
+      "Balance": 0,
+      "LocationCosmicObjectID": 5
+    }
+  }
+}

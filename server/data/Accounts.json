@@ -1,0 +1,32 @@
+{
+  "MaxID": 3,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "Email": "index@email.net",
+      "Nickname": "index",
+      "PasswordHash": "sha256$95121270071834fde6e1351dbb4a9b9c$d5e06d9f607a15fffb025ba064e7f9f6f1378ba4232a23b925c4c8e20f1d3ab7",
+      "Token": "f1aeafa5e338b85b6247dbb8bcb49b37e8d90b452299aa27a24276d000e8c73c",
+      "RegistrationTime": "2026-04-30T18:13:48.8712091+03:00",
+      "CurrentCharacterID": 1
+    },
+    "2": {
+      "ID": 2,
+      "Email": "auto2@auto.local",
+      "Nickname": "Pilot2",
+      "PasswordHash": "auto",
+      "Token": "c68113a9e2744babd9985c886dece70b0acd484c1647a5d0bcf5fd7ea22335eb",
+      "RegistrationTime": "2026-05-01T17:41:25.2410329+03:00",
+      "CurrentCharacterID": 2
+    },
+    "3": {
+      "ID": 3,
+      "Email": "auto3@auto.local",
+      "Nickname": "Pilot3",
+      "PasswordHash": "auto",
+      "Token": "04bab25912c7ed90537784ace14ef9da62be9641384a18866428a01aec5d446d",
+      "RegistrationTime": "2026-05-01T17:44:24.0338044+03:00",
+      "CurrentCharacterID": 3
+    }
+  }
+}

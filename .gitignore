@@ -5,6 +5,3 @@ client/dist/
 # Артефакты сборки Go-сервера.
 server/space-game-server
 server/space-game-server.exe
-
-# Локальные данные сервера.
-server/data/
