@@ -1,10 +1,5 @@
-﻿import * as Phaser from "phaser";
-import {
-  ASSET_KEY_BY_COSMIC_OBJECT_MODEL_ID,
-  ASSET_KEYS,
-  ASSET_PATHS,
-  TEXTURE_SCALE_BY_COSMIC_OBJECT_MODEL_ID,
-} from "../data/assets";
+import * as Phaser from "phaser";
+import { ASSET_KEYS, ASSET_PATHS } from "../data/assets";
 import {
   INITIAL_ZOOM,
   getViewportZoomScale,
@@ -13,7 +8,13 @@ import {
   worldToPilotScreen,
 } from "../domain/camera";
 import { GameClient } from "../network/GameClient";
-import type { ConnectionStatus, CosmicObject } from "../network/protocol";
+import type {
+  ConnectionStatus,
+  CosmicObject,
+  CosmicObjectModelReference,
+  ReferenceDataMessage,
+} from "../network/protocol";
+import { fetchReferenceData } from "../network/referenceData";
 import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
 
@@ -28,7 +29,13 @@ export class GameScene extends Phaser.Scene {
   // DOM-слой с диагностикой текущего состояния.
   private debugOverlay!: DebugOverlay;
   // Сетевой клиент для получения снимков и отправки ввода.
-  private gameClient!: GameClient;
+  private gameClient: GameClient | null = null;
+  // Справочники, полученные с сервера перед подключением к игровому потоку.
+  private referenceData: ReferenceDataMessage | null = null;
+  // Ключи текстур, для которых уже запущена асинхронная загрузка.
+  private loadingTextureKeys = new Set<string>();
+  // Сообщение об ошибке начальной загрузки, если сервер не отдал справочники.
+  private startupErrorMessage: string | null = null;
   // Текст ожидания, показанный до появления валидного снимка.
   private waitingText!: Phaser.GameObjects.Text;
   // Дискретный пользовательский уровень приближения.
@@ -40,7 +47,7 @@ export class GameScene extends Phaser.Scene {
     super("GameScene");
   }
 
-  // Регистрирует все статические изображения до создания объектов сцены.
+  // Регистрирует только фон; объектные текстуры приходят из серверных справочников.
   preload(): void {
     for (const [key, path] of Object.entries(ASSET_PATHS)) {
       this.load.image(key, path);
@@ -66,22 +73,22 @@ export class GameScene extends Phaser.Scene {
       throw new Error("debug-overlay element not found");
     }
 
-    this.gameClient = new GameClient();
     this.inputController = new InputController(
       this.game.canvas,
-      () => this.gameClient.getStatus() === "connected",
+      () => this.gameClient?.getStatus() === "connected",
     );
     this.debugOverlay = new DebugOverlay(overlay);
+    void this.loadStartupData();
   }
 
   // Каждый кадр отправляет свежий ввод и рисует последний серверный снимок мира.
   update(_time: number, _deltaMs: number): void {
     const input = this.inputController.consumeShipInput();
-    this.gameClient.setInput(input);
+    this.gameClient?.setInput(input);
     this.zoomLevel = this.inputController.getZoom();
 
-    const status = this.gameClient.getStatus();
-    const snapshot = this.gameClient.getLatestSnapshot();
+    const status = this.gameClient?.getStatus() ?? "connecting";
+    const snapshot = this.gameClient?.getLatestSnapshot() ?? null;
     const selfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
@@ -102,7 +109,8 @@ export class GameScene extends Phaser.Scene {
     this.waitingText.setVisible(true);
     this.waitingText.setPosition(this.scale.width / 2, this.scale.height / 2);
     this.waitingText.setText(
-      status === "connecting" ? "Подключение к серверу" : "Ожидание подключения к серверу",
+      this.startupErrorMessage ??
+        (status === "connecting" ? "Подключение к серверу" : "Ожидание подключения к серверу"),
     );
 
     this.renderBackground({
@@ -137,6 +145,9 @@ export class GameScene extends Phaser.Scene {
       activeObjectIds.add(object.ID);
 
       const sprite = this.getOrCreateObjectSprite(object);
+      if (!sprite) {
+        continue;
+      }
       const screen = worldToPilotScreen({ x: object.X, y: object.Y }, camera);
 
       sprite.setVisible(true);
@@ -168,27 +179,75 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Переиспользует спрайты между снимками, чтобы не создавать их каждый кадр.
-  private getOrCreateObjectSprite(
-    object: CosmicObject,
-  ): Phaser.GameObjects.Image {
+  private getOrCreateObjectSprite(object: CosmicObject): Phaser.GameObjects.Image | null {
     const existing = this.objectSprites.get(object.ID);
     if (existing) {
       return existing;
     }
 
-    const sprite = this.add.image(0, 0, this.textureKeyForObject(object)).setOrigin(0.5);
+    const textureKey = this.textureKeyForObject(object);
+    if (!textureKey) {
+      return null;
+    }
+
+    const sprite = this.add.image(0, 0, textureKey).setOrigin(0.5);
     this.objectSprites.set(object.ID, sprite);
 
     return sprite;
   }
 
-  // Возвращает ключ ассета по ID модели из серверных данных.
-  private textureKeyForObject(object: CosmicObject): string {
-    return ASSET_KEY_BY_COSMIC_OBJECT_MODEL_ID[object.CosmicObjectModelID] ?? ASSET_KEYS.shipBat;
+  // Загружает справочники до подключения к WebSocket, чтобы клиент не держал локальные таблицы.
+  private async loadStartupData(): Promise<void> {
+    try {
+      this.referenceData = await fetchReferenceData();
+      this.gameClient = new GameClient();
+    } catch (error) {
+      console.error(error);
+      this.startupErrorMessage = "Не удалось загрузить справочники с сервера";
+    }
   }
 
-  // Возвращает масштаб текстуры по ID модели из серверных данных.
+  // Возвращает модель объекта из серверного справочника.
+  private modelForObject(object: CosmicObject): CosmicObjectModelReference | null {
+    return this.referenceData?.CosmicObjectModel.Items[String(object.CosmicObjectModelID)] ?? null;
+  }
+
+  // Возвращает ключ текстуры модели и запускает загрузку, если Phaser еще не получил файл.
+  private textureKeyForObject(object: CosmicObject): string | null {
+    const model = this.modelForObject(object);
+    if (!model) {
+      return null;
+    }
+
+    const textureKey = `world.cosmicObjectModel.${model.ID}`;
+    if (!this.textures.exists(textureKey)) {
+      this.loadTextureForModel(model, textureKey);
+      return null;
+    }
+    return textureKey;
+  }
+
+  // Подключает файл текстуры из public/assets по пути, полученному с сервера.
+  private loadTextureForModel(model: CosmicObjectModelReference, textureKey: string): void {
+    if (this.loadingTextureKeys.has(textureKey)) {
+      return;
+    }
+
+    this.loadingTextureKeys.add(textureKey);
+    this.load.image(textureKey, this.texturePathForModel(model));
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => this.loadingTextureKeys.delete(textureKey));
+    if (!this.load.isLoading()) {
+      this.load.start();
+    }
+  }
+
+  // Переводит серверный путь данных в URL ассета, отдаваемый Vite из client/public.
+  private texturePathForModel(model: CosmicObjectModelReference): string {
+    return `/assets/world/cosmic-objects/${model.TextureFilePath.replace(/^assets\//, "")}`;
+  }
+
+  // Возвращает масштаб текстуры из серверной модели.
   private textureScaleForObject(object: CosmicObject): number {
-    return TEXTURE_SCALE_BY_COSMIC_OBJECT_MODEL_ID[object.CosmicObjectModelID] ?? 4;
+    return this.modelForObject(object)?.TextureScale ?? 4;
   }
 }

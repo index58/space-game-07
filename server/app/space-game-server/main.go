@@ -40,8 +40,9 @@ func main() {
 	hub := transport.NewHub(gameWorld)
 	handler := transport.NewHandler(hub, serverData.Accounts)
 
-	// Единственная HTTP-точка пока обслуживает WebSocket-протокол игрового клиента.
+	// HTTP-точки обслуживают игровой поток и стартовый пакет справочников.
 	http.Handle("/ws", handler)
+	http.Handle("/reference-data", transport.NewReferenceDataHandler(serverData))
 
 	ticker := time.NewTicker(time.Second / tickRate)
 	defer ticker.Stop()

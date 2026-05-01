@@ -108,3 +108,45 @@ export type SnapshotMessage = {
   // Объекты мира, видимые клиенту в текущем снимке.
   objects: CosmicObject[];
 };
+
+// Хранит одну JSON-таблицу справочника в серверном формате.
+export type ReferenceTable<TItem = Record<string, unknown>> = {
+  // Последний выданный числовой идентификатор записей.
+  MaxID: number;
+  // Записи таблицы по строковому представлению числового идентификатора.
+  Items: Record<string, TItem>;
+};
+
+// Описывает только поля модели, нужные клиенту для выбора и масштабирования текстуры.
+export type CosmicObjectModelReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Путь к основной текстуре объекта в игровом мире.
+  TextureFilePath: string;
+  // Количество пикселей текстуры на один метр мира.
+  TextureScale: number;
+};
+
+// Является полным пакетом справочников, загружаемым перед подключением к миру.
+export type ReferenceDataMessage = {
+  // Вид сообщения, по которому клиент проверяет назначение ответа.
+  type: "referenceData";
+  // Справочник NPC-кланов.
+  NpcClan: ReferenceTable;
+  // Справочник типов космических объектов.
+  CosmicObjectType: ReferenceTable;
+  // Справочник типов предметов.
+  Itemtype: ReferenceTable;
+  // Справочник моделей космических объектов.
+  CosmicObjectModel: ReferenceTable<CosmicObjectModelReference>;
+  // Справочник моделей предметов.
+  ItemModel: ReferenceTable;
+  // Справочник чертежей объектов.
+  Blueprint: ReferenceTable;
+  // Справочник компонентов чертежей.
+  BlueprintComponent: ReferenceTable;
+  // Справочник схем предметов.
+  Schema: ReferenceTable;
+  // Справочник компонентов схем.
+  SchemaComponent: ReferenceTable;
+};
