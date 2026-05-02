@@ -48,6 +48,39 @@ func TestCosmicObjectModelsAddAssignsIDCalculatesBodySizeAndIndexesModel(t *test
 	}
 }
 
+func TestCosmicObjectModelsBuildsSixteenPointBodyPolygon(t *testing.T) {
+	cosmicObjectModels := NewCosmicObjectModels()
+
+	cosmicObjectModel, err := cosmicObjectModels.Add(&CosmicObjectModel{
+		TitleRu:            "РљРѕСЂР°Р±Р»СЊ",
+		TitleEn:            "Ship",
+		Acronym:            "ship_test",
+		TextureScale:       4,
+		TextureBodyWidth:   40,
+		TextureBodyLength:  80,
+		CosmicObjectTypeID: 1,
+	})
+	if err != nil {
+		t.Fatalf("Add returned error: %v", err)
+	}
+
+	if len(cosmicObjectModel.BodyPolygon) != 16 {
+		t.Fatalf("BodyPolygon vertex count = %d, want 16", len(cosmicObjectModel.BodyPolygon))
+	}
+	if cosmicObjectModel.BodyPolygon[0].X != 0 || cosmicObjectModel.BodyPolygon[0].Y != 10 {
+		t.Fatalf("BodyPolygon[0] = %+v, want X=0 Y=10", cosmicObjectModel.BodyPolygon[0])
+	}
+	if cosmicObjectModel.BodyPolygon[4].X != 5 || cosmicObjectModel.BodyPolygon[4].Y != 0 {
+		t.Fatalf("BodyPolygon[4] = %+v, want X=5 Y=0", cosmicObjectModel.BodyPolygon[4])
+	}
+	if cosmicObjectModel.BodyPolygon[8].X != 0 || cosmicObjectModel.BodyPolygon[8].Y != -10 {
+		t.Fatalf("BodyPolygon[8] = %+v, want X=0 Y=-10", cosmicObjectModel.BodyPolygon[8])
+	}
+	if cosmicObjectModel.BodyPolygon[12].X != -5 || cosmicObjectModel.BodyPolygon[12].Y != 0 {
+		t.Fatalf("BodyPolygon[12] = %+v, want X=-5 Y=0", cosmicObjectModel.BodyPolygon[12])
+	}
+}
+
 func TestCosmicObjectModelsAddRejectsDuplicateUniqueFields(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 

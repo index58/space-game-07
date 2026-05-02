@@ -4,36 +4,45 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 )
 
 const defaultCosmicObjectModelTextureScale = 4
+const bodyPolygonVertexCount = 16
+
+// Описывает локальную точку физического тела относительно центра объекта.
+type BodyPoint struct {
+	X float64 `json:"x"` // Смещение по горизонтальной локальной оси в метрах.
+	Y float64 `json:"y"` // Смещение по продольной локальной оси в метрах.
+}
 
 // Хранит данные одной модели космического объекта.
 type CosmicObjectModel struct {
-	ID                 int64   `json:"ID"`                 // Уникальный числовой идентификатор записи.
-	TitleRu            string  `json:"TitleRu"`            // Русское название для интерфейса и данных.
-	TitleEn            string  `json:"TitleEn"`            // Английское название для интерфейса и данных.
-	Acronym            string  `json:"Acronym"`            // Неизменяемый строковый идентификатор для логики и ссылок.
-	IconFilePath       string  `json:"IconFilePath"`       // Путь к маленькому изображению модели в интерфейсе.
-	TextureFilePath    string  `json:"TextureFilePath"`    // Путь к основной текстуре объекта в игровом мире.
-	TextureWidth       int64   `json:"TextureWidth"`       // Полная ширина текстуры в пикселях.
-	TextureHeight      int64   `json:"TextureHeight"`      // Полная высота текстуры в пикселях.
-	TextureBodyOriginX int64   `json:"TextureBodyOriginX"` // Горизонтальное смещение физического тела внутри текстуры.
-	TextureBodyOriginY int64   `json:"TextureBodyOriginY"` // Вертикальное смещение физического тела внутри текстуры.
-	TextureBodyWidth   int64   `json:"TextureBodyWidth"`   // Ширина физического тела на текстуре в пикселях.
-	TextureBodyLength  int64   `json:"TextureBodyLength"`  // Длина физического тела на текстуре в пикселях.
-	TextureScale       float64 `json:"TextureScale"`       // Количество пикселей текстуры на один метр мира.
-	CosmicObjectTypeID int64   `json:"CosmicObjectTypeID"` // Тип объекта, к которому относится модель.
-	Mass               float64 `json:"Mass"`               // Базовая масса экземпляра этой модели.
-	Capacity           float64 `json:"Capacity"`           // Базовый доступный объем для оборудования или содержимого.
-	MaxArmor           float64 `json:"MaxArmor"`           // Базовый максимум брони.
-	MaxSpeed           float64 `json:"MaxSpeed"`           // Базовая максимальная линейная скорость.
-	MaxAngularSpeed    float64 `json:"MaxAngularSpeed"`    // Базовая максимальная угловая скорость.
-	Complexity         float64 `json:"Complexity"`         // Сложность производства и оценки стоимости модели.
-	BodyLength         float64 `json:"BodyLength"`         // Рассчитанная длина физического тела в метрах.
-	BodyWidth          float64 `json:"BodyWidth"`          // Рассчитанная ширина физического тела в метрах.
+	ID                 int64       `json:"ID"`                 // Уникальный числовой идентификатор записи.
+	TitleRu            string      `json:"TitleRu"`            // Русское название для интерфейса и данных.
+	TitleEn            string      `json:"TitleEn"`            // Английское название для интерфейса и данных.
+	Acronym            string      `json:"Acronym"`            // Неизменяемый строковый идентификатор для логики и ссылок.
+	IconFilePath       string      `json:"IconFilePath"`       // Путь к маленькому изображению модели в интерфейсе.
+	TextureFilePath    string      `json:"TextureFilePath"`    // Путь к основной текстуре объекта в игровом мире.
+	TextureWidth       int64       `json:"TextureWidth"`       // Полная ширина текстуры в пикселях.
+	TextureHeight      int64       `json:"TextureHeight"`      // Полная высота текстуры в пикселях.
+	TextureBodyOriginX int64       `json:"TextureBodyOriginX"` // Горизонтальное смещение физического тела внутри текстуры.
+	TextureBodyOriginY int64       `json:"TextureBodyOriginY"` // Вертикальное смещение физического тела внутри текстуры.
+	TextureBodyWidth   int64       `json:"TextureBodyWidth"`   // Ширина физического тела на текстуре в пикселях.
+	TextureBodyLength  int64       `json:"TextureBodyLength"`  // Длина физического тела на текстуре в пикселях.
+	TextureScale       float64     `json:"TextureScale"`       // Количество пикселей текстуры на один метр мира.
+	CosmicObjectTypeID int64       `json:"CosmicObjectTypeID"` // Тип объекта, к которому относится модель.
+	Mass               float64     `json:"Mass"`               // Базовая масса экземпляра этой модели.
+	Capacity           float64     `json:"Capacity"`           // Базовый доступный объем для оборудования или содержимого.
+	MaxArmor           float64     `json:"MaxArmor"`           // Базовый максимум брони.
+	MaxSpeed           float64     `json:"MaxSpeed"`           // Базовая максимальная линейная скорость.
+	MaxAngularSpeed    float64     `json:"MaxAngularSpeed"`    // Базовая максимальная угловая скорость.
+	Complexity         float64     `json:"Complexity"`         // Сложность производства и оценки стоимости модели.
+	BodyLength         float64     `json:"BodyLength"`         // Рассчитанная длина физического тела в метрах.
+	BodyWidth          float64     `json:"BodyWidth"`          // Рассчитанная ширина физического тела в метрах.
+	BodyPolygon        []BodyPoint `json:"-"`                  // Локальные вершины физического тела, рассчитанные при загрузке справочника.
 }
 
 // Хранит модели космических объектов и быстрые индексы по уникальным полям.
@@ -253,6 +262,34 @@ func (cosmicObjectModels *CosmicObjectModels) prepareCalculatedFields(cosmicObje
 	}
 	cosmicObjectModel.BodyLength = float64(cosmicObjectModel.TextureBodyLength) / cosmicObjectModel.TextureScale
 	cosmicObjectModel.BodyWidth = float64(cosmicObjectModel.TextureBodyWidth) / cosmicObjectModel.TextureScale
+	cosmicObjectModel.BodyPolygon = buildBodyPolygon(cosmicObjectModel.BodyWidth, cosmicObjectModel.BodyLength)
+}
+
+// Строит выпуклое тело по равномерным центральным углам эллипса.
+func buildBodyPolygon(bodyWidth float64, bodyLength float64) []BodyPoint {
+	points := make([]BodyPoint, bodyPolygonVertexCount)
+	radiusX := bodyWidth / 2
+	radiusY := bodyLength / 2
+
+	for index := 0; index < bodyPolygonVertexCount; index++ {
+		angle := 2 * math.Pi * float64(index) / bodyPolygonVertexCount
+		x := radiusX * math.Sin(angle)
+		y := radiusY * math.Cos(angle)
+		points[index] = BodyPoint{
+			X: zeroSmallValue(x),
+			Y: zeroSmallValue(y),
+		}
+	}
+
+	return points
+}
+
+// Убирает микроскопические погрешности тригонометрии у осевых вершин.
+func zeroSmallValue(value float64) float64 {
+	if math.Abs(value) < 0.000000000001 {
+		return 0
+	}
+	return value
 }
 
 type legacyCosmicObjectModel struct {

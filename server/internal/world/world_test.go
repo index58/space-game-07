@@ -7,6 +7,7 @@ import (
 
 	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
+	"space-game-07-server/internal/physics"
 	"space-game-07-server/internal/world"
 )
 
@@ -147,6 +148,32 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 	if serverData.CosmicObjects.Items[1].Y <= 0 {
 		t.Fatalf("got stored Y %v, want positive", serverData.CosmicObjects.Items[1].Y)
+	}
+}
+
+func TestTickPreventsControlledShipFromIntersectingAnchoredObject(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[2].X = 0
+	serverData.CosmicObjects.Items[2].Y = 11.7
+	serverData.CosmicObjects.Items[2].Enabled = false
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
+	snapshot := gameWorld.Tick(1.0 / 30.0)
+	object, ok := findCosmicObjectInSnapshot(snapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+
+	obstacle := serverData.CosmicObjects.Items[2]
+	objectModel := serverData.CosmicObjectModels.Items[object.CosmicObjectModelID]
+	obstacleModel := serverData.CosmicObjectModels.Items[obstacle.CosmicObjectModelID]
+	if _, collided := physics.CollisionCorrection(object, *objectModel, *obstacle, *obstacleModel); collided {
+		t.Fatalf("controlled object still intersects anchored object: %+v", object)
 	}
 }
 

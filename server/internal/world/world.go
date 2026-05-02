@@ -214,7 +214,16 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
-	for accountID, objectID := range world.accountObjectIDs {
+	accountIDs := make([]int64, 0, len(world.accountObjectIDs))
+	for accountID := range world.accountObjectIDs {
+		accountIDs = append(accountIDs, accountID)
+	}
+	sort.Slice(accountIDs, func(left int, right int) bool {
+		return accountIDs[left] < accountIDs[right]
+	})
+
+	for _, accountID := range accountIDs {
+		objectID := world.accountObjectIDs[accountID]
 		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
 		if !ok || cosmicObject.Anchored || !cosmicObject.Enabled {
 			continue
@@ -226,11 +235,49 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 		}
 
 		next := physics.StepShip(*cosmicObject, *model, world.inputs[accountID], dtSeconds)
+		next = world.resolveCollisions(next, cosmicObject.ID)
 		*cosmicObject = next
 	}
 
 	world.tick++
 	return world.snapshotLocked(0)
+}
+
+// Раздвигает движущийся объект со всеми включенными телами мира.
+func (world *World) resolveCollisions(moving data.CosmicObject, movingID int64) data.CosmicObject {
+	movingModel, ok := world.data.CosmicObjectModels.Get(moving.CosmicObjectModelID)
+	if !ok {
+		return moving
+	}
+
+	objectIDs := make([]int64, 0, len(world.data.CosmicObjects.Items))
+	for objectID := range world.data.CosmicObjects.Items {
+		objectIDs = append(objectIDs, objectID)
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+
+	for _, objectID := range objectIDs {
+		if objectID == movingID {
+			continue
+		}
+		obstacle, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok {
+			continue
+		}
+		obstacleModel, ok := world.data.CosmicObjectModels.Get(obstacle.CosmicObjectModelID)
+		if !ok {
+			continue
+		}
+		correction, collided := physics.CollisionCorrection(moving, *movingModel, *obstacle, *obstacleModel)
+		if !collided {
+			continue
+		}
+		moving = physics.ApplyCollisionCorrection(moving, correction)
+	}
+
+	return moving
 }
 
 // Возвращает снимок мира с заполненным ID объекта текущего игрока.
