@@ -1,6 +1,7 @@
 package world_test
 
 import (
+	"math"
 	"os"
 	"path/filepath"
 	"testing"
@@ -20,6 +21,15 @@ func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (data.Co
 	}
 
 	return data.CosmicObject{}, false
+}
+
+// Сравнивает дробные значения с малым допуском для проверок симуляции.
+func closeWorldFloat(t *testing.T, actual float64, expected float64) {
+	t.Helper()
+
+	if math.Abs(actual-expected) > 0.000001 {
+		t.Fatalf("got %v, want %v", actual, expected)
+	}
 }
 
 // Собирает минимальный игровой мир с кораблем, астероидом и станцией.
@@ -262,6 +272,53 @@ func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
 	if driftingShip.X <= 100 {
 		t.Fatalf("uncontrolled movable object did not move by velocity: %+v", driftingShip)
 	}
+}
+
+func TestTickAutobrakesConnectedShipWithoutThrust(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].VelocityX = 100
+	gameWorld := world.New(1, serverData)
+
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	gameWorld.Tick(0.1)
+
+	ship := serverData.CosmicObjects.Items[1]
+	if ship.VelocityX >= 100 {
+		t.Fatalf("connected ship did not autobrake: %+v", ship)
+	}
+}
+
+func TestTickAppliesDragToShipAfterDisconnect(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].VelocityX = 100
+	gameWorld := world.New(1, serverData)
+
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	gameWorld.DisconnectAccount(1)
+	gameWorld.Tick(0.1)
+
+	ship := serverData.CosmicObjects.Items[1]
+	closeWorldFloat(t, ship.VelocityX, 90)
+	closeWorldFloat(t, ship.X, 9)
+}
+
+func TestTickDoesNotApplyShipDragToUncontrolledAsteroid(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[2].Anchored = false
+	serverData.CosmicObjects.Items[2].X = 1000
+	serverData.CosmicObjects.Items[2].Y = 0
+	serverData.CosmicObjects.Items[2].VelocityX = 100
+	gameWorld := world.New(1, serverData)
+
+	gameWorld.Tick(0.1)
+
+	asteroid := serverData.CosmicObjects.Items[2]
+	closeWorldFloat(t, asteroid.VelocityX, 100)
+	closeWorldFloat(t, asteroid.X, 1010)
 }
 
 func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {

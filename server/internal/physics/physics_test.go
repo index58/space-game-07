@@ -274,6 +274,42 @@ func TestStepShipDoesNotAutobrakeAcrossAxisWhenLeftAndRightPressed(t *testing.T)
 	closeTo(t, next.VelocityY, 0)
 }
 
+func TestStepUnpilotedShipAppliesReferenceQuadraticDrag(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.VelocityX = 100
+
+	next := physics.StepUnpilotedShip(ship, 0.1)
+
+	closeTo(t, next.VelocityX, 90)
+	closeTo(t, next.VelocityY, 0)
+	closeTo(t, next.Speed, 90)
+	closeTo(t, next.X, 9)
+}
+
+func TestStepUnpilotedShipKeepsVelocityDirectionDuringQuadraticDrag(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.VelocityX = 60
+	ship.VelocityY = 80
+
+	next := physics.StepUnpilotedShip(ship, 0.1)
+
+	closeTo(t, next.VelocityX, 54)
+	closeTo(t, next.VelocityY, 72)
+	closeTo(t, next.Speed, 90)
+}
+
+func TestStepUnpilotedShipDoesNotReverseVelocityDuringQuadraticDrag(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.VelocityX = 10
+
+	next := physics.StepUnpilotedShip(ship, 10)
+
+	closeTo(t, next.VelocityX, 0)
+	closeTo(t, next.VelocityY, 0)
+	closeTo(t, next.Speed, 0)
+	closeTo(t, next.X, 0)
+}
+
 func TestApplyCollisionResponseBouncesAlongNormalWithRestitution(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Enabled = true

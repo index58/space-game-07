@@ -261,10 +261,18 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 		input, controlled := inputsByObjectID[objectID]
 		if controlled {
 			*cosmicObject = physics.StepShip(*cosmicObject, *model, input, dtSeconds)
+		} else if world.isShipModel(model) {
+			*cosmicObject = physics.StepUnpilotedShip(*cosmicObject, dtSeconds)
 		} else {
 			*cosmicObject = physics.StepFreeBody(*cosmicObject, dtSeconds)
 		}
 	}
+}
+
+// Проверяет, что модель относится к кораблям.
+func (world *World) isShipModel(model *data.CosmicObjectModel) bool {
+	cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
+	return ok && cosmicObjectType.Acronym == "Ship"
 }
 
 // Решает столкновения всех пар тел после движения объектов.

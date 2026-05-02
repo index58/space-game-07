@@ -12,6 +12,10 @@ const (
 	Epsilon = 0.000001
 	// Задает допуск, при котором корабль считается почти повернутым к цели.
 	angleEpsilon = 0.0001
+	// Задает скорость, на которой калибруется сопротивление свободного корабля.
+	freeShipDragReferenceSpeed = 100.0
+	// Задает торможение, возникающее на эталонной скорости.
+	freeShipDragReferenceAcceleration = 100.0
 )
 
 // Переводит пиксельный размер физического тела модели в метры мира.
@@ -75,6 +79,37 @@ func clampAbsoluteValue(value float64, maxAbsoluteValue float64) float64 {
 	}
 
 	return math.Copysign(math.Min(math.Abs(value), maxAbsoluteValue), value)
+}
+
+// Уменьшает линейную скорость по квадратичному закону без разворота направления.
+func applyQuadraticDrag(cosmicObject data.CosmicObject, dtSeconds float64) data.CosmicObject {
+	speed := math.Hypot(cosmicObject.VelocityX, cosmicObject.VelocityY)
+	if speed <= Epsilon {
+		cosmicObject.VelocityX = 0
+		cosmicObject.VelocityY = 0
+		cosmicObject.Speed = 0
+		return cosmicObject
+	}
+	if dtSeconds <= 0 {
+		cosmicObject.Speed = speed
+		return cosmicObject
+	}
+
+	dragCoefficient := freeShipDragReferenceAcceleration / (freeShipDragReferenceSpeed * freeShipDragReferenceSpeed)
+	speedDelta := dragCoefficient * speed * speed * dtSeconds
+	if speedDelta >= speed {
+		cosmicObject.VelocityX = 0
+		cosmicObject.VelocityY = 0
+		cosmicObject.Speed = 0
+		return cosmicObject
+	}
+
+	nextSpeed := speed - speedDelta
+	scale := nextSpeed / speed
+	cosmicObject.VelocityX *= scale
+	cosmicObject.VelocityY *= scale
+	cosmicObject.Speed = nextSpeed
+	return cosmicObject
 }
 
 // Двигает значение к цели не дальше разрешенной дельты за шаг.
@@ -218,6 +253,11 @@ func StepFreeBody(cosmicObject data.CosmicObject, dtSeconds float64) data.Cosmic
 	cosmicObject.AcrossForce = 0
 	cosmicObject.Torque = 0
 	return cosmicObject
+}
+
+// Двигает корабль без подключенного пилота с дополнительным сопротивлением.
+func StepUnpilotedShip(cosmicObject data.CosmicObject, dtSeconds float64) data.CosmicObject {
+	return StepFreeBody(applyQuadraticDrag(cosmicObject, dtSeconds), dtSeconds)
 }
 
 // Переводит пару противоположных кнопок в силу по одной локальной оси.
