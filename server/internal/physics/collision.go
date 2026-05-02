@@ -8,7 +8,7 @@ import (
 )
 
 // Задаёт долю скорости, сохраняемую после отскока по нормали удара.
-const collisionRestitution = 0.1
+const collisionRestitution = 0.5
 
 // Возвращает минимальный сдвиг первого тела, если два выпуклых тела пересекаются.
 func CollisionCorrection(moving data.CosmicObject, movingModel data.CosmicObjectModel, obstacle data.CosmicObject, obstacleModel data.CosmicObjectModel) (game.WorldVector, bool) {

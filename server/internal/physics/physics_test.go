@@ -287,9 +287,9 @@ func TestApplyCollisionResponseBouncesAlongNormalWithRestitution(t *testing.T) {
 
 	closeTo(t, next.X, 2)
 	closeTo(t, nextObstacle.X, 0)
-	closeTo(t, next.VelocityX, 1)
+	closeTo(t, next.VelocityX, 5)
 	closeTo(t, next.VelocityY, 5)
-	closeTo(t, next.Speed, math.Hypot(1, 5))
+	closeTo(t, next.Speed, math.Hypot(5, 5))
 }
 
 func TestApplyCollisionResponseUsesMassesForMovableBodies(t *testing.T) {
@@ -305,6 +305,6 @@ func TestApplyCollisionResponseUsesMassesForMovableBodies(t *testing.T) {
 
 	closeTo(t, next.X, 1)
 	closeTo(t, nextObstacle.X, -1)
-	closeTo(t, next.VelocityX, -4.5)
-	closeTo(t, nextObstacle.VelocityX, -5.5)
+	closeTo(t, next.VelocityX, -2.5)
+	closeTo(t, nextObstacle.VelocityX, -7.5)
 }
