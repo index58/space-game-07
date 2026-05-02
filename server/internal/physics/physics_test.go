@@ -412,3 +412,24 @@ func TestApplyCollisionResponseAddsAngularSpeedFromOffCenterContact(t *testing.T
 	}
 	closeTo(t, nextObstacle.AngularSpeed, 0)
 }
+
+func TestApplyCollisionResponseMovesTargetRotationByAngularBounceStopAngle(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.Enabled = true
+	ship.Mass = 1000
+	ship.MaxAngularSpeed = 10
+	ship.MaxTorque = 10000
+	ship.VelocityX = -10
+	obstacle := testShip(2, 0, 0)
+	obstacle.Enabled = true
+	obstacle.Anchored = true
+	collision := physics.Collision{
+		Correction:   game.WorldVector{X: 2, Y: 0},
+		ContactPoint: game.WorldVector{X: 0, Y: 10},
+	}
+
+	next, _ := physics.ApplyCollisionResponse(ship, testModel(), obstacle, testModel(), collision)
+	angularStopAngle := next.AngularSpeed * next.AngularSpeed / (2 * ship.MaxTorque / physics.MomentOfInertia(ship, testModel()))
+
+	closeTo(t, next.TargetRotation, angularStopAngle)
+}

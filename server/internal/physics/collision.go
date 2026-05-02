@@ -110,12 +110,16 @@ func ApplyCollisionResponse(moving data.CosmicObject, movingModel data.CosmicObj
 	}
 
 	normalImpulse := -(1 + collisionRestitution) * velocityAlongNormal / impulseDenominator
+	movingAngularVelocityDelta := movingAngularNormal * normalImpulse * movingInverseInertia
+	obstacleAngularVelocityDelta := -obstacleAngularNormal * normalImpulse * obstacleInverseInertia
 	moving.VelocityX += normal.X * normalImpulse * movingInverseMass
 	moving.VelocityY += normal.Y * normalImpulse * movingInverseMass
 	obstacle.VelocityX -= normal.X * normalImpulse * obstacleInverseMass
 	obstacle.VelocityY -= normal.Y * normalImpulse * obstacleInverseMass
-	moving.AngularSpeed = clampAbsoluteValue(moving.AngularSpeed+movingAngularNormal*normalImpulse*movingInverseInertia, moving.MaxAngularSpeed)
-	obstacle.AngularSpeed = clampAbsoluteValue(obstacle.AngularSpeed-obstacleAngularNormal*normalImpulse*obstacleInverseInertia, obstacle.MaxAngularSpeed)
+	moving.AngularSpeed = clampAbsoluteValue(moving.AngularSpeed+movingAngularVelocityDelta, moving.MaxAngularSpeed)
+	obstacle.AngularSpeed = clampAbsoluteValue(obstacle.AngularSpeed+obstacleAngularVelocityDelta, obstacle.MaxAngularSpeed)
+	moving.TargetRotation += angularBounceStopAngle(movingAngularVelocityDelta, moving, movingModel)
+	obstacle.TargetRotation += angularBounceStopAngle(obstacleAngularVelocityDelta, obstacle, obstacleModel)
 	moving.Speed = math.Hypot(moving.VelocityX, moving.VelocityY)
 	obstacle.Speed = math.Hypot(obstacle.VelocityX, obstacle.VelocityY)
 
@@ -143,6 +147,16 @@ func collisionInverseInertia(cosmicObject data.CosmicObject, model data.CosmicOb
 	}
 
 	return 1 / moment
+}
+
+// Считает угол, на который автоматика должна сместить цель после углового импульса.
+func angularBounceStopAngle(angularVelocityDelta float64, cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
+	acceleration := angularAcceleration(cosmicObject, model)
+	if acceleration <= 0 || math.Abs(angularVelocityDelta) <= Epsilon {
+		return 0
+	}
+
+	return math.Copysign(angularVelocityDelta*angularVelocityDelta/(2*acceleration), angularVelocityDelta)
 }
 
 // Считает скорость точки тела с учетом поступательного и вращательного движения.
