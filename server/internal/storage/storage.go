@@ -16,6 +16,7 @@ const cosmicObjectTypesFileName = "CosmicObjectTypes.json"
 const cosmicObjectModelsFileName = "CosmicObjectModels.json"
 const itemtypesFileName = "Itemtypes.json"
 const equipmentGroupFileName = "EquipmentGroups.json"
+const itemGroupFileName = "ItemGroups.json"
 const npcClanFileName = "NpcClans.json"
 const itemModelFileName = "ItemModels.json"
 const blueprintFileName = "Blueprints.json"
@@ -47,10 +48,11 @@ type ServerData struct {
 	CosmicObjectModels      *data.CosmicObjectModels      // Загруженный справочник моделей космических объектов.
 	Itemtypes               *data.Itemtypes               // Загруженный справочник типов предметов.
 	EquipmentGroups         *data.EquipmentGroups         // Загруженные группы оборудования космических объектов.
+	ItemGroups              *data.ItemGroups              // Загруженные группы предметов внутри контейнеров.
 	Assemblies              *data.Assemblies              // Загруженный справочник сборок космических объектов.
 	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Загруженный справочник оборудования сборок.
 	NpcClans                *RawReferenceTable            // Загруженный справочник NPC-кланов.
-	ItemModels              *RawReferenceTable            // Загруженный справочник моделей предметов.
+	ItemModels              *data.ItemModels              // Загруженный справочник моделей предметов.
 	Blueprints              *RawReferenceTable            // Загруженный справочник чертежей объектов.
 	BlueprintComponents     *RawReferenceTable            // Загруженный справочник компонентов чертежей.
 	Schemas                 *RawReferenceTable            // Загруженный справочник схем предметов.
@@ -96,6 +98,11 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		return nil, err
 	}
 
+	itemGroups, err := loadOptionalItemGroups(filepath.Join(dataDirectory, itemGroupFileName))
+	if err != nil {
+		return nil, err
+	}
+
 	assemblies, err := loadOptionalAssemblies(filepath.Join(dataDirectory, assemblyFileName))
 	if err != nil {
 		return nil, err
@@ -110,7 +117,7 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 	if err != nil {
 		return nil, err
 	}
-	itemModels, err := loadOptionalRawReferenceTable(filepath.Join(dataDirectory, itemModelFileName))
+	itemModels, err := loadOptionalItemModels(filepath.Join(dataDirectory, itemModelFileName))
 	if err != nil {
 		return nil, err
 	}
@@ -139,6 +146,7 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		CosmicObjectModels:      cosmicObjectModels,
 		Itemtypes:               itemtypes,
 		EquipmentGroups:         equipmentGroups,
+		ItemGroups:              itemGroups,
 		Assemblies:              assemblies,
 		AssemblyEquipmentGroups: assemblyEquipmentGroups,
 		NpcClans:                npcClans,
@@ -180,6 +188,30 @@ func loadOptionalEquipmentGroups(path string) (*data.EquipmentGroups, error) {
 		return nil, err
 	}
 	return groups, nil
+}
+
+// Загружает необязательную таблицу групп предметов или возвращает пустой контейнер до появления файла.
+func loadOptionalItemGroups(path string) (*data.ItemGroups, error) {
+	groups := data.NewItemGroups()
+	if err := groups.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewItemGroups(), nil
+		}
+		return nil, err
+	}
+	return groups, nil
+}
+
+// Загружает необязательную таблицу моделей предметов или возвращает пустой контейнер до появления файла.
+func loadOptionalItemModels(path string) (*data.ItemModels, error) {
+	models := data.NewItemModels()
+	if err := models.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewItemModels(), nil
+		}
+		return nil, err
+	}
+	return models, nil
 }
 
 // Загружает необязательную таблицу сборок или возвращает пустой контейнер до появления файла.

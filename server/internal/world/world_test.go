@@ -82,14 +82,38 @@ func testWorldData(t *testing.T) world.Data {
 		},
 	}
 	assemblyEquipmentGroups := &data.AssemblyEquipmentGroups{
-		MaxID: 3,
+		MaxID: 7,
 		Items: map[int64]*data.AssemblyEquipmentGroup{
 			1: {ID: 1, AssemblyID: 2, Title: "Thrusters", EquipmentItemModelID: 101, Count: 2},
 			2: {ID: 2, AssemblyID: 2, Title: "Torquers", EquipmentItemModelID: 102, Count: 1},
-			3: {ID: 3, AssemblyID: 3, Title: "New Thrusters", EquipmentItemModelID: 201, Count: 4},
+			3: {ID: 3, AssemblyID: 2, Title: "Containers", EquipmentItemModelID: 301, Count: 2},
+			4: {ID: 4, AssemblyID: 2, Title: "Cannons", EquipmentItemModelID: 302, Count: 3},
+			5: {ID: 5, AssemblyID: 3, Title: "New Thrusters", EquipmentItemModelID: 201, Count: 4},
+			6: {ID: 6, AssemblyID: 3, Title: "New Containers", EquipmentItemModelID: 401, Count: 1},
+			7: {ID: 7, AssemblyID: 3, Title: "New Cannons", EquipmentItemModelID: 402, Count: 4},
+		},
+	}
+	itemtypes := &data.Itemtypes{
+		MaxID: 18,
+		Items: map[int64]*data.Itemtype{
+			1:  {ID: 1, TitleRu: "Weapon", TitleEn: "Weapon", Acronym: "Weapon", CountMustBeInteger: true},
+			9:  {ID: 9, TitleRu: "Container", TitleEn: "Container", Acronym: "Container", CountMustBeInteger: true},
+			18: {ID: 18, TitleRu: "Ammunition", TitleEn: "Ammunition", Acronym: "Ammunition", CountMustBeInteger: true},
+		},
+	}
+	itemModels := &data.ItemModels{
+		MaxID: 403,
+		Items: map[int64]*data.ItemModel{
+			301: {ID: 301, TitleRu: "Container", TitleEn: "Container", Acronym: "Container", ItemtypeID: 9},
+			302: {ID: 302, TitleRu: "Cannon", TitleEn: "Cannon", Acronym: "Cannon", ItemtypeID: 1, AmmoItemModelID: 303, FiringRate: 0.5},
+			303: {ID: 303, TitleRu: "Shell", TitleEn: "Shell", Acronym: "Shell", ItemtypeID: 18},
+			401: {ID: 401, TitleRu: "New Container", TitleEn: "New Container", Acronym: "NewContainer", ItemtypeID: 9},
+			402: {ID: 402, TitleRu: "New Cannon", TitleEn: "New Cannon", Acronym: "NewCannon", ItemtypeID: 1, AmmoItemModelID: 403, FiringRate: 1},
+			403: {ID: 403, TitleRu: "New Shell", TitleEn: "New Shell", Acronym: "NewShell", ItemtypeID: 18},
 		},
 	}
 	equipmentGroups := data.NewEquipmentGroups()
+	itemGroups := data.NewItemGroups()
 
 	if err := accounts.RebuildIndexes(); err != nil {
 		t.Fatal(err)
@@ -112,6 +136,12 @@ func testWorldData(t *testing.T) world.Data {
 	if err := assemblyEquipmentGroups.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
+	if err := itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := itemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
 
 	return world.Data{
 		Accounts:                accounts,
@@ -119,7 +149,10 @@ func testWorldData(t *testing.T) world.Data {
 		CosmicObjects:           cosmicObjects,
 		CosmicObjectTypes:       cosmicObjectTypes,
 		CosmicObjectModels:      cosmicObjectModels,
+		Itemtypes:               itemtypes,
+		ItemModels:              itemModels,
 		EquipmentGroups:         equipmentGroups,
+		ItemGroups:              itemGroups,
 		Assemblies:              assemblies,
 		AssemblyEquipmentGroups: assemblyEquipmentGroups,
 	}
@@ -375,8 +408,8 @@ func TestNewInstallsAssemblyEquipmentOnLoadedShip(t *testing.T) {
 	world.New(1, serverData)
 	installed := serverData.EquipmentGroups.GetByCosmicObjectID(1)
 
-	if len(installed) != 2 {
-		t.Fatalf("got %d equipment groups, want 2", len(installed))
+	if len(installed) != 4 {
+		t.Fatalf("got %d equipment groups, want 4", len(installed))
 	}
 	if installed[0].EquipmentItemModelID != 101 || installed[0].Count != 2 || installed[0].EnabledCount != 2 || !installed[0].Enabled || !installed[0].Active {
 		t.Fatalf("first equipment group was not copied from assembly: %+v", installed[0])
@@ -407,8 +440,49 @@ func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 		t.Fatalf("starter ship stats were not copied from assembly: %+v", cosmicObject)
 	}
 	installed := serverData.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)
-	if len(installed) != 2 {
-		t.Fatalf("got %d starter equipment groups, want 2", len(installed))
+	if len(installed) != 4 {
+		t.Fatalf("got %d starter equipment groups, want 4", len(installed))
+	}
+}
+
+func TestCreateStarterAccountFillsFuelAndContainerAmmo(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	account, err := gameWorld.CreateStarterAccount()
+	if err != nil {
+		t.Fatalf("CreateStarterAccount returned error: %v", err)
+	}
+	character, ok := serverData.Characters.Get(account.CurrentCharacterID)
+	if !ok {
+		t.Fatalf("created character was not stored")
+	}
+	cosmicObject, ok := serverData.CosmicObjects.Get(character.LocationCosmicObjectID)
+	if !ok {
+		t.Fatalf("created ship was not stored")
+	}
+
+	if cosmicObject.Fuel != cosmicObject.MaxFuel || cosmicObject.Fuel != 50 {
+		t.Fatalf("starter ship fuel = %v/%v, want 50/50", cosmicObject.Fuel, cosmicObject.MaxFuel)
+	}
+
+	var container *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID) {
+		if group.EquipmentItemModelID == 301 {
+			container = group
+			break
+		}
+	}
+	if container == nil {
+		t.Fatalf("starter ship container was not installed")
+	}
+
+	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
+	if len(items) != 1 {
+		t.Fatalf("got %d container item groups, want 1", len(items))
+	}
+	if items[0].ContentItemModelID != 303 || items[0].Count != 1350 {
+		t.Fatalf("starter container ammo was not filled for 15 minutes: %+v", items[0])
 	}
 }
 
@@ -442,11 +516,63 @@ func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) 
 		t.Fatalf("new model index does not contain changed object")
 	}
 	installed := serverData.EquipmentGroups.GetByCosmicObjectID(objectID)
-	if len(installed) != 1 {
-		t.Fatalf("got %d equipment groups after model change, want 1", len(installed))
+	if len(installed) != 3 {
+		t.Fatalf("got %d equipment groups after model change, want 3", len(installed))
 	}
 	if installed[0].EquipmentItemModelID != 201 || installed[0].Count != 4 {
 		t.Fatalf("equipment was not replaced from selected assembly: %+v", installed[0])
+	}
+}
+
+func TestChangeControlledShipToRandomModelRefillsFuelAndContainerAmmo(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	oldContainer := serverData.EquipmentGroups.GetByCosmicObjectID(objectID)[2]
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{
+		ContainerEquipmentGroupID: oldContainer.ID,
+		ContentItemModelID:        303,
+		Count:                     1,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	serverData.CosmicObjects.Items[objectID].Fuel = 1
+
+	if !gameWorld.ChangeControlledShipToRandomModel(1) {
+		t.Fatalf("ship model was not changed")
+	}
+	cosmicObject, ok := serverData.CosmicObjects.Get(objectID)
+	if !ok {
+		t.Fatalf("object was not found")
+	}
+	if cosmicObject.Fuel != cosmicObject.MaxFuel || cosmicObject.Fuel != 51 {
+		t.Fatalf("changed ship fuel = %v/%v, want 51/51", cosmicObject.Fuel, cosmicObject.MaxFuel)
+	}
+	if len(serverData.ItemGroups.GetByContainerEquipmentGroupID(oldContainer.ID)) != 0 {
+		t.Fatalf("old container contents were not removed")
+	}
+
+	var container *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 401 {
+			container = group
+			break
+		}
+	}
+	if container == nil {
+		t.Fatalf("changed ship container was not installed")
+	}
+
+	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
+	if len(items) != 1 {
+		t.Fatalf("got %d changed container item groups, want 1", len(items))
+	}
+	if items[0].ContentItemModelID != 403 || items[0].Count != 3600 {
+		t.Fatalf("changed container ammo was not filled for 15 minutes: %+v", items[0])
 	}
 }
 

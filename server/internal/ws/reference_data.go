@@ -16,7 +16,7 @@ type ReferenceDataResponse struct {
 	CosmicObjectType   *data.CosmicObjectTypes    `json:"CosmicObjectType"`   // Справочник типов космических объектов.
 	Itemtype           *data.Itemtypes            `json:"Itemtype"`           // Справочник типов предметов.
 	CosmicObjectModel  *data.CosmicObjectModels   `json:"CosmicObjectModel"`  // Справочник моделей космических объектов.
-	ItemModel          *storage.RawReferenceTable `json:"ItemModel"`          // Справочник моделей предметов.
+	ItemModel          *data.ItemModels           `json:"ItemModel"`          // Справочник моделей предметов.
 	Blueprint          *storage.RawReferenceTable `json:"Blueprint"`          // Справочник чертежей объектов.
 	BlueprintComponent *storage.RawReferenceTable `json:"BlueprintComponent"` // Справочник компонентов чертежей.
 	Schema             *storage.RawReferenceTable `json:"Schema"`             // Справочник схем предметов.

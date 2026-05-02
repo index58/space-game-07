@@ -2,6 +2,7 @@ package world
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"path/filepath"
 	"sort"
@@ -26,7 +27,9 @@ type Data struct {
 	CosmicObjectTypes       *data.CosmicObjectTypes       // Справочник типов объектов для правил мира.
 	CosmicObjectModels      *data.CosmicObjectModels      // Справочник моделей объектов для физики и отображения.
 	Itemtypes               *data.Itemtypes               // Справочник типов предметов для серверной логики.
+	ItemModels              *data.ItemModels              // Справочник моделей предметов для оборудования и содержимого контейнеров.
 	EquipmentGroups         *data.EquipmentGroups         // Группы оборудования, установленные на объектах мира.
+	ItemGroups              *data.ItemGroups              // Группы предметов внутри контейнерного оборудования.
 	Assemblies              *data.Assemblies              // Справочник сборок для расчета характеристик кораблей.
 	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Группы оборудования, заданные в сборках.
 }
@@ -124,6 +127,7 @@ func (world *World) CreateStarterAccount() (*data.Account, error) {
 		world.data.Accounts.Delete(account.ID)
 		return nil, err
 	}
+	world.fillShipSupplies(createdObject)
 
 	character.LocationCosmicObjectID = createdObject.ID
 	if err := world.data.Accounts.SetCurrentCharacter(account.ID, character.ID); err != nil {
@@ -205,6 +209,7 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	if err := world.replaceEquipmentFromAssembly(cosmicObject.ID, assembly); err != nil {
 		return false
 	}
+	world.fillShipSupplies(cosmicObject)
 
 	return world.data.CosmicObjects.RebuildIndexes() == nil
 }
@@ -380,6 +385,11 @@ func (world *World) SaveData(workingDirectory string) error {
 			return err
 		}
 	}
+	if world.data.ItemGroups != nil {
+		if err := world.data.ItemGroups.SaveToFile(filepath.Join(dataDirectory, "ItemGroups.json")); err != nil {
+			return err
+		}
+	}
 	if world.data.Itemtypes != nil {
 		return world.data.Itemtypes.SaveToFile(filepath.Join(dataDirectory, "Itemtypes.json"))
 	}
@@ -493,6 +503,13 @@ func (world *World) replaceEquipmentFromAssembly(cosmicObjectID int64, assembly 
 	if world.data.EquipmentGroups == nil {
 		return nil
 	}
+	if world.data.ItemGroups != nil {
+		equipmentGroupIDs := make([]int64, 0)
+		for _, group := range world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObjectID) {
+			equipmentGroupIDs = append(equipmentGroupIDs, group.ID)
+		}
+		world.data.ItemGroups.DeleteByContainerEquipmentGroupIDs(equipmentGroupIDs)
+	}
 	world.data.EquipmentGroups.DeleteByCosmicObjectID(cosmicObjectID)
 	return world.installEquipmentFromAssembly(cosmicObjectID, assembly)
 }
@@ -517,4 +534,57 @@ func (world *World) installEquipmentFromAssembly(cosmicObjectID int64, assembly 
 		}
 	}
 	return nil
+}
+
+// Заполняет новый корабль топливом и кладет боеприпасы в установленные контейнеры.
+func (world *World) fillShipSupplies(cosmicObject *data.CosmicObject) {
+	if cosmicObject == nil {
+		return
+	}
+	cosmicObject.Fuel = cosmicObject.MaxFuel
+	if world.data.EquipmentGroups == nil || world.data.ItemGroups == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil {
+		return
+	}
+
+	containerType, ok := world.data.Itemtypes.GetByAcronym("Container")
+	if !ok {
+		return
+	}
+
+	containerIDs := make([]int64, 0)
+	ammoByModelID := make(map[int64]float64)
+	for _, group := range world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID) {
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok {
+			continue
+		}
+		if model.ItemtypeID == containerType.ID {
+			containerIDs = append(containerIDs, group.ID)
+		}
+		if model.AmmoItemModelID > 0 && model.FiringRate > 0 && group.Count > 0 {
+			ammoByModelID[model.AmmoItemModelID] += float64(group.Count) * model.FiringRate * 15 * 60
+		}
+	}
+	if len(containerIDs) == 0 || len(ammoByModelID) == 0 {
+		return
+	}
+	sort.Slice(containerIDs, func(left int, right int) bool {
+		return containerIDs[left] < containerIDs[right]
+	})
+	world.data.ItemGroups.DeleteByContainerEquipmentGroupIDs(containerIDs)
+
+	ammoModelIDs := make([]int64, 0, len(ammoByModelID))
+	for ammoModelID := range ammoByModelID {
+		ammoModelIDs = append(ammoModelIDs, ammoModelID)
+	}
+	sort.Slice(ammoModelIDs, func(left int, right int) bool {
+		return ammoModelIDs[left] < ammoModelIDs[right]
+	})
+	for _, ammoModelID := range ammoModelIDs {
+		_, _ = world.data.ItemGroups.Add(&data.ItemGroup{
+			ContainerEquipmentGroupID: containerIDs[0],
+			ContentItemModelID:        ammoModelID,
+			Count:                     math.Ceil(ammoByModelID[ammoModelID]),
+		})
+	}
 }

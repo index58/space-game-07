@@ -28,7 +28,7 @@ func TestReferenceDataHandlerReturnsAllStartupTables(t *testing.T) {
 		},
 		Itemtypes:           data.NewItemtypes(),
 		NpcClans:            storage.NewRawReferenceTable(),
-		ItemModels:          storage.NewRawReferenceTable(),
+		ItemModels:          data.NewItemModels(),
 		Blueprints:          storage.NewRawReferenceTable(),
 		BlueprintComponents: storage.NewRawReferenceTable(),
 		Schemas:             storage.NewRawReferenceTable(),
