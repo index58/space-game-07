@@ -126,8 +126,8 @@
       "TitleRu": "Робот",
       "TitleEn": "Robot",
       "Acronym": "Robot",
-      "IsEquipmentForShip": false,
-      "IsEquipmentForStation": false,
+      "IsEquipmentForShip": true,
+      "IsEquipmentForStation": true,
       "IsPilotInstrument": false,
       "CountMustBeInteger": true
     },
@@ -170,6 +170,16 @@
       "IsEquipmentForStation": false,
       "IsPilotInstrument": false,
       "CountMustBeInteger": false
+    },
+    "18": {
+      "ID": 18,
+      "TitleRu": "Боеприпас",
+      "TitleEn": "Ammunition",
+      "Acronym": "Ammunition",
+      "IsEquipmentForShip": false,
+      "IsEquipmentForStation": false,
+      "IsPilotInstrument": false,
+      "CountMustBeInteger": true
     }
   }
 }
