@@ -136,6 +136,14 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
   ID: number;
   // Путь к основной текстуре объекта в игровом мире.
   TextureFilePath: string;
+  // Полная ширина текстуры в пикселях.
+  TextureWidth: number;
+  // Полная высота текстуры в пикселях.
+  TextureHeight: number;
+  // Горизонтальная координата центра тела на текстуре.
+  TextureBodyOriginX: number;
+  // Вертикальная координата центра тела на текстуре.
+  TextureBodyOriginY: number;
   // Количество пикселей текстуры на один метр мира.
   TextureScale: number;
   // Рассчитанная ширина физического тела в метрах.

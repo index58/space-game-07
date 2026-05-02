@@ -258,19 +258,20 @@ func (cosmicObjectModels *CosmicObjectModels) prepareCalculatedFields(cosmicObje
 	}
 	cosmicObjectModel.BodyLength = float64(cosmicObjectModel.TextureBodyLength) / cosmicObjectModel.TextureScale
 	cosmicObjectModel.BodyWidth = float64(cosmicObjectModel.TextureBodyWidth) / cosmicObjectModel.TextureScale
-	cosmicObjectModel.BodyPolygon = buildBodyPolygon(cosmicObjectModel.BodyWidth, cosmicObjectModel.BodyLength)
+	cosmicObjectModel.BodyPolygon = buildBodyPolygon(*cosmicObjectModel)
 }
 
 // Строит выпуклое тело по равномерным центральным углам эллипса.
-func buildBodyPolygon(bodyWidth float64, bodyLength float64) []BodyPoint {
+func buildBodyPolygon(cosmicObjectModel CosmicObjectModel) []BodyPoint {
 	points := make([]BodyPoint, bodyPolygonVertexCount)
-	radiusX := bodyWidth / 2
-	radiusY := bodyLength / 2
+	offsetX, offsetY := bodyPolygonOffset(cosmicObjectModel)
+	radiusX := cosmicObjectModel.BodyWidth / 2
+	radiusY := cosmicObjectModel.BodyLength / 2
 
 	for index := 0; index < bodyPolygonVertexCount; index++ {
 		angle := 2 * math.Pi * float64(index) / bodyPolygonVertexCount
-		x := radiusX * math.Sin(angle)
-		y := radiusY * math.Cos(angle)
+		x := offsetX + zeroSmallValue(radiusX*math.Sin(angle))
+		y := offsetY + zeroSmallValue(radiusY*math.Cos(angle))
 		points[index] = BodyPoint{
 			X: zeroSmallValue(x),
 			Y: zeroSmallValue(y),
@@ -278,6 +279,16 @@ func buildBodyPolygon(bodyWidth float64, bodyLength float64) []BodyPoint {
 	}
 
 	return points
+}
+
+// Рассчитывает смещение центра тела относительно центра текстуры.
+func bodyPolygonOffset(cosmicObjectModel CosmicObjectModel) (float64, float64) {
+	if cosmicObjectModel.TextureScale <= 0 || cosmicObjectModel.TextureWidth <= 0 || cosmicObjectModel.TextureHeight <= 0 {
+		return 0, 0
+	}
+
+	return (float64(cosmicObjectModel.TextureBodyOriginX) - float64(cosmicObjectModel.TextureWidth)/2) / cosmicObjectModel.TextureScale,
+		(float64(cosmicObjectModel.TextureBodyOriginY) - float64(cosmicObjectModel.TextureHeight)/2) / cosmicObjectModel.TextureScale
 }
 
 // Убирает микроскопические погрешности тригонометрии у осевых вершин.

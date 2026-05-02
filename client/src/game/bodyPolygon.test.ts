@@ -5,6 +5,10 @@ import { bodyPolygonToPilotScreen, buildBodyPolygon } from "./bodyPolygon";
 const model = {
   ID: 1,
   TextureFilePath: "assets/ships/ship.png",
+  TextureWidth: 40,
+  TextureHeight: 80,
+  TextureBodyOriginX: 20,
+  TextureBodyOriginY: 40,
   TextureScale: 4,
   BodyWidth: 10,
   BodyLength: 20,
@@ -27,6 +31,24 @@ describe("buildBodyPolygon", () => {
     expect(points[4]).toEqual({ x: 5, y: 0 });
     expect(points[8]).toEqual({ x: 0, y: -10 });
     expect(points[12]).toEqual({ x: -5, y: 0 });
+  });
+
+  it("СЃРјРµС‰Р°РµС‚ С‚РѕС‡РєРё Рє С†РµРЅС‚СЂСѓ С‚РµР»Р° РЅР° С‚РµРєСЃС‚СѓСЂРµ", () => {
+    const points = buildBodyPolygon({
+      ...model,
+      TextureWidth: 100,
+      TextureHeight: 200,
+      TextureBodyOriginX: 60,
+      TextureBodyOriginY: 120,
+      TextureScale: 10,
+      BodyWidth: 4,
+      BodyLength: 8,
+    });
+
+    expect(points[0]).toEqual({ x: 1, y: 6 });
+    expect(points[4]).toEqual({ x: 3, y: 2 });
+    expect(points[8]).toEqual({ x: 1, y: -2 });
+    expect(points[12]).toEqual({ x: -1, y: 2 });
   });
 });
 

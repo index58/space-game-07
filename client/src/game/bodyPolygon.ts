@@ -8,6 +8,7 @@ const AXIS_EPSILON = 0.000000000001;
 
 // Строит локальные точки тела по той же формуле, что и сервер.
 export const buildBodyPolygon = (model: CosmicObjectModelReference): WorldVector[] => {
+  const offset = bodyPolygonOffset(model);
   const radiusX = model.BodyWidth / 2;
   const radiusY = model.BodyLength / 2;
   const points: WorldVector[] = [];
@@ -15,12 +16,24 @@ export const buildBodyPolygon = (model: CosmicObjectModelReference): WorldVector
   for (let index = 0; index < BODY_POLYGON_VERTEX_COUNT; index++) {
     const angle = 2 * Math.PI * index / BODY_POLYGON_VERTEX_COUNT;
     points.push({
-      x: zeroSmallValue(radiusX * Math.sin(angle)),
-      y: zeroSmallValue(radiusY * Math.cos(angle)),
+      x: zeroSmallValue(offset.x + zeroSmallValue(radiusX * Math.sin(angle))),
+      y: zeroSmallValue(offset.y + zeroSmallValue(radiusY * Math.cos(angle))),
     });
   }
 
   return points;
+};
+
+// Рассчитывает смещение центра тела относительно центра текстуры.
+const bodyPolygonOffset = (model: CosmicObjectModelReference): WorldVector => {
+  if (model.TextureScale <= 0 || model.TextureWidth <= 0 || model.TextureHeight <= 0) {
+    return { x: 0, y: 0 };
+  }
+
+  return {
+    x: (model.TextureBodyOriginX - model.TextureWidth / 2) / model.TextureScale,
+    y: (model.TextureBodyOriginY - model.TextureHeight / 2) / model.TextureScale,
+  };
 };
 
 // Переводит локальное тело объекта в экранные точки камеры пилота.
