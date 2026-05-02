@@ -62,6 +62,14 @@ func testWorldData(t *testing.T) world.Data {
 			3: {ID: 3, Title: "Station", CosmicObjectModelID: 3, X: 500, Y: 500, Mass: 185.625, MaxSpeed: 486, MaxAngularSpeed: 3, Enabled: true, Anchored: true},
 		},
 	}
+	assemblies := &data.Assemblies{
+		MaxID: 3,
+		Items: map[int64]*data.Assembly{
+			1: {ID: 1, AuthorCharacterID: 1, Title: "Private Ship", CosmicObjectModelID: 1, IsPublic: true, Mass: 999, MaxArmor: 999, MaxAlongForce: 999, MaxAcrossForce: 999, MaxTorque: 999},
+			2: {ID: 2, AuthorCharacterID: 0, Title: "Default Ship", CosmicObjectModelID: 1, IsPublic: true, Mass: 900, MaxArmor: 300, MaxAlongForce: 90000, MaxAcrossForce: 80000, MaxTorque: 70000, GeneratingPower: 10, ConsumingPower: 20, Complexity: 30, OccupiedVolume: 40, MaxFuel: 50},
+			3: {ID: 3, AuthorCharacterID: 0, Title: "Default New Ship", CosmicObjectModelID: 4, IsPublic: true, Mass: 1200, MaxArmor: 400, MaxAlongForce: 120000, MaxAcrossForce: 110000, MaxTorque: 100000, GeneratingPower: 11, ConsumingPower: 21, Complexity: 31, OccupiedVolume: 41, MaxFuel: 51},
+		},
+	}
 
 	if err := accounts.RebuildIndexes(); err != nil {
 		t.Fatal(err)
@@ -78,6 +86,9 @@ func testWorldData(t *testing.T) world.Data {
 	if err := cosmicObjects.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
+	if err := assemblies.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
 
 	return world.Data{
 		Accounts:           accounts,
@@ -85,6 +96,7 @@ func testWorldData(t *testing.T) world.Data {
 		CosmicObjects:      cosmicObjects,
 		CosmicObjectTypes:  cosmicObjectTypes,
 		CosmicObjectModels: cosmicObjectModels,
+		Assemblies:         assemblies,
 	}
 }
 
@@ -124,6 +136,44 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 }
 
+func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].X = 10
+	serverData.CosmicObjects.Items[1].VelocityY = 3
+
+	world.New(1, serverData)
+	cosmicObject := serverData.CosmicObjects.Items[1]
+
+	if cosmicObject.Mass != 900 || cosmicObject.MaxArmor != 300 || cosmicObject.MaxAlongForce != 90000 || cosmicObject.MaxAcrossForce != 80000 || cosmicObject.MaxTorque != 70000 {
+		t.Fatalf("loaded ship stats were not copied from assembly: %+v", cosmicObject)
+	}
+	if cosmicObject.X != 10 || cosmicObject.VelocityY != 3 {
+		t.Fatalf("loaded ship movement state was not preserved: %+v", cosmicObject)
+	}
+}
+
+func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	account, err := gameWorld.CreateStarterAccount()
+	if err != nil {
+		t.Fatalf("CreateStarterAccount returned error: %v", err)
+	}
+	character, ok := serverData.Characters.Get(account.CurrentCharacterID)
+	if !ok {
+		t.Fatalf("created character was not stored")
+	}
+	cosmicObject, ok := serverData.CosmicObjects.Get(character.LocationCosmicObjectID)
+	if !ok {
+		t.Fatalf("created ship was not stored")
+	}
+
+	if cosmicObject.Mass != 900 || cosmicObject.MaxArmor != 300 || cosmicObject.MaxAlongForce != 90000 || cosmicObject.MaxAcrossForce != 80000 || cosmicObject.MaxTorque != 70000 {
+		t.Fatalf("starter ship stats were not copied from assembly: %+v", cosmicObject)
+	}
+}
+
 func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -144,14 +194,38 @@ func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) 
 	if object.CosmicObjectModelID != 4 {
 		t.Fatalf("got model %v, want another ship model 4", object.CosmicObjectModelID)
 	}
-	if object.Mass != 12 || object.Capacity != 20 || object.MaxArmor != 150 || object.MaxSpeed != 600 || object.MaxAngularSpeed != 4 {
-		t.Fatalf("ship stats were not copied from selected model: %+v", object)
+	if object.Mass != 1200 || object.Capacity != 20 || object.MaxArmor != 400 || object.MaxSpeed != 600 || object.MaxAngularSpeed != 4 || object.MaxAlongForce != 120000 || object.MaxAcrossForce != 110000 || object.MaxTorque != 100000 {
+		t.Fatalf("ship stats were not copied from selected assembly and model: %+v", object)
 	}
 	if len(serverData.CosmicObjects.GetByCosmicObjectModelID(1)) != 0 {
 		t.Fatalf("old model index still contains changed object")
 	}
 	if len(serverData.CosmicObjects.GetByCosmicObjectModelID(4)) != 1 {
 		t.Fatalf("new model index does not contain changed object")
+	}
+}
+
+func TestChangeControlledShipToRandomModelKeepsMovementState(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].X = 10
+	serverData.CosmicObjects.Items[1].Y = 20
+	serverData.CosmicObjects.Items[1].VelocityX = 3
+	serverData.CosmicObjects.Items[1].VelocityY = 4
+	gameWorld := world.New(1, serverData)
+
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	if !gameWorld.ChangeControlledShipToRandomModel(1) {
+		t.Fatalf("ship model was not changed")
+	}
+	object, ok := serverData.CosmicObjects.Get(1)
+	if !ok {
+		t.Fatalf("object was not found")
+	}
+
+	if object.X != 10 || object.Y != 20 || object.VelocityX != 3 || object.VelocityY != 4 {
+		t.Fatalf("movement state was not preserved: %+v", object)
 	}
 }
 

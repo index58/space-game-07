@@ -36,6 +36,7 @@ func main() {
 		CosmicObjectTypes:  serverData.CosmicObjectTypes,
 		CosmicObjectModels: serverData.CosmicObjectModels,
 		Itemtypes:          serverData.Itemtypes,
+		Assemblies:         serverData.Assemblies,
 	})
 	hub := transport.NewHub(gameWorld)
 	handler := transport.NewHandler(hub, serverData.Accounts)

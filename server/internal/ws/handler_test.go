@@ -99,10 +99,25 @@ func testWorld(t *testing.T, accounts *data.Accounts) *world.World {
 		t.Fatalf("Add model returned error: %v", err)
 	}
 
+	assemblies := data.NewAssemblies()
+	if _, err := assemblies.Add(&data.Assembly{
+		Title:               "Starter Assembly",
+		CosmicObjectModelID: 1,
+		IsPublic:            true,
+		Mass:                9000,
+		MaxArmor:            100,
+		MaxAlongForce:       900000,
+		MaxAcrossForce:      900000,
+		MaxTorque:           900000,
+	}); err != nil {
+		t.Fatalf("Add assembly returned error: %v", err)
+	}
+
 	return world.New(1, world.Data{
 		Accounts:           accounts,
 		Characters:         data.NewCharacters(),
 		CosmicObjects:      data.NewCosmicObjects(),
 		CosmicObjectModels: models,
+		Assemblies:         assemblies,
 	})
 }

@@ -15,12 +15,14 @@ const cosmicObjectsFileName = "CosmicObjects.json"
 const cosmicObjectTypesFileName = "CosmicObjectTypes.json"
 const cosmicObjectModelsFileName = "CosmicObjectModels.json"
 const itemtypesFileName = "Itemtypes.json"
-const npcClanFileName = "NpcClan.json"
-const itemModelFileName = "ItemModel.json"
-const blueprintFileName = "Blueprint.json"
-const blueprintComponentFileName = "BlueprintComponent.json"
-const schemaFileName = "Schema.json"
-const schemaComponentFileName = "SchemaComponent.json"
+const npcClanFileName = "NpcClans.json"
+const itemModelFileName = "ItemModels.json"
+const blueprintFileName = "Blueprints.json"
+const blueprintComponentFileName = "BlueprintComponents.json"
+const schemaFileName = "Schemas.json"
+const schemaComponentFileName = "SchemaComponents.json"
+const assemblyFileName = "Assemblies.json"
+const assemblyEquipmentGroupFileName = "AssemblyEquipmentGroups.json"
 
 // Хранит таблицу, для которой на сервере пока нет отдельной предметной модели.
 type RawReferenceTable struct {
@@ -37,53 +39,66 @@ func NewRawReferenceTable() *RawReferenceTable {
 
 // Объединяет данные сервера, загружаемые из JSON-файлов при старте.
 type ServerData struct {
-	Accounts            *data.Accounts           // Загруженные учетные записи игроков.
-	Characters          *data.Characters         // Загруженные персонажи игроков.
-	CosmicObjects       *data.CosmicObjects      // Загруженные экземпляры объектов мира.
-	CosmicObjectTypes   *data.CosmicObjectTypes  // Загруженный справочник типов космических объектов.
-	CosmicObjectModels  *data.CosmicObjectModels // Загруженный справочник моделей космических объектов.
-	Itemtypes           *data.Itemtypes          // Загруженный справочник типов предметов.
-	NpcClans            *RawReferenceTable       // Загруженный справочник NPC-кланов.
-	ItemModels          *RawReferenceTable       // Загруженный справочник моделей предметов.
-	Blueprints          *RawReferenceTable       // Загруженный справочник чертежей объектов.
-	BlueprintComponents *RawReferenceTable       // Загруженный справочник компонентов чертежей.
-	Schemas             *RawReferenceTable       // Загруженный справочник схем предметов.
-	SchemaComponents    *RawReferenceTable       // Загруженный справочник компонентов схем.
+	Accounts                *data.Accounts                // Загруженные учетные записи игроков.
+	Characters              *data.Characters              // Загруженные персонажи игроков.
+	CosmicObjects           *data.CosmicObjects           // Загруженные экземпляры объектов мира.
+	CosmicObjectTypes       *data.CosmicObjectTypes       // Загруженный справочник типов космических объектов.
+	CosmicObjectModels      *data.CosmicObjectModels      // Загруженный справочник моделей космических объектов.
+	Itemtypes               *data.Itemtypes               // Загруженный справочник типов предметов.
+	Assemblies              *data.Assemblies              // Загруженный справочник сборок космических объектов.
+	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Загруженный справочник оборудования сборок.
+	NpcClans                *RawReferenceTable            // Загруженный справочник NPC-кланов.
+	ItemModels              *RawReferenceTable            // Загруженный справочник моделей предметов.
+	Blueprints              *RawReferenceTable            // Загруженный справочник чертежей объектов.
+	BlueprintComponents     *RawReferenceTable            // Загруженный справочник компонентов чертежей.
+	Schemas                 *RawReferenceTable            // Загруженный справочник схем предметов.
+	SchemaComponents        *RawReferenceTable            // Загруженный справочник компонентов схем.
 }
 
 // Загружает все JSON-файлы данных сервера из указанного рабочего каталога.
 func LoadServerData(workingDirectory string) (*ServerData, error) {
+	dataDirectory := filepath.Join(workingDirectory, "data")
+
 	accounts := data.NewAccounts()
-	if err := accounts.LoadFromFile(filepath.Join(workingDirectory, "data", accountsFileName)); err != nil {
+	if err := accounts.LoadFromFile(filepath.Join(dataDirectory, accountsFileName)); err != nil {
 		return nil, err
 	}
 
 	characters := data.NewCharacters()
-	if err := characters.LoadFromFile(filepath.Join(workingDirectory, "data", charactersFileName)); err != nil {
+	if err := characters.LoadFromFile(filepath.Join(dataDirectory, charactersFileName)); err != nil {
 		return nil, err
 	}
 
 	cosmicObjects := data.NewCosmicObjects()
-	if err := cosmicObjects.LoadFromFile(filepath.Join(workingDirectory, "data", cosmicObjectsFileName)); err != nil {
+	if err := cosmicObjects.LoadFromFile(filepath.Join(dataDirectory, cosmicObjectsFileName)); err != nil {
 		return nil, err
 	}
 
 	cosmicObjectTypes := data.NewCosmicObjectTypes()
-	if err := cosmicObjectTypes.LoadFromFile(filepath.Join(workingDirectory, "data", cosmicObjectTypesFileName)); err != nil {
+	if err := cosmicObjectTypes.LoadFromFile(filepath.Join(dataDirectory, cosmicObjectTypesFileName)); err != nil {
 		return nil, err
 	}
 
 	cosmicObjectModels := data.NewCosmicObjectModels()
-	if err := cosmicObjectModels.LoadFromFile(filepath.Join(workingDirectory, "data", cosmicObjectModelsFileName)); err != nil {
+	if err := cosmicObjectModels.LoadFromFile(filepath.Join(dataDirectory, cosmicObjectModelsFileName)); err != nil {
 		return nil, err
 	}
 
 	itemtypes := data.NewItemtypes()
-	if err := itemtypes.LoadFromFile(filepath.Join(workingDirectory, "data", itemtypesFileName)); err != nil {
+	if err := itemtypes.LoadFromFile(filepath.Join(dataDirectory, itemtypesFileName)); err != nil {
 		return nil, err
 	}
 
-	dataDirectory := filepath.Join(workingDirectory, "data")
+	assemblies, err := loadOptionalAssemblies(filepath.Join(dataDirectory, assemblyFileName))
+	if err != nil {
+		return nil, err
+	}
+
+	assemblyEquipmentGroups, err := loadOptionalAssemblyEquipmentGroups(filepath.Join(dataDirectory, assemblyEquipmentGroupFileName))
+	if err != nil {
+		return nil, err
+	}
+
 	npcClans, err := loadOptionalRawReferenceTable(filepath.Join(dataDirectory, npcClanFileName))
 	if err != nil {
 		return nil, err
@@ -110,18 +125,20 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 	}
 
 	return &ServerData{
-		Accounts:            accounts,
-		Characters:          characters,
-		CosmicObjects:       cosmicObjects,
-		CosmicObjectTypes:   cosmicObjectTypes,
-		CosmicObjectModels:  cosmicObjectModels,
-		Itemtypes:           itemtypes,
-		NpcClans:            npcClans,
-		ItemModels:          itemModels,
-		Blueprints:          blueprints,
-		BlueprintComponents: blueprintComponents,
-		Schemas:             schemas,
-		SchemaComponents:    schemaComponents,
+		Accounts:                accounts,
+		Characters:              characters,
+		CosmicObjects:           cosmicObjects,
+		CosmicObjectTypes:       cosmicObjectTypes,
+		CosmicObjectModels:      cosmicObjectModels,
+		Itemtypes:               itemtypes,
+		Assemblies:              assemblies,
+		AssemblyEquipmentGroups: assemblyEquipmentGroups,
+		NpcClans:                npcClans,
+		ItemModels:              itemModels,
+		Blueprints:              blueprints,
+		BlueprintComponents:     blueprintComponents,
+		Schemas:                 schemas,
+		SchemaComponents:        schemaComponents,
 	}, nil
 }
 
@@ -143,4 +160,28 @@ func loadOptionalRawReferenceTable(path string) (*RawReferenceTable, error) {
 		loaded.Items = make(map[string]json.RawMessage)
 	}
 	return loaded, nil
+}
+
+// Загружает необязательную таблицу сборок или возвращает пустой контейнер до появления файла.
+func loadOptionalAssemblies(path string) (*data.Assemblies, error) {
+	assemblies := data.NewAssemblies()
+	if err := assemblies.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewAssemblies(), nil
+		}
+		return nil, err
+	}
+	return assemblies, nil
+}
+
+// Загружает необязательную таблицу оборудования сборок или возвращает пустой контейнер до появления файла.
+func loadOptionalAssemblyEquipmentGroups(path string) (*data.AssemblyEquipmentGroups, error) {
+	groups := data.NewAssemblyEquipmentGroups()
+	if err := groups.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewAssemblyEquipmentGroups(), nil
+		}
+		return nil, err
+	}
+	return groups, nil
 }

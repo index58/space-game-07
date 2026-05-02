@@ -16,38 +16,39 @@ const (
 	defaultAccountEmailDomain = "auto.local"
 	defaultAccountPassword    = "auto"
 	defaultStarterShipAcronym = "ship_bat"
-	defaultStarterShipForce   = 1287901.529888449
-	defaultStarterShipTorque  = 653565
 )
 
-// Собирает все загруженные справочники и игровые сущности, нужные миру.
+// Собирает справочники и игровые сущности, нужные симуляции мира.
 type Data struct {
 	Accounts           *data.Accounts           // Учетные записи, доступные игровой симуляции.
 	Characters         *data.Characters         // Персонажи, доступные игровой симуляции.
-	CosmicObjects      *data.CosmicObjects      // Экземпляры объектов, которые участвуют в мире.
+	CosmicObjects      *data.CosmicObjects      // Экземпляры объектов, участвующие в мире.
 	CosmicObjectTypes  *data.CosmicObjectTypes  // Справочник типов объектов для правил мира.
 	CosmicObjectModels *data.CosmicObjectModels // Справочник моделей объектов для физики и отображения.
 	Itemtypes          *data.Itemtypes          // Справочник типов предметов для серверной логики.
+	Assemblies         *data.Assemblies         // Справочник сборок для расчета характеристик кораблей.
 }
 
-// Управляет подключенными аккаунтами, входами игроков и пошаговой симуляцией объектов.
+// Управляет подключенными аккаунтами, вводом игроков и пошаговой симуляцией объектов.
 type World struct {
 	mu               sync.Mutex               // Защищает изменяемое состояние мира от параллельных горутин.
 	tick             int64                    // Номер последнего выполненного шага симуляции.
 	data             Data                     // Справочники и игровые сущности, которыми управляет мир.
 	accountObjectIDs map[int64]int64          // Связь подключенных аккаунтов с управляемыми объектами.
 	inputs           map[int64]game.ShipInput // Последний принятый ввод для каждого подключенного аккаунта.
-	random           *rand.Rand               // Источник случайности для команд, воспроизводимых по начальному зерну.
+	random           *rand.Rand               // Источник случайности для воспроизводимых команд.
 }
 
 // Создает мир поверх уже загруженных серверных данных.
 func New(seed int64, serverData Data) *World {
-	return &World{
+	created := &World{
 		data:             serverData,
 		accountObjectIDs: map[int64]int64{},
 		inputs:           map[int64]game.ShipInput{},
 		random:           rand.New(rand.NewSource(seed)),
 	}
+	created.applyAssembliesToLoadedShips()
+	return created
 }
 
 // Привязывает аккаунт к текущему объекту его персонажа и разрешает получать ввод.
@@ -83,6 +84,10 @@ func (world *World) CreateStarterAccount() (*data.Account, error) {
 	if !ok {
 		return nil, fmt.Errorf("starter ship model %q not found", defaultStarterShipAcronym)
 	}
+	assembly, ok := world.firstPublicDeveloperAssembly(model.ID)
+	if !ok {
+		return nil, fmt.Errorf("public developer assembly for starter ship model %q not found", defaultStarterShipAcronym)
+	}
 
 	nextAccountID := world.data.Accounts.MaxID + 1
 	account, err := world.data.Accounts.Add(&data.Account{
@@ -102,32 +107,19 @@ func (world *World) CreateStarterAccount() (*data.Account, error) {
 		return nil, err
 	}
 
-	cosmicObject, err := world.data.CosmicObjects.Add(&data.CosmicObject{
-		Title:               model.TitleRu,
-		CosmicObjectModelID: model.ID,
-		OwnerCharacterID:    character.ID,
-		CreatorCharacterID:  character.ID,
-		Mass:                model.Mass,
-		Capacity:            model.Capacity,
-		MaxArmor:            model.MaxArmor,
-		MaxSpeed:            model.MaxSpeed,
-		MaxAngularSpeed:     model.MaxAngularSpeed,
-		Armor:               model.MaxArmor,
-		MaxAlongForce:       defaultStarterShipForce,
-		MaxAcrossForce:      defaultStarterShipForce,
-		MaxTorque:           defaultStarterShipTorque,
-		Enabled:             true,
-		TargetRotation:      0,
-	})
+	cosmicObject := world.cosmicObjectFromModelAndAssembly(model, assembly)
+	cosmicObject.OwnerCharacterID = character.ID
+	cosmicObject.CreatorCharacterID = character.ID
+	createdObject, err := world.data.CosmicObjects.Add(cosmicObject)
 	if err != nil {
 		world.data.Characters.Delete(character.ID)
 		world.data.Accounts.Delete(account.ID)
 		return nil, err
 	}
 
-	character.LocationCosmicObjectID = cosmicObject.ID
+	character.LocationCosmicObjectID = createdObject.ID
 	if err := world.data.Accounts.SetCurrentCharacter(account.ID, character.ID); err != nil {
-		world.data.CosmicObjects.Delete(cosmicObject.ID)
+		world.data.CosmicObjects.Delete(createdObject.ID)
 		world.data.Characters.Delete(character.ID)
 		world.data.Accounts.Delete(account.ID)
 		return nil, err
@@ -180,7 +172,9 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	candidateIDs := make([]int64, 0)
 	for modelID, model := range world.data.CosmicObjectModels.Items {
 		if model.CosmicObjectTypeID == shipType.ID && modelID != cosmicObject.CosmicObjectModelID {
-			candidateIDs = append(candidateIDs, modelID)
+			if _, ok := world.firstPublicDeveloperAssembly(modelID); ok {
+				candidateIDs = append(candidateIDs, modelID)
+			}
 		}
 	}
 	if len(candidateIDs) == 0 {
@@ -194,15 +188,12 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	if !ok {
 		return false
 	}
+	assembly, ok := world.firstPublicDeveloperAssembly(model.ID)
+	if !ok {
+		return false
+	}
 
-	cosmicObject.Title = model.TitleRu
-	cosmicObject.CosmicObjectModelID = model.ID
-	cosmicObject.Mass = model.Mass
-	cosmicObject.Capacity = model.Capacity
-	cosmicObject.MaxArmor = model.MaxArmor
-	cosmicObject.Armor = model.MaxArmor
-	cosmicObject.MaxSpeed = model.MaxSpeed
-	cosmicObject.MaxAngularSpeed = model.MaxAngularSpeed
+	world.applyModelAndAssembly(cosmicObject, model, assembly)
 
 	return world.data.CosmicObjects.RebuildIndexes() == nil
 }
@@ -286,6 +277,11 @@ func (world *World) SaveData(workingDirectory string) error {
 	if err := world.data.CosmicObjectModels.SaveToFile(filepath.Join(dataDirectory, "CosmicObjectModels.json")); err != nil {
 		return err
 	}
+	if world.data.Assemblies != nil {
+		if err := world.data.Assemblies.SaveToFile(filepath.Join(dataDirectory, "Assemblies.json")); err != nil {
+			return err
+		}
+	}
 	if world.data.Itemtypes != nil {
 		return world.data.Itemtypes.SaveToFile(filepath.Join(dataDirectory, "Itemtypes.json"))
 	}
@@ -316,5 +312,71 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		Tick:         world.tick,
 		SelfObjectID: selfObjectID,
 		Objects:      objects,
+	}
+}
+
+// Ищет первую публичную системную сборку для модели корпуса.
+func (world *World) firstPublicDeveloperAssembly(cosmicObjectModelID int64) (*data.Assembly, bool) {
+	if world.data.Assemblies == nil {
+		return nil, false
+	}
+	return world.data.Assemblies.FirstPublicDeveloperAssembly(cosmicObjectModelID)
+}
+
+// Обновляет сохраненные корабли по системным публичным сборкам, сохраняя их движение и владельцев.
+func (world *World) applyAssembliesToLoadedShips() {
+	if world.data.CosmicObjects == nil || world.data.CosmicObjectModels == nil || world.data.CosmicObjectTypes == nil {
+		return
+	}
+
+	shipType, ok := world.data.CosmicObjectTypes.GetByAcronym("Ship")
+	if !ok {
+		return
+	}
+
+	for _, cosmicObject := range world.data.CosmicObjects.Items {
+		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
+		if !ok || model.CosmicObjectTypeID != shipType.ID {
+			continue
+		}
+		assembly, ok := world.firstPublicDeveloperAssembly(model.ID)
+		if !ok {
+			continue
+		}
+		world.applyModelAndAssembly(cosmicObject, model, assembly)
+	}
+}
+
+// Собирает новый объект из модели корпуса и рассчитанной сборки.
+func (world *World) cosmicObjectFromModelAndAssembly(model *data.CosmicObjectModel, assembly *data.Assembly) *data.CosmicObject {
+	cosmicObject := &data.CosmicObject{Enabled: true}
+	world.applyModelAndAssembly(cosmicObject, model, assembly)
+	cosmicObject.Armor = assembly.MaxArmor
+	cosmicObject.Fuel = assembly.MaxFuel
+	return cosmicObject
+}
+
+// Применяет рассчитанные характеристики сборки, не трогая движение и владение объектом.
+func (world *World) applyModelAndAssembly(cosmicObject *data.CosmicObject, model *data.CosmicObjectModel, assembly *data.Assembly) {
+	cosmicObject.Title = model.TitleRu
+	cosmicObject.CosmicObjectModelID = model.ID
+	cosmicObject.Mass = assembly.Mass
+	cosmicObject.Capacity = model.Capacity
+	cosmicObject.MaxArmor = assembly.MaxArmor
+	cosmicObject.MaxSpeed = model.MaxSpeed
+	cosmicObject.MaxAngularSpeed = model.MaxAngularSpeed
+	cosmicObject.MaxAlongForce = assembly.MaxAlongForce
+	cosmicObject.MaxAcrossForce = assembly.MaxAcrossForce
+	cosmicObject.MaxTorque = assembly.MaxTorque
+	cosmicObject.GeneratingPower = assembly.GeneratingPower
+	cosmicObject.ConsumingPower = assembly.ConsumingPower
+	cosmicObject.Complexity = assembly.Complexity
+	cosmicObject.OccupiedVolume = assembly.OccupiedVolume
+	cosmicObject.MaxFuel = assembly.MaxFuel
+	if cosmicObject.Armor > assembly.MaxArmor {
+		cosmicObject.Armor = assembly.MaxArmor
+	}
+	if cosmicObject.Fuel > assembly.MaxFuel {
+		cosmicObject.Fuel = assembly.MaxFuel
 	}
 }

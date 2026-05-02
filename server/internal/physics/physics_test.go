@@ -21,7 +21,7 @@ func testShip(id int64, x float64, y float64) data.CosmicObject {
 		CosmicObjectModelID: 1,
 		X:                   x,
 		Y:                   y,
-		Mass:                7.92,
+		Mass:                7920,
 		MaxSpeed:            497,
 		MaxAngularSpeed:     3,
 		MaxAlongForce:       1287901.529888449,
@@ -62,6 +62,22 @@ func TestStepShipAcceleratesForwardAlongPositiveYAtZeroRotation(t *testing.T) {
 
 	closeTo(t, next.VelocityX, 0)
 	closeTo(t, next.VelocityY, 162.61382953137096)
+}
+
+func TestStepShipUsesObjectMassAsKilograms(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.Mass = 1000
+	ship.MaxAlongForce = 100000
+	ship.MaxSpeed = 1000
+
+	next := physics.StepShip(
+		ship,
+		testModel(),
+		game.ShipInput{ThrustForward: true},
+		1,
+	)
+
+	closeTo(t, next.VelocityY, 100)
 }
 
 func TestStepShipClampsLinearVelocityToModelMaximum(t *testing.T) {

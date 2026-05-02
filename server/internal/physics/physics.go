@@ -12,8 +12,6 @@ const (
 	Epsilon = 0.000001
 	// Задает допуск, при котором корабль считается почти повернутым к цели.
 	angleEpsilon = 0.0001
-	// Переводит массу из единиц данных в килограммы для физических формул.
-	objectMassScale = 1000
 )
 
 // Переводит пиксельный размер физического тела модели в метры мира.
@@ -27,9 +25,7 @@ func BodySizeMeters(model data.CosmicObjectModel) game.WorldVector {
 // Оценивает момент инерции корабля как прямоугольного тела.
 func MomentOfInertia(cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
 	body := BodySizeMeters(model)
-	massKg := cosmicObject.Mass * objectMassScale
-
-	return massKg * (body.X*body.X + body.Y*body.Y) / 16
+	return cosmicObject.Mass * (body.X*body.X + body.Y*body.Y) / 16
 }
 
 // Возвращает локальную ось "вперед" для текущего угла корабля.
@@ -167,8 +163,7 @@ func StepShip(cosmicObject data.CosmicObject, model data.CosmicObjectModel, inpu
 		across--
 	}
 
-	massKg := cosmicObject.Mass * objectMassScale
-	linearAcceleration := cosmicObject.MaxAlongForce / massKg
+	linearAcceleration := cosmicObject.MaxAlongForce / cosmicObject.Mass
 	currentVelocity := game.WorldVector{X: cosmicObject.VelocityX, Y: cosmicObject.VelocityY}
 	alongVelocity := 0.0
 	if hasAlongControl {
