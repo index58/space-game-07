@@ -304,11 +304,11 @@ func (world *World) resolveAllCollisions() {
 			if !ok {
 				continue
 			}
-			correction, collided := physics.CollisionCorrection(*first, *firstModel, *second, *secondModel)
+			collision, collided := physics.CollisionInfo(*first, *firstModel, *second, *secondModel)
 			if !collided {
 				continue
 			}
-			nextFirst, nextSecond := physics.ApplyCollisionResponse(*first, *second, correction)
+			nextFirst, nextSecond := physics.ApplyCollisionResponse(*first, *firstModel, *second, *secondModel, collision)
 			*first = nextFirst
 			*second = nextSecond
 		}

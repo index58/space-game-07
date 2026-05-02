@@ -341,7 +341,10 @@ func TestApplyCollisionResponseBouncesAlongNormalWithRestitution(t *testing.T) {
 	obstacle.Enabled = true
 	obstacle.Anchored = true
 
-	next, nextObstacle := physics.ApplyCollisionResponse(ship, obstacle, game.WorldVector{X: 2, Y: 0})
+	next, nextObstacle := physics.ApplyCollisionResponse(ship, testModel(), obstacle, testModel(), physics.Collision{
+		Correction:   game.WorldVector{X: 2, Y: 0},
+		ContactPoint: game.WorldVector{},
+	})
 
 	closeTo(t, next.X, 2)
 	closeTo(t, nextObstacle.X, 0)
@@ -359,10 +362,35 @@ func TestApplyCollisionResponseUsesMassesForMovableBodies(t *testing.T) {
 	obstacle.Enabled = true
 	obstacle.Mass = 1
 
-	next, nextObstacle := physics.ApplyCollisionResponse(ship, obstacle, game.WorldVector{X: 2, Y: 0})
+	next, nextObstacle := physics.ApplyCollisionResponse(ship, testModel(), obstacle, testModel(), physics.Collision{
+		Correction:   game.WorldVector{X: 2, Y: 0},
+		ContactPoint: game.WorldVector{},
+	})
 
 	closeTo(t, next.X, 1)
 	closeTo(t, nextObstacle.X, -1)
 	closeTo(t, next.VelocityX, -2.5)
 	closeTo(t, nextObstacle.VelocityX, -7.5)
+}
+
+func TestApplyCollisionResponseAddsAngularSpeedFromOffCenterContact(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.Enabled = true
+	ship.Mass = 1000
+	ship.MaxAngularSpeed = 10
+	ship.VelocityX = -10
+	obstacle := testShip(2, 0, 0)
+	obstacle.Enabled = true
+	obstacle.Anchored = true
+	collision := physics.Collision{
+		Correction:   game.WorldVector{X: 2, Y: 0},
+		ContactPoint: game.WorldVector{X: 0, Y: 10},
+	}
+
+	next, nextObstacle := physics.ApplyCollisionResponse(ship, testModel(), obstacle, testModel(), collision)
+
+	if next.AngularSpeed <= 0 {
+		t.Fatalf("got angular velocity %v, want positive", next.AngularSpeed)
+	}
+	closeTo(t, nextObstacle.AngularSpeed, 0)
 }
