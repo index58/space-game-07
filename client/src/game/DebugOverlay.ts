@@ -12,6 +12,7 @@ export class DebugOverlay {
   update(
     status: ConnectionStatus,
     selfObject: CosmicObject | null,
+    textureFilePath: string | null,
     fps: number,
     zoom: number,
   ): void {
@@ -30,6 +31,7 @@ export class DebugOverlay {
     this.element.textContent = [
       `Статус: ${status}`,
       `ID своего объекта: ${selfObject.ID}`,
+      `Файл объекта: ${textureFilePath ?? "неизвестно"}`,
       `X: ${formatNumber(selfObject.X)} м`,
       `Y: ${formatNumber(selfObject.Y)} м`,
       `Скорость: ${formatNumber(speed)} м/с`,

@@ -124,9 +124,9 @@
       "MaxArmor": 255,
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
-      "X": -402.36724846526295,
-      "Y": 559.4128647602163,
-      "Rotation": -24.437500000000266,
+      "X": -304.16790917996826,
+      "Y": 485.3166116447326,
+      "Rotation": -24.775000000000276,
       "Armor": 0,
       "MaxAlongForce": 8200000,
       "MaxAcrossForce": 8200000,
@@ -147,7 +147,7 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -24.437500000000266
+      "TargetRotation": -24.775000000000276
     },
     "5": {
       "ID": 5,

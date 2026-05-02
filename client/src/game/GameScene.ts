@@ -112,13 +112,19 @@ export class GameScene extends Phaser.Scene {
 
     if (status !== "connected" || !snapshot || !selfObject) {
       this.renderWaiting(status);
-      this.debugOverlay.update(status, null, this.game.loop.actualFps, this.zoomScale);
+      this.debugOverlay.update(status, null, null, this.game.loop.actualFps, this.zoomScale);
       return;
     }
 
     this.waitingText.setVisible(false);
     this.renderWorld(snapshot.objects, selfObject);
-    this.debugOverlay.update(status, selfObject, this.game.loop.actualFps, this.zoomScale);
+    this.debugOverlay.update(
+      status,
+      selfObject,
+      this.modelForObject(selfObject)?.TextureFilePath ?? null,
+      this.game.loop.actualFps,
+      this.zoomScale,
+    );
   }
 
   // Показывает фон и статус, пока нет валидного снимка объекта игрока.
