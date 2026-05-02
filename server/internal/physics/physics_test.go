@@ -274,8 +274,10 @@ func TestStepShipDoesNotAutobrakeAcrossAxisWhenLeftAndRightPressed(t *testing.T)
 	closeTo(t, next.VelocityY, 0)
 }
 
-func TestStepUnpilotedShipAppliesReferenceQuadraticDrag(t *testing.T) {
+func TestStepUnpilotedShipAppliesConstantBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
+	ship.Mass = 1000
+	ship.MaxAlongForce = 100000
 	ship.VelocityX = 100
 
 	next := physics.StepUnpilotedShip(ship, 0.1)
@@ -286,8 +288,26 @@ func TestStepUnpilotedShipAppliesReferenceQuadraticDrag(t *testing.T) {
 	closeTo(t, next.X, 9)
 }
 
-func TestStepUnpilotedShipKeepsVelocityDirectionDuringQuadraticDrag(t *testing.T) {
+func TestStepUnpilotedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
+	slowShip := testShip(1, 0, 0)
+	slowShip.Mass = 1000
+	slowShip.MaxAlongForce = 100000
+	slowShip.VelocityX = 100
+	fastShip := slowShip
+	fastShip.ID = 2
+	fastShip.VelocityX = 200
+
+	nextSlow := physics.StepUnpilotedShip(slowShip, 0.1)
+	nextFast := physics.StepUnpilotedShip(fastShip, 0.1)
+
+	closeTo(t, slowShip.VelocityX-nextSlow.VelocityX, 10)
+	closeTo(t, fastShip.VelocityX-nextFast.VelocityX, 10)
+}
+
+func TestStepUnpilotedShipKeepsVelocityDirectionDuringConstantBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
+	ship.Mass = 1000
+	ship.MaxAlongForce = 100000
 	ship.VelocityX = 60
 	ship.VelocityY = 80
 
@@ -298,8 +318,10 @@ func TestStepUnpilotedShipKeepsVelocityDirectionDuringQuadraticDrag(t *testing.T
 	closeTo(t, next.Speed, 90)
 }
 
-func TestStepUnpilotedShipDoesNotReverseVelocityDuringQuadraticDrag(t *testing.T) {
+func TestStepUnpilotedShipDoesNotReverseVelocityDuringConstantBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
+	ship.Mass = 1000
+	ship.MaxAlongForce = 100000
 	ship.VelocityX = 10
 
 	next := physics.StepUnpilotedShip(ship, 10)

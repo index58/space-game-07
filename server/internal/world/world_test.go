@@ -258,7 +258,7 @@ func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
 		Enabled:             true,
 		X:                   100,
 		Y:                   0,
-		VelocityX:           10,
+		VelocityX:           100,
 		VelocityY:           0,
 	}
 	if err := serverData.CosmicObjects.RebuildIndexes(); err != nil {
@@ -266,7 +266,7 @@ func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
 	}
 	gameWorld := world.New(1, serverData)
 
-	gameWorld.Tick(1)
+	gameWorld.Tick(0.1)
 
 	driftingShip := serverData.CosmicObjects.Items[4]
 	if driftingShip.X <= 100 {
@@ -290,7 +290,7 @@ func TestTickAutobrakesConnectedShipWithoutThrust(t *testing.T) {
 	}
 }
 
-func TestTickAppliesDragToShipAfterDisconnect(t *testing.T) {
+func TestTickAppliesConstantBrakeToShipAfterDisconnect(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 100
 	gameWorld := world.New(1, serverData)
@@ -304,6 +304,38 @@ func TestTickAppliesDragToShipAfterDisconnect(t *testing.T) {
 	ship := serverData.CosmicObjects.Items[1]
 	closeWorldFloat(t, ship.VelocityX, 90)
 	closeWorldFloat(t, ship.X, 9)
+}
+
+func TestTickDisconnectedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].VelocityX = 100
+	serverData.CosmicObjects.MaxID = 4
+	serverData.CosmicObjects.Items[4] = &data.CosmicObject{
+		ID:                  4,
+		Title:               "Fast ship",
+		CosmicObjectModelID: 1,
+		Mass:                900,
+		MaxSpeed:            497,
+		MaxAngularSpeed:     3,
+		MaxAlongForce:       90000,
+		MaxAcrossForce:      80000,
+		MaxTorque:           70000,
+		Enabled:             true,
+		X:                   1000,
+		Y:                   0,
+		VelocityX:           200,
+	}
+	if err := serverData.CosmicObjects.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+
+	gameWorld.Tick(0.1)
+
+	slowShip := serverData.CosmicObjects.Items[1]
+	fastShip := serverData.CosmicObjects.Items[4]
+	closeWorldFloat(t, 100-slowShip.VelocityX, 10)
+	closeWorldFloat(t, 200-fastShip.VelocityX, 10)
 }
 
 func TestTickDoesNotApplyShipDragToUncontrolledAsteroid(t *testing.T) {
