@@ -30,13 +30,15 @@ func main() {
 	)
 
 	gameWorld := world.New(time.Now().UnixNano(), world.Data{
-		Accounts:           serverData.Accounts,
-		Characters:         serverData.Characters,
-		CosmicObjects:      serverData.CosmicObjects,
-		CosmicObjectTypes:  serverData.CosmicObjectTypes,
-		CosmicObjectModels: serverData.CosmicObjectModels,
-		Itemtypes:          serverData.Itemtypes,
-		Assemblies:         serverData.Assemblies,
+		Accounts:                serverData.Accounts,
+		Characters:              serverData.Characters,
+		CosmicObjects:           serverData.CosmicObjects,
+		CosmicObjectTypes:       serverData.CosmicObjectTypes,
+		CosmicObjectModels:      serverData.CosmicObjectModels,
+		Itemtypes:               serverData.Itemtypes,
+		EquipmentGroups:         serverData.EquipmentGroups,
+		Assemblies:              serverData.Assemblies,
+		AssemblyEquipmentGroups: serverData.AssemblyEquipmentGroups,
 	})
 	hub := transport.NewHub(gameWorld)
 	handler := transport.NewHandler(hub, serverData.Accounts)

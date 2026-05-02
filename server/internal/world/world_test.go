@@ -70,6 +70,15 @@ func testWorldData(t *testing.T) world.Data {
 			3: {ID: 3, AuthorCharacterID: 0, Title: "Default New Ship", CosmicObjectModelID: 4, IsPublic: true, Mass: 1200, MaxArmor: 400, MaxAlongForce: 120000, MaxAcrossForce: 110000, MaxTorque: 100000, GeneratingPower: 11, ConsumingPower: 21, Complexity: 31, OccupiedVolume: 41, MaxFuel: 51},
 		},
 	}
+	assemblyEquipmentGroups := &data.AssemblyEquipmentGroups{
+		MaxID: 3,
+		Items: map[int64]*data.AssemblyEquipmentGroup{
+			1: {ID: 1, AssemblyID: 2, Title: "Thrusters", EquipmentItemModelID: 101, Count: 2},
+			2: {ID: 2, AssemblyID: 2, Title: "Torquers", EquipmentItemModelID: 102, Count: 1},
+			3: {ID: 3, AssemblyID: 3, Title: "New Thrusters", EquipmentItemModelID: 201, Count: 4},
+		},
+	}
+	equipmentGroups := data.NewEquipmentGroups()
 
 	if err := accounts.RebuildIndexes(); err != nil {
 		t.Fatal(err)
@@ -89,14 +98,19 @@ func testWorldData(t *testing.T) world.Data {
 	if err := assemblies.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
+	if err := assemblyEquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
 
 	return world.Data{
-		Accounts:           accounts,
-		Characters:         characters,
-		CosmicObjects:      cosmicObjects,
-		CosmicObjectTypes:  cosmicObjectTypes,
-		CosmicObjectModels: cosmicObjectModels,
-		Assemblies:         assemblies,
+		Accounts:                accounts,
+		Characters:              characters,
+		CosmicObjects:           cosmicObjects,
+		CosmicObjectTypes:       cosmicObjectTypes,
+		CosmicObjectModels:      cosmicObjectModels,
+		EquipmentGroups:         equipmentGroups,
+		Assemblies:              assemblies,
+		AssemblyEquipmentGroups: assemblyEquipmentGroups,
 	}
 }
 
@@ -152,6 +166,23 @@ func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {
 	}
 }
 
+func TestNewInstallsAssemblyEquipmentOnLoadedShip(t *testing.T) {
+	serverData := testWorldData(t)
+
+	world.New(1, serverData)
+	installed := serverData.EquipmentGroups.GetByCosmicObjectID(1)
+
+	if len(installed) != 2 {
+		t.Fatalf("got %d equipment groups, want 2", len(installed))
+	}
+	if installed[0].EquipmentItemModelID != 101 || installed[0].Count != 2 || installed[0].EnabledCount != 2 || !installed[0].Enabled || !installed[0].Active {
+		t.Fatalf("first equipment group was not copied from assembly: %+v", installed[0])
+	}
+	if installed[1].EquipmentItemModelID != 102 || installed[1].Count != 1 || installed[1].EnabledCount != 1 || !installed[1].Enabled || !installed[1].Active {
+		t.Fatalf("second equipment group was not copied from assembly: %+v", installed[1])
+	}
+}
+
 func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -171,6 +202,10 @@ func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 
 	if cosmicObject.Mass != 900 || cosmicObject.MaxArmor != 300 || cosmicObject.MaxAlongForce != 90000 || cosmicObject.MaxAcrossForce != 80000 || cosmicObject.MaxTorque != 70000 {
 		t.Fatalf("starter ship stats were not copied from assembly: %+v", cosmicObject)
+	}
+	installed := serverData.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)
+	if len(installed) != 2 {
+		t.Fatalf("got %d starter equipment groups, want 2", len(installed))
 	}
 }
 
@@ -202,6 +237,13 @@ func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) 
 	}
 	if len(serverData.CosmicObjects.GetByCosmicObjectModelID(4)) != 1 {
 		t.Fatalf("new model index does not contain changed object")
+	}
+	installed := serverData.EquipmentGroups.GetByCosmicObjectID(objectID)
+	if len(installed) != 1 {
+		t.Fatalf("got %d equipment groups after model change, want 1", len(installed))
+	}
+	if installed[0].EquipmentItemModelID != 201 || installed[0].Count != 4 {
+		t.Fatalf("equipment was not replaced from selected assembly: %+v", installed[0])
 	}
 }
 

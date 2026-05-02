@@ -20,13 +20,15 @@ const (
 
 // Собирает справочники и игровые сущности, нужные симуляции мира.
 type Data struct {
-	Accounts           *data.Accounts           // Учетные записи, доступные игровой симуляции.
-	Characters         *data.Characters         // Персонажи, доступные игровой симуляции.
-	CosmicObjects      *data.CosmicObjects      // Экземпляры объектов, участвующие в мире.
-	CosmicObjectTypes  *data.CosmicObjectTypes  // Справочник типов объектов для правил мира.
-	CosmicObjectModels *data.CosmicObjectModels // Справочник моделей объектов для физики и отображения.
-	Itemtypes          *data.Itemtypes          // Справочник типов предметов для серверной логики.
-	Assemblies         *data.Assemblies         // Справочник сборок для расчета характеристик кораблей.
+	Accounts                *data.Accounts                // Учетные записи, доступные игровой симуляции.
+	Characters              *data.Characters              // Персонажи, доступные игровой симуляции.
+	CosmicObjects           *data.CosmicObjects           // Экземпляры объектов, участвующие в мире.
+	CosmicObjectTypes       *data.CosmicObjectTypes       // Справочник типов объектов для правил мира.
+	CosmicObjectModels      *data.CosmicObjectModels      // Справочник моделей объектов для физики и отображения.
+	Itemtypes               *data.Itemtypes               // Справочник типов предметов для серверной логики.
+	EquipmentGroups         *data.EquipmentGroups         // Группы оборудования, установленные на объектах мира.
+	Assemblies              *data.Assemblies              // Справочник сборок для расчета характеристик кораблей.
+	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Группы оборудования, заданные в сборках.
 }
 
 // Управляет подключенными аккаунтами, вводом игроков и пошаговой симуляцией объектов.
@@ -116,6 +118,12 @@ func (world *World) CreateStarterAccount() (*data.Account, error) {
 		world.data.Accounts.Delete(account.ID)
 		return nil, err
 	}
+	if err := world.replaceEquipmentFromAssembly(createdObject.ID, assembly); err != nil {
+		world.data.CosmicObjects.Delete(createdObject.ID)
+		world.data.Characters.Delete(character.ID)
+		world.data.Accounts.Delete(account.ID)
+		return nil, err
+	}
 
 	character.LocationCosmicObjectID = createdObject.ID
 	if err := world.data.Accounts.SetCurrentCharacter(account.ID, character.ID); err != nil {
@@ -194,6 +202,9 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	}
 
 	world.applyModelAndAssembly(cosmicObject, model, assembly)
+	if err := world.replaceEquipmentFromAssembly(cosmicObject.ID, assembly); err != nil {
+		return false
+	}
 
 	return world.data.CosmicObjects.RebuildIndexes() == nil
 }
@@ -282,6 +293,11 @@ func (world *World) SaveData(workingDirectory string) error {
 			return err
 		}
 	}
+	if world.data.EquipmentGroups != nil {
+		if err := world.data.EquipmentGroups.SaveToFile(filepath.Join(dataDirectory, "EquipmentGroups.json")); err != nil {
+			return err
+		}
+	}
 	if world.data.Itemtypes != nil {
 		return world.data.Itemtypes.SaveToFile(filepath.Join(dataDirectory, "Itemtypes.json"))
 	}
@@ -344,6 +360,7 @@ func (world *World) applyAssembliesToLoadedShips() {
 			continue
 		}
 		world.applyModelAndAssembly(cosmicObject, model, assembly)
+		_ = world.ensureEquipmentFromAssembly(cosmicObject.ID, assembly)
 	}
 }
 
@@ -379,4 +396,43 @@ func (world *World) applyModelAndAssembly(cosmicObject *data.CosmicObject, model
 	if cosmicObject.Fuel > assembly.MaxFuel {
 		cosmicObject.Fuel = assembly.MaxFuel
 	}
+}
+
+// Устанавливает оборудование из сборки, если у объекта еще нет оборудования.
+func (world *World) ensureEquipmentFromAssembly(cosmicObjectID int64, assembly *data.Assembly) error {
+	if world.data.EquipmentGroups == nil || len(world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObjectID)) > 0 {
+		return nil
+	}
+	return world.installEquipmentFromAssembly(cosmicObjectID, assembly)
+}
+
+// Заменяет оборудование объекта на оборудование выбранной сборки.
+func (world *World) replaceEquipmentFromAssembly(cosmicObjectID int64, assembly *data.Assembly) error {
+	if world.data.EquipmentGroups == nil {
+		return nil
+	}
+	world.data.EquipmentGroups.DeleteByCosmicObjectID(cosmicObjectID)
+	return world.installEquipmentFromAssembly(cosmicObjectID, assembly)
+}
+
+// Копирует группы оборудования сборки на конкретный объект.
+func (world *World) installEquipmentFromAssembly(cosmicObjectID int64, assembly *data.Assembly) error {
+	if world.data.EquipmentGroups == nil || world.data.AssemblyEquipmentGroups == nil {
+		return nil
+	}
+
+	for _, group := range world.data.AssemblyEquipmentGroups.GetByAssemblyID(assembly.ID) {
+		if _, err := world.data.EquipmentGroups.Add(&data.EquipmentGroup{
+			CosmicObjectID:       cosmicObjectID,
+			Title:                group.Title,
+			EquipmentItemModelID: group.EquipmentItemModelID,
+			Count:                group.Count,
+			EnabledCount:         group.Count,
+			Enabled:              true,
+			Active:               true,
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
 }

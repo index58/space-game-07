@@ -15,6 +15,7 @@ const cosmicObjectsFileName = "CosmicObjects.json"
 const cosmicObjectTypesFileName = "CosmicObjectTypes.json"
 const cosmicObjectModelsFileName = "CosmicObjectModels.json"
 const itemtypesFileName = "Itemtypes.json"
+const equipmentGroupFileName = "EquipmentGroups.json"
 const npcClanFileName = "NpcClans.json"
 const itemModelFileName = "ItemModels.json"
 const blueprintFileName = "Blueprints.json"
@@ -45,6 +46,7 @@ type ServerData struct {
 	CosmicObjectTypes       *data.CosmicObjectTypes       // Загруженный справочник типов космических объектов.
 	CosmicObjectModels      *data.CosmicObjectModels      // Загруженный справочник моделей космических объектов.
 	Itemtypes               *data.Itemtypes               // Загруженный справочник типов предметов.
+	EquipmentGroups         *data.EquipmentGroups         // Загруженные группы оборудования космических объектов.
 	Assemblies              *data.Assemblies              // Загруженный справочник сборок космических объектов.
 	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Загруженный справочник оборудования сборок.
 	NpcClans                *RawReferenceTable            // Загруженный справочник NPC-кланов.
@@ -86,6 +88,11 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 
 	itemtypes := data.NewItemtypes()
 	if err := itemtypes.LoadFromFile(filepath.Join(dataDirectory, itemtypesFileName)); err != nil {
+		return nil, err
+	}
+
+	equipmentGroups, err := loadOptionalEquipmentGroups(filepath.Join(dataDirectory, equipmentGroupFileName))
+	if err != nil {
 		return nil, err
 	}
 
@@ -131,6 +138,7 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		CosmicObjectTypes:       cosmicObjectTypes,
 		CosmicObjectModels:      cosmicObjectModels,
 		Itemtypes:               itemtypes,
+		EquipmentGroups:         equipmentGroups,
 		Assemblies:              assemblies,
 		AssemblyEquipmentGroups: assemblyEquipmentGroups,
 		NpcClans:                npcClans,
@@ -160,6 +168,18 @@ func loadOptionalRawReferenceTable(path string) (*RawReferenceTable, error) {
 		loaded.Items = make(map[string]json.RawMessage)
 	}
 	return loaded, nil
+}
+
+// Загружает необязательную таблицу оборудования объектов или возвращает пустой контейнер до появления файла.
+func loadOptionalEquipmentGroups(path string) (*data.EquipmentGroups, error) {
+	groups := data.NewEquipmentGroups()
+	if err := groups.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewEquipmentGroups(), nil
+		}
+		return nil, err
+	}
+	return groups, nil
 }
 
 // Загружает необязательную таблицу сборок или возвращает пустой контейнер до появления файла.

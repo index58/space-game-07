@@ -182,11 +182,24 @@ type AssemblyEquipmentGroup struct {
 type AssemblyEquipmentGroups struct {
 	MaxID int64                             `json:"MaxID"` // Последний выданный числовой идентификатор записей.
 	Items map[int64]*AssemblyEquipmentGroup `json:"Items"` // Основное хранилище записей по числовому идентификатору.
+
+	ByAssemblyID map[int64][]*AssemblyEquipmentGroup `json:"-"` // Быстрый поиск групп оборудования по сборке.
 }
 
 // Создает пустое хранилище групп оборудования.
 func NewAssemblyEquipmentGroups() *AssemblyEquipmentGroups {
-	return &AssemblyEquipmentGroups{Items: make(map[int64]*AssemblyEquipmentGroup)}
+	return &AssemblyEquipmentGroups{
+		Items:        make(map[int64]*AssemblyEquipmentGroup),
+		ByAssemblyID: make(map[int64][]*AssemblyEquipmentGroup),
+	}
+}
+
+// Возвращает группы оборудования указанной сборки.
+func (groups *AssemblyEquipmentGroups) GetByAssemblyID(assemblyID int64) []*AssemblyEquipmentGroup {
+	if groups.ByAssemblyID == nil {
+		_ = groups.RebuildIndexes()
+	}
+	return groups.ByAssemblyID[assemblyID]
 }
 
 // Пересобирает хранилище после загрузки из JSON.
@@ -194,9 +207,18 @@ func (groups *AssemblyEquipmentGroups) RebuildIndexes() error {
 	if groups.Items == nil {
 		groups.Items = make(map[int64]*AssemblyEquipmentGroup)
 	}
+	groups.ByAssemblyID = make(map[int64][]*AssemblyEquipmentGroup)
 
 	var maxID int64
-	for id, group := range groups.Items {
+	ids := make([]int64, 0, len(groups.Items))
+	for id := range groups.Items {
+		ids = append(ids, id)
+	}
+	sort.Slice(ids, func(left int, right int) bool {
+		return ids[left] < ids[right]
+	})
+	for _, id := range ids {
+		group := groups.Items[id]
 		if group == nil {
 			return fmt.Errorf("assembly equipment group with ID %d is nil", id)
 		}
@@ -209,6 +231,7 @@ func (groups *AssemblyEquipmentGroups) RebuildIndexes() error {
 		if id > maxID {
 			maxID = id
 		}
+		groups.ByAssemblyID[group.AssemblyID] = append(groups.ByAssemblyID[group.AssemblyID], group)
 	}
 	if groups.MaxID < maxID {
 		groups.MaxID = maxID

@@ -20,6 +20,7 @@ func TestLoadServerDataLoadsOptionalReferenceTablesWhenFilesExist(t *testing.T) 
 		"CosmicObjectTypes.json":       `{"MaxID":0,"Items":{}}`,
 		"CosmicObjectModels.json":      `{"MaxID":0,"Items":{}}`,
 		"Itemtypes.json":               `{"MaxID":0,"Items":{}}`,
+		"EquipmentGroups.json":         `{"MaxID":1,"Items":{"1":{"ID":1,"CosmicObjectID":1,"Title":"Main","EquipmentItemModelID":1,"Count":2,"EnabledCount":1,"Enabled":true,"Active":true}}}`,
 		"Assemblies.json":              `{"MaxID":1,"Items":{"1":{"ID":1,"Title":"Default","CosmicObjectModelID":1,"IsPublic":true}}}`,
 		"AssemblyEquipmentGroups.json": `{"MaxID":1,"Items":{"1":{"ID":1,"AssemblyID":1,"Title":"Thrusters","EquipmentItemModelID":1,"Count":2}}}`,
 		"NpcClans.json":                `{"MaxID":1,"Items":{"1":{"ID":1,"TitleRu":"Клан","TitleEn":"Clan","Acronym":"Clan"}}}`,
@@ -51,6 +52,13 @@ func TestLoadServerDataLoadsOptionalReferenceTablesWhenFilesExist(t *testing.T) 
 	}
 	if _, ok := serverData.AssemblyEquipmentGroups.Items[1]; !ok {
 		t.Fatal("AssemblyEquipmentGroups item 1 was not loaded")
+	}
+	equipmentGroup, ok := serverData.EquipmentGroups.Get(1)
+	if !ok {
+		t.Fatal("EquipmentGroups item 1 was not loaded")
+	}
+	if equipmentGroup.Count != 2 || equipmentGroup.EnabledCount != 1 {
+		t.Fatalf("EquipmentGroups counts were not loaded as integers: %+v", equipmentGroup)
 	}
 	if _, ok := serverData.ItemModels.Items["1"]; !ok {
 		t.Fatal("ItemModels item 1 was not loaded")
