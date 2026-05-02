@@ -274,7 +274,9 @@ func (world *World) resolveCollisions(moving data.CosmicObject, movingID int64) 
 		if !collided {
 			continue
 		}
-		moving = physics.ApplyCollisionCorrection(moving, correction)
+		nextMoving, nextObstacle := physics.ApplyCollisionResponse(moving, *obstacle, correction)
+		moving = nextMoving
+		*obstacle = nextObstacle
 	}
 
 	return moving

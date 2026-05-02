@@ -7,6 +7,9 @@ import (
 	"space-game-07-server/internal/game"
 )
 
+// Задаёт долю скорости, сохраняемую после отскока по нормали удара.
+const collisionRestitution = 0.1
+
 // Возвращает минимальный сдвиг первого тела, если два выпуклых тела пересекаются.
 func CollisionCorrection(moving data.CosmicObject, movingModel data.CosmicObjectModel, obstacle data.CosmicObject, obstacleModel data.CosmicObjectModel) (game.WorldVector, bool) {
 	movingPolygon := transformedBodyPolygon(moving, movingModel)
@@ -37,28 +40,54 @@ func CollisionCorrection(moving data.CosmicObject, movingModel data.CosmicObject
 	}, true
 }
 
-// Применяет сдвиг и убирает скорость, направленную внутрь препятствия.
-func ApplyCollisionCorrection(cosmicObject data.CosmicObject, correction game.WorldVector) data.CosmicObject {
-	cosmicObject.X += correction.X
-	cosmicObject.Y += correction.Y
-
+// Применяет разделение тел и импульс столкновения с учётом масс.
+func ApplyCollisionResponse(moving data.CosmicObject, obstacle data.CosmicObject, correction game.WorldVector) (data.CosmicObject, data.CosmicObject) {
 	length := math.Hypot(correction.X, correction.Y)
 	if length <= Epsilon {
-		return cosmicObject
+		return moving, obstacle
 	}
 
 	normal := game.WorldVector{
 		X: correction.X / length,
 		Y: correction.Y / length,
 	}
-	velocityAlongNormal := cosmicObject.VelocityX*normal.X + cosmicObject.VelocityY*normal.Y
-	if velocityAlongNormal < 0 {
-		cosmicObject.VelocityX -= normal.X * velocityAlongNormal
-		cosmicObject.VelocityY -= normal.Y * velocityAlongNormal
-		cosmicObject.Speed = math.Hypot(cosmicObject.VelocityX, cosmicObject.VelocityY)
+	movingInverseMass := collisionInverseMass(moving)
+	obstacleInverseMass := collisionInverseMass(obstacle)
+	totalInverseMass := movingInverseMass + obstacleInverseMass
+	if totalInverseMass <= 0 {
+		return moving, obstacle
 	}
 
-	return cosmicObject
+	moving.X += correction.X * movingInverseMass / totalInverseMass
+	moving.Y += correction.Y * movingInverseMass / totalInverseMass
+	obstacle.X -= correction.X * obstacleInverseMass / totalInverseMass
+	obstacle.Y -= correction.Y * obstacleInverseMass / totalInverseMass
+
+	relativeVelocityX := moving.VelocityX - obstacle.VelocityX
+	relativeVelocityY := moving.VelocityY - obstacle.VelocityY
+	velocityAlongNormal := relativeVelocityX*normal.X + relativeVelocityY*normal.Y
+	if velocityAlongNormal >= 0 {
+		return moving, obstacle
+	}
+
+	normalImpulse := -(1 + collisionRestitution) * velocityAlongNormal / totalInverseMass
+	moving.VelocityX += normal.X * normalImpulse * movingInverseMass
+	moving.VelocityY += normal.Y * normalImpulse * movingInverseMass
+	obstacle.VelocityX -= normal.X * normalImpulse * obstacleInverseMass
+	obstacle.VelocityY -= normal.Y * normalImpulse * obstacleInverseMass
+	moving.Speed = math.Hypot(moving.VelocityX, moving.VelocityY)
+	obstacle.Speed = math.Hypot(obstacle.VelocityX, obstacle.VelocityY)
+
+	return moving, obstacle
+}
+
+// Возвращает подвижность тела для импульсного расчёта.
+func collisionInverseMass(cosmicObject data.CosmicObject) float64 {
+	if cosmicObject.Anchored || !cosmicObject.Enabled || cosmicObject.Mass <= 0 {
+		return 0
+	}
+
+	return 1 / cosmicObject.Mass
 }
 
 // Переводит локальные вершины модели в координаты игрового мира.

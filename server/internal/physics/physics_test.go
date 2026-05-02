@@ -273,3 +273,38 @@ func TestStepShipDoesNotAutobrakeAcrossAxisWhenLeftAndRightPressed(t *testing.T)
 	closeTo(t, next.VelocityX, 100)
 	closeTo(t, next.VelocityY, 0)
 }
+
+func TestApplyCollisionResponseBouncesAlongNormalWithRestitution(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.Enabled = true
+	ship.VelocityX = -10
+	ship.VelocityY = 5
+	obstacle := testShip(2, 0, 0)
+	obstacle.Enabled = true
+	obstacle.Anchored = true
+
+	next, nextObstacle := physics.ApplyCollisionResponse(ship, obstacle, game.WorldVector{X: 2, Y: 0})
+
+	closeTo(t, next.X, 2)
+	closeTo(t, nextObstacle.X, 0)
+	closeTo(t, next.VelocityX, 1)
+	closeTo(t, next.VelocityY, 5)
+	closeTo(t, next.Speed, math.Hypot(1, 5))
+}
+
+func TestApplyCollisionResponseUsesMassesForMovableBodies(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.Enabled = true
+	ship.Mass = 1
+	ship.VelocityX = -10
+	obstacle := testShip(2, 0, 0)
+	obstacle.Enabled = true
+	obstacle.Mass = 1
+
+	next, nextObstacle := physics.ApplyCollisionResponse(ship, obstacle, game.WorldVector{X: 2, Y: 0})
+
+	closeTo(t, next.X, 1)
+	closeTo(t, nextObstacle.X, -1)
+	closeTo(t, next.VelocityX, -4.5)
+	closeTo(t, nextObstacle.VelocityX, -5.5)
+}
