@@ -12,6 +12,8 @@ const (
 	Epsilon = 0.000001
 	// Задает допуск, при котором корабль считается почти повернутым к цели.
 	angleEpsilon = 0.0001
+	// Задает торможение вращения для корабля без подключенного пилота.
+	unpilotedShipAngularBrake = 1.0
 )
 
 // Переводит пиксельный размер физического тела модели в метры мира.
@@ -256,7 +258,9 @@ func StepFreeBody(cosmicObject data.CosmicObject, dtSeconds float64) data.Cosmic
 
 // Двигает корабль без подключенного пилота с дополнительным сопротивлением.
 func StepUnpilotedShip(cosmicObject data.CosmicObject, dtSeconds float64) data.CosmicObject {
-	return StepFreeBody(applyConstantBrake(cosmicObject, dtSeconds), dtSeconds)
+	cosmicObject = applyConstantBrake(cosmicObject, dtSeconds)
+	cosmicObject.AngularSpeed = brakeValue(cosmicObject.AngularSpeed, unpilotedShipAngularBrake, dtSeconds)
+	return StepFreeBody(cosmicObject, dtSeconds)
 }
 
 // Переводит пару противоположных кнопок в силу по одной локальной оси.

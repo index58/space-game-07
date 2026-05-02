@@ -332,6 +332,24 @@ func TestStepUnpilotedShipDoesNotReverseVelocityDuringConstantBrake(t *testing.T
 	closeTo(t, next.X, 0)
 }
 
+func TestStepUnpilotedShipAppliesAngularBrake(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.AngularSpeed = 3
+
+	next := physics.StepUnpilotedShip(ship, 0.5)
+
+	closeTo(t, next.AngularSpeed, 2.5)
+}
+
+func TestStepUnpilotedShipDoesNotReverseAngularVelocityDuringBrake(t *testing.T) {
+	ship := testShip(1, 0, 0)
+	ship.AngularSpeed = -0.25
+
+	next := physics.StepUnpilotedShip(ship, 1)
+
+	closeTo(t, next.AngularSpeed, 0)
+}
+
 func TestApplyCollisionResponseBouncesAlongNormalWithRestitution(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Enabled = true
