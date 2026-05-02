@@ -217,6 +217,34 @@ func TestAccountsSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
+func TestAccountsSaveToFileOrdersItemsByNumericID(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "accounts.json")
+	accounts := NewAccounts()
+	accounts.MaxID = 10
+	accounts.Items[10] = &Account{ID: 10, Email: "ten@example.com", Nickname: "Ten", PasswordHash: "hash", Token: "token-10"}
+	accounts.Items[2] = &Account{ID: 2, Email: "two@example.com", Nickname: "Two", PasswordHash: "hash", Token: "token-2"}
+	accounts.Items[1] = &Account{ID: 1, Email: "one@example.com", Nickname: "One", PasswordHash: "hash", Token: "token-1"}
+
+	if err := accounts.SaveToFile(path); err != nil {
+		t.Fatalf("SaveToFile returned error: %v", err)
+	}
+
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("ReadFile returned error: %v", err)
+	}
+	text := string(content)
+	firstIndex := strings.Index(text, `"1":`)
+	secondIndex := strings.Index(text, `"2":`)
+	tenthIndex := strings.Index(text, `"10":`)
+	if firstIndex < 0 || secondIndex < 0 || tenthIndex < 0 {
+		t.Fatalf("saved JSON does not contain all expected IDs: %s", text)
+	}
+	if !(firstIndex < secondIndex && secondIndex < tenthIndex) {
+		t.Fatalf("saved JSON IDs are not in numeric order: %s", text)
+	}
+}
+
 func TestAccountsJSONKeysMatchGoFieldNames(t *testing.T) {
 	accounts := NewAccounts()
 	if _, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"}); err != nil {

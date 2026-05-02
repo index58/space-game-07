@@ -146,11 +146,7 @@ func (characters *Characters) LoadFromFile(path string) error {
 // Сохраняет персонажей в JSON-файл без вспомогательных индексов.
 func (characters *Characters) SaveToFile(path string) error {
 	characters.ensureMaps()
-	content, err := json.MarshalIndent(characters, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, content, 0o600)
+	return saveTableWithOrderedItems(path, characters.MaxID, characters.Items)
 }
 
 // Подготавливает основное хранилище и все индексы.

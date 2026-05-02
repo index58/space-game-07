@@ -134,11 +134,7 @@ func (assemblies *Assemblies) LoadFromFile(path string) error {
 // Сохраняет варианты оснащения в JSON-файл.
 func (assemblies *Assemblies) SaveToFile(path string) error {
 	assemblies.ensureMaps()
-	content, err := json.MarshalIndent(assemblies, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, content, 0o600)
+	return saveTableWithOrderedItems(path, assemblies.MaxID, assemblies.Items)
 }
 
 // Подготавливает основное хранилище и индексы.
@@ -263,9 +259,5 @@ func (groups *AssemblyEquipmentGroups) SaveToFile(path string) error {
 	if groups.Items == nil {
 		groups.Items = make(map[int64]*AssemblyEquipmentGroup)
 	}
-	content, err := json.MarshalIndent(groups, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, content, 0o600)
+	return saveTableWithOrderedItems(path, groups.MaxID, groups.Items)
 }

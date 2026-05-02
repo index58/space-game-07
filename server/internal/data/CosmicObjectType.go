@@ -150,11 +150,7 @@ func (cosmicObjectTypes *CosmicObjectTypes) LoadFromFile(path string) error {
 // Сохраняет типы космических объектов в JSON-файл без вспомогательных индексов.
 func (cosmicObjectTypes *CosmicObjectTypes) SaveToFile(path string) error {
 	cosmicObjectTypes.ensureMaps()
-	content, err := json.MarshalIndent(cosmicObjectTypes, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, content, 0o600)
+	return saveTableWithOrderedItems(path, cosmicObjectTypes.MaxID, cosmicObjectTypes.Items)
 }
 
 // Подготавливает основное хранилище и все индексы.

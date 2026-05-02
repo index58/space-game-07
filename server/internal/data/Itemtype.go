@@ -151,11 +151,7 @@ func (itemtypes *Itemtypes) LoadFromFile(path string) error {
 // Сохраняет типы предметов в JSON-файл без вспомогательных индексов.
 func (itemtypes *Itemtypes) SaveToFile(path string) error {
 	itemtypes.ensureMaps()
-	content, err := json.MarshalIndent(itemtypes, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, content, 0o600)
+	return saveTableWithOrderedItems(path, itemtypes.MaxID, itemtypes.Items)
 }
 
 // Подготавливает основное хранилище и все индексы.

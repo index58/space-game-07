@@ -23,28 +23,6 @@
       "Active": true,
       "LastRechargeStartTime": 0
     },
-    "321": {
-      "ID": 321,
-      "CosmicObjectID": 4,
-      "Title": "MagicThruster",
-      "EquipmentItemModelID": 1,
-      "Count": 82,
-      "EnabledCount": 82,
-      "Enabled": true,
-      "Active": true,
-      "LastRechargeStartTime": 0
-    },
-    "322": {
-      "ID": 322,
-      "CosmicObjectID": 4,
-      "Title": "MagicTorquer",
-      "EquipmentItemModelID": 2,
-      "Count": 79,
-      "EnabledCount": 79,
-      "Enabled": true,
-      "Active": true,
-      "LastRechargeStartTime": 0
-    },
     "5": {
       "ID": 5,
       "CosmicObjectID": 5,
@@ -63,6 +41,28 @@
       "EquipmentItemModelID": 2,
       "Count": 1,
       "EnabledCount": 1,
+      "Enabled": true,
+      "Active": true,
+      "LastRechargeStartTime": 0
+    },
+    "321": {
+      "ID": 321,
+      "CosmicObjectID": 4,
+      "Title": "MagicThruster",
+      "EquipmentItemModelID": 1,
+      "Count": 82,
+      "EnabledCount": 82,
+      "Enabled": true,
+      "Active": true,
+      "LastRechargeStartTime": 0
+    },
+    "322": {
+      "ID": 322,
+      "CosmicObjectID": 4,
+      "Title": "MagicTorquer",
+      "EquipmentItemModelID": 2,
+      "Count": 79,
+      "EnabledCount": 79,
       "Enabled": true,
       "Active": true,
       "LastRechargeStartTime": 0

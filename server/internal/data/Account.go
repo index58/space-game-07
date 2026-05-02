@@ -283,11 +283,7 @@ func (accounts *Accounts) LoadFromFile(path string) error {
 // Сохраняет аккаунты в JSON-файл без вспомогательных индексов.
 func (accounts *Accounts) SaveToFile(path string) error {
 	accounts.ensureMaps()
-	content, err := json.MarshalIndent(accounts, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, content, 0o600)
+	return saveTableWithOrderedItems(path, accounts.MaxID, accounts.Items)
 }
 
 // Подготавливает основное хранилище и все индексы.

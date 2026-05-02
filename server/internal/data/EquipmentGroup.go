@@ -132,11 +132,7 @@ func (groups *EquipmentGroups) LoadFromFile(path string) error {
 // Сохраняет группы оборудования объектов в JSON-файл.
 func (groups *EquipmentGroups) SaveToFile(path string) error {
 	groups.ensureMaps()
-	content, err := json.MarshalIndent(groups, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, content, 0o600)
+	return saveTableWithOrderedItems(path, groups.MaxID, groups.Items)
 }
 
 // Подготавливает основное хранилище и быстрые индексы.
