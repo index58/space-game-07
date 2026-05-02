@@ -214,6 +214,15 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
+	world.stepMovableObjects(dtSeconds, world.inputsByObjectID())
+	world.resolveAllCollisions()
+
+	world.tick++
+	return world.snapshotLocked(0)
+}
+
+// Собирает ввод подключенных аккаунтов по управляемым объектам.
+func (world *World) inputsByObjectID() map[int64]game.ShipInput {
 	accountIDs := make([]int64, 0, len(world.accountObjectIDs))
 	for accountID := range world.accountObjectIDs {
 		accountIDs = append(accountIDs, accountID)
@@ -222,34 +231,15 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 		return accountIDs[left] < accountIDs[right]
 	})
 
+	result := make(map[int64]game.ShipInput, len(accountIDs))
 	for _, accountID := range accountIDs {
-		objectID := world.accountObjectIDs[accountID]
-		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
-		if !ok || cosmicObject.Anchored || !cosmicObject.Enabled {
-			continue
-		}
-
-		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
-		if !ok {
-			continue
-		}
-
-		next := physics.StepShip(*cosmicObject, *model, world.inputs[accountID], dtSeconds)
-		next = world.resolveCollisions(next, cosmicObject.ID)
-		*cosmicObject = next
+		result[world.accountObjectIDs[accountID]] = world.inputs[accountID]
 	}
-
-	world.tick++
-	return world.snapshotLocked(0)
+	return result
 }
 
-// Раздвигает движущийся объект со всеми включенными телами мира.
-func (world *World) resolveCollisions(moving data.CosmicObject, movingID int64) data.CosmicObject {
-	movingModel, ok := world.data.CosmicObjectModels.Get(moving.CosmicObjectModelID)
-	if !ok {
-		return moving
-	}
-
+// Двигает все подвижные объекты мира до общего решения столкновений.
+func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[int64]game.ShipInput) {
 	objectIDs := make([]int64, 0, len(world.data.CosmicObjects.Items))
 	for objectID := range world.data.CosmicObjects.Items {
 		objectIDs = append(objectIDs, objectID)
@@ -259,27 +249,62 @@ func (world *World) resolveCollisions(moving data.CosmicObject, movingID int64) 
 	})
 
 	for _, objectID := range objectIDs {
-		if objectID == movingID {
+		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok || cosmicObject.Anchored || !cosmicObject.Enabled {
 			continue
 		}
-		obstacle, ok := world.data.CosmicObjects.Get(objectID)
+		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
 		if !ok {
 			continue
 		}
-		obstacleModel, ok := world.data.CosmicObjectModels.Get(obstacle.CosmicObjectModelID)
-		if !ok {
-			continue
-		}
-		correction, collided := physics.CollisionCorrection(moving, *movingModel, *obstacle, *obstacleModel)
-		if !collided {
-			continue
-		}
-		nextMoving, nextObstacle := physics.ApplyCollisionResponse(moving, *obstacle, correction)
-		moving = nextMoving
-		*obstacle = nextObstacle
-	}
 
-	return moving
+		input, controlled := inputsByObjectID[objectID]
+		if controlled {
+			*cosmicObject = physics.StepShip(*cosmicObject, *model, input, dtSeconds)
+		} else {
+			*cosmicObject = physics.StepFreeBody(*cosmicObject, dtSeconds)
+		}
+	}
+}
+
+// Решает столкновения всех пар тел после движения объектов.
+func (world *World) resolveAllCollisions() {
+	objectIDs := make([]int64, 0, len(world.data.CosmicObjects.Items))
+	for objectID := range world.data.CosmicObjects.Items {
+		objectIDs = append(objectIDs, objectID)
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+
+	for leftIndex := 0; leftIndex < len(objectIDs); leftIndex++ {
+		first, ok := world.data.CosmicObjects.Get(objectIDs[leftIndex])
+		if !ok {
+			continue
+		}
+		firstModel, ok := world.data.CosmicObjectModels.Get(first.CosmicObjectModelID)
+		if !ok {
+			continue
+		}
+
+		for rightIndex := leftIndex + 1; rightIndex < len(objectIDs); rightIndex++ {
+			second, ok := world.data.CosmicObjects.Get(objectIDs[rightIndex])
+			if !ok {
+				continue
+			}
+			secondModel, ok := world.data.CosmicObjectModels.Get(second.CosmicObjectModelID)
+			if !ok {
+				continue
+			}
+			correction, collided := physics.CollisionCorrection(*first, *firstModel, *second, *secondModel)
+			if !collided {
+				continue
+			}
+			nextFirst, nextSecond := physics.ApplyCollisionResponse(*first, *second, correction)
+			*first = nextFirst
+			*second = nextSecond
+		}
+	}
 }
 
 // Возвращает снимок мира с заполненным ID объекта текущего игрока.

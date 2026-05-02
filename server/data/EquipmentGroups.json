@@ -1,5 +1,5 @@
 {
-  "MaxID": 326,
+  "MaxID": 374,
   "Items": {
     "1": {
       "ID": 1,
@@ -45,24 +45,24 @@
       "Active": true,
       "LastRechargeStartTime": 0
     },
-    "325": {
-      "ID": 325,
+    "373": {
+      "ID": 373,
       "CosmicObjectID": 4,
       "Title": "MagicThruster",
       "EquipmentItemModelID": 1,
-      "Count": 37,
-      "EnabledCount": 37,
+      "Count": 136,
+      "EnabledCount": 136,
       "Enabled": true,
       "Active": true,
       "LastRechargeStartTime": 0
     },
-    "326": {
-      "ID": 326,
+    "374": {
+      "ID": 374,
       "CosmicObjectID": 4,
       "Title": "MagicTorquer",
       "EquipmentItemModelID": 2,
-      "Count": 16,
-      "EnabledCount": 16,
+      "Count": 216,
+      "EnabledCount": 216,
       "Enabled": true,
       "Active": true,
       "LastRechargeStartTime": 0

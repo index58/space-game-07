@@ -177,6 +177,93 @@ func TestTickPreventsControlledShipFromIntersectingAnchoredObject(t *testing.T) 
 	}
 }
 
+func TestTickAppliesCollisionImpulseToBothControlledShips(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "second@email.net", Nickname: "second", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 4}
+	serverData.CosmicObjects.MaxID = 4
+	serverData.CosmicObjects.Items[1].X = -1
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].VelocityX = 10
+	serverData.CosmicObjects.Items[1].VelocityY = 0
+	serverData.CosmicObjects.Items[4] = &data.CosmicObject{
+		ID:                  4,
+		Title:               "Second ship",
+		CosmicObjectModelID: 1,
+		Mass:                900,
+		MaxSpeed:            497,
+		MaxAngularSpeed:     3,
+		MaxAlongForce:       90000,
+		MaxAcrossForce:      80000,
+		MaxTorque:           70000,
+		Enabled:             true,
+		X:                   1,
+		Y:                   0,
+	}
+	if err := serverData.Accounts.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Characters.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.CosmicObjects.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("first account was not connected")
+	}
+	if _, ok := gameWorld.ConnectAccount(2); !ok {
+		t.Fatalf("second account was not connected")
+	}
+	gameWorld.Tick(0)
+
+	first := serverData.CosmicObjects.Items[1]
+	second := serverData.CosmicObjects.Items[4]
+	if first.VelocityX >= 10 {
+		t.Fatalf("first ship velocity was not reduced by collision: %+v", first)
+	}
+	if second.VelocityX <= 0 {
+		t.Fatalf("second ship did not receive collision impulse: %+v", second)
+	}
+	if first.X >= second.X {
+		t.Fatalf("ships were not separated in stable order: first=%+v second=%+v", first, second)
+	}
+}
+
+func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.MaxID = 4
+	serverData.CosmicObjects.Items[4] = &data.CosmicObject{
+		ID:                  4,
+		Title:               "Drifting ship",
+		CosmicObjectModelID: 1,
+		Mass:                900,
+		MaxSpeed:            497,
+		MaxAngularSpeed:     3,
+		MaxAlongForce:       90000,
+		MaxAcrossForce:      80000,
+		MaxTorque:           70000,
+		Enabled:             true,
+		X:                   100,
+		Y:                   0,
+		VelocityX:           10,
+		VelocityY:           0,
+	}
+	if err := serverData.CosmicObjects.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+
+	gameWorld.Tick(1)
+
+	driftingShip := serverData.CosmicObjects.Items[4]
+	if driftingShip.X <= 100 {
+		t.Fatalf("uncontrolled movable object did not move by velocity: %+v", driftingShip)
+	}
+}
+
 func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].X = 10

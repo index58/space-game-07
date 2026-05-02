@@ -208,6 +208,18 @@ func StepShip(cosmicObject data.CosmicObject, model data.CosmicObjectModel, inpu
 	return cosmicObject
 }
 
+// Двигает свободное тело без управляющей тяги и автопилотного торможения.
+func StepFreeBody(cosmicObject data.CosmicObject, dtSeconds float64) data.CosmicObject {
+	cosmicObject.X += cosmicObject.VelocityX * dtSeconds
+	cosmicObject.Y += cosmicObject.VelocityY * dtSeconds
+	cosmicObject.Rotation += cosmicObject.AngularSpeed * dtSeconds
+	cosmicObject.Speed = math.Hypot(cosmicObject.VelocityX, cosmicObject.VelocityY)
+	cosmicObject.AlongForce = 0
+	cosmicObject.AcrossForce = 0
+	cosmicObject.Torque = 0
+	return cosmicObject
+}
+
 // Переводит пару противоположных кнопок в силу по одной локальной оси.
 func axisForce(positive bool, negative bool, maxForce float64) float64 {
 	if positive == negative {
