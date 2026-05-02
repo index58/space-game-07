@@ -1,5 +1,5 @@
 ﻿import { describe, expect, it } from "vitest";
-import { MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL, toShipInput } from "./inputState";
+import { MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL, isFreshKeyDown, toShipInput } from "./inputState";
 
 // Эти тесты фиксируют границу между заблокированным системным курсором и игровым вводом.
 describe("toShipInput", () => {
@@ -31,5 +31,13 @@ describe("toShipInput", () => {
     expect(toShipInput(true, {}, -2).targetRotationDelta).toBeCloseTo(
       -2 * MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL,
     );
+  });
+});
+
+describe("isFreshKeyDown", () => {
+  it("срабатывает только при первом нажатии нужной клавиши", () => {
+    expect(isFreshKeyDown("KeyO", false, "KeyO")).toBe(true);
+    expect(isFreshKeyDown("KeyO", true, "KeyO")).toBe(false);
+    expect(isFreshKeyDown("KeyP", false, "KeyO")).toBe(false);
   });
 });

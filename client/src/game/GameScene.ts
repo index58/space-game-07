@@ -15,13 +15,20 @@ import type {
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
+import { bodyPolygonToPilotScreen } from "./bodyPolygon";
 import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
+
+const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
 
 // Связывает Phaser-отрисовку, сетевой клиент, ввод и отладочный DOM-слой.
 export class GameScene extends Phaser.Scene {
   // Спрайты объектов, переиспользуемые между серверными снимками.
   private objectSprites = new Map<number, Phaser.GameObjects.Image>();
+  // Векторный слой отладочной отрисовки физических тел.
+  private bodyPolygonGraphics!: Phaser.GameObjects.Graphics;
+  // Включает показ серверных физических тел поверх текстур.
+  private bodyPolygonDebugVisible = false;
   // Тайловое изображение космоса под всеми объектами.
   private background!: Phaser.GameObjects.TileSprite;
   // Контроллер клавиатуры, мыши и захвата указателя.
@@ -66,6 +73,7 @@ export class GameScene extends Phaser.Scene {
         fontSize: "18px",
       })
       .setOrigin(0.5);
+    this.bodyPolygonGraphics = this.add.graphics().setDepth(1000);
 
     const overlay = document.getElementById("debug-overlay");
 
@@ -87,6 +95,12 @@ export class GameScene extends Phaser.Scene {
     this.gameClient?.setInput(input);
     if (this.inputController.consumeRandomShipChangeRequest()) {
       this.gameClient?.requestRandomShipChange();
+    }
+    if (this.inputController.consumeBodyPolygonDebugToggleRequest()) {
+      this.bodyPolygonDebugVisible = !this.bodyPolygonDebugVisible;
+      if (!this.bodyPolygonDebugVisible) {
+        this.bodyPolygonGraphics.clear();
+      }
     }
     this.zoomLevel = this.inputController.getZoom();
 
@@ -127,6 +141,7 @@ export class GameScene extends Phaser.Scene {
     for (const sprite of this.objectSprites.values()) {
       sprite.setVisible(false);
     }
+    this.bodyPolygonGraphics.clear();
   }
 
   // Размещает все объекты в экранных координатах камеры пилота.
@@ -165,6 +180,40 @@ export class GameScene extends Phaser.Scene {
         sprite.destroy();
         this.objectSprites.delete(objectId);
       }
+    }
+    this.renderBodyPolygons(objects, camera);
+  }
+
+  // Рисует полупрозрачные физические тела поверх видимых объектов.
+  private renderBodyPolygons(
+    objects: CosmicObject[],
+    camera: Parameters<typeof worldToPilotScreen>[1],
+  ): void {
+    this.bodyPolygonGraphics.clear();
+    if (!this.bodyPolygonDebugVisible) {
+      return;
+    }
+
+    this.bodyPolygonGraphics.fillStyle(BODY_POLYGON_DEBUG_COLOR, 0.24);
+    this.bodyPolygonGraphics.lineStyle(1, BODY_POLYGON_DEBUG_COLOR, 0.9);
+    for (const object of objects) {
+      const model = this.modelForObject(object);
+      if (!model) {
+        continue;
+      }
+      const points = bodyPolygonToPilotScreen(object, model, camera);
+      if (points.length === 0) {
+        continue;
+      }
+
+      this.bodyPolygonGraphics.beginPath();
+      this.bodyPolygonGraphics.moveTo(points[0].x, points[0].y);
+      for (const point of points.slice(1)) {
+        this.bodyPolygonGraphics.lineTo(point.x, point.y);
+      }
+      this.bodyPolygonGraphics.closePath();
+      this.bodyPolygonGraphics.fillPath();
+      this.bodyPolygonGraphics.strokePath();
     }
   }
 

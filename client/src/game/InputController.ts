@@ -1,6 +1,6 @@
 ﻿import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
 import type { ClientInputState } from "../network/protocol";
-import { toShipInput } from "./inputState";
+import { isFreshKeyDown, toShipInput } from "./inputState";
 
 // Изолирует браузерные события ввода от игровой сцены.
 export class InputController {
@@ -12,6 +12,8 @@ export class InputController {
   private zoom = INITIAL_ZOOM;
   // Одноразовый запрос на смену модели корабля.
   private randomShipChangeRequested = false;
+  // Одноразовый запрос на переключение отладочной отрисовки тел.
+  private bodyPolygonDebugToggleRequested = false;
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -21,8 +23,11 @@ export class InputController {
   ) {
     // Состояние клавиш хранится непрерывно, потому что сетевой ввод отправляется реже кадров браузера.
     window.addEventListener("keydown", (event) => {
-      if (event.code === "Backslash" && !this.keys[event.code]) {
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "Backslash")) {
         this.randomShipChangeRequested = true;
+      }
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyO")) {
+        this.bodyPolygonDebugToggleRequested = true;
       }
 
       this.keys[event.code] = true;
@@ -66,6 +71,13 @@ export class InputController {
   consumeRandomShipChangeRequest(): boolean {
     const requested = this.randomShipChangeRequested;
     this.randomShipChangeRequested = false;
+    return requested;
+  }
+
+  // Возвращает запрос переключения отладочного слоя один раз на одно нажатие.
+  consumeBodyPolygonDebugToggleRequest(): boolean {
+    const requested = this.bodyPolygonDebugToggleRequested;
+    this.bodyPolygonDebugToggleRequested = false;
     return requested;
   }
 

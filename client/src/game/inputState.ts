@@ -6,6 +6,13 @@ export type KeyState = Record<string, boolean>;
 // Переводит движение мыши в изменение целевого угла корабля.
 export const MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL = 0.0025;
 
+// Проверяет первое событие нажатия, игнорируя автоповторы удерживаемой клавиши.
+export const isFreshKeyDown = (
+  eventCode: string,
+  wasAlreadyPressed: boolean,
+  targetCode: string,
+): boolean => eventCode === targetCode && !wasAlreadyPressed;
+
 // Возвращает безопасное управление без тяги, когда пилот не захватил мышь.
 export const emptyShipInput = (): ClientInputState => ({
   thrustForward: false,

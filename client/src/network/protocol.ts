@@ -138,6 +138,10 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
   TextureFilePath: string;
   // Количество пикселей текстуры на один метр мира.
   TextureScale: number;
+  // Рассчитанная ширина физического тела в метрах.
+  BodyWidth: number;
+  // Рассчитанная длина физического тела в метрах.
+  BodyLength: number;
 };
 
 // Является полным пакетом справочников, загружаемым перед подключением к миру.
