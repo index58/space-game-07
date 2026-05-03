@@ -15,14 +15,13 @@ import type {
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
+import type { GameUiController } from "../ui/gameUiState";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
-import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
-import { ObjectIndicatorsOverlay } from "./ObjectIndicatorsOverlay";
 
 const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
 
-// Связывает Phaser-отрисовку, сетевой клиент, ввод и отладочный DOM-слой.
+// Связывает Phaser-отрисовку, сетевой клиент, ввод и SolidJS UI-слой.
 export class GameScene extends Phaser.Scene {
   // Спрайты объектов, переиспользуемые между серверными снимками.
   private objectSprites = new Map<number, Phaser.GameObjects.Image>();
@@ -34,10 +33,6 @@ export class GameScene extends Phaser.Scene {
   private background!: Phaser.GameObjects.TileSprite;
   // Контроллер клавиатуры, мыши и захвата указателя.
   private inputController!: InputController;
-  // DOM-слой с диагностикой текущего состояния.
-  private debugOverlay!: DebugOverlay;
-  // DOM-слой с основными показателями посещаемого объекта.
-  private objectIndicatorsOverlay!: ObjectIndicatorsOverlay;
   // Сетевой клиент для получения снимков и отправки ввода.
   private gameClient: GameClient | null = null;
   // Справочники, полученные с сервера перед подключением к игровому потоку.
@@ -53,7 +48,10 @@ export class GameScene extends Phaser.Scene {
   // Рассчитанный масштаб мира в пикселях на метр.
   private zoomScale = getViewportZoomScale(INITIAL_ZOOM, 1000);
 
-  constructor() {
+  constructor(
+    // Мост передачи состояния из Phaser в SolidJS UI.
+    private readonly gameUi: GameUiController,
+  ) {
     super("GameScene");
   }
 
@@ -78,22 +76,10 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5);
     this.bodyPolygonGraphics = this.add.graphics().setDepth(1000);
 
-    const overlay = document.getElementById("debug-overlay");
-    const objectIndicatorsOverlay = document.getElementById("object-indicators-overlay");
-
-    if (!overlay) {
-      throw new Error("debug-overlay element not found");
-    }
-    if (!objectIndicatorsOverlay) {
-      throw new Error("object-indicators-overlay element not found");
-    }
-
     this.inputController = new InputController(
       this.game.canvas,
       () => this.gameClient?.getStatus() === "connected",
     );
-    this.debugOverlay = new DebugOverlay(overlay);
-    this.objectIndicatorsOverlay = new ObjectIndicatorsOverlay(objectIndicatorsOverlay);
     void this.loadStartupData();
   }
 
@@ -120,21 +106,25 @@ export class GameScene extends Phaser.Scene {
 
     if (status !== "connected" || !snapshot || !selfObject) {
       this.renderWaiting(status);
-      this.debugOverlay.update(status, null, null, this.game.loop.actualFps, this.zoomScale);
-      this.objectIndicatorsOverlay.update(null);
+      this.gameUi.update({
+        status,
+        selfObject: null,
+        textureFilePath: null,
+        fps: this.game.loop.actualFps,
+        zoom: this.zoomScale,
+      });
       return;
     }
 
     this.waitingText.setVisible(false);
     this.renderWorld(snapshot.objects, selfObject);
-    this.debugOverlay.update(
+    this.gameUi.update({
       status,
       selfObject,
-      this.modelForObject(selfObject)?.TextureFilePath ?? null,
-      this.game.loop.actualFps,
-      this.zoomScale,
-    );
-    this.objectIndicatorsOverlay.update(selfObject);
+      textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
+      fps: this.game.loop.actualFps,
+      zoom: this.zoomScale,
+    });
   }
 
   // Показывает фон и статус, пока нет валидного снимка объекта игрока.

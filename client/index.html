@@ -6,10 +6,9 @@
     <title>Space Game 07</title>
   </head>
   <body>
-    <!-- Phaser рисует в game-root, а игровые DOM-панели остаются поверх canvas. -->
+    <!-- Phaser рисует в game-root, а SolidJS владеет всем UI в ui-root поверх canvas. -->
     <div id="game-root"></div>
-    <div id="object-indicators-overlay" class="object-indicators-overlay"></div>
-    <div id="debug-overlay"></div>
+    <div id="ui-root"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

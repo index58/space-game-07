@@ -1,6 +1,16 @@
-﻿import * as Phaser from "phaser";
+import * as Phaser from "phaser";
 import "./style.css";
 import { GameScene } from "./game/GameScene";
+import { mountGameUi } from "./ui/mountGameUi";
+
+const uiRoot = document.getElementById("ui-root");
+
+if (!uiRoot) {
+  throw new Error("ui-root element not found");
+}
+
+// SolidJS владеет всем текущим UI и получает данные из Phaser-сцены через контроллер.
+const gameUi = mountGameUi(uiRoot);
 
 // Phaser.Game является корневым объектом клиента и владеет canvas внутри #game-root.
 const game = new Phaser.Game({
@@ -16,10 +26,13 @@ const game = new Phaser.Game({
     pixelArt: false,
     antialias: true,
   },
-  scene: [GameScene],
+  scene: [new GameScene(gameUi.controller)],
 });
 
 // Глобальная ссылка нужна только для корректного уничтожения Phaser при горячей перезагрузке Vite.
 if (import.meta.hot) {
-  import.meta.hot.dispose(() => game.destroy(true));
+  import.meta.hot.dispose(() => {
+    game.destroy(true);
+    gameUi.dispose();
+  });
 }

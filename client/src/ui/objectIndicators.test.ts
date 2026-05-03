@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CosmicObject } from "../network/protocol";
-import { getObjectIndicators } from "./ObjectIndicatorsOverlay";
+import { getObjectIndicators } from "./objectIndicators";
 
 const selfObject = {
   Armor: 420,

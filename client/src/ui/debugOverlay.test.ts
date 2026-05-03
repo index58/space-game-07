@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CosmicObject } from "../network/protocol";
-import { DebugOverlay } from "./DebugOverlay";
+import { getDebugOverlayLines } from "./debugOverlay";
 
 const selfObject = {
   ID: 7,
@@ -12,13 +12,16 @@ const selfObject = {
   AngularSpeed: 0.25,
 } as CosmicObject;
 
-describe("DebugOverlay", () => {
+describe("getDebugOverlayLines", () => {
   it("показывает путь к файлу модели текущего объекта", () => {
-    const element = { textContent: "" } as HTMLElement;
-    const overlay = new DebugOverlay(element);
+    const lines = getDebugOverlayLines({
+      status: "connected",
+      selfObject,
+      textureFilePath: "assets/ships/ship.png",
+      fps: 60,
+      zoom: 1,
+    });
 
-    overlay.update("connected", selfObject, "assets/ships/ship.png", 60, 1);
-
-    expect(element.textContent).toContain("Файл объекта: assets/ships/ship.png");
+    expect(lines).toContain("Файл объекта: assets/ships/ship.png");
   });
 });
