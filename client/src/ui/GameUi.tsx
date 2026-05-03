@@ -3,6 +3,7 @@ import type { GameUiState } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
 import { getMinimapView, type MinimapPointView } from "./minimap";
+import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
 
 type GameUiProps = {
   // Реактивное состояние всего игрового UI.
@@ -18,6 +19,7 @@ type ObjectIndicatorProps = {
 export const GameUi = (props: GameUiProps) => (
   <>
     <ObjectIndicatorsPanel selfObject={props.state().selfObject} />
+    <PilotToolbarPanel state={props.state} />
     <MinimapPanel state={props.state} />
     <DebugOverlay state={props.state} />
   </>
@@ -84,6 +86,81 @@ type MinimapPanelProps = {
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
 };
+
+type PilotToolbarPanelProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
+type PilotToolSlotProps = {
+  // Данные одной ячейки панели инструментов пилота.
+  slot: PilotToolSlotView;
+};
+
+type PilotToolbarReadyState = {
+  // Посещаемый объект, для которого строится панель пилота.
+  selfObject: NonNullable<GameUiState["selfObject"]>;
+  // Справочники клиента для определения инструментов пилота.
+  referenceData: NonNullable<GameUiState["referenceData"]>;
+};
+
+// Возвращает данные панели пилота только после получения объекта и справочников.
+const getPilotToolbarReadyState = (state: GameUiState): PilotToolbarReadyState | null => {
+  if (!state.selfObject || !state.referenceData) {
+    return null;
+  }
+  return {
+    selfObject: state.selfObject,
+    referenceData: state.referenceData,
+  };
+};
+
+// Показывает десять ячеек инструментов пилота в центральной нижней части экрана.
+const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (
+  <Show when={getPilotToolbarReadyState(props.state())}>
+    {(ready) => {
+      const toolbar = () =>
+        getPilotToolbarView({
+          selfObject: ready().selfObject,
+          equipmentGroups: props.state().equipmentGroups,
+          referenceData: ready().referenceData,
+        });
+
+      return (
+        <section class="pilot-toolbar" aria-label="Панель инструментов пилота">
+          <Show when={toolbar().magazine}>
+            {(magazine) => (
+              <div class="pilot-toolbar__magazine">
+                <div class="pilot-toolbar__magazine-fill" style={{ width: `${magazine().fillPercent}%` }} />
+                <div class="pilot-toolbar__magazine-value">{magazine().valueText}</div>
+              </div>
+            )}
+          </Show>
+          <div class="pilot-toolbar__slots">
+            <For each={toolbar().slots}>{(slot) => <PilotToolSlot slot={slot} />}</For>
+          </div>
+        </section>
+      );
+    }}
+  </Show>
+);
+
+// Рисует одну квадратную ячейку инструмента пилота.
+const PilotToolSlot = (props: PilotToolSlotProps) => (
+  <div class={`pilot-tool-slot ${props.slot.isSelected ? "is-selected" : ""}`} title={props.slot.tool?.title ?? ""}>
+    <Show when={props.slot.tool} fallback={<span class="pilot-tool-slot__key">{props.slot.index}</span>}>
+      {(tool) => (
+        <>
+          <span class="pilot-tool-slot__key">{props.slot.index}</span>
+          <Show when={tool().iconFilePath} fallback={<span class="pilot-tool-slot__fallback-icon">{tool().acronym.slice(0, 2)}</span>}>
+            {(iconFilePath) => <img class="pilot-tool-slot__icon" src={`/assets/ui/icons/${iconFilePath().replace(/^assets\/ui\/icons\//, "")}`} alt="" />}
+          </Show>
+          <span class="pilot-tool-slot__count">{tool().enabledCount}</span>
+        </>
+      )}
+    </Show>
+  </div>
+);
 
 type MinimapReadyState = {
   // Посещаемый объект игрока, относительно которого центрируется карта.

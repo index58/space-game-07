@@ -110,6 +110,28 @@ export type CosmicObject = {
   TargetRotation: number;
 };
 
+// Повторяет серверный формат группы установленного оборудования.
+export type EquipmentGroup = {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Космический объект, на котором установлено оборудование.
+  CosmicObjectID: number;
+  // Пользовательское название группы оборудования.
+  Title: string;
+  // Модель установленного оборудования.
+  EquipmentItemModelID: number;
+  // Количество единиц оборудования в группе.
+  Count: number;
+  // Количество включенных единиц оборудования в группе.
+  EnabledCount: number;
+  // Разрешает группе оборудования получать питание.
+  Enabled: boolean;
+  // Показывает, выполняет ли оборудование работу в текущем тике.
+  Active: boolean;
+  // Время начала последней перезарядки в миллисекундах Unix.
+  LastRechargeStartTime: number;
+};
+
 // Является полным состоянием мира, которое сервер регулярно отправляет клиенту.
 export type SnapshotMessage = {
   // Вид сообщения, по которому клиент отличает снимок от других пакетов.
@@ -120,6 +142,8 @@ export type SnapshotMessage = {
   selfObjectId: number;
   // Объекты мира, видимые клиенту в текущем снимке.
   objects: CosmicObject[];
+  // Группы оборудования, нужные UI для панели пилота.
+  equipmentGroups: EquipmentGroup[];
 };
 
 // Хранит одну JSON-таблицу справочника в серверном формате.
@@ -154,6 +178,34 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
   BodyLength: number;
 };
 
+// Описывает поля типа предмета, нужные клиентскому UI.
+export type ItemtypeReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Неизменяемый строковый идентификатор типа.
+  Acronym: string;
+  // Разрешает назначать предметы этого типа в панель пилота.
+  IsPilotInstrument: boolean;
+};
+
+// Описывает поля модели предмета, нужные клиентскому UI.
+export type ItemModelReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Тип предмета из справочника типов.
+  ItemtypeID: number;
+  // Неизменяемый строковый идентификатор модели.
+  Acronym: string;
+  // Русское название модели для интерфейса.
+  TitleRu?: string;
+  // Английское название модели для интерфейса.
+  TitleEn?: string;
+  // Путь к файлу иконки предмета.
+  IconFilePath?: string;
+  // Вместимость магазина, если у инструмента есть магазин.
+  MagazineCapacity?: number;
+};
+
 // Является полным пакетом справочников, загружаемым перед подключением к миру.
 export type ReferenceDataMessage = {
   // Вид сообщения, по которому клиент проверяет назначение ответа.
@@ -163,11 +215,11 @@ export type ReferenceDataMessage = {
   // Справочник типов космических объектов.
   CosmicObjectType: ReferenceTable;
   // Справочник типов предметов.
-  Itemtype: ReferenceTable;
+  Itemtype: ReferenceTable<ItemtypeReference>;
   // Справочник моделей космических объектов.
   CosmicObjectModel: ReferenceTable<CosmicObjectModelReference>;
   // Справочник моделей предметов.
-  ItemModel: ReferenceTable;
+  ItemModel: ReferenceTable<ItemModelReference>;
   // Справочник чертежей объектов.
   Blueprint: ReferenceTable;
   // Справочник компонентов чертежей.

@@ -77,6 +77,14 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				TargetRotation:      0.25,
 			},
 		},
+		EquipmentGroups: []data.EquipmentGroup{
+			{
+				ID:                   3,
+				CosmicObjectID:       7,
+				EquipmentItemModelID: 101,
+				EnabledCount:         2,
+			},
+		},
 	}
 
 	payload, err := transport.EncodeSnapshotMessage(snapshot)
@@ -91,6 +99,9 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		`"VelocityY":0.4`,
 		`"AngularSpeed":0.01`,
 		`"TargetRotation":0.25`,
+		`"equipmentGroups":[`,
+		`"EquipmentItemModelID":101`,
+		`"EnabledCount":2`,
 	} {
 		if !strings.Contains(jsonText, field) {
 			t.Fatalf("encoded snapshot %s does not contain %s", jsonText, field)

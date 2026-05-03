@@ -21,8 +21,9 @@ type ShipInput struct {
 
 // Содержит полный серверный снимок мира на конкретном тике.
 type Snapshot struct {
-	Type         string              `json:"type"`         // Вид сетевого сообщения со снимком мира.
-	Tick         int64               `json:"tick"`         // Номер шага симуляции, на котором сделан снимок.
-	SelfObjectID int64               `json:"selfObjectId"` // Управляемый объект получателя снимка.
-	Objects      []data.CosmicObject `json:"objects"`      // Объекты мира, видимые клиенту в текущем снимке.
+	Type            string                `json:"type"`            // Вид сетевого сообщения со снимком мира.
+	Tick            int64                 `json:"tick"`            // Номер шага симуляции, на котором сделан снимок.
+	SelfObjectID    int64                 `json:"selfObjectId"`    // Управляемый объект получателя снимка.
+	Objects         []data.CosmicObject   `json:"objects"`         // Объекты мира, видимые клиенту в текущем снимке.
+	EquipmentGroups []data.EquipmentGroup `json:"equipmentGroups"` // Группы оборудования, нужные UI для панели пилота.
 }

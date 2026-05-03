@@ -530,11 +530,30 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		objects = append(objects, *cosmicObject)
 	}
 
+	equipmentGroups := make([]data.EquipmentGroup, 0)
+	if world.data.EquipmentGroups != nil {
+		groupIDs := make([]int64, 0, len(world.data.EquipmentGroups.Items))
+		for groupID := range world.data.EquipmentGroups.Items {
+			groupIDs = append(groupIDs, groupID)
+		}
+		sort.Slice(groupIDs, func(left int, right int) bool {
+			return groupIDs[left] < groupIDs[right]
+		})
+		for _, groupID := range groupIDs {
+			group, ok := world.data.EquipmentGroups.Get(groupID)
+			if !ok {
+				continue
+			}
+			equipmentGroups = append(equipmentGroups, *group)
+		}
+	}
+
 	return game.Snapshot{
-		Type:         "snapshot",
-		Tick:         world.tick,
-		SelfObjectID: selfObjectID,
-		Objects:      objects,
+		Type:            "snapshot",
+		Tick:            world.tick,
+		SelfObjectID:    selfObjectID,
+		Objects:         objects,
+		EquipmentGroups: equipmentGroups,
 	}
 }
 

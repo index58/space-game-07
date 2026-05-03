@@ -102,6 +102,105 @@ body,
   text-shadow: 0 0.12vh 0.24vh rgba(0, 4, 8, 0.9);
 }
 
+.pilot-toolbar {
+  /* Панель инструментов пилота масштабируется от высоты экрана и лежит над нижним краем. */
+  position: fixed;
+  left: 50%;
+  bottom: 3vh;
+  z-index: 9;
+  transform: translateX(-50%);
+  width: 55vh;
+  color: #d8f3ff;
+  pointer-events: none;
+}
+
+.pilot-toolbar__magazine {
+  position: relative;
+  height: 1.7vh;
+  margin-bottom: 0.7vh;
+  overflow: hidden;
+  background: rgba(5, 18, 28, 0.95);
+  border: 0.14vh solid rgba(130, 210, 255, 0.34);
+}
+
+.pilot-toolbar__magazine-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: rgba(126, 212, 255, 0.42);
+}
+
+.pilot-toolbar__magazine-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eefaff;
+  font: 1.1vh/1 Consolas, monospace;
+  text-shadow: 0 0.12vh 0.24vh rgba(0, 4, 8, 0.9);
+}
+
+.pilot-toolbar__slots {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.6vh;
+}
+
+.pilot-tool-slot {
+  position: relative;
+  width: 4.96vh;
+  height: 4.96vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgba(0, 10, 18, 0.82);
+  border: 0.14vh solid rgba(130, 210, 255, 0.34);
+}
+
+.pilot-tool-slot.is-selected {
+  border-color: rgba(238, 250, 255, 0.9);
+  box-shadow: inset 0 0 0 0.14vh rgba(238, 250, 255, 0.36);
+}
+
+.pilot-tool-slot__key {
+  position: absolute;
+  left: 0.35vh;
+  top: 0.32vh;
+  color: rgba(216, 243, 255, 0.64);
+  font: 1vh/1 Consolas, monospace;
+}
+
+.pilot-tool-slot__icon,
+.pilot-tool-slot__fallback-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pilot-tool-slot__icon {
+  max-width: 3.1vh;
+  max-height: 3.1vh;
+}
+
+.pilot-tool-slot__fallback-icon {
+  color: #9edcff;
+  font: 1.55vh/1 Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.pilot-tool-slot__count {
+  position: absolute;
+  right: 0.35vh;
+  bottom: 0.25vh;
+  min-width: 1.5vh;
+  color: #eefaff;
+  font: 1.2vh/1 Consolas, monospace;
+  text-align: right;
+  text-shadow: 0 0.12vh 0.24vh rgba(0, 4, 8, 0.9);
+}
+
 .minimap-overlay {
   /* Мини-карта масштабируется от высоты экрана и не перехватывает управление мышью. */
   position: fixed;
