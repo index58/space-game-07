@@ -134,6 +134,8 @@ export type ReferenceTable<TItem = Record<string, unknown>> = {
 export type CosmicObjectModelReference = Record<string, unknown> & {
   // Уникальный числовой идентификатор записи.
   ID: number;
+  // Тип космического объекта, к которому относится модель.
+  CosmicObjectTypeID: number;
   // Путь к основной текстуре объекта в игровом мире.
   TextureFilePath: string;
   // Полная ширина текстуры в пикселях.

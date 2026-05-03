@@ -109,6 +109,8 @@ export class GameScene extends Phaser.Scene {
       this.gameUi.update({
         status,
         selfObject: null,
+        objects: snapshot?.objects ?? [],
+        referenceData: this.referenceData,
         textureFilePath: null,
         fps: this.game.loop.actualFps,
         zoom: this.zoomScale,
@@ -121,6 +123,8 @@ export class GameScene extends Phaser.Scene {
     this.gameUi.update({
       status,
       selfObject,
+      objects: snapshot.objects,
+      referenceData: this.referenceData,
       textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
       fps: this.game.loop.actualFps,
       zoom: this.zoomScale,

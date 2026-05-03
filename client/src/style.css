@@ -101,3 +101,189 @@ body,
   font: 1.55vh/1 Consolas, monospace;
   text-shadow: 0 0.12vh 0.24vh rgba(0, 4, 8, 0.9);
 }
+
+.minimap-overlay {
+  /* Мини-карта масштабируется от высоты экрана и не перехватывает управление мышью. */
+  position: fixed;
+  right: 3vh;
+  bottom: 3vh;
+  z-index: 8;
+  width: 34vh;
+  box-sizing: border-box;
+  padding: 1vh;
+  color: #d8f3ff;
+  background: rgba(0, 10, 18, 0.82);
+  border: 0.14vh solid rgba(130, 210, 255, 0.38);
+  pointer-events: none;
+}
+
+.minimap-compass {
+  position: relative;
+  height: 3.2vh;
+  margin-bottom: 0.9vh;
+  overflow: hidden;
+  color: rgba(216, 243, 255, 0.88);
+  font: 1.35vh/1 Consolas, monospace;
+  text-align: center;
+  background: rgba(5, 18, 28, 0.88);
+  border: 0.14vh solid rgba(130, 210, 255, 0.28);
+}
+
+.minimap-compass__mark {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 2.4vh;
+}
+
+.minimap-compass::before,
+.minimap-compass::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 0.14vh;
+  transform: translateX(-50%);
+  background: rgba(216, 243, 255, 0.92);
+}
+
+.minimap-compass::before {
+  top: 0;
+  height: 0.9vh;
+}
+
+.minimap-compass::after {
+  bottom: 0;
+  height: 0.9vh;
+}
+
+.minimap-body {
+  display: grid;
+  grid-template-columns: 3.2vh 1fr;
+  gap: 0.9vh;
+  align-items: stretch;
+}
+
+.minimap-status {
+  display: grid;
+  grid-template-rows: 3.2vh 3.2vh 1fr;
+  gap: 0.8vh;
+}
+
+.minimap-status__zone,
+.minimap-status__anchor {
+  position: relative;
+  width: 3.2vh;
+  height: 3.2vh;
+  box-sizing: border-box;
+  background: rgba(5, 18, 28, 0.9);
+  border: 0.14vh solid rgba(130, 210, 255, 0.28);
+}
+
+.minimap-status__zone::before {
+  content: "";
+  position: absolute;
+  inset: 0.8vh;
+  border-radius: 50%;
+  background: #8fffc1;
+  box-shadow: 0 0 0.8vh rgba(143, 255, 193, 0.55);
+}
+
+.minimap-status__zone.is-pvp::before {
+  background: #ff6d6d;
+  box-shadow: 0 0 0.8vh rgba(255, 109, 109, 0.55);
+}
+
+.minimap-status__anchor::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.55vh;
+  width: 1vh;
+  height: 1.7vh;
+  border: 0.22vh solid rgba(216, 243, 255, 0.38);
+  border-top: 0;
+  transform: translateX(-50%);
+}
+
+.minimap-status__anchor::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0.45vh;
+  width: 1.9vh;
+  height: 0.22vh;
+  transform: translateX(-50%);
+  background: rgba(216, 243, 255, 0.38);
+}
+
+.minimap-status__anchor.is-active::before {
+  border-color: rgba(238, 250, 255, 0.95);
+}
+
+.minimap-status__anchor.is-active::after {
+  background: rgba(238, 250, 255, 0.95);
+}
+
+.minimap-map {
+  position: relative;
+  height: 24vh;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(130, 210, 255, 0.1) 0.14vh, transparent 0.14vh),
+    linear-gradient(90deg, rgba(130, 210, 255, 0.1) 0.14vh, transparent 0.14vh),
+    rgba(5, 18, 28, 0.92);
+  background-size: 4vh 4vh;
+  border: 0.14vh solid rgba(130, 210, 255, 0.32);
+}
+
+.minimap-map__crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.5vh;
+  height: 1.5vh;
+  transform: translate(-50%, -50%);
+  border: 0.14vh solid rgba(238, 250, 255, 0.45);
+}
+
+.minimap-point {
+  position: absolute;
+  width: 0.9vh;
+  height: 0.9vh;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #cfd8dc;
+  box-shadow: 0 0 0.45vh currentColor;
+}
+
+.minimap-point.is-self {
+  width: 1.4vh;
+  height: 1.4vh;
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.minimap-point--npc {
+  color: #ff6d6d;
+  background: #ff6d6d;
+}
+
+.minimap-point--player {
+  color: #ffd65f;
+  background: #ffd65f;
+}
+
+.minimap-point--asteroid {
+  color: #6db7ff;
+  background: #6db7ff;
+}
+
+.minimap-point--owned {
+  color: #8fffc1;
+  background: #8fffc1;
+}
+
+.minimap-point--neutral {
+  color: #cfd8dc;
+  background: #cfd8dc;
+}

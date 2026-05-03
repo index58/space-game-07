@@ -1,11 +1,15 @@
 import { createSignal, type Accessor } from "solid-js";
-import type { ConnectionStatus, CosmicObject } from "../network/protocol";
+import type { ConnectionStatus, CosmicObject, ReferenceDataMessage } from "../network/protocol";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
   status: ConnectionStatus;
   // Посещаемый объект игрока, если он уже получен.
   selfObject: CosmicObject | null;
+  // Объекты последнего серверного снимка, доступные клиенту.
+  objects: CosmicObject[];
+  // Справочники клиента, нужные UI для определения типов объектов.
+  referenceData: ReferenceDataMessage | null;
   // Путь к текстуре текущего объекта.
   textureFilePath: string | null;
   // Текущая частота кадров.
@@ -24,6 +28,8 @@ export type GameUiController = {
 const initialGameUiState: GameUiState = {
   status: "connecting",
   selfObject: null,
+  objects: [],
+  referenceData: null,
   textureFilePath: null,
   fps: 0,
   zoom: 1,

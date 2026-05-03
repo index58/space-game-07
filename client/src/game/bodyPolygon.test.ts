@@ -4,6 +4,7 @@ import { bodyPolygonToPilotScreen, buildBodyPolygon } from "./bodyPolygon";
 
 const model = {
   ID: 1,
+  CosmicObjectTypeID: 1,
   TextureFilePath: "assets/ships/ship.png",
   TextureWidth: 40,
   TextureHeight: 80,

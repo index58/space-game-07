@@ -2,6 +2,7 @@ import { For, Match, Show, Switch, type Accessor } from "solid-js";
 import type { GameUiState } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
+import { getMinimapView, type MinimapPointView } from "./minimap";
 
 type GameUiProps = {
   // Реактивное состояние всего игрового UI.
@@ -17,6 +18,7 @@ type ObjectIndicatorProps = {
 export const GameUi = (props: GameUiProps) => (
   <>
     <ObjectIndicatorsPanel selfObject={props.state().selfObject} />
+    <MinimapPanel state={props.state} />
     <DebugOverlay state={props.state} />
   </>
 );
@@ -75,6 +77,80 @@ const IndicatorIcon = (props: IndicatorIconProps) => (
       </Match>
     </Switch>
   </svg>
+);
+
+type MinimapPanelProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
+type MinimapReadyState = {
+  // Посещаемый объект игрока, относительно которого центрируется карта.
+  selfObject: NonNullable<GameUiState["selfObject"]>;
+  // Справочники клиента, нужные для определения типов объектов.
+  referenceData: NonNullable<GameUiState["referenceData"]>;
+};
+
+type MinimapPointProps = {
+  // Данные точки объекта на мини-карте.
+  point: MinimapPointView;
+};
+
+// Возвращает готовые данные для мини-карты только после получения объекта и справочников.
+const getMinimapReadyState = (state: GameUiState): MinimapReadyState | null => {
+  if (!state.selfObject || !state.referenceData) {
+    return null;
+  }
+  return {
+    selfObject: state.selfObject,
+    referenceData: state.referenceData,
+  };
+};
+
+// Показывает мини-карту в правой нижней части экрана.
+const MinimapPanel = (props: MinimapPanelProps) => (
+  <Show when={getMinimapReadyState(props.state())}>
+    {(ready) => {
+      const minimap = () =>
+        getMinimapView({
+          selfObject: ready().selfObject,
+          objects: props.state().objects,
+          referenceData: ready().referenceData,
+        });
+
+      return (
+        <section class="minimap-overlay" aria-label="Мини-карта">
+          <div class="minimap-compass">
+            <For each={minimap().compassMarks}>
+              {(mark) => (
+                <span class="minimap-compass__mark" style={{ left: `${mark.xPercent}%` }}>
+                  {mark.label}
+                </span>
+              )}
+            </For>
+          </div>
+          <div class="minimap-body">
+            <div class="minimap-status">
+              <div class={`minimap-status__zone ${minimap().isPveZone ? "is-pve" : "is-pvp"}`} title={minimap().isPveZone ? "ПВЕ" : "ПВП"} />
+              <div class={`minimap-status__anchor ${minimap().isAnchored ? "is-active" : ""}`} title="Якорь" />
+            </div>
+            <div class="minimap-map">
+              <For each={minimap().points}>{(point) => <MinimapPoint point={point} />}</For>
+              <div class="minimap-map__crosshair" />
+            </div>
+          </div>
+        </section>
+      );
+    }}
+  </Show>
+);
+
+// Рисует одну точку объекта внутри области мини-карты.
+const MinimapPoint = (props: MinimapPointProps) => (
+  <span
+    class={`minimap-point minimap-point--${props.point.kind} ${props.point.isSelf ? "is-self" : ""}`}
+    style={{ left: `${props.point.xPercent}%`, top: `${props.point.yPercent}%` }}
+  />
 );
 
 type DebugOverlayProps = {
