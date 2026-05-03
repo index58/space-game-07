@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// Проверяет, что добавление космического объекта назначает идентификатор и строит индексы по модели и владельцу.
 func TestCosmicObjectsAddAssignsIDAndIndexesObject(t *testing.T) {
 	cosmicObjects := NewCosmicObjects()
 
@@ -48,6 +49,7 @@ func TestCosmicObjectsAddAssignsIDAndIndexesObject(t *testing.T) {
 	}
 }
 
+// Проверяет, что космический объект без модели не добавляется.
 func TestCosmicObjectsAddRejectsEmptyModelID(t *testing.T) {
 	cosmicObjects := NewCosmicObjects()
 
@@ -56,6 +58,7 @@ func TestCosmicObjectsAddRejectsEmptyModelID(t *testing.T) {
 	}
 }
 
+// Проверяет, что удаление космического объекта очищает основное хранилище и связанные индексы.
 func TestCosmicObjectsDeleteRemovesObjectAndIndexes(t *testing.T) {
 	cosmicObjects := NewCosmicObjects()
 	cosmicObject, err := cosmicObjects.Add(&CosmicObject{CosmicObjectModelID: 23, OwnerCharacterID: 1})
@@ -78,6 +81,7 @@ func TestCosmicObjectsDeleteRemovesObjectAndIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что сохранённые космические объекты загружаются обратно с сохранением положения и модели.
 func TestCosmicObjectsSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "CosmicObjects.json")
 	cosmicObjects := NewCosmicObjects()
@@ -114,6 +118,7 @@ func TestCosmicObjectsSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что JSON-представление космических объектов использует имена полей из Go-структур.
 func TestCosmicObjectsJSONKeysMatchGoFieldNames(t *testing.T) {
 	cosmicObjects := NewCosmicObjects()
 	if _, err := cosmicObjects.Add(&CosmicObject{CosmicObjectModelID: 23}); err != nil {
@@ -148,6 +153,7 @@ func TestCosmicObjectsJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
+// Проверяет, что восстановление индексов отклоняет сохранённый космический объект без модели.
 func TestCosmicObjectsRebuildIndexesRejectsInvalidStoredObject(t *testing.T) {
 	cosmicObjects := NewCosmicObjects()
 	cosmicObjects.Items[1] = &CosmicObject{ID: 1}

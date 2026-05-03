@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// Проверяет, что добавление типа предмета назначает идентификатор и строит уникальные индексы.
 func TestItemtypesAddAssignsIDAndIndexesType(t *testing.T) {
 	itemtypes := NewItemtypes()
 
@@ -52,6 +53,7 @@ func TestItemtypesAddAssignsIDAndIndexesType(t *testing.T) {
 	}
 }
 
+// Проверяет, что повторяющиеся уникальные названия и акроним не допускаются.
 func TestItemtypesAddRejectsDuplicateUniqueFields(t *testing.T) {
 	itemtypes := NewItemtypes()
 
@@ -70,6 +72,7 @@ func TestItemtypesAddRejectsDuplicateUniqueFields(t *testing.T) {
 	}
 }
 
+// Проверяет, что удаление типа предмета очищает основное хранилище и все уникальные индексы.
 func TestItemtypesDeleteRemovesTypeAndIndexes(t *testing.T) {
 	itemtypes := NewItemtypes()
 	itemtype, err := itemtypes.Add(&Itemtype{TitleRu: "Оружие", TitleEn: "Weapon", Acronym: "Weapon"})
@@ -95,6 +98,7 @@ func TestItemtypesDeleteRemovesTypeAndIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что сохранённые типы предметов загружаются обратно с восстановленным индексом по акрониму.
 func TestItemtypesSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "Itemtypes.json")
 	itemtypes := NewItemtypes()
@@ -132,6 +136,7 @@ func TestItemtypesSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что JSON-представление типов предметов использует имена полей из Go-структур.
 func TestItemtypesJSONKeysMatchGoFieldNames(t *testing.T) {
 	itemtypes := NewItemtypes()
 	if _, err := itemtypes.Add(&Itemtype{TitleRu: "Оружие", TitleEn: "Weapon", Acronym: "Weapon"}); err != nil {
@@ -163,6 +168,7 @@ func TestItemtypesJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
+// Проверяет, что восстановление индексов отклоняет сохранённый тип предмета без обязательных полей.
 func TestItemtypesRebuildIndexesRejectsInvalidStoredType(t *testing.T) {
 	itemtypes := NewItemtypes()
 	itemtypes.Items[1] = &Itemtype{ID: 1}

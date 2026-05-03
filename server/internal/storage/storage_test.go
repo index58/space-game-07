@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// Проверяет, что основной загрузчик читает аккаунты из стандартного файла и строит поиск по почте.
 func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -60,6 +61,7 @@ func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	}
 }
 
+// Проверяет, что отсутствие обязательного файла аккаунтов считается ошибкой загрузки.
 func TestLoadServerDataReturnsErrorWhenAccountsFileIsMissing(t *testing.T) {
 	_, err := LoadServerData(t.TempDir())
 	if err == nil {
@@ -67,6 +69,7 @@ func TestLoadServerDataReturnsErrorWhenAccountsFileIsMissing(t *testing.T) {
 	}
 }
 
+// Проверяет, что персонажи читаются из стандартного файла и доступны по числовому идентификатору.
 func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -122,6 +125,7 @@ func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	}
 }
 
+// Проверяет, что типы космических объектов читаются из стандартного файла и индексируются по акрониму.
 func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -176,6 +180,7 @@ func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
 	}
 }
 
+// Проверяет, что космические объекты читаются из стандартного файла с сохранением модели.
 func TestLoadServerDataLoadsCosmicObjectsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -255,6 +260,7 @@ func TestLoadServerDataLoadsCosmicObjectsFromDefaultFile(t *testing.T) {
 	}
 }
 
+// Проверяет, что типы предметов читаются из стандартного файла и индексируются по акрониму.
 func TestLoadServerDataLoadsItemtypesFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -310,6 +316,7 @@ func TestLoadServerDataLoadsItemtypesFromDefaultFile(t *testing.T) {
 	}
 }
 
+// Проверяет, что модели космических объектов читаются из стандартного файла с вычисленными размерами тела.
 func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -379,6 +386,7 @@ func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	}
 }
 
+// Проверяет, что реальные файлы репозитория загружаются как единый набор серверных данных.
 func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	serverData, err := LoadServerData(filepath.Join("..", ".."))
 	if err != nil {

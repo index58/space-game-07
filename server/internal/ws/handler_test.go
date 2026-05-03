@@ -24,6 +24,7 @@ func testAccounts(t *testing.T) *data.Accounts {
 	return accounts
 }
 
+// Проверяет, что запрос с известным токеном сопоставляется с существующим аккаунтом.
 func TestHandlerFindsAccountByToken(t *testing.T) {
 	handler := NewHandler(nil, testAccounts(t))
 	request := httptest.NewRequest("GET", "/ws?token=token", nil)
@@ -34,6 +35,7 @@ func TestHandlerFindsAccountByToken(t *testing.T) {
 	}
 }
 
+// Проверяет, что неизвестный токен отклоняется без создания аккаунта и нового токена.
 func TestHandlerRejectsUnknownToken(t *testing.T) {
 	handler := NewHandler(nil, testAccounts(t))
 	request := httptest.NewRequest("GET", "/ws?token=unknown", nil)
@@ -47,6 +49,7 @@ func TestHandlerRejectsUnknownToken(t *testing.T) {
 	}
 }
 
+// Проверяет, что запрос без токена создаёт стартовый аккаунт, персонажа и корабль.
 func TestHandlerCreatesStarterAccountWhenTokenIsMissing(t *testing.T) {
 	accounts := data.NewAccounts()
 	handler := NewHandler(NewHub(testWorld(t, accounts)), accounts)

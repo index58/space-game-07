@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// Проверяет, что добавление модели назначает идентификатор, вычисляет размеры тела и индексирует акроним.
 func TestCosmicObjectModelsAddAssignsIDCalculatesBodySizeAndIndexesModel(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
@@ -48,6 +49,7 @@ func TestCosmicObjectModelsAddAssignsIDCalculatesBodySizeAndIndexesModel(t *test
 	}
 }
 
+// Проверяет, что физическое тело модели описывается шестнадцатиточечным многоугольником.
 func TestCosmicObjectModelsBuildsSixteenPointBodyPolygon(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
@@ -81,6 +83,7 @@ func TestCosmicObjectModelsBuildsSixteenPointBodyPolygon(t *testing.T) {
 	}
 }
 
+// Проверяет, что многоугольник тела смещается относительно центра текстуры.
 func TestCosmicObjectModelsOffsetsBodyPolygonFromTextureBodyOrigin(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
@@ -115,6 +118,7 @@ func TestCosmicObjectModelsOffsetsBodyPolygonFromTextureBodyOrigin(t *testing.T)
 	}
 }
 
+// Проверяет, что повторяющиеся уникальные названия и акроним модели не допускаются.
 func TestCosmicObjectModelsAddRejectsDuplicateUniqueFields(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
@@ -133,6 +137,7 @@ func TestCosmicObjectModelsAddRejectsDuplicateUniqueFields(t *testing.T) {
 	}
 }
 
+// Проверяет, что сохранённые модели загружаются обратно с восстановленными основными полями.
 func TestCosmicObjectModelsSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "CosmicObjectModels.json")
 	cosmicObjectModels := NewCosmicObjectModels()
@@ -170,6 +175,7 @@ func TestCosmicObjectModelsSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что JSON-представление моделей использует имена полей из Go-структур.
 func TestCosmicObjectModelsJSONKeysMatchGoFieldNames(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "Корабль", TitleEn: "Ship", Acronym: "ship_0001", TextureScale: 4, CosmicObjectTypeID: 1}); err != nil {
@@ -204,6 +210,7 @@ func TestCosmicObjectModelsJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
+// Проверяет, что импорт старого JSON добавляет номера к повторяющимся названиям.
 func TestCosmicObjectModelsLoadFromLegacyJSONNumbersDuplicateTitles(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "legacy.json")
 	content := []byte(`[

@@ -194,6 +194,7 @@ func testWorldData(t *testing.T) world.Data {
 	}
 }
 
+// Проверяет, что подключение аккаунта берёт управляемый объект из текущего местоположения персонажа.
 func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 
@@ -207,6 +208,7 @@ func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 	}
 }
 
+// Проверяет, что ввод подключённого аккаунта двигает уже существующий корабль и сохраняет новое положение.
 func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -230,6 +232,7 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 }
 
+// Проверяет, что тяга включает нужное оборудование, обновляет потребление энергии и тратит топливо.
 func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -261,6 +264,7 @@ func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	}
 }
 
+// Проверяет, что без ввода двигатели не потребляют энергию и не расходуют топливо.
 func TestTickDisablesEngineConsumptionWhenInputStops(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -286,6 +290,7 @@ func TestTickDisablesEngineConsumptionWhenInputStops(t *testing.T) {
 	}
 }
 
+// Проверяет, что генератор без потребителей не активируется и не тратит топливо.
 func TestTickDoesNotSpendGeneratorFuelWithoutPowerDemand(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -313,6 +318,7 @@ func TestTickDoesNotSpendGeneratorFuelWithoutPowerDemand(t *testing.T) {
 	}
 }
 
+// Проверяет, что генератор при частичной нагрузке тратит топливо пропорционально спросу на энергию.
 func TestTickSpendsGeneratorFuelProportionallyToPowerDemand(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -340,6 +346,7 @@ func TestTickSpendsGeneratorFuelProportionallyToPowerDemand(t *testing.T) {
 	}
 }
 
+// Проверяет, что расход топлива растёт сверх базового уровня, когда потребление выше генерации.
 func TestTickSpendsGeneratorFuelAboveBaseRateWhenPowerDemandExceedsGeneration(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -369,6 +376,7 @@ func TestTickSpendsGeneratorFuelAboveBaseRateWhenPowerDemandExceedsGeneration(t 
 	}
 }
 
+// Проверяет, что управляемый корабль после столкновения не остаётся внутри закреплённого объекта.
 func TestTickPreventsControlledShipFromIntersectingAnchoredObject(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[2].X = 0
@@ -395,6 +403,7 @@ func TestTickPreventsControlledShipFromIntersectingAnchoredObject(t *testing.T) 
 	}
 }
 
+// Проверяет, что столкновение двух управляемых кораблей меняет скорости обоих и разделяет их.
 func TestTickAppliesCollisionImpulseToBothControlledShips(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "second@email.net", Nickname: "second", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
@@ -450,6 +459,7 @@ func TestTickAppliesCollisionImpulseToBothControlledShips(t *testing.T) {
 	}
 }
 
+// Проверяет, что подвижный объект без управления продолжает смещаться по своей скорости.
 func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.MaxID = 4
@@ -482,6 +492,7 @@ func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
 	}
 }
 
+// Проверяет, что подключённый корабль без тяги автоматически снижает скорость.
 func TestTickAutobrakesConnectedShipWithoutThrust(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 100
@@ -498,6 +509,7 @@ func TestTickAutobrakesConnectedShipWithoutThrust(t *testing.T) {
 	}
 }
 
+// Проверяет, что после отключения корабль тормозит постоянным замедлением и продолжает движение.
 func TestTickAppliesConstantBrakeToShipAfterDisconnect(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 100
@@ -514,6 +526,7 @@ func TestTickAppliesConstantBrakeToShipAfterDisconnect(t *testing.T) {
 	closeWorldFloat(t, ship.X, 9)
 }
 
+// Проверяет, что торможение неподключённых кораблей одинаково по величине для разных скоростей.
 func TestTickDisconnectedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 100
@@ -546,6 +559,7 @@ func TestTickDisconnectedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
 	closeWorldFloat(t, 200-fastShip.VelocityX, 10)
 }
 
+// Проверяет, что неуправляемый астероид движется без корабельного торможения.
 func TestTickDoesNotApplyShipDragToUncontrolledAsteroid(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[2].Anchored = false
@@ -561,6 +575,7 @@ func TestTickDoesNotApplyShipDragToUncontrolledAsteroid(t *testing.T) {
 	closeWorldFloat(t, asteroid.X, 1010)
 }
 
+// Проверяет, что при создании мира загруженный корабль получает характеристики сборки без потери движения.
 func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].X = 10
@@ -577,6 +592,7 @@ func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {
 	}
 }
 
+// Проверяет, что при создании мира оборудование сборки устанавливается на загруженный корабль.
 func TestNewInstallsAssemblyEquipmentOnLoadedShip(t *testing.T) {
 	serverData := testWorldData(t)
 
@@ -594,6 +610,7 @@ func TestNewInstallsAssemblyEquipmentOnLoadedShip(t *testing.T) {
 	}
 }
 
+// Проверяет, что стартовый аккаунт получает корабль из первой публичной разработческой сборки.
 func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -620,6 +637,7 @@ func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 	}
 }
 
+// Проверяет, что стартовый корабль получает полный бак и боезапас в контейнере на заданное время стрельбы.
 func TestCreateStarterAccountFillsFuelAndContainerAmmo(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -661,6 +679,7 @@ func TestCreateStarterAccountFillsFuelAndContainerAmmo(t *testing.T) {
 	}
 }
 
+// Проверяет, что случайная смена выбирает другую корабельную модель и заменяет характеристики с оборудованием.
 func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -702,6 +721,7 @@ func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) 
 	}
 }
 
+// Проверяет, что после смены модели топливо и боезапас пересоздаются для нового контейнера.
 func TestChangeControlledShipToRandomModelRefillsFuelAndContainerAmmo(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -754,6 +774,7 @@ func TestChangeControlledShipToRandomModelRefillsFuelAndContainerAmmo(t *testing
 	}
 }
 
+// Проверяет, что смена модели сохраняет положение и скорость управляемого корабля.
 func TestChangeControlledShipToRandomModelKeepsMovementState(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].X = 10
@@ -778,6 +799,7 @@ func TestChangeControlledShipToRandomModelKeepsMovementState(t *testing.T) {
 	}
 }
 
+// Проверяет, что отключение аккаунта не удаляет корабль из снимка мира.
 func TestDisconnectAccountDoesNotDeleteStoredShip(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 
@@ -793,6 +815,7 @@ func TestDisconnectAccountDoesNotDeleteStoredShip(t *testing.T) {
 	}
 }
 
+// Проверяет, что снимок мира содержит объекты, загруженные из серверных данных.
 func TestSnapshotContainsObjectsLoadedFromData(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 
@@ -813,6 +836,7 @@ func TestSnapshotContainsObjectsLoadedFromData(t *testing.T) {
 	}
 }
 
+// Проверяет, что сохранение данных записывает обновлённое положение космического объекта.
 func TestSaveDataWritesCosmicObjectPosition(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)

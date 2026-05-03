@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// Проверяет, что добавление персонажа назначает идентификатор, время создания и индекс по аккаунту.
 func TestCharactersAddAssignsIDCreationTimeAndIndexesCharacter(t *testing.T) {
 	characters := NewCharacters()
 
@@ -41,6 +42,7 @@ func TestCharactersAddAssignsIDCreationTimeAndIndexesCharacter(t *testing.T) {
 	}
 }
 
+// Проверяет, что персонаж без привязки к аккаунту не добавляется.
 func TestCharactersAddRejectsEmptyAccountID(t *testing.T) {
 	characters := NewCharacters()
 
@@ -49,6 +51,7 @@ func TestCharactersAddRejectsEmptyAccountID(t *testing.T) {
 	}
 }
 
+// Проверяет, что удаление персонажа очищает основное хранилище и индекс по аккаунту.
 func TestCharactersDeleteRemovesCharacterAndIndexes(t *testing.T) {
 	characters := NewCharacters()
 	character, err := characters.Add(&Character{AccountID: 7})
@@ -68,6 +71,7 @@ func TestCharactersDeleteRemovesCharacterAndIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что сохранённые персонажи загружаются обратно с восстановленным индексом по аккаунту.
 func TestCharactersSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "Characters.json")
 	characters := NewCharacters()
@@ -100,6 +104,7 @@ func TestCharactersSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что JSON-представление персонажей использует имена полей из Go-структур.
 func TestCharactersJSONKeysMatchGoFieldNames(t *testing.T) {
 	characters := NewCharacters()
 	if _, err := characters.Add(&Character{AccountID: 7}); err != nil {
@@ -128,6 +133,7 @@ func TestCharactersJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
+// Проверяет, что восстановление индексов отклоняет сохранённого персонажа без аккаунта.
 func TestCharactersRebuildIndexesRejectsInvalidStoredCharacter(t *testing.T) {
 	characters := NewCharacters()
 	characters.Items[1] = &Character{ID: 1}

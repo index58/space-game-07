@@ -10,6 +10,7 @@ import (
 	"space-game-07-server/internal/storage"
 )
 
+// Проверяет, что HTTP-ответ справочников содержит все таблицы, необходимые клиенту при старте.
 func TestReferenceDataHandlerReturnsAllStartupTables(t *testing.T) {
 	serverData := &storage.ServerData{
 		CosmicObjectTypes: data.NewCosmicObjectTypes(),

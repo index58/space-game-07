@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// Проверяет, что дополнительные справочные таблицы загружаются из файлов при их наличии.
 func TestLoadServerDataLoadsOptionalReferenceTablesWhenFilesExist(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")

@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// Проверяет, что добавление типа космического объекта назначает идентификатор и строит уникальные индексы.
 func TestCosmicObjectTypesAddAssignsIDAndIndexesType(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 
@@ -51,6 +52,7 @@ func TestCosmicObjectTypesAddAssignsIDAndIndexesType(t *testing.T) {
 	}
 }
 
+// Проверяет, что повторяющиеся уникальные названия и акроним не допускаются.
 func TestCosmicObjectTypesAddRejectsDuplicateUniqueFields(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 
@@ -69,6 +71,7 @@ func TestCosmicObjectTypesAddRejectsDuplicateUniqueFields(t *testing.T) {
 	}
 }
 
+// Проверяет, что удаление типа космического объекта очищает основное хранилище и все уникальные индексы.
 func TestCosmicObjectTypesDeleteRemovesTypeAndIndexes(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 	cosmicObjectType, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship"})
@@ -94,6 +97,7 @@ func TestCosmicObjectTypesDeleteRemovesTypeAndIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что сохранённые типы космических объектов загружаются обратно с восстановленным индексом по акрониму.
 func TestCosmicObjectTypesSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "CosmicObjectTypes.json")
 	cosmicObjectTypes := NewCosmicObjectTypes()
@@ -131,6 +135,7 @@ func TestCosmicObjectTypesSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
+// Проверяет, что JSON-представление типов космических объектов использует имена полей из Go-структур.
 func TestCosmicObjectTypesJSONKeysMatchGoFieldNames(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship"}); err != nil {
@@ -161,6 +166,7 @@ func TestCosmicObjectTypesJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
+// Проверяет, что восстановление индексов отклоняет сохранённый тип космического объекта без обязательных полей.
 func TestCosmicObjectTypesRebuildIndexesRejectsInvalidStoredType(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 	cosmicObjectTypes.Items[1] = &CosmicObjectType{ID: 1}

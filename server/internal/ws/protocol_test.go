@@ -10,6 +10,7 @@ import (
 	transport "space-game-07-server/internal/ws"
 )
 
+// Проверяет, что входное сообщение управления читается из согласованных JSON-полей.
 func TestDecodeInputMessageUsesAgreedJSONFields(t *testing.T) {
 	input, ok := transport.DecodeInputMessage([]byte(`{
 		"type": "input",
@@ -34,6 +35,7 @@ func TestDecodeInputMessageUsesAgreedJSONFields(t *testing.T) {
 	}
 }
 
+// Проверяет, что сообщение с неподдерживаемым типом не принимается как управление.
 func TestDecodeInputMessageRejectsUnknownType(t *testing.T) {
 	_, ok := transport.DecodeInputMessage([]byte(`{"type":"unknown"}`))
 
@@ -42,18 +44,21 @@ func TestDecodeInputMessageRejectsUnknownType(t *testing.T) {
 	}
 }
 
+// Проверяет, что команда случайной смены корабля принимается по согласованному типу.
 func TestDecodeRandomShipMessageAcceptsAgreedType(t *testing.T) {
 	if !transport.DecodeRandomShipMessage([]byte(`{"type":"randomShip"}`)) {
 		t.Fatalf("random ship message was not accepted")
 	}
 }
 
+// Проверяет, что другие типы сообщений не распознаются как команда смены корабля.
 func TestDecodeRandomShipMessageRejectsOtherTypes(t *testing.T) {
 	if transport.DecodeRandomShipMessage([]byte(`{"type":"input"}`)) {
 		t.Fatalf("input message was accepted as random ship command")
 	}
 }
 
+// Проверяет, что снимок мира кодируется с текущими именами полей и без удалённых полей.
 func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 	snapshot := game.Snapshot{
 		Type:         "snapshot",
@@ -108,6 +113,7 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 	}
 }
 
+// Проверяет, что сообщение авторизации содержит тип и токен для отправки до снимков мира.
 func TestEncodeAuthMessageSendsTokenBeforeSnapshots(t *testing.T) {
 	payload, err := transport.EncodeAuthMessage("secret-token")
 	if err != nil {
