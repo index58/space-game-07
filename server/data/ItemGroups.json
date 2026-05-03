@@ -1,4 +1,11 @@
 {
-  "MaxID": 0,
-  "Items": {}
+  "MaxID": 1,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "ContainerEquipmentGroupID": 380,
+      "ContentItemModelID": 7,
+      "Count": 900
+    }
+  }
 }

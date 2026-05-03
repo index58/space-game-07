@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Панель основных показателей</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #05080d;
+        color: #d8f3ff;
+        font-family: Arial, sans-serif;
+      }
+
+      .screen {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.55) 1px, transparent 2px),
+          radial-gradient(circle at 62% 22%, rgba(255, 255, 255, 0.36) 1px, transparent 2px),
+          radial-gradient(circle at 80% 74%, rgba(255, 255, 255, 0.42) 1px, transparent 2px),
+          radial-gradient(circle at 36% 66%, rgba(255, 255, 255, 0.28) 1px, transparent 2px),
+          #05080d;
+        background-size: 120px 90px, 180px 140px, 150px 110px, 210px 170px, auto;
+      }
+
+      .ship {
+        position: absolute;
+        left: 50%;
+        bottom: 18%;
+        width: 42px;
+        height: 82px;
+        transform: translateX(-50%);
+        border-radius: 22px 22px 10px 10px;
+        background: linear-gradient(180deg, #e5f5ff, #6d8798);
+        box-shadow: 0 0 24px rgba(130, 210, 255, 0.24);
+      }
+
+      .object-indicators {
+        position: absolute;
+        left: 24px;
+        bottom: 24px;
+        width: 320px;
+        padding: 10px;
+        border: 1px solid rgba(130, 210, 255, 0.38);
+        background: rgba(0, 10, 18, 0.82);
+        box-sizing: border-box;
+      }
+
+      .indicator {
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        font: 13px/1.2 Consolas, monospace;
+      }
+
+      .indicator + .indicator {
+        margin-top: 10px;
+      }
+
+      .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        color: #9edcff;
+      }
+
+      .icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .bar {
+        position: relative;
+        height: 28px;
+        border: 1px solid rgba(130, 210, 255, 0.34);
+        background: rgba(5, 18, 28, 0.95);
+        overflow: hidden;
+      }
+
+      .fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: rgba(126, 212, 255, 0.42);
+      }
+
+      .armor {
+        width: 84%;
+      }
+
+      .power {
+        width: 75%;
+      }
+
+      .fuel {
+        width: 58%;
+      }
+
+      .bar-value {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #eefaff;
+        text-shadow: 0 1px 2px rgba(0, 4, 8, 0.9);
+      }
+
+      .note {
+        position: absolute;
+        left: 24px;
+        bottom: 140px;
+        max-width: 360px;
+        color: #9ab9c8;
+        font-size: 13px;
+        line-height: 1.35;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="screen">
+      <div class="ship"></div>
+
+      <div class="note">Новый вариант: одноцветные индикаторы, значки вместо подписей, значения внутри полос.</div>
+
+      <section class="object-indicators" aria-label="Основные показатели посещаемого объекта">
+        <div class="indicator">
+          <div class="icon" aria-label="Броня">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z" />
+            </svg>
+          </div>
+          <div class="bar"><div class="fill armor"></div><div class="bar-value">420 / 500</div></div>
+        </div>
+        <div class="indicator">
+          <div class="icon" aria-label="Энергия">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13 2L5 13h6l-1 9 9-13h-6l1-7z" />
+            </svg>
+          </div>
+          <div class="bar"><div class="fill power"></div><div class="bar-value">18 / 24</div></div>
+        </div>
+        <div class="indicator">
+          <div class="icon" aria-label="Топливо">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 3h8v18H7z" />
+              <path d="M9 6h4" />
+              <path d="M15 8h2l2 3v7c0 1-1 2-2 2h-2" />
+              <path d="M19 11h-2" />
+            </svg>
+          </div>
+          <div class="bar"><div class="fill fuel"></div><div class="bar-value">76 / 130</div></div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

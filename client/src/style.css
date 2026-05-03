@@ -24,3 +24,80 @@ body,
   pointer-events: none;
   white-space: pre;
 }
+
+.object-indicators-overlay {
+  /* Панель основных показателей масштабируется от высоты экрана, как и остальной HUD. */
+  position: fixed;
+  left: 3vh;
+  bottom: 3vh;
+  z-index: 8;
+  width: 40vh;
+  padding: 1.2vh;
+  box-sizing: border-box;
+  color: #d8f3ff;
+  background: rgba(0, 10, 18, 0.82);
+  border: 0.14vh solid rgba(130, 210, 255, 0.38);
+}
+
+.object-indicators-overlay:empty,
+.object-indicators-overlay[hidden] {
+  display: none;
+}
+
+.object-indicator {
+  display: grid;
+  grid-template-columns: 3.4vh 1fr;
+  align-items: center;
+  gap: 1vh;
+  min-height: 3.6vh;
+}
+
+.object-indicator + .object-indicator {
+  margin-top: 1.1vh;
+}
+
+.object-indicator__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.4vh;
+  height: 3.4vh;
+  color: #9edcff;
+}
+
+.object-indicator__icon svg {
+  width: 2.5vh;
+  height: 2.5vh;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.object-indicator__bar {
+  position: relative;
+  height: 3.4vh;
+  overflow: hidden;
+  background: rgba(5, 18, 28, 0.95);
+  border: 0.14vh solid rgba(130, 210, 255, 0.34);
+}
+
+.object-indicator__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: rgba(126, 212, 255, 0.42);
+}
+
+.object-indicator__value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eefaff;
+  font: 1.55vh/1 Consolas, monospace;
+  text-shadow: 0 0.12vh 0.24vh rgba(0, 4, 8, 0.9);
+}

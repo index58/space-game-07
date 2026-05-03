@@ -18,6 +18,7 @@ import { fetchReferenceData } from "../network/referenceData";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
 import { DebugOverlay } from "./DebugOverlay";
 import { InputController } from "./InputController";
+import { ObjectIndicatorsOverlay } from "./ObjectIndicatorsOverlay";
 
 const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
 
@@ -35,6 +36,8 @@ export class GameScene extends Phaser.Scene {
   private inputController!: InputController;
   // DOM-слой с диагностикой текущего состояния.
   private debugOverlay!: DebugOverlay;
+  // DOM-слой с основными показателями посещаемого объекта.
+  private objectIndicatorsOverlay!: ObjectIndicatorsOverlay;
   // Сетевой клиент для получения снимков и отправки ввода.
   private gameClient: GameClient | null = null;
   // Справочники, полученные с сервера перед подключением к игровому потоку.
@@ -76,9 +79,13 @@ export class GameScene extends Phaser.Scene {
     this.bodyPolygonGraphics = this.add.graphics().setDepth(1000);
 
     const overlay = document.getElementById("debug-overlay");
+    const objectIndicatorsOverlay = document.getElementById("object-indicators-overlay");
 
     if (!overlay) {
       throw new Error("debug-overlay element not found");
+    }
+    if (!objectIndicatorsOverlay) {
+      throw new Error("object-indicators-overlay element not found");
     }
 
     this.inputController = new InputController(
@@ -86,6 +93,7 @@ export class GameScene extends Phaser.Scene {
       () => this.gameClient?.getStatus() === "connected",
     );
     this.debugOverlay = new DebugOverlay(overlay);
+    this.objectIndicatorsOverlay = new ObjectIndicatorsOverlay(objectIndicatorsOverlay);
     void this.loadStartupData();
   }
 
@@ -113,6 +121,7 @@ export class GameScene extends Phaser.Scene {
     if (status !== "connected" || !snapshot || !selfObject) {
       this.renderWaiting(status);
       this.debugOverlay.update(status, null, null, this.game.loop.actualFps, this.zoomScale);
+      this.objectIndicatorsOverlay.update(null);
       return;
     }
 
@@ -125,6 +134,7 @@ export class GameScene extends Phaser.Scene {
       this.game.loop.actualFps,
       this.zoomScale,
     );
+    this.objectIndicatorsOverlay.update(selfObject);
   }
 
   // Показывает фон и статус, пока нет валидного снимка объекта игрока.
