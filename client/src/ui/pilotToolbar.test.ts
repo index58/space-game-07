@@ -109,8 +109,21 @@ describe("pilot toolbar", () => {
   });
 
   it("wraps selected tool index over available tools", () => {
-    expect(getNextPilotToolIndex(0, -1, 2)).toBe(1);
-    expect(getNextPilotToolIndex(1, 1, 2)).toBe(0);
-    expect(getNextPilotToolIndex(0, 1, 0)).toBe(0);
+    expect(getNextPilotToolIndex(0, -1)).toBe(9);
+    expect(getNextPilotToolIndex(9, 1)).toBe(0);
+    expect(getNextPilotToolIndex(4, 1)).toBe(5);
+  });
+
+  it("can select an empty slot", () => {
+    const toolbar = getPilotToolbarView({
+      selfObject: emptyObject(),
+      equipmentGroups: [group(5, 101, 2)],
+      referenceData,
+      selectedToolIndex: 4,
+    });
+
+    expect(toolbar.slots[4].tool).toBeNull();
+    expect(toolbar.slots[4].isSelected).toBe(true);
+    expect(toolbar.magazine).toBeNull();
   });
 });

@@ -47,7 +47,7 @@ type PilotToolbarInput = {
   equipmentGroups: EquipmentGroup[];
   // Справочники клиента для определения моделей и типов оборудования.
   referenceData: ReferenceDataMessage;
-  // Выбранный индекс среди доступных инструментов.
+  // Выбранный индекс среди десяти ячеек панели.
   selectedToolIndex: number;
 };
 
@@ -63,7 +63,7 @@ type AggregatedPilotTool = {
 // Собирает данные панели пилота из групп оборудования текущего объекта.
 export const getPilotToolbarView = (input: PilotToolbarInput): PilotToolbarView => {
   const tools = getAggregatedPilotTools(input).slice(0, PILOT_TOOL_SLOT_COUNT);
-  const selectedToolIndex = normalizePilotToolIndex(input.selectedToolIndex, tools.length);
+  const selectedToolIndex = normalizePilotToolIndex(input.selectedToolIndex);
   const selectedTool = tools[selectedToolIndex] ?? null;
   const slots = Array.from({ length: PILOT_TOOL_SLOT_COUNT }, (_, slotIndex): PilotToolSlotView => {
     const tool = tools[slotIndex] ? toPilotToolView(tools[slotIndex]) : null;
@@ -71,7 +71,7 @@ export const getPilotToolbarView = (input: PilotToolbarInput): PilotToolbarView 
     return {
       index: slotIndex + 1,
       tool,
-      isSelected: slotIndex === selectedToolIndex && tool !== null,
+      isSelected: slotIndex === selectedToolIndex,
     };
   });
 
@@ -86,20 +86,14 @@ export const getPilotToolbarView = (input: PilotToolbarInput): PilotToolbarView 
   };
 };
 
-// Возвращает следующий индекс инструмента с кольцевым переходом через границы.
-export const getNextPilotToolIndex = (currentIndex: number, delta: number, toolCount: number): number => {
-  if (toolCount <= 0) {
-    return 0;
-  }
-  return normalizePilotToolIndex(currentIndex + delta, toolCount);
+// Возвращает следующий индекс ячейки с кольцевым переходом через границы.
+export const getNextPilotToolIndex = (currentIndex: number, delta: number): number => {
+  return normalizePilotToolIndex(currentIndex + delta);
 };
 
-// Приводит индекс к доступному диапазону инструментов.
-export const normalizePilotToolIndex = (index: number, toolCount: number): number => {
-  if (toolCount <= 0) {
-    return 0;
-  }
-  return ((index % toolCount) + toolCount) % toolCount;
+// Приводит индекс к диапазону десяти ячеек панели.
+export const normalizePilotToolIndex = (index: number): number => {
+  return ((index % PILOT_TOOL_SLOT_COUNT) + PILOT_TOOL_SLOT_COUNT) % PILOT_TOOL_SLOT_COUNT;
 };
 
 // Объединяет группы одной модели и оставляет только типы, разрешенные для панели пилота.

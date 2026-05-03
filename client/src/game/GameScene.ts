@@ -16,7 +16,7 @@ import type {
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
 import type { GameUiController } from "../ui/gameUiState";
-import { getNextPilotToolIndex, getPilotToolbarView } from "../ui/pilotToolbar";
+import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
 import { InputController } from "./InputController";
 
@@ -124,15 +124,8 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
-    if (pilotToolSelectionDelta !== 0 && this.referenceData) {
-      const toolbar = getPilotToolbarView({
-        selfObject,
-        equipmentGroups: snapshot.equipmentGroups ?? [],
-        referenceData: this.referenceData,
-        selectedToolIndex: this.selectedPilotToolIndex,
-      });
-      const toolCount = toolbar.slots.filter((slot) => slot.tool !== null).length;
-      this.selectedPilotToolIndex = getNextPilotToolIndex(this.selectedPilotToolIndex, pilotToolSelectionDelta, toolCount);
+    if (pilotToolSelectionDelta !== 0) {
+      this.selectedPilotToolIndex = getNextPilotToolIndex(this.selectedPilotToolIndex, pilotToolSelectionDelta);
     }
 
     this.waitingText.setVisible(false);
