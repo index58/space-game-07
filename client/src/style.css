@@ -248,17 +248,17 @@ body,
 
 .minimap-point {
   position: absolute;
-  width: 0.9vh;
-  height: 0.9vh;
+  width: 0.34vh;
+  height: 0.34vh;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   background: #cfd8dc;
-  box-shadow: 0 0 0.45vh currentColor;
+  box-shadow: 0 0 0.22vh currentColor;
 }
 
 .minimap-point.is-self {
-  width: 1.4vh;
-  height: 1.4vh;
+  width: 0.74vh;
+  height: 0.74vh;
   border-radius: 0;
   transform: translate(-50%, -50%) rotate(45deg);
 }

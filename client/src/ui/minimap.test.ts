@@ -75,8 +75,8 @@ describe("getMinimapView", () => {
 
     expect(view.points).toEqual([
       { id: 1, xPercent: 50, yPercent: 50, kind: "owned", isSelf: true },
-      { id: 2, xPercent: 62.5, yPercent: 43.75, kind: "asteroid", isSelf: false },
-      { id: 3, xPercent: 100, yPercent: 50, kind: "asteroid", isSelf: false },
+      { id: 2, xPercent: 52, yPercent: 49, kind: "asteroid", isSelf: false },
+      { id: 3, xPercent: 99, yPercent: 50, kind: "asteroid", isSelf: false },
     ]);
   });
 
@@ -94,7 +94,7 @@ describe("getMinimapView", () => {
     expect(view.points[1]).toMatchObject({
       id: 2,
       xPercent: 50,
-      yPercent: 37.5,
+      yPercent: 48,
     });
   });
 
@@ -118,7 +118,7 @@ describe("getMinimapView", () => {
 
     expect(view.points[1]).toMatchObject({
       id: 2,
-      xPercent: 37.5,
+      xPercent: 48,
       yPercent: 50,
       kind: "asteroid",
       isSelf: false,

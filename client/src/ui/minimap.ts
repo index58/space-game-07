@@ -1,6 +1,6 @@
 import type { CosmicObject, ReferenceDataMessage } from "../network/protocol";
 
-const MINIMAP_WORLD_RADIUS_METERS = 800;
+const MINIMAP_WORLD_RADIUS_METERS = 5000;
 const FIRST_PVE_RADIUS_METERS = 100000;
 const ZONE_RING_WIDTH_METERS = 10000;
 
