@@ -71,7 +71,8 @@ const IndicatorIcon = (props: IndicatorIconProps) => (
       </Match>
       <Match when={props.acronym === "Fuel"}>
         <path d="M7 3h8v18H7z" />
-        <path d="M9 6h4" />
+        <path d="M9 6h4v4H9z" />
+        <path d="M10 8h2" />
         <path d="M15 8h2l2 3v7c0 1-1 2-2 2h-2" />
         <path d="M19 11h-2" />
       </Match>

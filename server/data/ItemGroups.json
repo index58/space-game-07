@@ -1,9 +1,9 @@
 {
-  "MaxID": 27,
+  "MaxID": 28,
   "Items": {
-    "27": {
-      "ID": 27,
-      "ContainerEquipmentGroupID": 536,
+    "28": {
+      "ID": 28,
+      "ContainerEquipmentGroupID": 542,
       "ContentItemModelID": 7,
       "Count": 450
     }
