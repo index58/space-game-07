@@ -11,6 +11,7 @@ describe("toShipInput", () => {
       thrustBackward: false,
       thrustLeft: false,
       thrustRight: false,
+      toggleAnchor: false,
       targetRotationDelta: 0,
     });
   });

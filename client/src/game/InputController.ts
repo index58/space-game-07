@@ -16,6 +16,8 @@ export class InputController {
   private bodyPolygonDebugToggleRequested = false;
   // Накопленное переключение выбранного инструмента пилота.
   private pilotToolSelectionDelta = 0;
+  // Одноразовый запрос на переключение якоря.
+  private anchorToggleRequested = false;
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -30,6 +32,9 @@ export class InputController {
       }
       if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyO")) {
         this.bodyPolygonDebugToggleRequested = true;
+      }
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyP")) {
+        this.anchorToggleRequested = true;
       }
 
       this.keys[event.code] = true;
@@ -99,7 +104,9 @@ export class InputController {
     // Захват указателя отдает относительное движение мыши; после кадра накопление сбрасывается.
     const isPointerLocked = document.pointerLockElement === this.canvas;
     const input = toShipInput(isPointerLocked, this.keys, this.mouseDeltaX);
+    input.toggleAnchor = isPointerLocked && this.anchorToggleRequested;
     this.mouseDeltaX = 0;
+    this.anchorToggleRequested = false;
 
     return input;
   }

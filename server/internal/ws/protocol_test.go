@@ -19,6 +19,7 @@ func TestDecodeInputMessageUsesAgreedJSONFields(t *testing.T) {
 		"thrustBackward": false,
 		"thrustLeft": false,
 		"thrustRight": true,
+		"toggleAnchor": true,
 		"targetRotationDelta": 0.0125
 	}`))
 
@@ -30,6 +31,7 @@ func TestDecodeInputMessageUsesAgreedJSONFields(t *testing.T) {
 		input.ThrustBackward ||
 		input.ThrustLeft ||
 		!input.ThrustRight ||
+		!input.ToggleAnchor ||
 		input.TargetRotationDelta != 0.0125 {
 		t.Fatalf("decoded input mismatch: %+v", input)
 	}

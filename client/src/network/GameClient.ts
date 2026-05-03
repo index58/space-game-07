@@ -47,6 +47,7 @@ const emptyInput = (): ClientInputState => ({
   thrustBackward: false,
   thrustLeft: false,
   thrustRight: false,
+  toggleAnchor: false,
   targetRotationDelta: 0,
 });
 
@@ -180,6 +181,8 @@ export class GameClient {
   setInput(input: ClientInputState): void {
     this.latestInput = {
       ...input,
+      // Переключение якоря является одноразовой командой и должно дожить до ближайшей отправки.
+      toggleAnchor: this.latestInput.toggleAnchor || input.toggleAnchor,
       // Угловая дельта мыши приходит каждый кадр рендера, поэтому копим ее до сетевой отправки.
       targetRotationDelta: this.latestInput.targetRotationDelta + input.targetRotationDelta,
     };
@@ -307,6 +310,7 @@ export class GameClient {
     // После успешной отправки оставляем последние состояния клавиш, но начинаем новую угловую дельту.
     this.latestInput = {
       ...this.latestInput,
+      toggleAnchor: false,
       targetRotationDelta: 0,
     };
   }

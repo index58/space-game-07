@@ -233,6 +233,93 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 }
 
+// Проверяет, что одноразовая команда ввода переключает якорь управляемого объекта.
+func TestSetInputTogglesControlledShipAnchor(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	gameWorld.SetInput(1, game.ShipInput{ToggleAnchor: true})
+	firstSnapshot := gameWorld.SnapshotForAccount(1)
+	firstObject, ok := findCosmicObjectInSnapshot(firstSnapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+	if !firstObject.Anchored {
+		t.Fatalf("anchor was not enabled: %+v", firstObject)
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{})
+	secondSnapshot := gameWorld.SnapshotForAccount(1)
+	secondObject, ok := findCosmicObjectInSnapshot(secondSnapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+	if !secondObject.Anchored {
+		t.Fatalf("anchor changed without toggle command: %+v", secondObject)
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{ToggleAnchor: true})
+	thirdSnapshot := gameWorld.SnapshotForAccount(1)
+	thirdObject, ok := findCosmicObjectInSnapshot(thirdSnapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+	if thirdObject.Anchored {
+		t.Fatalf("anchor was not disabled: %+v", thirdObject)
+	}
+}
+
+// Проверяет, что якорь нельзя включить до полной остановки объекта.
+func TestSetInputDoesNotEnableAnchorUntilControlledObjectStops(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].VelocityX = 0.01
+	serverData.CosmicObjects.Items[1].AngularSpeed = 0.01
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	gameWorld.SetInput(1, game.ShipInput{ToggleAnchor: true})
+	firstSnapshot := gameWorld.SnapshotForAccount(1)
+	firstObject, ok := findCosmicObjectInSnapshot(firstSnapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+	if firstObject.Anchored {
+		t.Fatalf("moving object enabled anchor: %+v", firstObject)
+	}
+
+	serverData.CosmicObjects.Items[1].VelocityX = 0
+	serverData.CosmicObjects.Items[1].VelocityY = 0
+	serverData.CosmicObjects.Items[1].Speed = 0
+	serverData.CosmicObjects.Items[1].AngularSpeed = 0
+	gameWorld.SetInput(1, game.ShipInput{ToggleAnchor: true})
+	secondSnapshot := gameWorld.SnapshotForAccount(1)
+	secondObject, ok := findCosmicObjectInSnapshot(secondSnapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+	if !secondObject.Anchored {
+		t.Fatalf("stopped object did not enable anchor: %+v", secondObject)
+	}
+
+	serverData.CosmicObjects.Items[1].VelocityX = 0.01
+	gameWorld.SetInput(1, game.ShipInput{ToggleAnchor: true})
+	thirdSnapshot := gameWorld.SnapshotForAccount(1)
+	thirdObject, ok := findCosmicObjectInSnapshot(thirdSnapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+	if thirdObject.Anchored {
+		t.Fatalf("active anchor was not disabled while moving: %+v", thirdObject)
+	}
+}
+
 // Проверяет, что тяга включает нужное оборудование, обновляет потребление энергии и тратит топливо.
 func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	serverData := testWorldData(t)

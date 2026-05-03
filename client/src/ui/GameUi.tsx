@@ -201,6 +201,16 @@ type MinimapPointProps = {
   point: MinimapPointView;
 };
 
+// Рисует статус стояночного якоря морским якорем.
+const AnchorIcon = () => (
+  <svg class="minimap-status__anchor-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <circle data-icon-part="anchor-ring" cx="12" cy="5" r="2.2" />
+    <path data-icon-part="anchor-stock" d="M12 7.2v11.3M8 10h8" />
+    <path data-icon-part="anchor-flukes" d="M5.5 15.5c1.1 3.1 3.5 4.8 6.5 4.8s5.4-1.7 6.5-4.8M5.5 15.5H8M18.5 15.5H16" />
+    <path data-icon-part="anchor-tip" d="M12 18.5l-1.7-1.7M12 18.5l1.7-1.7" />
+  </svg>
+);
+
 // Возвращает готовые данные для мини-карты только после получения объекта и справочников.
 const getMinimapReadyState = (state: GameUiState): MinimapReadyState | null => {
   if (!state.selfObject || !state.referenceData) {
@@ -237,7 +247,9 @@ const MinimapPanel = (props: MinimapPanelProps) => (
           <div class="minimap-body">
             <div class="minimap-status">
               <div class={`minimap-status__zone ${minimap().isPveZone ? "is-pve" : "is-pvp"}`} title={minimap().isPveZone ? "ПВЕ" : "ПВП"} />
-              <div class={`minimap-status__anchor ${minimap().isAnchored ? "is-active" : ""}`} title="Якорь" />
+              <div class={`minimap-status__anchor ${minimap().isAnchored ? "is-active" : ""}`} title="Якорь">
+                <AnchorIcon />
+              </div>
             </div>
             <div class="minimap-map">
               <For each={minimap().points}>{(point) => <MinimapPoint point={point} />}</For>

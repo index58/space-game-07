@@ -108,4 +108,18 @@ describe("GameUi", () => {
       ["hud-panel", "hud-panel--left-top", "debug-overlay"],
     ]);
   });
+
+  it("renders the minimap anchor status as a sea anchor icon", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={state} />, root);
+
+    const anchorIcon = root.querySelector(".minimap-status__anchor svg");
+
+    expect(anchorIcon?.getAttribute("viewBox")).toBe("0 0 24 24");
+    expect(anchorIcon?.querySelector('[data-icon-part="anchor-ring"]')).not.toBeNull();
+    expect(anchorIcon?.querySelector('[data-icon-part="anchor-stock"]')).not.toBeNull();
+    expect(anchorIcon?.querySelector('[data-icon-part="anchor-flukes"]')).not.toBeNull();
+  });
 });

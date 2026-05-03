@@ -33,6 +33,7 @@ const emptyInput = (): ClientInputState => ({
   thrustBackward: false,
   thrustLeft: false,
   thrustRight: false,
+  toggleAnchor: false,
   targetRotationDelta: 0,
 });
 
@@ -192,6 +193,7 @@ describe("GameClient", () => {
       thrustBackward: false,
       thrustLeft: false,
       thrustRight: false,
+      toggleAnchor: false,
       targetRotationDelta: 0.25,
     });
 
@@ -243,6 +245,7 @@ describe("GameClient", () => {
       thrustBackward: false,
       thrustLeft: false,
       thrustRight: true,
+      toggleAnchor: false,
       targetRotationDelta: firstMessage.targetRotationDelta,
     });
     expect(firstMessage.targetRotationDelta).toBeCloseTo(0.25);
@@ -254,6 +257,7 @@ describe("GameClient", () => {
       thrustBackward: false,
       thrustLeft: false,
       thrustRight: true,
+      toggleAnchor: false,
       targetRotationDelta: 0,
     });
 
@@ -275,6 +279,28 @@ describe("GameClient", () => {
     socket.onclose?.();
 
     expect(client.getStatus()).toBe("waiting");
+
+    client.destroy();
+    vi.useRealTimers();
+  });
+
+  it("sends anchor toggle only once after P input", () => {
+    vi.useFakeTimers();
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    client.setInput({ ...emptyInput(), toggleAnchor: true });
+    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000);
+
+    expect(JSON.parse(socket.sent[0])).toMatchObject({ toggleAnchor: true });
+    expect(JSON.parse(socket.sent[1])).toMatchObject({ toggleAnchor: false });
 
     client.destroy();
     vi.useRealTimers();

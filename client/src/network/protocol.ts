@@ -11,6 +11,8 @@ export type ClientInputState = {
   thrustLeft: boolean;
   // Запрос поперечной тяги вправо.
   thrustRight: boolean;
+  // Одноразовый запрос переключения якоря.
+  toggleAnchor: boolean;
   // Изменение целевого угла поворота с прошлого пакета.
   targetRotationDelta: number;
 };

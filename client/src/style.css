@@ -304,35 +304,25 @@ body {
   box-shadow: 0 0 0.8vh rgba(255, 109, 109, 0.55);
 }
 
-.minimap-status__anchor::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0.55vh;
-  width: 1vh;
-  height: 1.7vh;
-  border: 0.22vh solid rgba(216, 243, 255, 0.38);
-  border-top: 0;
-  transform: translateX(-50%);
+.minimap-status__anchor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.minimap-status__anchor::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 0.45vh;
-  width: 1.9vh;
-  height: 0.22vh;
-  transform: translateX(-50%);
-  background: rgba(216, 243, 255, 0.38);
+.minimap-status__anchor-icon {
+  width: 2.35vh;
+  height: 2.35vh;
+  color: rgba(216, 243, 255, 0.38);
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.minimap-status__anchor.is-active::before {
-  border-color: rgba(238, 250, 255, 0.95);
-}
-
-.minimap-status__anchor.is-active::after {
-  background: rgba(238, 250, 255, 0.95);
+.minimap-status__anchor.is-active .minimap-status__anchor-icon {
+  color: rgba(238, 250, 255, 0.95);
 }
 
 .minimap-map {

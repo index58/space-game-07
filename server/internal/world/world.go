@@ -154,10 +154,19 @@ func (world *World) SetInput(accountID int64, input game.ShipInput) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
-	if _, ok := world.accountObjectIDs[accountID]; !ok {
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
 		return
 	}
 
+	if input.ToggleAnchor {
+		if cosmicObject, ok := world.data.CosmicObjects.Get(objectID); ok {
+			if cosmicObject.Anchored || cosmicObjectIsFullyStopped(*cosmicObject) {
+				cosmicObject.Anchored = !cosmicObject.Anchored
+			}
+		}
+		input.ToggleAnchor = false
+	}
 	world.inputs[accountID] = input
 }
 
@@ -242,6 +251,14 @@ func (world *World) inputsByObjectID() map[int64]game.ShipInput {
 		result[world.accountObjectIDs[accountID]] = world.inputs[accountID]
 	}
 	return result
+}
+
+// Проверяет, что объект не имеет ни линейного, ни углового движения.
+func cosmicObjectIsFullyStopped(cosmicObject data.CosmicObject) bool {
+	return math.Abs(cosmicObject.VelocityX) <= physics.Epsilon &&
+		math.Abs(cosmicObject.VelocityY) <= physics.Epsilon &&
+		math.Abs(cosmicObject.Speed) <= physics.Epsilon &&
+		math.Abs(cosmicObject.AngularSpeed) <= physics.Epsilon
 }
 
 // Двигает все подвижные объекты мира до общего решения столкновений.

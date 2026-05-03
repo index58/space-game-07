@@ -16,6 +16,7 @@ type ShipInput struct {
 	ThrustBackward      bool    `json:"thrustBackward"`      // Запрос продольной тяги назад.
 	ThrustLeft          bool    `json:"thrustLeft"`          // Запрос поперечной тяги влево.
 	ThrustRight         bool    `json:"thrustRight"`         // Запрос поперечной тяги вправо.
+	ToggleAnchor        bool    `json:"toggleAnchor"`        // Одноразовый запрос переключения якоря.
 	TargetRotationDelta float64 `json:"targetRotationDelta"` // Изменение целевого угла поворота за пакет.
 }
 

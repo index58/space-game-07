@@ -19,6 +19,7 @@ export const emptyShipInput = (): ClientInputState => ({
   thrustBackward: false,
   thrustLeft: false,
   thrustRight: false,
+  toggleAnchor: false,
   targetRotationDelta: 0,
 });
 
@@ -38,6 +39,7 @@ export const toShipInput = (
     thrustBackward: Boolean(keys.KeyS),
     thrustLeft: Boolean(keys.KeyA),
     thrustRight: Boolean(keys.KeyD),
+    toggleAnchor: false,
     targetRotationDelta: mouseDeltaX * MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL,
   };
 };
