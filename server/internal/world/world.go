@@ -274,9 +274,10 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 		}
 
 		input, controlled := inputsByObjectID[objectID]
-		if controlled {
+		isShip := world.isShipModel(model)
+		if controlled && (!isShip || shipHasFuel(*cosmicObject)) {
 			*cosmicObject = physics.StepShip(*cosmicObject, *model, input, dtSeconds)
-		} else if world.isShipModel(model) {
+		} else if isShip {
 			*cosmicObject = physics.StepUnpilotedShip(*cosmicObject, dtSeconds)
 		} else {
 			*cosmicObject = physics.StepFreeBody(*cosmicObject, dtSeconds)
@@ -306,6 +307,10 @@ func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeco
 
 		enabledCount := enabledEquipmentCount(group)
 		if enabledCount <= 0 {
+			group.Active = false
+			continue
+		}
+		if !shipHasFuel(*cosmicObject) && equipmentConsumesStoredFuel(*model) {
 			group.Active = false
 			continue
 		}
@@ -351,6 +356,16 @@ func enabledEquipmentCount(group *data.EquipmentGroup) int64 {
 		return 0
 	}
 	return group.EnabledCount
+}
+
+// Проверяет, что в баке есть ресурс для топливозависимого оборудования.
+func shipHasFuel(cosmicObject data.CosmicObject) bool {
+	return cosmicObject.Fuel > physics.Epsilon
+}
+
+// Проверяет, что модель тратит хранимый ресурс корабля.
+func equipmentConsumesStoredFuel(model data.ItemModel) bool {
+	return model.ConsumingItemModelID > 0 && model.ConsumingCount > 0
 }
 
 // Определяет, выполняет ли оборудование работу в текущем тике.

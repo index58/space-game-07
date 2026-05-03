@@ -211,6 +211,7 @@ func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 // Проверяет, что ввод подключённого аккаунта двигает уже существующий корабль и сохраняет новое положение.
 func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Fuel = 50
 	gameWorld := world.New(1, serverData)
 
 	objectID, ok := gameWorld.ConnectAccount(1)
@@ -374,6 +375,59 @@ func TestTickSpendsGeneratorFuelAboveBaseRateWhenPowerDemandExceedsGeneration(t 
 	if !generator.Active {
 		t.Fatalf("generator must be active with power demand: %+v", generator)
 	}
+}
+
+// Проверяет, что при пустом баке топливозависимое оборудование не работает.
+func TestTickDisablesFuelConsumingEquipmentWithoutFuel(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	generator := addTestGenerator(t, serverData, objectID)
+	serverData.CosmicObjects.Items[objectID].Fuel = 0
+
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true, TargetRotationDelta: 1})
+	gameWorld.Tick(1)
+
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	if cosmicObject.ConsumingPower != 0 {
+		t.Fatalf("consuming power = %v, want 0", cosmicObject.ConsumingPower)
+	}
+	if cosmicObject.GeneratingPower != 0 {
+		t.Fatalf("generating power = %v, want 0", cosmicObject.GeneratingPower)
+	}
+	if cosmicObject.Fuel != 0 {
+		t.Fatalf("fuel = %v, want 0", cosmicObject.Fuel)
+	}
+	if cosmicObject.AlongForce != 0 || cosmicObject.AcrossForce != 0 || cosmicObject.Torque != 0 {
+		t.Fatalf("fuel-less ship produced force: %+v", cosmicObject)
+	}
+
+	installed := serverData.EquipmentGroups.GetByCosmicObjectID(objectID)
+	if installed[0].Active || installed[1].Active || generator.Active {
+		t.Fatalf("fuel-consuming equipment must be inactive without fuel: %+v %+v %+v", installed[0], installed[1], generator)
+	}
+}
+
+// Проверяет, что подключенный корабль без топлива тормозит как непилотируемый.
+func TestTickTreatsConnectedShipWithoutFuelAsUnpilotedForBrake(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Fuel = 0
+	serverData.CosmicObjects.Items[1].VelocityX = 100
+	gameWorld := world.New(1, serverData)
+
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
+	gameWorld.Tick(0.1)
+
+	ship := serverData.CosmicObjects.Items[1]
+	closeWorldFloat(t, ship.VelocityX, 90)
+	closeWorldFloat(t, ship.X, 9)
 }
 
 // Проверяет, что управляемый корабль после столкновения не остаётся внутри закреплённого объекта.
@@ -839,6 +893,7 @@ func TestSnapshotContainsObjectsLoadedFromData(t *testing.T) {
 // Проверяет, что сохранение данных записывает обновлённое положение космического объекта.
 func TestSaveDataWritesCosmicObjectPosition(t *testing.T) {
 	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Fuel = 50
 	gameWorld := world.New(1, serverData)
 	workingDirectory := t.TempDir()
 	if err := os.Mkdir(filepath.Join(workingDirectory, "data"), 0o700); err != nil {
