@@ -47,6 +47,8 @@ type PilotToolbarInput = {
   equipmentGroups: EquipmentGroup[];
   // Справочники клиента для определения моделей и типов оборудования.
   referenceData: ReferenceDataMessage;
+  // Выбранный индекс среди доступных инструментов.
+  selectedToolIndex: number;
 };
 
 type AggregatedPilotTool = {
@@ -61,14 +63,15 @@ type AggregatedPilotTool = {
 // Собирает данные панели пилота из групп оборудования текущего объекта.
 export const getPilotToolbarView = (input: PilotToolbarInput): PilotToolbarView => {
   const tools = getAggregatedPilotTools(input).slice(0, PILOT_TOOL_SLOT_COUNT);
-  const selectedTool = tools[0] ?? null;
+  const selectedToolIndex = normalizePilotToolIndex(input.selectedToolIndex, tools.length);
+  const selectedTool = tools[selectedToolIndex] ?? null;
   const slots = Array.from({ length: PILOT_TOOL_SLOT_COUNT }, (_, slotIndex): PilotToolSlotView => {
     const tool = tools[slotIndex] ? toPilotToolView(tools[slotIndex]) : null;
 
     return {
       index: slotIndex + 1,
       tool,
-      isSelected: slotIndex === 0 && tool !== null,
+      isSelected: slotIndex === selectedToolIndex && tool !== null,
     };
   });
 
@@ -81,6 +84,22 @@ export const getPilotToolbarView = (input: PilotToolbarInput): PilotToolbarView 
       }
       : null,
   };
+};
+
+// Возвращает следующий индекс инструмента с кольцевым переходом через границы.
+export const getNextPilotToolIndex = (currentIndex: number, delta: number, toolCount: number): number => {
+  if (toolCount <= 0) {
+    return 0;
+  }
+  return normalizePilotToolIndex(currentIndex + delta, toolCount);
+};
+
+// Приводит индекс к доступному диапазону инструментов.
+export const normalizePilotToolIndex = (index: number, toolCount: number): number => {
+  if (toolCount <= 0) {
+    return 0;
+  }
+  return ((index % toolCount) + toolCount) % toolCount;
 };
 
 // Объединяет группы одной модели и оставляет только типы, разрешенные для панели пилота.

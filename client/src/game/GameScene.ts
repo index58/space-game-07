@@ -16,6 +16,7 @@ import type {
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
 import type { GameUiController } from "../ui/gameUiState";
+import { getNextPilotToolIndex, getPilotToolbarView } from "../ui/pilotToolbar";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
 import { InputController } from "./InputController";
 
@@ -47,6 +48,8 @@ export class GameScene extends Phaser.Scene {
   private zoomLevel = INITIAL_ZOOM;
   // Рассчитанный масштаб мира в пикселях на метр.
   private zoomScale = getViewportZoomScale(INITIAL_ZOOM, 1000);
+  // Выбранный индекс инструмента пилота среди доступных инструментов.
+  private selectedPilotToolIndex = 0;
 
   constructor(
     // Мост передачи состояния из Phaser в SolidJS UI.
@@ -97,6 +100,7 @@ export class GameScene extends Phaser.Scene {
       }
     }
     this.zoomLevel = this.inputController.getZoom();
+    const pilotToolSelectionDelta = this.inputController.consumePilotToolSelectionDelta();
 
     const status = this.gameClient?.getStatus() ?? "connecting";
     const snapshot = this.gameClient?.getLatestSnapshot() ?? null;
@@ -111,12 +115,24 @@ export class GameScene extends Phaser.Scene {
         selfObject: null,
         objects: snapshot?.objects ?? [],
         equipmentGroups: snapshot?.equipmentGroups ?? [],
+        selectedPilotToolIndex: this.selectedPilotToolIndex,
         referenceData: this.referenceData,
         textureFilePath: null,
         fps: this.game.loop.actualFps,
         zoom: this.zoomScale,
       });
       return;
+    }
+
+    if (pilotToolSelectionDelta !== 0 && this.referenceData) {
+      const toolbar = getPilotToolbarView({
+        selfObject,
+        equipmentGroups: snapshot.equipmentGroups ?? [],
+        referenceData: this.referenceData,
+        selectedToolIndex: this.selectedPilotToolIndex,
+      });
+      const toolCount = toolbar.slots.filter((slot) => slot.tool !== null).length;
+      this.selectedPilotToolIndex = getNextPilotToolIndex(this.selectedPilotToolIndex, pilotToolSelectionDelta, toolCount);
     }
 
     this.waitingText.setVisible(false);
@@ -126,6 +142,7 @@ export class GameScene extends Phaser.Scene {
       selfObject,
       objects: snapshot.objects,
       equipmentGroups: snapshot.equipmentGroups ?? [],
+      selectedPilotToolIndex: this.selectedPilotToolIndex,
       referenceData: this.referenceData,
       textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
       fps: this.game.loop.actualFps,

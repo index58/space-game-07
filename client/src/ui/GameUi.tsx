@@ -124,6 +124,7 @@ const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (
           selfObject: ready().selfObject,
           equipmentGroups: props.state().equipmentGroups,
           referenceData: ready().referenceData,
+          selectedToolIndex: props.state().selectedPilotToolIndex,
         });
 
       return (

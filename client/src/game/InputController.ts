@@ -14,6 +14,8 @@ export class InputController {
   private randomShipChangeRequested = false;
   // Одноразовый запрос на переключение отладочной отрисовки тел.
   private bodyPolygonDebugToggleRequested = false;
+  // Накопленное переключение выбранного инструмента пилота.
+  private pilotToolSelectionDelta = 0;
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -47,6 +49,10 @@ export class InputController {
     window.addEventListener(
       "wheel",
       (event) => {
+        if (event.shiftKey) {
+          this.pilotToolSelectionDelta += event.deltaY > 0 ? 1 : -1;
+          return;
+        }
         this.zoom = clampZoom(this.zoom + (event.deltaY > 0 ? -1 : 1));
       },
       { passive: true },
@@ -79,6 +85,13 @@ export class InputController {
     const requested = this.bodyPolygonDebugToggleRequested;
     this.bodyPolygonDebugToggleRequested = false;
     return requested;
+  }
+
+  // Возвращает накопленное переключение инструмента пилота и сразу сбрасывает его.
+  consumePilotToolSelectionDelta(): number {
+    const delta = this.pilotToolSelectionDelta;
+    this.pilotToolSelectionDelta = 0;
+    return delta;
   }
 
   // Отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.

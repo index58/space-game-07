@@ -10,6 +10,8 @@ export type GameUiState = {
   objects: CosmicObject[];
   // Группы оборудования последнего серверного снимка, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
+  // Выбранный индекс инструмента пилота среди доступных инструментов.
+  selectedPilotToolIndex: number;
   // Справочники клиента, нужные UI для определения типов объектов.
   referenceData: ReferenceDataMessage | null;
   // Путь к текстуре текущего объекта.
@@ -32,6 +34,7 @@ const initialGameUiState: GameUiState = {
   selfObject: null,
   objects: [],
   equipmentGroups: [],
+  selectedPilotToolIndex: 0,
   referenceData: null,
   textureFilePath: null,
   fps: 0,

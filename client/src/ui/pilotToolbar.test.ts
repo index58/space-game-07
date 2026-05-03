@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
-import { getPilotToolbarView } from "./pilotToolbar";
+import { getPilotToolbarView, getNextPilotToolIndex } from "./pilotToolbar";
 
 const emptyObject = (): CosmicObject => ({
   ID: 10,
@@ -86,9 +86,10 @@ describe("pilot toolbar", () => {
         group(5, 101, 2),
         group(7, 101, 3),
         group(6, 201, 8),
-        group(8, 102, 1, 99),
+        group(8, 102, 1),
       ],
       referenceData,
+      selectedToolIndex: 1,
     });
 
     expect(toolbar.slots).toHaveLength(10);
@@ -98,11 +99,18 @@ describe("pilot toolbar", () => {
       title: "Лазер",
       enabledCount: 5,
     });
-    expect(toolbar.slots[0].isSelected).toBe(true);
-    expect(toolbar.slots[1].tool).toBeNull();
-    expect(toolbar.magazine).toEqual({
-      fillPercent: 100,
-      valueText: "6 / 6",
+    expect(toolbar.slots[0].isSelected).toBe(false);
+    expect(toolbar.slots[1].tool).toMatchObject({
+      itemModelId: 102,
+      enabledCount: 1,
     });
+    expect(toolbar.slots[1].isSelected).toBe(true);
+    expect(toolbar.magazine).toBeNull();
+  });
+
+  it("wraps selected tool index over available tools", () => {
+    expect(getNextPilotToolIndex(0, -1, 2)).toBe(1);
+    expect(getNextPilotToolIndex(1, 1, 2)).toBe(0);
+    expect(getNextPilotToolIndex(0, 1, 0)).toBe(0);
   });
 });
