@@ -209,6 +209,7 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	if err := world.replaceEquipmentFromAssembly(cosmicObject.ID, assembly); err != nil {
 		return false
 	}
+	cosmicObject.Armor = cosmicObject.MaxArmor
 	world.fillShipSupplies(cosmicObject)
 
 	return world.data.CosmicObjects.RebuildIndexes() == nil
@@ -255,11 +256,20 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 
 	for _, objectID := range objectIDs {
 		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
-		if !ok || cosmicObject.Anchored || !cosmicObject.Enabled {
+		if !ok {
+			continue
+		}
+		if !cosmicObject.Enabled {
+			world.updateEquipmentUsage(cosmicObject, dtSeconds)
 			continue
 		}
 		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
 		if !ok {
+			world.updateEquipmentUsage(cosmicObject, dtSeconds)
+			continue
+		}
+		if cosmicObject.Anchored {
+			world.updateEquipmentUsage(cosmicObject, dtSeconds)
 			continue
 		}
 
@@ -271,7 +281,97 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 		} else {
 			*cosmicObject = physics.StepFreeBody(*cosmicObject, dtSeconds)
 		}
+		world.updateEquipmentUsage(cosmicObject, dtSeconds)
 	}
+}
+
+// Обновляет активность оборудования, мощность и запас топлива после шага объекта.
+func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeconds float64) {
+	cosmicObject.ConsumingPower = 0
+	cosmicObject.GeneratingPower = 0
+	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
+		return
+	}
+
+	fuelConsumptionPerSecond := 0.0
+	generatorFuelConsumptionPerSecond := 0.0
+	generatorPower := 0.0
+	generatorGroups := make([]*data.EquipmentGroup, 0)
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)) {
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok {
+			group.Active = false
+			continue
+		}
+
+		enabledCount := enabledEquipmentCount(group)
+		if enabledCount <= 0 {
+			group.Active = false
+			continue
+		}
+
+		if model.GeneratingPower > 0 {
+			cosmicObject.GeneratingPower += model.GeneratingPower * float64(enabledCount)
+			generatorPower += model.GeneratingPower * float64(enabledCount)
+			if model.ConsumingItemModelID > 0 && model.ConsumingCount > 0 {
+				generatorFuelConsumptionPerSecond += model.ConsumingCount * float64(enabledCount)
+			}
+			group.Active = false
+			generatorGroups = append(generatorGroups, group)
+			continue
+		}
+
+		group.Active = equipmentIsActive(*cosmicObject, *model)
+		if !group.Active {
+			continue
+		}
+
+		cosmicObject.ConsumingPower += model.ConsumingPower * float64(enabledCount)
+		if model.ConsumingItemModelID > 0 && model.ConsumingCount > 0 {
+			fuelConsumptionPerSecond += model.ConsumingCount * float64(enabledCount)
+		}
+	}
+
+	if generatorPower > 0 && cosmicObject.ConsumingPower > 0 && generatorFuelConsumptionPerSecond > 0 {
+		generatorLoadRatio := cosmicObject.ConsumingPower / generatorPower
+		fuelConsumptionPerSecond += generatorFuelConsumptionPerSecond * generatorLoadRatio
+		for _, group := range generatorGroups {
+			group.Active = true
+		}
+	}
+
+	if dtSeconds > 0 && fuelConsumptionPerSecond > 0 {
+		cosmicObject.Fuel = math.Max(0, cosmicObject.Fuel-fuelConsumptionPerSecond*dtSeconds)
+	}
+}
+
+// Возвращает фактически включенное количество единиц оборудования.
+func enabledEquipmentCount(group *data.EquipmentGroup) int64 {
+	if group == nil || !group.Enabled {
+		return 0
+	}
+	return group.EnabledCount
+}
+
+// Определяет, выполняет ли оборудование работу в текущем тике.
+func equipmentIsActive(cosmicObject data.CosmicObject, model data.ItemModel) bool {
+	usesLinearForce := model.MaxAlongForce > 0 || model.MaxAcrossForce > 0
+	usesTorque := model.MaxTorque > 0
+	if usesLinearForce || usesTorque {
+		return (usesLinearForce && (math.Abs(cosmicObject.AlongForce) > physics.Epsilon || math.Abs(cosmicObject.AcrossForce) > physics.Epsilon)) ||
+			(usesTorque && math.Abs(cosmicObject.Torque) > physics.Epsilon)
+	}
+
+	return false
+}
+
+// Возвращает группы оборудования в стабильном порядке ID.
+func sortedEquipmentGroups(groups []*data.EquipmentGroup) []*data.EquipmentGroup {
+	result := append([]*data.EquipmentGroup(nil), groups...)
+	sort.Slice(result, func(left int, right int) bool {
+		return result[left].ID < result[right].ID
+	})
+	return result
 }
 
 // Проверяет, что модель относится к кораблям.

@@ -33,6 +33,38 @@ func closeWorldFloat(t *testing.T, actual float64, expected float64) {
 }
 
 // Собирает минимальный игровой мир с кораблем, астероидом и станцией.
+// Устанавливает тестовый генератор на указанный объект.
+func addTestGenerator(t *testing.T, serverData world.Data, cosmicObjectID int64) *data.EquipmentGroup {
+	t.Helper()
+
+	serverData.ItemModels.Items[104] = &data.ItemModel{
+		ID:                   104,
+		TitleRu:              "Generator",
+		TitleEn:              "Generator",
+		Acronym:              "Generator",
+		ItemtypeID:           1,
+		GeneratingPower:      60000,
+		ConsumingItemModelID: 7,
+		ConsumingCount:       2,
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	group, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       cosmicObjectID,
+		Title:                "Generator",
+		EquipmentItemModelID: 104,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return group
+}
+
+// Собирает минимальный игровой мир с кораблем, астероидом и станцией.
 func testWorldData(t *testing.T) world.Data {
 	t.Helper()
 
@@ -97,6 +129,7 @@ func testWorldData(t *testing.T) world.Data {
 		MaxID: 18,
 		Items: map[int64]*data.Itemtype{
 			1:  {ID: 1, TitleRu: "Weapon", TitleEn: "Weapon", Acronym: "Weapon", CountMustBeInteger: true},
+			7:  {ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel"},
 			9:  {ID: 9, TitleRu: "Container", TitleEn: "Container", Acronym: "Container", CountMustBeInteger: true},
 			18: {ID: 18, TitleRu: "Ammunition", TitleEn: "Ammunition", Acronym: "Ammunition", CountMustBeInteger: true},
 		},
@@ -104,6 +137,9 @@ func testWorldData(t *testing.T) world.Data {
 	itemModels := &data.ItemModels{
 		MaxID: 403,
 		Items: map[int64]*data.ItemModel{
+			101: {ID: 101, TitleRu: "Thruster", TitleEn: "Thruster", Acronym: "Thruster", ItemtypeID: 1, ConsumingPower: 15000, ConsumingItemModelID: 7, ConsumingCount: 0.5, MaxAlongForce: 45000, MaxAcrossForce: 40000},
+			102: {ID: 102, TitleRu: "Torquer", TitleEn: "Torquer", Acronym: "Torquer", ItemtypeID: 1, ConsumingPower: 5000, ConsumingItemModelID: 7, ConsumingCount: 0.25, MaxTorque: 70000},
+			201: {ID: 201, TitleRu: "New Thruster", TitleEn: "New Thruster", Acronym: "NewThruster", ItemtypeID: 1, ConsumingPower: 10000, ConsumingItemModelID: 7, ConsumingCount: 0.4, MaxAlongForce: 30000, MaxAcrossForce: 27500},
 			301: {ID: 301, TitleRu: "Container", TitleEn: "Container", Acronym: "Container", ItemtypeID: 9},
 			302: {ID: 302, TitleRu: "Cannon", TitleEn: "Cannon", Acronym: "Cannon", ItemtypeID: 1, AmmoItemModelID: 303, FiringRate: 0.5},
 			303: {ID: 303, TitleRu: "Shell", TitleEn: "Shell", Acronym: "Shell", ItemtypeID: 18},
@@ -191,6 +227,145 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 	if serverData.CosmicObjects.Items[1].Y <= 0 {
 		t.Fatalf("got stored Y %v, want positive", serverData.CosmicObjects.Items[1].Y)
+	}
+}
+
+func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	serverData.CosmicObjects.Items[objectID].Fuel = 50
+
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
+	gameWorld.Tick(2)
+
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	if cosmicObject.ConsumingPower != 30000 {
+		t.Fatalf("consuming power = %v, want 30000", cosmicObject.ConsumingPower)
+	}
+	if cosmicObject.GeneratingPower != 0 {
+		t.Fatalf("generating power = %v, want 0", cosmicObject.GeneratingPower)
+	}
+	closeWorldFloat(t, cosmicObject.Fuel, 48)
+
+	installed := serverData.EquipmentGroups.GetByCosmicObjectID(objectID)
+	if !installed[0].Active {
+		t.Fatalf("thrusters must be active while creating thrust: %+v", installed[0])
+	}
+	if installed[1].Active {
+		t.Fatalf("torquer must not be active without target rotation delta: %+v", installed[1])
+	}
+}
+
+func TestTickDisablesEngineConsumptionWhenInputStops(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	serverData.CosmicObjects.Items[objectID].Fuel = 50
+
+	gameWorld.SetInput(1, game.ShipInput{})
+	gameWorld.Tick(2)
+
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	if cosmicObject.ConsumingPower != 0 {
+		t.Fatalf("consuming power = %v, want 0", cosmicObject.ConsumingPower)
+	}
+	closeWorldFloat(t, cosmicObject.Fuel, 50)
+
+	installed := serverData.EquipmentGroups.GetByCosmicObjectID(objectID)
+	if installed[0].Active || installed[1].Active {
+		t.Fatalf("engine equipment must be inactive without thrust or torque: %+v %+v", installed[0], installed[1])
+	}
+}
+
+func TestTickDoesNotSpendGeneratorFuelWithoutPowerDemand(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	generator := addTestGenerator(t, serverData, objectID)
+	serverData.CosmicObjects.Items[objectID].Fuel = 50
+
+	gameWorld.SetInput(1, game.ShipInput{})
+	gameWorld.Tick(2)
+
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	if cosmicObject.ConsumingPower != 0 {
+		t.Fatalf("consuming power = %v, want 0", cosmicObject.ConsumingPower)
+	}
+	if cosmicObject.GeneratingPower != 60000 {
+		t.Fatalf("generating power = %v, want 60000", cosmicObject.GeneratingPower)
+	}
+	closeWorldFloat(t, cosmicObject.Fuel, 50)
+	if generator.Active {
+		t.Fatalf("generator must be inactive without power demand: %+v", generator)
+	}
+}
+
+func TestTickSpendsGeneratorFuelProportionallyToPowerDemand(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	generator := addTestGenerator(t, serverData, objectID)
+	serverData.CosmicObjects.Items[objectID].Fuel = 50
+
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
+	gameWorld.Tick(2)
+
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	if cosmicObject.ConsumingPower != 30000 {
+		t.Fatalf("consuming power = %v, want 30000", cosmicObject.ConsumingPower)
+	}
+	if cosmicObject.GeneratingPower != 60000 {
+		t.Fatalf("generating power = %v, want 60000", cosmicObject.GeneratingPower)
+	}
+	closeWorldFloat(t, cosmicObject.Fuel, 46)
+	if !generator.Active {
+		t.Fatalf("generator must be active with power demand: %+v", generator)
+	}
+}
+
+func TestTickSpendsGeneratorFuelAboveBaseRateWhenPowerDemandExceedsGeneration(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	generator := addTestGenerator(t, serverData, objectID)
+	serverData.CosmicObjects.Items[objectID].Fuel = 50
+	serverData.EquipmentGroups.GetByCosmicObjectID(objectID)[0].Count = 6
+	serverData.EquipmentGroups.GetByCosmicObjectID(objectID)[0].EnabledCount = 6
+
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
+	gameWorld.Tick(2)
+
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	if cosmicObject.ConsumingPower != 90000 {
+		t.Fatalf("consuming power = %v, want 90000", cosmicObject.ConsumingPower)
+	}
+	if cosmicObject.GeneratingPower != 60000 {
+		t.Fatalf("generating power = %v, want 60000", cosmicObject.GeneratingPower)
+	}
+	closeWorldFloat(t, cosmicObject.Fuel, 38)
+	if !generator.Active {
+		t.Fatalf("generator must be active with power demand: %+v", generator)
 	}
 }
 
@@ -508,6 +683,9 @@ func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) 
 	}
 	if object.Mass != 1200 || object.Capacity != 20 || object.MaxArmor != 400 || object.MaxSpeed != 600 || object.MaxAngularSpeed != 4 || object.MaxAlongForce != 120000 || object.MaxAcrossForce != 110000 || object.MaxTorque != 100000 {
 		t.Fatalf("ship stats were not copied from selected assembly and model: %+v", object)
+	}
+	if object.Armor != object.MaxArmor || object.Armor != 400 {
+		t.Fatalf("changed ship armor = %v/%v, want 400/400", object.Armor, object.MaxArmor)
 	}
 	if len(serverData.CosmicObjects.GetByCosmicObjectModelID(1)) != 0 {
 		t.Fatalf("old model index still contains changed object")
