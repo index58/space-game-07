@@ -10,7 +10,7 @@ export type GameUiState = {
   objects: CosmicObject[];
   // Группы оборудования последнего серверного снимка, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
-  // Выбранный индекс инструмента пилота среди доступных инструментов.
+  // Выбранный индекс среди десяти ячеек панели пилота.
   selectedPilotToolIndex: number;
   // Справочники клиента, нужные UI для определения типов объектов.
   referenceData: ReferenceDataMessage | null;

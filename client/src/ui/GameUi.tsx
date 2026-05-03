@@ -1,13 +1,28 @@
-import { For, Match, Show, Switch, type Accessor } from "solid-js";
+import { For, Match, Show, Switch, type Accessor, type JSX } from "solid-js";
 import type { GameUiState } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
 import { getMinimapView, type MinimapPointView } from "./minimap";
 import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
 
+type HudPanelPosition = "left-bottom" | "bottom-center" | "right-bottom" | "left-top";
+
 type GameUiProps = {
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
+};
+
+type HudPanelProps = {
+  // Расположение панели относительно игрового экрана.
+  position: HudPanelPosition;
+  // Частный CSS-класс содержимого конкретной панели.
+  className: string;
+  // Доступное название панели для браузерного дерева.
+  ariaLabel?: string;
+  // Стабильный идентификатор панели, если он нужен внешнему коду или тестам.
+  id?: string;
+  // Внутреннее содержимое панели.
+  children: JSX.Element;
 };
 
 type ObjectIndicatorProps = {
@@ -25,6 +40,17 @@ export const GameUi = (props: GameUiProps) => (
   </>
 );
 
+// Задаёт единый технический каркас для всех игровых HUD-панелей.
+const HudPanel = (props: HudPanelProps) => (
+  <section
+    id={props.id}
+    class={`hud-panel hud-panel--${props.position} ${props.className}`}
+    aria-label={props.ariaLabel}
+  >
+    {props.children}
+  </section>
+);
+
 type ObjectIndicatorsPanelProps = {
   // Посещаемый объект игрока, если он уже получен.
   selfObject: GameUiState["selfObject"];
@@ -34,11 +60,11 @@ type ObjectIndicatorsPanelProps = {
 const ObjectIndicatorsPanel = (props: ObjectIndicatorsPanelProps) => (
   <Show when={props.selfObject}>
     {(selfObject) => (
-      <section class="object-indicators-overlay" aria-label="Основные показатели посещаемого объекта">
+      <HudPanel position="left-bottom" className="object-indicators" ariaLabel="Основные показатели посещаемого объекта">
         <For each={getObjectIndicators(selfObject())}>
           {(indicator) => <ObjectIndicator indicator={indicator} />}
         </For>
-      </section>
+      </HudPanel>
     )}
   </Show>
 );
@@ -128,7 +154,7 @@ const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (
         });
 
       return (
-        <section class="pilot-toolbar" aria-label="Панель инструментов пилота">
+        <HudPanel position="bottom-center" className="pilot-toolbar" ariaLabel="Панель инструментов пилота">
           <Show when={toolbar().magazine}>
             {(magazine) => (
               <div class="pilot-toolbar__magazine">
@@ -140,7 +166,7 @@ const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (
           <div class="pilot-toolbar__slots">
             <For each={toolbar().slots}>{(slot) => <PilotToolSlot slot={slot} />}</For>
           </div>
-        </section>
+        </HudPanel>
       );
     }}
   </Show>
@@ -198,7 +224,7 @@ const MinimapPanel = (props: MinimapPanelProps) => (
         });
 
       return (
-        <section class="minimap-overlay" aria-label="Мини-карта">
+        <HudPanel position="right-bottom" className="minimap" ariaLabel="Мини-карта">
           <div class="minimap-compass">
             <For each={minimap().compassMarks}>
               {(mark) => (
@@ -218,7 +244,7 @@ const MinimapPanel = (props: MinimapPanelProps) => (
               <div class="minimap-map__crosshair" />
             </div>
           </div>
-        </section>
+        </HudPanel>
       );
     }}
   </Show>
@@ -239,7 +265,7 @@ type DebugOverlayProps = {
 
 // Показывает диагностические строки поверх canvas.
 const DebugOverlay = (props: DebugOverlayProps) => (
-  <div id="debug-overlay">
+  <HudPanel id="debug-overlay" position="left-top" className="debug-overlay">
     {getDebugOverlayLines({
       status: props.state().status,
       selfObject: props.state().selfObject,
@@ -247,5 +273,5 @@ const DebugOverlay = (props: DebugOverlayProps) => (
       fps: props.state().fps,
       zoom: props.state().zoom,
     }).join("\n")}
-  </div>
+  </HudPanel>
 );

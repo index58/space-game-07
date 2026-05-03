@@ -1,7 +1,6 @@
-﻿/* Клиент первого прототипа всегда занимает всё окно браузера. */
+/* Клиент занимает всё окно браузера. */
 html,
-body,
-#game-root {
+body {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -9,38 +8,66 @@ body,
   background: #000;
 }
 
-#debug-overlay {
-  /* Отладочная панель лежит поверх canvas и не перехватывает управление мышью. */
-  position: fixed;
-  top: 8px;
-  left: 8px;
-  z-index: 10;
-  min-width: 260px;
-  padding: 8px 10px;
-  font: 12px/1.4 Consolas, monospace;
-  color: #d8f3ff;
-  background: rgba(0, 8, 16, 0.78);
-  border: 1px solid rgba(130, 210, 255, 0.35);
-  pointer-events: none;
-  white-space: pre;
+#game-root,
+#ui-root {
+  width: 100%;
+  height: 100%;
 }
 
-.object-indicators-overlay {
-  /* Панель основных показателей масштабируется от высоты экрана, как и остальной HUD. */
+#ui-root {
+  /* Игровой DOM UI лежит поверх canvas, но мышь остаётся во владении игрового ввода. */
   position: fixed;
-  left: 3vh;
-  bottom: 3vh;
-  z-index: 8;
-  width: 40vh;
-  padding: 1.2vh;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hud-panel {
+  /* Единый технический каркас всех неинтерактивных HUD-панелей игрового режима. */
+  position: fixed;
   box-sizing: border-box;
   color: #d8f3ff;
   background: rgba(0, 10, 18, 0.82);
   border: 0.14vh solid rgba(130, 210, 255, 0.38);
+  pointer-events: none;
 }
 
-.object-indicators-overlay:empty,
-.object-indicators-overlay[hidden] {
+.hud-panel--left-bottom {
+  left: 3vh;
+  bottom: 3vh;
+}
+
+.hud-panel--bottom-center {
+  left: 50%;
+  bottom: 3vh;
+  transform: translateX(-50%);
+}
+
+.hud-panel--right-bottom {
+  right: 3vh;
+  bottom: 3vh;
+}
+
+.hud-panel--left-top {
+  left: 1vh;
+  top: 1vh;
+}
+
+.debug-overlay {
+  min-width: 32vh;
+  padding: 1vh 1.2vh;
+  font: 1.2vh/1.4 Consolas, monospace;
+  white-space: pre;
+}
+
+.object-indicators {
+  /* Панель основных показателей масштабируется от высоты экрана, как и остальной HUD. */
+  width: 40vh;
+  padding: 1.2vh;
+}
+
+.object-indicators:empty,
+.object-indicators[hidden] {
   display: none;
 }
 
@@ -104,14 +131,8 @@ body,
 
 .pilot-toolbar {
   /* Панель инструментов пилота масштабируется от высоты экрана и лежит над нижним краем. */
-  position: fixed;
-  left: 50%;
-  bottom: 3vh;
-  z-index: 9;
-  transform: translateX(-50%);
   width: 55vh;
-  color: #d8f3ff;
-  pointer-events: none;
+  padding: 1vh;
 }
 
 .pilot-toolbar__magazine {
@@ -201,19 +222,10 @@ body,
   text-shadow: 0 0.12vh 0.24vh rgba(0, 4, 8, 0.9);
 }
 
-.minimap-overlay {
+.minimap {
   /* Мини-карта масштабируется от высоты экрана и не перехватывает управление мышью. */
-  position: fixed;
-  right: 3vh;
-  bottom: 3vh;
-  z-index: 8;
   width: 34vh;
-  box-sizing: border-box;
   padding: 1vh;
-  color: #d8f3ff;
-  background: rgba(0, 10, 18, 0.82);
-  border: 0.14vh solid rgba(130, 210, 255, 0.38);
-  pointer-events: none;
 }
 
 .minimap-compass {

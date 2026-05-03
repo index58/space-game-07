@@ -48,7 +48,7 @@ export class GameScene extends Phaser.Scene {
   private zoomLevel = INITIAL_ZOOM;
   // Рассчитанный масштаб мира в пикселях на метр.
   private zoomScale = getViewportZoomScale(INITIAL_ZOOM, 1000);
-  // Выбранный индекс инструмента пилота среди доступных инструментов.
+  // Выбранный индекс среди десяти ячеек панели пилота.
   private selectedPilotToolIndex = 0;
 
   constructor(
