@@ -1,5 +1,5 @@
 {
-  "MaxID": 4,
+  "MaxID": 5,
   "Items": {
     "1": {
       "ID": 1,
@@ -36,6 +36,15 @@
       "Token": "8d62c2750588eae5a7301f18d7eef87c43522ef2a2901ec8eba80a75363ba2f2",
       "RegistrationTime": "2026-05-04T00:51:55.7894042+03:00",
       "CurrentCharacterID": 4
+    },
+    "5": {
+      "ID": 5,
+      "Email": "auto5@auto.local",
+      "Nickname": "Pilot5",
+      "PasswordHash": "auto",
+      "Token": "57cadf894a6d9e566fa5c288f5438a5256c7819d0acda46da56ddb5c84796bf0",
+      "RegistrationTime": "2026-05-04T01:15:18.3139776+03:00",
+      "CurrentCharacterID": 5
     }
   }
 }

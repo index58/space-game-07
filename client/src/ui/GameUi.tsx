@@ -246,8 +246,10 @@ const MinimapPanel = (props: MinimapPanelProps) => (
           </div>
           <div class="minimap-body">
             <div class="minimap-status">
-              <div class={`minimap-status__zone ${minimap().isPveZone ? "is-pve" : "is-pvp"}`} title={minimap().isPveZone ? "ПВЕ" : "ПВП"} />
-              <div class={`minimap-status__anchor ${minimap().isAnchored ? "is-active" : ""}`} title="Якорь">
+              <div class={`minimap-status__item minimap-status__zone ${minimap().isPveZone ? "is-pve" : "is-pvp"}`} title={minimap().isPveZone ? "ПВЕ" : "ПВП"}>
+                {minimap().isPveZone ? "PVE" : "PVP"}
+              </div>
+              <div class={`minimap-status__item minimap-status__anchor ${minimap().isAnchored ? "is-active" : ""}`} title="Якорь">
                 <AnchorIcon />
               </div>
             </div>

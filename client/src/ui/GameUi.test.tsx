@@ -122,4 +122,18 @@ describe("GameUi", () => {
     expect(anchorIcon?.querySelector('[data-icon-part="anchor-stock"]')).not.toBeNull();
     expect(anchorIcon?.querySelector('[data-icon-part="anchor-flukes"]')).not.toBeNull();
   });
+
+  it("renders minimap zone and anchor statuses in the same monochrome HUD style", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={state} />, root);
+
+    const zone = root.querySelector(".minimap-status__zone");
+    const anchor = root.querySelector(".minimap-status__anchor");
+
+    expect(zone?.textContent).toBe("PVE");
+    expect(Array.from(zone?.classList ?? [])).toContain("minimap-status__item");
+    expect(Array.from(anchor?.classList ?? [])).toContain("minimap-status__item");
+  });
 });

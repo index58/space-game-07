@@ -24,6 +24,9 @@ body {
 
 .hud-panel {
   /* Единый технический каркас всех неинтерактивных HUD-панелей игрового режима. */
+  --hud-icon-muted: rgba(216, 243, 255, 0.64);
+  --hud-icon-active: rgba(238, 250, 255, 0.95);
+  --hud-control-bg: rgba(5, 18, 28, 0.9);
   position: fixed;
   box-sizing: border-box;
   color: #d8f3ff;
@@ -89,12 +92,12 @@ body {
   justify-content: center;
   width: 3.4vh;
   height: 3.4vh;
-  color: #9edcff;
+  color: var(--hud-icon-muted);
 }
 
 .object-indicator__icon svg {
-  width: 2.5vh;
-  height: 2.5vh;
+  width: 2.35vh;
+  height: 2.35vh;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.8;
@@ -165,14 +168,14 @@ body {
 
 .pilot-toolbar__slots {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(10, minmax(0, 1fr));
   gap: 0.6vh;
 }
 
 .pilot-tool-slot {
   position: relative;
-  width: 4.96vh;
-  height: 4.96vh;
+  width: 100%;
+  aspect-ratio: 1;
   box-sizing: border-box;
   overflow: hidden;
   background: rgba(0, 10, 18, 0.82);
@@ -180,7 +183,7 @@ body {
 }
 
 .pilot-tool-slot.is-selected {
-  border-color: rgba(238, 250, 255, 0.9);
+  border-color: var(--hud-icon-active);
   box-shadow: inset 0 0 0 0.14vh rgba(238, 250, 255, 0.36);
 }
 
@@ -188,7 +191,7 @@ body {
   position: absolute;
   left: 0.35vh;
   top: 0.32vh;
-  color: rgba(216, 243, 255, 0.64);
+  color: var(--hud-icon-muted);
   font: 1vh/1 Consolas, monospace;
 }
 
@@ -206,7 +209,7 @@ body {
 }
 
 .pilot-tool-slot__fallback-icon {
-  color: #9edcff;
+  color: var(--hud-icon-muted);
   font: 1.55vh/1 Consolas, monospace;
   text-transform: uppercase;
 }
@@ -280,40 +283,26 @@ body {
   gap: 0.8vh;
 }
 
-.minimap-status__zone,
-.minimap-status__anchor {
+.minimap-status__item {
   position: relative;
-  width: 3.2vh;
-  height: 3.2vh;
-  box-sizing: border-box;
-  background: rgba(5, 18, 28, 0.9);
-  border: 0.14vh solid rgba(130, 210, 255, 0.28);
-}
-
-.minimap-status__zone::before {
-  content: "";
-  position: absolute;
-  inset: 0.8vh;
-  border-radius: 50%;
-  background: #8fffc1;
-  box-shadow: 0 0 0.8vh rgba(143, 255, 193, 0.55);
-}
-
-.minimap-status__zone.is-pvp::before {
-  background: #ff6d6d;
-  box-shadow: 0 0 0.8vh rgba(255, 109, 109, 0.55);
-}
-
-.minimap-status__anchor {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 3.2vh;
+  height: 3.2vh;
+  box-sizing: border-box;
+  color: var(--hud-icon-muted);
+  background: var(--hud-control-bg);
+  border: 0.14vh solid rgba(130, 210, 255, 0.28);
+}
+
+.minimap-status__zone {
+  font: 0.95vh/1 Consolas, monospace;
 }
 
 .minimap-status__anchor-icon {
   width: 2.35vh;
   height: 2.35vh;
-  color: rgba(216, 243, 255, 0.38);
   stroke: currentColor;
   fill: none;
   stroke-width: 1.8;
@@ -321,8 +310,8 @@ body {
   stroke-linejoin: round;
 }
 
-.minimap-status__anchor.is-active .minimap-status__anchor-icon {
-  color: rgba(238, 250, 255, 0.95);
+.minimap-status__anchor.is-active {
+  color: var(--hud-icon-active);
 }
 
 .minimap-map {
