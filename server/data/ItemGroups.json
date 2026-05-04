@@ -1,23 +1,23 @@
 {
-  "MaxID": 40,
+  "MaxID": 48,
   "Items": {
-    "37": {
-      "ID": 37,
-      "ContainerEquipmentGroupID": 596,
-      "ContentItemModelID": 7,
-      "Count": 2250
-    },
     "39": {
       "ID": 39,
       "ContainerEquipmentGroupID": 608,
       "ContentItemModelID": 7,
       "Count": 3150
     },
-    "40": {
-      "ID": 40,
-      "ContainerEquipmentGroupID": 614,
+    "44": {
+      "ID": 44,
+      "ContainerEquipmentGroupID": 638,
       "ContentItemModelID": 7,
       "Count": 450
+    },
+    "48": {
+      "ID": 48,
+      "ContainerEquipmentGroupID": 662,
+      "ContentItemModelID": 7,
+      "Count": 2250
     }
   }
 }
