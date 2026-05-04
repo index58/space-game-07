@@ -1,9 +1,9 @@
 # Описание проекта находится в следующих файлах:
-* `specifications/gameworld.md` — Игровой мир (что видят игроки)
-* `specifications/gameworld_classes.go` — Модель данных игрового мира
-* `specifications/technical.md` — Техническая часть (что не видят игроки)
+* `specifications/gameworld.md` — Игровой мир — что видят игроки (ФЗ)
+* `specifications/gameworld_data_model.go` — Модель данных игрового мира (Модель)
+* `specifications/technical.md` — Техническая часть — что не видят игроки (ТЗ)
 
-# Указания
+# Рабочие указания
 Для этого проекта Go-команды (`go test`, `go build`, `go run`, `go list` и т.п.) всегда запускай с повышенным разрешением Codex, потому что стандартный Go build cache в `%LocalAppData%\go-build` недоступен из песочницы.
 
 Не создавай локальный `server/.gocache`.
