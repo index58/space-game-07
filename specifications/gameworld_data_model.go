@@ -290,6 +290,16 @@ type Message struct {
 	SentTime          time.Time // Время отправки. Время отправки сообщения. Значение по умолчанию = now()
 }
 
+// Прочтение сообщения. У какого персонажа в каком чате какое сообщение является последним из прочитанных
+// Уникальные наборы свойств: (CharacterID, ChatID)
+type MessageRead struct {
+	ID                int64     // ID
+	CharacterID       int64     // Персонаж. ID персонажа
+	ChatID            int64     // Чат. ID чата
+	LastReadMessageID int64     // Последнее прочитанное сообщение. ID последнего сообщения в указанном чате из прочитанных указанным персонажем
+	ReadTime          time.Time // Время прочтения
+}
+
 // Тип сообщения. Тип сообщения, влияющий на внешний вид отображения сообщения в чате. Значения: От персонажа (FromCharacter), От администрации (FromAdministration), От системы (FromSystem)
 // Уникальные наборы свойств: (TitleRu), (Acronym), (TitleEn)
 type MessageType struct {
