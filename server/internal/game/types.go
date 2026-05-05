@@ -21,7 +21,7 @@ type ChatTab struct {
 	Title                string        `json:"title"`                // Подпись вкладки для интерфейса.
 	CommunityTypeAcronym string        `json:"communityTypeAcronym"` // Тип сообщества, к которому относится чат.
 	DuoChatKey           string        `json:"duoChatKey"`           // Ключ личной переписки двух персонажей.
-	Messages             []ChatMessage `json:"messages"`             // Последние сообщения выбранной истории.
+	Messages             []ChatMessage `json:"messages"`             // Полная доступная история выбранного чата.
 }
 
 // ChatMessage описывает одно сообщение в клиентском представлении чата.

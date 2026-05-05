@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	chatHistoryLimit          = 10
 	communityTypeServer       = "Server"
 	communityTypeDuo          = "Duo"
 	communityChatRoleMember   = "Member"
@@ -215,7 +214,7 @@ func (world *World) chatTabsForCharacterLocked(account *data.Account, character 
 	return tabs
 }
 
-// chatTabLocked строит одну вкладку с ограниченной историей сообщений.
+// chatTabLocked строит одну вкладку с полной доступной историей сообщений.
 func (world *World) chatTabLocked(character *data.Character, chat *data.Chat) game.ChatTab {
 	communityType, _ := world.data.CommunityTypes.Get(chat.CommunityTypeID)
 	title := communityType.Acronym
@@ -223,9 +222,6 @@ func (world *World) chatTabLocked(character *data.Character, chat *data.Chat) ga
 		title = world.duoPeerNicknameLocked(character.ID, chat)
 	}
 	messages := world.data.Messages.GetByChatID(chat.ID)
-	if len(messages) > chatHistoryLimit {
-		messages = messages[len(messages)-chatHistoryLimit:]
-	}
 
 	return game.ChatTab{
 		ChatID:               chat.ID,

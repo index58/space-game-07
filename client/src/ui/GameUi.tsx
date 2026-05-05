@@ -38,6 +38,7 @@ export const GameUi = (props: GameUiProps) => (
     <PilotToolbarPanel state={props.state} />
     <MinimapPanel state={props.state} />
     <DebugOverlay state={props.state} />
+    <GameCursor state={props.state} />
   </>
 );
 
@@ -124,6 +125,11 @@ type ChatPanelProps = {
   state: Accessor<GameUiState>;
 };
 
+type GameCursorProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
 type PilotToolSlotProps = {
   // Данные одной ячейки панели инструментов пилота.
   slot: PilotToolSlotView;
@@ -166,14 +172,30 @@ const ChatPanel = (props: ChatPanelProps) => {
             </For>
           </div>
           <div class="chat-messages">
-            <For each={tab().messages}>
-              {(message) => (
-                <div class="chat-message" style={{ color: `#${message.color || "d8f3ff"}` }}>
-                  <span class="chat-message__sender">{message.senderNickname}</span>
-                  <span class="chat-message__text">{message.text}</span>
-                </div>
-              )}
-            </For>
+            <div
+              class="chat-messages__content"
+              style={{ transform: `translateY(${props.state().chatScroll.contentOffsetPx}px)` }}
+            >
+              <For each={tab().messages}>
+                {(message) => (
+                  <div class="chat-message" style={{ color: `#${message.color || "d8f3ff"}` }}>
+                    <span class="chat-message__sender">{message.senderNickname}</span>
+                    <span class="chat-message__text">{message.text}</span>
+                  </div>
+                )}
+              </For>
+            </div>
+            <Show when={props.state().chatScroll.visible}>
+              <div class={`chat-scrollbar ${props.state().chatScroll.dragging ? "is-dragging" : ""}`}>
+                <div
+                  class="chat-scrollbar__thumb"
+                  style={{
+                    top: `${props.state().chatScroll.thumbTopPercent}%`,
+                    height: `${props.state().chatScroll.thumbHeightPercent}%`,
+                  }}
+                />
+              </div>
+            </Show>
           </div>
           <Show when={props.state().chatError}>
             {(error) => <div class="chat-error">{error()}</div>}
@@ -199,6 +221,13 @@ const ChatPanel = (props: ChatPanelProps) => {
     </Show>
   );
 };
+
+// Рисует серый игровой указатель поверх HUD, когда системный указатель захвачен игрой.
+const GameCursor = (props: GameCursorProps) => (
+  <Show when={props.state().gameCursor.visible}>
+    <div class="game-cursor" style={{ left: `${props.state().gameCursor.x}px`, top: `${props.state().gameCursor.y}px` }} />
+  </Show>
+);
 
 // Показывает десять ячеек инструментов пилота в центральной нижней части экрана.
 const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (

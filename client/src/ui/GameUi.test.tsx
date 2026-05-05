@@ -87,6 +87,8 @@ const state = (): GameUiState => ({
   chatInputFocused: false,
   chatError: null,
   chatContextMenu: null,
+  gameCursor: { visible: false, x: 0, y: 0 },
+  chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   fps: 60,
   zoom: 4,
 });
@@ -168,6 +170,8 @@ describe("GameUi", () => {
       chatInputFocused: true,
       chatError: "Адресат не найден",
       chatContextMenu: { chatId: 2, communityTypeAcronym: "Duo", x: 120, y: 220 },
+      gameCursor: { visible: true, x: 320, y: 240 },
+      chatScroll: { visible: true, thumbTopPercent: 25, thumbHeightPercent: 60, contentOffsetPx: 42, dragging: true },
     });
 
     dispose = render(() => <GameUi state={chatState} />, root);
@@ -179,5 +183,9 @@ describe("GameUi", () => {
     expect(root.querySelector(".chat-input__text")?.textContent).toBe("draft");
     expect(root.querySelector(".chat-error")?.textContent).toBe("Адресат не найден");
     expect(root.querySelector(".chat-context-menu__item")?.textContent).toBe("Закрыть");
+    expect(root.querySelector(".chat-scrollbar__thumb")).not.toBeNull();
+    expect(Array.from(root.querySelector(".chat-scrollbar")?.classList ?? [])).toContain("is-dragging");
+    expect(root.querySelector<HTMLElement>(".chat-messages__content")?.style.transform).toBe("translateY(42px)");
+    expect(root.querySelector(".game-cursor")).not.toBeNull();
   });
 });

@@ -312,8 +312,8 @@ func TestSendDuoChatMessageRejectsUnknownAccountNickname(t *testing.T) {
 	}
 }
 
-// Проверяет, что состояние чата отдает только последние десять сообщений.
-func TestChatStateLimitsHistoryToLastTenMessages(t *testing.T) {
+// Проверяет, что состояние чата отдает всю доступную историю сообщений.
+func TestChatStateIncludesFullMessageHistory(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 	if _, ok := gameWorld.ConnectAccount(1); !ok {
 		t.Fatalf("account was not connected")
@@ -333,11 +333,11 @@ func TestChatStateLimitsHistoryToLastTenMessages(t *testing.T) {
 		t.Fatalf("chat state is not available")
 	}
 	messages := chatState.Tabs[0].Messages
-	if len(messages) != 10 {
-		t.Fatalf("message count = %d, want 10", len(messages))
+	if len(messages) != 12 {
+		t.Fatalf("message count = %d, want 12", len(messages))
 	}
-	if messages[0].Text != "msg-03" || messages[9].Text != "msg-12" {
-		t.Fatalf("message range = %q..%q, want msg-03..msg-12", messages[0].Text, messages[9].Text)
+	if messages[0].Text != "msg-01" || messages[11].Text != "msg-12" {
+		t.Fatalf("message range = %q..%q, want msg-01..msg-12", messages[0].Text, messages[11].Text)
 	}
 }
 

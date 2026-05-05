@@ -36,25 +36,25 @@ body {
 }
 
 .hud-panel--left-bottom {
-  left: 3vh;
-  bottom: 3vh;
+  left: 1vh;
+  bottom: 1vh;
 }
 
 .hud-panel--left-middle {
-  left: 3vh;
+  left: 1vh;
   top: 50%;
   transform: translateY(-50%);
 }
 
 .hud-panel--bottom-center {
   left: 50%;
-  bottom: 3vh;
+  bottom: 1vh;
   transform: translateX(-50%);
 }
 
 .hud-panel--right-bottom {
-  right: 3vh;
-  bottom: 3vh;
+  right: 1vh;
+  bottom: 1vh;
 }
 
 .hud-panel--left-top {
@@ -188,25 +188,59 @@ body {
 }
 
 .chat-messages {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.55vh;
+  position: relative;
   height: 24vh;
   margin-top: 0.8vh;
   overflow: hidden;
-  padding: 0.8vh;
+  padding: 0.8vh 1.6vh 0.8vh 0.8vh;
   box-sizing: border-box;
   background: rgba(5, 18, 28, 0.72);
   border: 0.14vh solid rgba(130, 210, 255, 0.22);
 }
 
+.chat-messages__content {
+  position: absolute;
+  left: 0.8vh;
+  right: 1.6vh;
+  bottom: 0.8vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.32vh;
+  transition: transform 120ms ease-out;
+  will-change: transform;
+}
+
+.chat-scrollbar {
+  position: absolute;
+  right: 0.25vh;
+  top: 0.8vh;
+  width: 1.1vh;
+  height: calc(100% - 1.6vh);
+  background: rgba(216, 243, 255, 0.08);
+}
+
+.chat-scrollbar__thumb {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  min-height: 2.8vh;
+  background: rgba(216, 243, 255, 0.48);
+  box-shadow: 0 0 0.45vh rgba(130, 210, 255, 0.26);
+  transition: top 120ms ease-out, height 120ms ease-out;
+  will-change: top, height;
+}
+
+.chat-scrollbar.is-dragging .chat-scrollbar__thumb {
+  transition: none;
+}
+
 .chat-message {
   display: grid;
-  grid-template-columns: minmax(6vh, max-content) minmax(0, 1fr);
-  gap: 0.7vh;
-  min-height: 1.7vh;
-  font: 1.25vh/1.25 Consolas, monospace;
+  grid-template-columns: minmax(5.2vh, max-content) minmax(0, 1fr);
+  gap: 0.55vh;
+  min-height: 1.35vh;
+  font: 1.05vh/1.2 Consolas, monospace;
 }
 
 .chat-message__sender {
@@ -529,4 +563,27 @@ body {
 .minimap-point--neutral {
   color: #cfd8dc;
   background: #cfd8dc;
+}
+
+.game-cursor {
+  position: fixed;
+  width: 2.1vh;
+  height: 3vh;
+  transform: translate(0, 0);
+  background: linear-gradient(135deg, #7f8991 0%, #4c565e 62%, #252c32 100%);
+  clip-path: polygon(0 0, 0 82%, 31% 58%, 50% 100%, 64% 94%, 45% 54%, 76% 54%);
+  filter:
+    drop-shadow(0 0 0.18vh rgba(0, 0, 0, 1))
+    drop-shadow(0 0 0.34vh rgba(216, 243, 255, 0.14));
+  z-index: 20;
+  pointer-events: none;
+}
+
+.game-cursor::after {
+  content: "";
+  position: absolute;
+  inset: 0.18vh 0.28vh 0.48vh 0.18vh;
+  clip-path: polygon(0 0, 0 74%, 30% 52%, 48% 94%, 55% 91%, 38% 50%, 65% 50%);
+  background: linear-gradient(135deg, rgba(238, 250, 255, 0.42) 0%, rgba(238, 250, 255, 0.06) 58%, rgba(0, 0, 0, 0) 100%);
+  opacity: 0.78;
 }

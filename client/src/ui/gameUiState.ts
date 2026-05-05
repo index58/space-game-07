@@ -1,5 +1,5 @@
 import { createSignal, type Accessor } from "solid-js";
-import type { ChatContextMenuState } from "../game/InputController";
+import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
 import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
 
 export type GameUiState = {
@@ -27,6 +27,10 @@ export type GameUiState = {
   chatError: string | null;
   // Открытое игровое меню вкладки, если игрок вызвал его правым кликом.
   chatContextMenu: ChatContextMenuState | null;
+  // Положение и видимость игрового указателя мыши.
+  gameCursor: GameCursorState;
+  // Состояние полосы прокрутки выбранного чата.
+  chatScroll: ChatScrollState;
   // Текущая частота кадров.
   fps: number;
   // Рассчитанный масштаб камеры.
@@ -53,6 +57,8 @@ const initialGameUiState: GameUiState = {
   chatInputFocused: false,
   chatError: null,
   chatContextMenu: null,
+  gameCursor: { visible: false, x: 0, y: 0 },
+  chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   fps: 0,
   zoom: 1,
 };

@@ -1,5 +1,5 @@
 {
-  "MaxID": 16,
+  "MaxID": 34,
   "Items": {
     "1": {
       "ID": 1,
@@ -144,6 +144,168 @@
       "Text": "вп",
       "Color": "D8F3FF",
       "SentTime": "2026-05-05T20:00:32.0331456+03:00"
+    },
+    "17": {
+      "ID": 17,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "hhjfr",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:40.5371623+03:00"
+    },
+    "18": {
+      "ID": 18,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "grd",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:42.4431755+03:00"
+    },
+    "19": {
+      "ID": 19,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "drgd",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:43.3827438+03:00"
+    },
+    "20": {
+      "ID": 20,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "rdg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:44.1213566+03:00"
+    },
+    "21": {
+      "ID": 21,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "rdg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:44.6494532+03:00"
+    },
+    "22": {
+      "ID": 22,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "dr",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:45.0715845+03:00"
+    },
+    "23": {
+      "ID": 23,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "g",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:45.5939317+03:00"
+    },
+    "24": {
+      "ID": 24,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "g",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:46.3057427+03:00"
+    },
+    "25": {
+      "ID": 25,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "drg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:46.9003129+03:00"
+    },
+    "26": {
+      "ID": 26,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "dr",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:02:47.4111257+03:00"
+    },
+    "27": {
+      "ID": 27,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "rgjhyjyjkhdsrg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:03:25.1312032+03:00"
+    },
+    "28": {
+      "ID": 28,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "efwgrtghre5y",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:03:27.0154713+03:00"
+    },
+    "29": {
+      "ID": 29,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "4tge4geg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:03:29.3268357+03:00"
+    },
+    "30": {
+      "ID": 30,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "wwwadad",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:05:22.0711457+03:00"
+    },
+    "31": {
+      "ID": 31,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "12",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:12:57.5357945+03:00"
+    },
+    "32": {
+      "ID": 32,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "rthr5yh",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:13:54.1381448+03:00"
+    },
+    "33": {
+      "ID": 33,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "jtj",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:34:32.7189414+03:00"
+    },
+    "34": {
+      "ID": 34,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "tyut56",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:45:42.4294031+03:00"
     }
   }
 }

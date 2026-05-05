@@ -129,6 +129,8 @@ export class GameScene extends Phaser.Scene {
         chatInputFocused: false,
         chatError: null,
         chatContextMenu: null,
+        gameCursor: this.inputController.getGameCursor(),
+        chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
         fps: this.game.loop.actualFps,
         zoom: this.zoomScale,
       });
@@ -154,6 +156,8 @@ export class GameScene extends Phaser.Scene {
       chatInputFocused: this.inputController.isChatInputFocused(),
       chatError: this.gameClient?.getLatestChatError() ?? null,
       chatContextMenu: this.inputController.getChatContextMenu(),
+      gameCursor: this.inputController.getGameCursor(),
+      chatScroll: this.inputController.getChatScrollState(),
       fps: this.game.loop.actualFps,
       zoom: this.zoomScale,
     });
