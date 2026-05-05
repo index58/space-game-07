@@ -1,5 +1,5 @@
 {
-  "MaxID": 662,
+  "MaxID": 686,
   "Items": {
     "1": {
       "ID": 1,
@@ -177,68 +177,68 @@
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "657": {
-      "ID": 657,
+    "681": {
+      "ID": 681,
       "CosmicObjectID": 4,
       "Title": "SimpleThruster",
       "EquipmentItemModelID": 1,
-      "Count": 90,
-      "EnabledCount": 90,
+      "Count": 63,
+      "EnabledCount": 63,
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "658": {
-      "ID": 658,
+    "682": {
+      "ID": 682,
       "CosmicObjectID": 4,
       "Title": "SimpleTorquer",
       "EquipmentItemModelID": 2,
-      "Count": 91,
-      "EnabledCount": 91,
+      "Count": 47,
+      "EnabledCount": 47,
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "659": {
-      "ID": 659,
+    "683": {
+      "ID": 683,
       "CosmicObjectID": 4,
       "Title": "LightCannon120mm",
       "EquipmentItemModelID": 3,
-      "Count": 5,
-      "EnabledCount": 5,
+      "Count": 3,
+      "EnabledCount": 3,
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "660": {
-      "ID": 660,
+    "684": {
+      "ID": 684,
       "CosmicObjectID": 4,
       "Title": "CompactGenerator",
       "EquipmentItemModelID": 4,
-      "Count": 33,
-      "EnabledCount": 33,
+      "Count": 21,
+      "EnabledCount": 21,
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "661": {
-      "ID": 661,
+    "685": {
+      "ID": 685,
       "CosmicObjectID": 4,
       "Title": "SmallMelitFuelTank",
       "EquipmentItemModelID": 5,
-      "Count": 117,
-      "EnabledCount": 117,
+      "Count": 75,
+      "EnabledCount": 75,
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "662": {
-      "ID": 662,
+    "686": {
+      "ID": 686,
       "CosmicObjectID": 4,
       "Title": "SmallCargoContainer",
       "EquipmentItemModelID": 6,
-      "Count": 9,
-      "EnabledCount": 9,
+      "Count": 6,
+      "EnabledCount": 6,
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0
