@@ -1,5 +1,5 @@
 {
-  "MaxID": 34,
+  "MaxID": 36,
   "Items": {
     "1": {
       "ID": 1,
@@ -306,6 +306,24 @@
       "Text": "tyut56",
       "Color": "D8F3FF",
       "SentTime": "2026-05-05T21:45:42.4294031+03:00"
+    },
+    "35": {
+      "ID": 35,
+      "ChatID": 1,
+      "SenderCharacterID": 3,
+      "MessageTypeID": 1,
+      "Text": "4444",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T21:54:08.3282821+03:00"
+    },
+    "36": {
+      "ID": 36,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "111",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T22:24:05.0755673+03:00"
     }
   }
 }

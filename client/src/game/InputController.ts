@@ -98,6 +98,10 @@ export class InputController {
   private chatScrollState: ChatScrollState = { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false };
   // Полный размер истории выбранной вкладки для расчета высоты прокрутки.
   private selectedChatMessageCount = 0;
+  // Последний чат, для которого рассчитан локальный сдвиг истории.
+  private scrolledChatId = 0;
+  // Последнее сообщение выбранной вкладки для определения пополнения истории.
+  private selectedChatLastMessageId = 0;
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -240,6 +244,8 @@ export class InputController {
     if (tabs.length === 0) {
       this.selectedChatId = 0;
       this.selectedChatMessageCount = 0;
+      this.scrolledChatId = 0;
+      this.selectedChatLastMessageId = 0;
       this.visibleChatState = { ...chatState, tabs: [], selectedChatId: 0 };
       this.chatScrollState = { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false };
       return this.visibleChatState;
@@ -517,11 +523,21 @@ export class InputController {
   private applyChatScroll(tabs: ChatStateMessage["tabs"]): void {
     const selectedTab = tabs.find((tab) => tab.chatId === this.selectedChatId);
     if (!selectedTab) {
+      this.scrolledChatId = 0;
+      this.selectedChatLastMessageId = 0;
       this.chatScrollState = { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: this.chatScrollbarDragActive };
       return;
     }
 
     const total = selectedTab.messages.length;
+    const lastMessageId = selectedTab.messages.at(-1)?.id ?? 0;
+    const chatChanged = this.scrolledChatId !== selectedTab.chatId;
+    const receivedNewMessage = !chatChanged && lastMessageId > this.selectedChatLastMessageId;
+    if (chatChanged || (receivedNewMessage && !this.chatScrollbarDragActive)) {
+      this.chatScrollOffsetPx = 0;
+    }
+    this.scrolledChatId = selectedTab.chatId;
+    this.selectedChatLastMessageId = lastMessageId;
     this.selectedChatMessageCount = total;
     const maxOffsetPx = this.selectedChatMaxScrollOffset();
     this.chatScrollOffsetPx = clamp(this.chatScrollOffsetPx, 0, maxOffsetPx);

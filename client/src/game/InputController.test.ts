@@ -280,6 +280,39 @@ describe("InputController", () => {
     expect(controller.getChatScrollState().contentOffsetPx).toBeGreaterThan(0);
   });
 
+  // Проверяет, что новое сообщение в выбранной вкладке возвращает историю к последним строкам.
+  it("scrolls selected chat to bottom when a new message arrives", () => {
+    setViewportWidth(1000);
+    setViewportHeight(1000);
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: messages(20) }],
+    });
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    moveMouse(-300, 0);
+    wheel(-100, false);
+    controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: messages(20) }],
+    });
+    expect(controller.getChatScrollState().contentOffsetPx).toBeGreaterThan(0);
+
+    controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: messages(21) }],
+    });
+
+    expect(controller.getChatScrollState().contentOffsetPx).toBe(0);
+  });
+
   // Проверяет, что перетаскивание начинается на видимой полосе и двигает ползунок с той же скоростью, что и указатель.
   it("scrolls selected chat by dragging scrollbar with game cursor", () => {
     setViewportWidth(1000);

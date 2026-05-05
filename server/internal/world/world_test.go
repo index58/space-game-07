@@ -209,6 +209,26 @@ func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 	}
 }
 
+// Проверяет, что подключение аккаунта не оставляет кораблю устаревший целевой угол поворота.
+func TestConnectAccountAlignsTargetRotationWithCurrentRotation(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Rotation = 1.75
+	serverData.CosmicObjects.Items[1].TargetRotation = 0
+	gameWorld := world.New(1, serverData)
+
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	object, ok := serverData.CosmicObjects.Get(1)
+	if !ok {
+		t.Fatalf("object was not found")
+	}
+
+	if object.TargetRotation != object.Rotation {
+		t.Fatalf("target rotation = %v, want current rotation %v", object.TargetRotation, object.Rotation)
+	}
+}
+
 // Проверяет, что новый мир создает серверный чат и показывает его подключенному аккаунту.
 func TestChatStateIncludesServerChatAfterConnect(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
@@ -1055,6 +1075,8 @@ func TestChangeControlledShipToRandomModelKeepsMovementState(t *testing.T) {
 	serverData.CosmicObjects.Items[1].Y = 20
 	serverData.CosmicObjects.Items[1].VelocityX = 3
 	serverData.CosmicObjects.Items[1].VelocityY = 4
+	serverData.CosmicObjects.Items[1].Rotation = 2.5
+	serverData.CosmicObjects.Items[1].TargetRotation = 0
 	gameWorld := world.New(1, serverData)
 
 	if _, ok := gameWorld.ConnectAccount(1); !ok {
@@ -1068,8 +1090,11 @@ func TestChangeControlledShipToRandomModelKeepsMovementState(t *testing.T) {
 		t.Fatalf("object was not found")
 	}
 
-	if object.X != 10 || object.Y != 20 || object.VelocityX != 3 || object.VelocityY != 4 {
+	if object.X != 10 || object.Y != 20 || object.VelocityX != 3 || object.VelocityY != 4 || object.Rotation != 2.5 {
 		t.Fatalf("movement state was not preserved: %+v", object)
+	}
+	if object.TargetRotation != object.Rotation {
+		t.Fatalf("target rotation = %v, want current rotation %v", object.TargetRotation, object.Rotation)
 	}
 }
 

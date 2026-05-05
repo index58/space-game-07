@@ -78,9 +78,11 @@ func (world *World) ConnectAccount(accountID int64) (int64, bool) {
 		return 0, false
 	}
 
-	if _, ok := world.data.CosmicObjects.Get(character.LocationCosmicObjectID); !ok {
+	cosmicObject, ok := world.data.CosmicObjects.Get(character.LocationCosmicObjectID)
+	if !ok {
 		return 0, false
 	}
+	cosmicObject.TargetRotation = cosmicObject.Rotation
 
 	world.accountObjectIDs[accountID] = character.LocationCosmicObjectID
 	world.inputs[accountID] = game.ShipInput{}
@@ -222,6 +224,7 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	}
 
 	world.applyModelAndAssembly(cosmicObject, model, assembly)
+	cosmicObject.TargetRotation = cosmicObject.Rotation
 	if err := world.replaceEquipmentFromAssembly(cosmicObject.ID, assembly); err != nil {
 		return false
 	}
