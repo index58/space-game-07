@@ -104,7 +104,8 @@ export class GameScene extends Phaser.Scene {
 
     const status = this.gameClient?.getStatus() ?? "connecting";
     const snapshot = this.gameClient?.getLatestSnapshot() ?? null;
-    const chatState = this.inputController.getVisibleChatState(this.gameClient?.getLatestChatState() ?? null);
+    const isWorldReady = status === "connected" && Boolean(snapshot);
+    const chatState = isWorldReady ? this.inputController.getVisibleChatState(this.gameClient?.getLatestChatState() ?? null) : null;
     const chatAction = this.inputController.consumeChatAction();
     if (chatAction) {
       this.gameClient?.sendChatMessage(chatAction);
@@ -123,11 +124,11 @@ export class GameScene extends Phaser.Scene {
         selectedPilotToolIndex: this.selectedPilotToolIndex,
         referenceData: this.referenceData,
         textureFilePath: null,
-        chatState,
-        chatInputText: this.inputController.getChatInputText(),
-        chatInputFocused: this.inputController.isChatInputFocused(),
-        chatError: this.gameClient?.getLatestChatError() ?? null,
-        chatContextMenu: this.inputController.getChatContextMenu(),
+        chatState: null,
+        chatInputText: "",
+        chatInputFocused: false,
+        chatError: null,
+        chatContextMenu: null,
         fps: this.game.loop.actualFps,
         zoom: this.zoomScale,
       });

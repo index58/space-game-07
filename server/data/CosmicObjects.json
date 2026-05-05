@@ -124,9 +124,9 @@
       "MaxArmor": 7126,
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
-      "X": 196.7562594483044,
-      "Y": 1268.3965957671999,
-      "Rotation": -10.77193449120271,
+      "X": 354.68257556897703,
+      "Y": 2398.9182242672277,
+      "Rotation": -17.243129003332104,
       "Armor": 7126,
       "MaxAlongForce": 6300000,
       "MaxAcrossForce": 6300000,
@@ -142,12 +142,12 @@
       "Complexity": 77233,
       "OccupiedVolume": 596,
       "MaxFuel": 22500,
-      "Fuel": 12112.947916663175,
+      "Fuel": 6926.217708330567,
       "Speed": 0,
       "VelocityX": 0,
       "VelocityY": -0,
       "AngularSpeed": 0,
-      "TargetRotation": -10.77193449120271
+      "TargetRotation": -17.243129003332104
     },
     "5": {
       "ID": 5,
@@ -198,9 +198,9 @@
       "MaxArmor": 14117,
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
-      "X": 875.901052966712,
-      "Y": 1930.81737480038,
-      "Rotation": 4.856282463988256,
+      "X": 966.0323556993745,
+      "Y": 2025.842786776085,
+      "Rotation": 5.132320654740926,
       "Armor": 14117,
       "MaxAlongForce": 10300000,
       "MaxAcrossForce": 10300000,
@@ -221,7 +221,7 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": 6.931214143086497
+      "TargetRotation": 7.6384532054622
     },
     "7": {
       "ID": 7,

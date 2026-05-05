@@ -56,6 +56,12 @@ export class InputController {
   ) {
     // Состояние клавиш хранится непрерывно, потому что сетевой ввод отправляется реже кадров браузера.
     window.addEventListener("keydown", (event) => {
+      if (!this.isPointerLocked()) {
+        this.chatInputFocused = false;
+        this.chatContextMenu = null;
+        this.keys[event.code] = true;
+        return;
+      }
       if (this.handleChatKeyDown(event)) {
         return;
       }
@@ -86,6 +92,9 @@ export class InputController {
     window.addEventListener(
       "wheel",
       (event) => {
+        if (!this.isPointerLocked()) {
+          return;
+        }
         if (event.shiftKey) {
           this.pilotToolSelectionDelta += event.deltaY > 0 ? 1 : -1;
           return;
@@ -96,13 +105,17 @@ export class InputController {
     );
 
     window.addEventListener("contextmenu", (event) => {
-      if (this.openChatContextMenu(event.clientX, event.clientY)) {
+      if (this.isPointerLocked() && this.openChatContextMenu(event.clientX, event.clientY)) {
         event.preventDefault();
       }
     });
 
     window.addEventListener("mousedown", (event) => {
       if (event.button !== 0) {
+        return;
+      }
+      if (!this.isPointerLocked()) {
+        this.chatContextMenu = null;
         return;
       }
       if (this.closeChatContextMenuItem(event.clientX, event.clientY)) {
@@ -208,7 +221,11 @@ export class InputController {
   // Отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.
   consumeShipInput(): ClientInputState {
     // Захват указателя отдает относительное движение мыши; после кадра накопление сбрасывается.
-    const isPointerLocked = document.pointerLockElement === this.canvas;
+    const isPointerLocked = this.isPointerLocked();
+    if (!isPointerLocked) {
+      this.chatInputFocused = false;
+      this.chatContextMenu = null;
+    }
     const input = toShipInput(isPointerLocked, this.keys, this.mouseDeltaX);
     input.toggleAnchor = isPointerLocked && this.anchorToggleRequested;
     this.mouseDeltaX = 0;
@@ -299,6 +316,12 @@ export class InputController {
 
     this.chatInputText = "";
     this.chatCursorIndex = 0;
+    this.chatInputFocused = false;
+  }
+
+  // Проверяет, что системный указатель передан игровому canvas.
+  private isPointerLocked(): boolean {
+    return document.pointerLockElement === this.canvas;
   }
 
   // Открывает игровое меню, если правый клик попал в область вкладки.

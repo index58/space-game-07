@@ -37,6 +37,7 @@ describe("InputController", () => {
   it("uses Shift and mouse wheel for pilot tool selection instead of zoom", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
 
     wheel(-100, true);
     wheel(100, true);
@@ -49,6 +50,7 @@ describe("InputController", () => {
   it("returns pilot tool wheel delta once", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
 
     wheel(-100, true);
     expect(controller.consumePilotToolSelectionDelta()).toBe(-1);
@@ -72,6 +74,7 @@ describe("InputController", () => {
   it("focuses chat with Enter, types text and sends it with second Enter", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
     controller.getVisibleChatState({
       type: "chatState",
       selectedChatId: 5,
@@ -84,7 +87,7 @@ describe("InputController", () => {
     pressKey("KeyI", "i");
     pressKey("Enter", "Enter");
 
-    expect(controller.isChatInputFocused()).toBe(true);
+    expect(controller.isChatInputFocused()).toBe(false);
     expect(controller.consumeChatAction()).toEqual({ chatId: 5, text: "hi" });
     expect(controller.getChatInputText()).toBe("");
   });
@@ -92,6 +95,7 @@ describe("InputController", () => {
   it("parses addressed chat command by account nickname", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
 
     pressKey("Enter", "Enter");
     releaseKey("Enter");
@@ -125,6 +129,7 @@ describe("InputController", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
     setViewportHeight(1000);
+    setPointerLockElement(canvas);
     controller.getVisibleChatState({
       type: "chatState",
       selectedChatId: 1,
@@ -147,5 +152,22 @@ describe("InputController", () => {
 
     expect(controller.getChatContextMenu()).toBeNull();
     expect(visibleState?.tabs.map((tab) => tab.chatId)).toEqual([1]);
+  });
+
+  it("ignores game keyboard and wheel input while system pointer is unlocked", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+
+    pressKey("Enter", "Enter");
+    pressKey("Backslash", "\\");
+    pressKey("KeyO", "o");
+    wheel(100, false);
+    wheel(100, true);
+
+    expect(controller.isChatInputFocused()).toBe(false);
+    expect(controller.consumeRandomShipChangeRequest()).toBe(false);
+    expect(controller.consumeBodyPolygonDebugToggleRequest()).toBe(false);
+    expect(controller.consumePilotToolSelectionDelta()).toBe(0);
+    expect(controller.getZoom()).toBe(INITIAL_ZOOM);
   });
 });
