@@ -1,5 +1,6 @@
 import { createSignal, type Accessor } from "solid-js";
-import type { ConnectionStatus, CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
+import type { ChatContextMenuState } from "../game/InputController";
+import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
@@ -16,6 +17,16 @@ export type GameUiState = {
   referenceData: ReferenceDataMessage | null;
   // Путь к текстуре текущего объекта.
   textureFilePath: string | null;
+  // Сетевое состояние доступных вкладок и истории чата.
+  chatState: ChatStateMessage | null;
+  // Локальная строка ввода, которую HUD только показывает.
+  chatInputText: string;
+  // Признак направления печатных клавиш в панель чата.
+  chatInputFocused: boolean;
+  // Последняя ошибка отправки текста, полученная от сервера.
+  chatError: string | null;
+  // Открытое игровое меню вкладки, если игрок вызвал его правым кликом.
+  chatContextMenu: ChatContextMenuState | null;
   // Текущая частота кадров.
   fps: number;
   // Рассчитанный масштаб камеры.
@@ -37,6 +48,11 @@ const initialGameUiState: GameUiState = {
   selectedPilotToolIndex: 0,
   referenceData: null,
   textureFilePath: null,
+  chatState: null,
+  chatInputText: "",
+  chatInputFocused: false,
+  chatError: null,
+  chatContextMenu: null,
   fps: 0,
   zoom: 1,
 };

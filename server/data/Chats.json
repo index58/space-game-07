@@ -1,0 +1,11 @@
+{
+  "MaxID": 1,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "CommunityTypeID": 1,
+      "CommunityID": 0,
+      "DuoChatKey": ""
+    }
+  }
+}

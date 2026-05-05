@@ -41,6 +41,12 @@ func main() {
 		ItemGroups:              serverData.ItemGroups,
 		Assemblies:              serverData.Assemblies,
 		AssemblyEquipmentGroups: serverData.AssemblyEquipmentGroups,
+		Chats:                   serverData.Chats,
+		ChatMembers:             serverData.ChatMembers,
+		CommunityTypes:          serverData.CommunityTypes,
+		CommunityChatRoles:      serverData.CommunityChatRoles,
+		Messages:                serverData.Messages,
+		MessageTypes:            serverData.MessageTypes,
 	})
 	hub := transport.NewHub(gameWorld)
 	handler := transport.NewHandler(hub, serverData.Accounts)

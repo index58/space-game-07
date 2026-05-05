@@ -60,6 +60,82 @@ func TestDecodeRandomShipMessageRejectsOtherTypes(t *testing.T) {
 	}
 }
 
+// Проверяет, что команда чата читает выбранную вкладку и адресный ник из JSON.
+func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeChatSendMessage([]byte(`{
+		"type": "chatSend",
+		"chatId": 7,
+		"targetNickname": "Pilot2",
+		"text": "hello"
+	}`))
+
+	if !ok {
+		t.Fatalf("chat message was not accepted")
+	}
+	if message.ChatID != 7 || message.TargetNickname != "Pilot2" || message.Text != "hello" {
+		t.Fatalf("decoded chat message mismatch: %+v", message)
+	}
+}
+
+// Проверяет, что другие входящие типы не распознаются как отправка текста.
+func TestDecodeChatSendMessageRejectsOtherTypes(t *testing.T) {
+	if _, ok := transport.DecodeChatSendMessage([]byte(`{"type":"input","text":"hello"}`)); ok {
+		t.Fatalf("input message was accepted as chat command")
+	}
+}
+
+// Проверяет, что состояние чата кодируется с согласованными именами полей.
+func TestEncodeChatStateMessageUsesAgreedCamelCaseFields(t *testing.T) {
+	payload, err := transport.EncodeChatStateMessage(game.ChatState{
+		Type:           "chatState",
+		SelectedChatID: 3,
+		Tabs: []game.ChatTab{
+			{
+				ChatID:               3,
+				Title:                "Server",
+				CommunityTypeAcronym: "Server",
+				Messages: []game.ChatMessage{
+					{ID: 9, ChatID: 3, SenderNickname: "Pilot1", Text: "hello"},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("encode chat state: %v", err)
+	}
+
+	jsonText := string(payload)
+	for _, field := range []string{
+		`"type":"chatState"`,
+		`"selectedChatId":3`,
+		`"chatId":3`,
+		`"communityTypeAcronym":"Server"`,
+		`"senderNickname":"Pilot1"`,
+	} {
+		if !strings.Contains(jsonText, field) {
+			t.Fatalf("encoded chat state %s does not contain %s", jsonText, field)
+		}
+	}
+}
+
+// Проверяет, что отказ команды чата возвращается отдельным сетевым типом.
+func TestEncodeChatErrorMessageUsesAgreedFields(t *testing.T) {
+	payload, err := transport.EncodeChatErrorMessage("Адресат не найден")
+	if err != nil {
+		t.Fatalf("encode chat error: %v", err)
+	}
+
+	jsonText := string(payload)
+	for _, field := range []string{
+		`"type":"chatError"`,
+		`"message":"Адресат не найден"`,
+	} {
+		if !strings.Contains(jsonText, field) {
+			t.Fatalf("encoded chat error %s does not contain %s", jsonText, field)
+		}
+	}
+}
+
 // Проверяет, что снимок мира кодируется с текущими именами полей и без удалённых полей.
 func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 	snapshot := game.Snapshot{

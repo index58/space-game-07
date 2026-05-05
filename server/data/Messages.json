@@ -1,0 +1,140 @@
+{
+  "MaxID": 15,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "ert",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:49:05.0342873+03:00"
+    },
+    "2": {
+      "ID": 2,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Абвгд",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:06.9883122+03:00"
+    },
+    "3": {
+      "ID": 3,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "234",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:08.6937374+03:00"
+    },
+    "4": {
+      "ID": 4,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "456",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:09.2822904+03:00"
+    },
+    "5": {
+      "ID": 5,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "ывп",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:09.7606218+03:00"
+    },
+    "6": {
+      "ID": 6,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "ыцу",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:10.105672+03:00"
+    },
+    "7": {
+      "ID": 7,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "кп",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:10.4774554+03:00"
+    },
+    "8": {
+      "ID": 8,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "кер",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:10.7721679+03:00"
+    },
+    "9": {
+      "ID": 9,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "ено",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:10.9946817+03:00"
+    },
+    "10": {
+      "ID": 10,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "к",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:11.1883483+03:00"
+    },
+    "11": {
+      "ID": 11,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "вкп",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:11.4059022+03:00"
+    },
+    "12": {
+      "ID": 12,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "в",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:11.6448833+03:00"
+    },
+    "13": {
+      "ID": 13,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "к",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:11.8339937+03:00"
+    },
+    "14": {
+      "ID": 14,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "пк",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:12.066843+03:00"
+    },
+    "15": {
+      "ID": 15,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "пкп",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-05T19:50:12.2782539+03:00"
+    }
+  }
+}

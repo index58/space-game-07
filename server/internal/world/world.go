@@ -32,6 +32,12 @@ type Data struct {
 	ItemGroups              *data.ItemGroups              // Группы предметов внутри контейнерного оборудования.
 	Assemblies              *data.Assemblies              // Справочник сборок для расчета характеристик кораблей.
 	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Группы оборудования, заданные в сборках.
+	Chats                   *data.Chats                   // Чаты игрового мира.
+	ChatMembers             *data.ChatMembers             // Участники чатов.
+	CommunityTypes          *data.CommunityTypes          // Справочник типов сообществ.
+	CommunityChatRoles      *data.CommunityChatRoles      // Справочник ролей в чатах сообществ.
+	Messages                *data.Messages                // Сообщения чатов.
+	MessageTypes            *data.MessageTypes            // Справочник типов сообщений.
 }
 
 // Управляет подключенными аккаунтами, вводом игроков и пошаговой симуляцией объектов.
@@ -52,6 +58,7 @@ func New(seed int64, serverData Data) *World {
 		inputs:           map[int64]game.ShipInput{},
 		random:           rand.New(rand.NewSource(seed)),
 	}
+	created.ensureChatData()
 	created.applyAssembliesToLoadedShips()
 	return created
 }
@@ -523,7 +530,39 @@ func (world *World) SaveData(workingDirectory string) error {
 		}
 	}
 	if world.data.Itemtypes != nil {
-		return world.data.Itemtypes.SaveToFile(filepath.Join(dataDirectory, "Itemtypes.json"))
+		if err := world.data.Itemtypes.SaveToFile(filepath.Join(dataDirectory, "Itemtypes.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.Chats != nil {
+		if err := world.data.Chats.SaveToFile(filepath.Join(dataDirectory, "Chats.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.ChatMembers != nil {
+		if err := world.data.ChatMembers.SaveToFile(filepath.Join(dataDirectory, "ChatMembers.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.CommunityTypes != nil {
+		if err := world.data.CommunityTypes.SaveToFile(filepath.Join(dataDirectory, "CommunityTypes.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.CommunityChatRoles != nil {
+		if err := world.data.CommunityChatRoles.SaveToFile(filepath.Join(dataDirectory, "CommunityChatRoles.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.Messages != nil {
+		if err := world.data.Messages.SaveToFile(filepath.Join(dataDirectory, "Messages.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.MessageTypes != nil {
+		if err := world.data.MessageTypes.SaveToFile(filepath.Join(dataDirectory, "MessageTypes.json")); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -5,7 +5,7 @@ import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicator
 import { getMinimapView, type MinimapPointView } from "./minimap";
 import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
 
-type HudPanelPosition = "left-bottom" | "bottom-center" | "right-bottom" | "left-top";
+type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-bottom" | "left-top";
 
 type GameUiProps = {
   // Реактивное состояние всего игрового UI.
@@ -34,6 +34,7 @@ type ObjectIndicatorProps = {
 export const GameUi = (props: GameUiProps) => (
   <>
     <ObjectIndicatorsPanel selfObject={props.state().selfObject} />
+    <ChatPanel state={props.state} />
     <PilotToolbarPanel state={props.state} />
     <MinimapPanel state={props.state} />
     <DebugOverlay state={props.state} />
@@ -118,6 +119,11 @@ type PilotToolbarPanelProps = {
   state: Accessor<GameUiState>;
 };
 
+type ChatPanelProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
 type PilotToolSlotProps = {
   // Данные одной ячейки панели инструментов пилота.
   slot: PilotToolSlotView;
@@ -139,6 +145,59 @@ const getPilotToolbarReadyState = (state: GameUiState): PilotToolbarReadyState |
     selfObject: state.selfObject,
     referenceData: state.referenceData,
   };
+};
+
+// Показывает доступные вкладки, последние строки истории и локальную строку ввода.
+const ChatPanel = (props: ChatPanelProps) => {
+  const selectedTab = () => props.state().chatState?.tabs.find((tab) => tab.chatId === props.state().chatState?.selectedChatId) ?? null;
+
+  return (
+    <Show when={props.state().chatState && selectedTab()}>
+      {(tab) => (
+        <HudPanel position="left-middle" className="chat-panel" ariaLabel="Чат">
+          <div class="chat-tabs">
+            <For each={props.state().chatState?.tabs ?? []}>
+              {(chatTab) => (
+                <div class={`chat-tab ${chatTab.chatId === tab().chatId ? "is-selected" : ""}`}>
+                  <span class="chat-tab__marker">{chatTab.communityTypeAcronym === "Server" ? "S" : "D"}</span>
+                  <span class="chat-tab__title">{chatTab.title}</span>
+                </div>
+              )}
+            </For>
+          </div>
+          <div class="chat-messages">
+            <For each={tab().messages}>
+              {(message) => (
+                <div class="chat-message" style={{ color: `#${message.color || "d8f3ff"}` }}>
+                  <span class="chat-message__sender">{message.senderNickname}</span>
+                  <span class="chat-message__text">{message.text}</span>
+                </div>
+              )}
+            </For>
+          </div>
+          <Show when={props.state().chatError}>
+            {(error) => <div class="chat-error">{error()}</div>}
+          </Show>
+          <div class={`chat-input ${props.state().chatInputFocused ? "is-focused" : ""}`}>
+            <span class="chat-input__text">{props.state().chatInputText}</span>
+            <Show when={props.state().chatInputFocused}>
+              <span class="chat-input__caret" />
+            </Show>
+          </div>
+          <Show when={props.state().chatContextMenu}>
+            {(menu) => (
+              <div
+                class="chat-context-menu"
+                style={{ left: `${menu().x}px`, top: `${menu().y}px` }}
+              >
+                <div class={`chat-context-menu__item ${menu().communityTypeAcronym === "Duo" ? "" : "is-disabled"}`}>Закрыть</div>
+              </div>
+            )}
+          </Show>
+        </HudPanel>
+      )}
+    </Show>
+  );
 };
 
 // Показывает десять ячеек инструментов пилота в центральной нижней части экрана.

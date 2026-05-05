@@ -16,6 +16,20 @@ type AuthMessage struct {
 	Token string `json:"token"` // Секрет созданной учетной записи.
 }
 
+// Передает текст в текущий чат или в личный дуэт по нику.
+type ChatSendMessage struct {
+	Type           string `json:"type"`                     // Вид пакета для маршрутизации входящей команды.
+	ChatID         int64  `json:"chatId,omitempty"`         // Чат, в который нужно отправить обычный текст.
+	TargetNickname string `json:"targetNickname,omitempty"` // Ник аккаунта для адресной команды.
+	Text           string `json:"text"`                     // Содержимое, которое будет записано в историю.
+}
+
+// Передает ошибку чата отдельным сетевым пакетом.
+type ChatErrorMessage struct {
+	Type    string `json:"type"`    // Вид пакета для отдельной обработки на клиенте.
+	Message string `json:"message"` // Текст, который можно показать игроку в панели.
+}
+
 // Разбирает клиентский JSON и пропускает только сообщения управления кораблем.
 func DecodeInputMessage(payload []byte) (game.ShipInput, bool) {
 	var input game.ShipInput
@@ -40,9 +54,36 @@ func DecodeRandomShipMessage(payload []byte) bool {
 	return message.Type == "randomShip"
 }
 
+// Разбирает клиентский JSON и пропускает только команды чата.
+func DecodeChatSendMessage(payload []byte) (ChatSendMessage, bool) {
+	var message ChatSendMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ChatSendMessage{}, false
+	}
+
+	if message.Type != "chatSend" {
+		return ChatSendMessage{}, false
+	}
+
+	return message, true
+}
+
 // Сериализует снимок мира в формат WebSocket-сообщения.
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
+}
+
+// Сериализует состояние вкладок и истории чата.
+func EncodeChatStateMessage(chatState game.ChatState) ([]byte, error) {
+	return json.Marshal(chatState)
+}
+
+// Сериализует причину отказа команды чата.
+func EncodeChatErrorMessage(message string) ([]byte, error) {
+	return json.Marshal(ChatErrorMessage{
+		Type:    "chatError",
+		Message: message,
+	})
 }
 
 // Сериализует результат автоматической авторизации.

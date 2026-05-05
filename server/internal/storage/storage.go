@@ -25,6 +25,12 @@ const schemaFileName = "Schemas.json"
 const schemaComponentFileName = "SchemaComponents.json"
 const assemblyFileName = "Assemblies.json"
 const assemblyEquipmentGroupFileName = "AssemblyEquipmentGroups.json"
+const chatsFileName = "Chats.json"
+const chatMembersFileName = "ChatMembers.json"
+const communityTypesFileName = "CommunityTypes.json"
+const communityChatRolesFileName = "CommunityChatRoles.json"
+const messagesFileName = "Messages.json"
+const messageTypesFileName = "MessageTypes.json"
 
 // Хранит таблицу, для которой на сервере пока нет отдельной предметной модели.
 type RawReferenceTable struct {
@@ -57,6 +63,12 @@ type ServerData struct {
 	BlueprintComponents     *RawReferenceTable            // Загруженный справочник компонентов чертежей.
 	Schemas                 *RawReferenceTable            // Загруженный справочник схем предметов.
 	SchemaComponents        *RawReferenceTable            // Загруженный справочник компонентов схем.
+	Chats                   *data.Chats                   // Загруженные чаты игрового мира.
+	ChatMembers             *data.ChatMembers             // Загруженные участники чатов.
+	CommunityTypes          *data.CommunityTypes          // Загруженный справочник типов сообществ.
+	CommunityChatRoles      *data.CommunityChatRoles      // Загруженный справочник ролей в чатах сообществ.
+	Messages                *data.Messages                // Загруженные сообщения чатов.
+	MessageTypes            *data.MessageTypes            // Загруженный справочник типов сообщений.
 }
 
 // Загружает все JSON-файлы данных сервера из указанного рабочего каталога.
@@ -137,6 +149,30 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 	if err != nil {
 		return nil, err
 	}
+	chats, err := loadOptionalChats(filepath.Join(dataDirectory, chatsFileName))
+	if err != nil {
+		return nil, err
+	}
+	chatMembers, err := loadOptionalChatMembers(filepath.Join(dataDirectory, chatMembersFileName))
+	if err != nil {
+		return nil, err
+	}
+	communityTypes, err := loadOptionalCommunityTypes(filepath.Join(dataDirectory, communityTypesFileName))
+	if err != nil {
+		return nil, err
+	}
+	communityChatRoles, err := loadOptionalCommunityChatRoles(filepath.Join(dataDirectory, communityChatRolesFileName))
+	if err != nil {
+		return nil, err
+	}
+	messages, err := loadOptionalMessages(filepath.Join(dataDirectory, messagesFileName))
+	if err != nil {
+		return nil, err
+	}
+	messageTypes, err := loadOptionalMessageTypes(filepath.Join(dataDirectory, messageTypesFileName))
+	if err != nil {
+		return nil, err
+	}
 
 	return &ServerData{
 		Accounts:                accounts,
@@ -155,6 +191,12 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		BlueprintComponents:     blueprintComponents,
 		Schemas:                 schemas,
 		SchemaComponents:        schemaComponents,
+		Chats:                   chats,
+		ChatMembers:             chatMembers,
+		CommunityTypes:          communityTypes,
+		CommunityChatRoles:      communityChatRoles,
+		Messages:                messages,
+		MessageTypes:            messageTypes,
 	}, nil
 }
 
@@ -236,4 +278,76 @@ func loadOptionalAssemblyEquipmentGroups(path string) (*data.AssemblyEquipmentGr
 		return nil, err
 	}
 	return groups, nil
+}
+
+// Загружает необязательную таблицу чатов или возвращает пустое хранилище до появления файла.
+func loadOptionalChats(path string) (*data.Chats, error) {
+	chats := data.NewChats()
+	if err := chats.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewChats(), nil
+		}
+		return nil, err
+	}
+	return chats, nil
+}
+
+// Загружает необязательную таблицу участников чатов или возвращает пустое хранилище до появления файла.
+func loadOptionalChatMembers(path string) (*data.ChatMembers, error) {
+	members := data.NewChatMembers()
+	if err := members.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewChatMembers(), nil
+		}
+		return nil, err
+	}
+	return members, nil
+}
+
+// Загружает необязательный справочник типов сообществ или возвращает пустое хранилище до появления файла.
+func loadOptionalCommunityTypes(path string) (*data.CommunityTypes, error) {
+	types := data.NewCommunityTypes()
+	if err := types.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewCommunityTypes(), nil
+		}
+		return nil, err
+	}
+	return types, nil
+}
+
+// Загружает необязательный справочник ролей чатов или возвращает пустое хранилище до появления файла.
+func loadOptionalCommunityChatRoles(path string) (*data.CommunityChatRoles, error) {
+	roles := data.NewCommunityChatRoles()
+	if err := roles.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewCommunityChatRoles(), nil
+		}
+		return nil, err
+	}
+	return roles, nil
+}
+
+// Загружает необязательную таблицу сообщений или возвращает пустое хранилище до появления файла.
+func loadOptionalMessages(path string) (*data.Messages, error) {
+	messages := data.NewMessages()
+	if err := messages.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewMessages(), nil
+		}
+		return nil, err
+	}
+	return messages, nil
+}
+
+// Загружает необязательный справочник типов сообщений или возвращает пустое хранилище до появления файла.
+func loadOptionalMessageTypes(path string) (*data.MessageTypes, error) {
+	types := data.NewMessageTypes()
+	if err := types.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewMessageTypes(), nil
+		}
+		return nil, err
+	}
+	return types, nil
 }

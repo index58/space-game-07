@@ -1,6 +1,7 @@
 package world_test
 
 import (
+	"fmt"
 	"math"
 	"os"
 	"path/filepath"
@@ -205,6 +206,138 @@ func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 
 	if objectID != 1 {
 		t.Fatalf("got object ID %v, want 1", objectID)
+	}
+}
+
+// Проверяет, что новый мир создает серверный чат и показывает его подключенному аккаунту.
+func TestChatStateIncludesServerChatAfterConnect(t *testing.T) {
+	gameWorld := world.New(1, testWorldData(t))
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+
+	chatState, ok := gameWorld.ChatStateForAccount(1, 0)
+	if !ok {
+		t.Fatalf("chat state is not available")
+	}
+	if len(chatState.Tabs) != 1 {
+		t.Fatalf("chat tabs count = %d, want 1", len(chatState.Tabs))
+	}
+	if chatState.Tabs[0].CommunityTypeAcronym != "Server" {
+		t.Fatalf("first chat type = %q, want Server", chatState.Tabs[0].CommunityTypeAcronym)
+	}
+}
+
+// Проверяет, что сообщение в серверный чат сохраняется от имени текущего персонажа.
+func TestSendServerChatMessageStoresMessageFromCurrentCharacter(t *testing.T) {
+	gameWorld := world.New(1, testWorldData(t))
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	chatState, ok := gameWorld.ChatStateForAccount(1, 0)
+	if !ok {
+		t.Fatalf("chat state is not available")
+	}
+
+	nextState, recipients, chatError := gameWorld.SendChatMessage(1, chatState.SelectedChatID, "", "Привет всем")
+	if chatError != "" {
+		t.Fatalf("SendChatMessage returned error: %s", chatError)
+	}
+	if len(recipients) != 1 || recipients[0] != 1 {
+		t.Fatalf("recipients = %v, want [1]", recipients)
+	}
+	if len(nextState.Tabs[0].Messages) != 1 {
+		t.Fatalf("message count = %d, want 1", len(nextState.Tabs[0].Messages))
+	}
+	message := nextState.Tabs[0].Messages[0]
+	if message.Text != "Привет всем" || message.SenderCharacterID != 1 || message.SenderNickname != "index" {
+		t.Fatalf("message = %+v, want text from current account", message)
+	}
+}
+
+// Проверяет, что адресация через ник аккаунта создает дуэтный чат с ключом из ID персонажей.
+func TestSendDuoChatMessageUsesAccountNicknameAndDuoKey(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "pilot2@email.net", Nickname: "Pilot2", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 3}
+	if err := serverData.Accounts.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Characters.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("first account was not connected")
+	}
+	if _, ok := gameWorld.ConnectAccount(2); !ok {
+		t.Fatalf("second account was not connected")
+	}
+
+	chatState, recipients, chatError := gameWorld.SendChatMessage(1, 0, "Pilot2", "Личное сообщение")
+	if chatError != "" {
+		t.Fatalf("SendChatMessage returned error: %s", chatError)
+	}
+	if len(recipients) != 2 || recipients[0] != 1 || recipients[1] != 2 {
+		t.Fatalf("recipients = %v, want [1 2]", recipients)
+	}
+
+	var duoTab game.ChatTab
+	for _, tab := range chatState.Tabs {
+		if tab.CommunityTypeAcronym == "Duo" {
+			duoTab = tab
+		}
+	}
+	if duoTab.ChatID == 0 {
+		t.Fatal("duo tab was not opened")
+	}
+	if duoTab.Title != "Pilot2" || duoTab.DuoChatKey != "1:2" {
+		t.Fatalf("duo tab = %+v, want Pilot2 with key 1:2", duoTab)
+	}
+}
+
+// Проверяет, что неизвестный ник аккаунта дает ошибку без создания сообщения.
+func TestSendDuoChatMessageRejectsUnknownAccountNickname(t *testing.T) {
+	gameWorld := world.New(1, testWorldData(t))
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+
+	_, recipients, chatError := gameWorld.SendChatMessage(1, 0, "Nobody", "Личное сообщение")
+	if chatError == "" {
+		t.Fatal("unknown nickname was accepted")
+	}
+	if len(recipients) != 0 {
+		t.Fatalf("recipients = %v, want empty list", recipients)
+	}
+}
+
+// Проверяет, что состояние чата отдает только последние десять сообщений.
+func TestChatStateLimitsHistoryToLastTenMessages(t *testing.T) {
+	gameWorld := world.New(1, testWorldData(t))
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	chatState, ok := gameWorld.ChatStateForAccount(1, 0)
+	if !ok {
+		t.Fatalf("chat state is not available")
+	}
+	for index := 1; index <= 12; index++ {
+		if _, _, chatError := gameWorld.SendChatMessage(1, chatState.SelectedChatID, "", fmt.Sprintf("msg-%02d", index)); chatError != "" {
+			t.Fatalf("SendChatMessage returned error: %s", chatError)
+		}
+	}
+
+	chatState, ok = gameWorld.ChatStateForAccount(1, chatState.SelectedChatID)
+	if !ok {
+		t.Fatalf("chat state is not available")
+	}
+	messages := chatState.Tabs[0].Messages
+	if len(messages) != 10 {
+		t.Fatalf("message count = %d, want 10", len(messages))
+	}
+	if messages[0].Text != "msg-03" || messages[9].Text != "msg-12" {
+		t.Fatalf("message range = %q..%q, want msg-03..msg-12", messages[0].Text, messages[9].Text)
 	}
 }
 

@@ -1,5 +1,8 @@
 ﻿import type {
   AuthMessage,
+  ChatErrorMessage,
+  ChatSendMessage,
+  ChatStateMessage,
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
@@ -118,6 +121,30 @@ const isAuthMessage = (message: unknown): message is AuthMessage => {
   return auth.type === "auth" && typeof auth.token === "string" && auth.token.length > 0;
 };
 
+// Проверяет минимальный контракт состояния чата перед передачей в HUD.
+const isChatStateMessage = (message: unknown): message is ChatStateMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const chatState = message as ChatStateMessage;
+
+  return chatState.type === "chatState" &&
+    Array.isArray(chatState.tabs) &&
+    typeof chatState.selectedChatId === "number";
+};
+
+// Проверяет пакет ошибки перед отображением в панели.
+const isChatErrorMessage = (message: unknown): message is ChatErrorMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const chatError = message as ChatErrorMessage;
+
+  return chatError.type === "chatError" && typeof chatError.message === "string";
+};
+
 // Сохраняет секрет, если окружение предоставляет браузерное хранилище.
 const storeAccountToken = (token: string): void => {
   if (typeof localStorage === "undefined") {
@@ -143,6 +170,10 @@ export class GameClient {
   private status: ConnectionStatus = "connecting";
   // Последний валидный снимок мира от сервера.
   private latestSnapshot: SnapshotMessage | null = null;
+  // Последнее валидное состояние вкладок чата.
+  private latestChatState: ChatStateMessage | null = null;
+  // Последняя ошибка отправки текста.
+  private latestChatError: string | null = null;
   // Последнее состояние управления, готовое к отправке.
   private latestInput: ClientInputState = emptyInput();
   // Последний выданный порядковый номер пакета ввода.
@@ -177,6 +208,16 @@ export class GameClient {
     return this.latestSnapshot;
   }
 
+  // Возвращает последнюю историю и список вкладок без копирования сообщений.
+  getLatestChatState(): ChatStateMessage | null {
+    return this.latestChatState;
+  }
+
+  // Возвращает последнюю ошибку панели, если сервер отказал команде.
+  getLatestChatError(): string | null {
+    return this.latestChatError;
+  }
+
   // Обновляет состояние клавиш и накапливает относительный поворот мыши до отправки.
   setInput(input: ClientInputState): void {
     this.latestInput = {
@@ -199,6 +240,20 @@ export class GameClient {
     };
 
     this.socket.send(JSON.stringify(message));
+  }
+
+  // Отправляет текстовую команду отдельно от потокового управления кораблем.
+  sendChatMessage(message: Omit<ChatSendMessage, "type">): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
+    const payload: ChatSendMessage = {
+      type: "chatSend",
+      ...message,
+    };
+
+    this.socket.send(JSON.stringify(payload));
   }
 
   // Останавливает таймеры и закрывает сокет при уничтожении Phaser-сцены или теста.
@@ -261,6 +316,17 @@ export class GameClient {
 
     if (isSnapshotMessage(parsed)) {
       this.latestSnapshot = parsed;
+      return;
+    }
+
+    if (isChatStateMessage(parsed)) {
+      this.latestChatState = parsed;
+      this.latestChatError = null;
+      return;
+    }
+
+    if (isChatErrorMessage(parsed)) {
+      this.latestChatError = parsed.message;
     }
   }
 

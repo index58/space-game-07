@@ -51,6 +51,11 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initi
 	for _, payload := range initialMessages {
 		client.send <- payload
 	}
+	if chatState, ok := hub.world.ChatStateForAccount(accountID, 0); ok {
+		if payload, err := EncodeChatStateMessage(chatState); err == nil {
+			client.send <- payload
+		}
+	}
 
 	hub.mu.Lock()
 	hub.clients[client] = struct{}{}
@@ -101,10 +106,71 @@ func (hub *Hub) readLoop(client *Client) {
 			if DecodeRandomShipMessage(payload) {
 				hub.world.ChangeControlledShipToRandomModel(client.accountID)
 			}
+			if message, ok := DecodeChatSendMessage(payload); ok {
+				hub.handleChatSend(client, message)
+			}
 			continue
 		}
 
 		hub.world.SetInput(client.accountID, input)
+	}
+}
+
+// Обрабатывает отправку текста и рассылает обновления вкладок всем доступным получателям.
+func (hub *Hub) handleChatSend(client *Client, message ChatSendMessage) {
+	chatState, recipientIDs, chatError := hub.world.SendChatMessage(client.accountID, message.ChatID, message.TargetNickname, message.Text)
+	if chatError != "" {
+		payload, err := EncodeChatErrorMessage(chatError)
+		if err != nil {
+			return
+		}
+		hub.sendToClient(client, payload)
+		return
+	}
+
+	if len(recipientIDs) == 0 {
+		recipientIDs = []int64{client.accountID}
+	}
+	for _, accountID := range recipientIDs {
+		state := chatState
+		if accountID != client.accountID {
+			var ok bool
+			state, ok = hub.world.ChatStateForAccount(accountID, chatState.SelectedChatID)
+			if !ok {
+				continue
+			}
+		}
+		payload, err := EncodeChatStateMessage(state)
+		if err != nil {
+			continue
+		}
+		hub.sendToAccount(accountID, payload)
+	}
+}
+
+// Кладет пакет в очередь конкретного подключения.
+func (hub *Hub) sendToClient(client *Client, payload []byte) {
+	select {
+	case client.send <- payload:
+	case <-client.done:
+	default:
+		hub.removeClient(client)
+	}
+}
+
+// Кладет пакет во все соединения указанной учетной записи.
+func (hub *Hub) sendToAccount(accountID int64, payload []byte) {
+	hub.mu.Lock()
+	clients := make([]*Client, 0)
+	for client := range hub.clients {
+		if client.accountID == accountID {
+			clients = append(clients, client)
+		}
+	}
+	hub.mu.Unlock()
+
+	for _, client := range clients {
+		hub.sendToClient(client, payload)
 	}
 }
 

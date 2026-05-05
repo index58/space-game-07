@@ -1,0 +1,19 @@
+{
+  "MaxID": 2,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "CommunityTypeID": 1,
+      "TitleRu": "Участник",
+      "TitleEn": "Member",
+      "Acronym": "Member"
+    },
+    "2": {
+      "ID": 2,
+      "CommunityTypeID": 2,
+      "TitleRu": "Участник",
+      "TitleEn": "Member",
+      "Acronym": "Member"
+    }
+  }
+}

@@ -305,4 +305,63 @@ describe("GameClient", () => {
     client.destroy();
     vi.useRealTimers();
   });
+
+  it("updates latest chat state and clears previous chat error", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "chatError", message: "Ошибка" }) });
+    socket.onmessage?.({
+      data: JSON.stringify({
+        type: "chatState",
+        selectedChatId: 1,
+        tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: [] }],
+      }),
+    });
+
+    expect(client.getLatestChatState()?.selectedChatId).toBe(1);
+    expect(client.getLatestChatError()).toBeNull();
+
+    client.destroy();
+  });
+
+  it("stores latest chat error from server refusal", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "chatError", message: "Адресат не найден" }) });
+
+    expect(client.getLatestChatError()).toBe("Адресат не найден");
+
+    client.destroy();
+  });
+
+  it("sends chat command while connected", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    client.sendChatMessage({ chatId: 3, text: "hello" });
+    client.sendChatMessage({ targetNickname: "Pilot2", text: "private" });
+
+    expect(JSON.parse(socket.sent[0])).toEqual({ type: "chatSend", chatId: 3, text: "hello" });
+    expect(JSON.parse(socket.sent[1])).toEqual({ type: "chatSend", targetNickname: "Pilot2", text: "private" });
+
+    client.destroy();
+  });
 });

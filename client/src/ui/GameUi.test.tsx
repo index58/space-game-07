@@ -82,6 +82,11 @@ const state = (): GameUiState => ({
   selectedPilotToolIndex: 0,
   referenceData,
   textureFilePath: null,
+  chatState: null,
+  chatInputText: "",
+  chatInputFocused: false,
+  chatError: null,
+  chatContextMenu: null,
   fps: 60,
   zoom: 4,
 });
@@ -135,5 +140,44 @@ describe("GameUi", () => {
     expect(zone?.textContent).toBe("PVE");
     expect(Array.from(zone?.classList ?? [])).toContain("minimap-status__item");
     expect(Array.from(anchor?.classList ?? [])).toContain("minimap-status__item");
+  });
+
+  it("renders chat panel with tabs, selected history and local input text", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const chatState = (): GameUiState => ({
+      ...state(),
+      chatState: {
+        type: "chatState",
+        selectedChatId: 2,
+        tabs: [
+          { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: [] },
+          {
+            chatId: 2,
+            title: "Pilot2",
+            communityTypeAcronym: "Duo",
+            duoChatKey: "1:2",
+            messages: [
+              { id: 10, chatId: 2, senderCharacterId: 1, senderNickname: "Pilot1", messageTypeAcronym: "FromCharacter", text: "old", color: "D8F3FF", sentTime: "" },
+              { id: 11, chatId: 2, senderCharacterId: 2, senderNickname: "Pilot2", messageTypeAcronym: "FromCharacter", text: "new", color: "E8FFD8", sentTime: "" },
+            ],
+          },
+        ],
+      },
+      chatInputText: "draft",
+      chatInputFocused: true,
+      chatError: "Адресат не найден",
+      chatContextMenu: { chatId: 2, communityTypeAcronym: "Duo", x: 120, y: 220 },
+    });
+
+    dispose = render(() => <GameUi state={chatState} />, root);
+
+    expect(root.querySelector(".chat-panel")).not.toBeNull();
+    expect(Array.from(root.querySelectorAll(".chat-tab")).map((tab) => tab.textContent)).toEqual(["SServer", "DPilot2"]);
+    expect(root.querySelector(".chat-tab.is-selected")?.textContent).toBe("DPilot2");
+    expect(Array.from(root.querySelectorAll(".chat-message__text")).map((message) => message.textContent)).toEqual(["old", "new"]);
+    expect(root.querySelector(".chat-input__text")?.textContent).toBe("draft");
+    expect(root.querySelector(".chat-error")?.textContent).toBe("Адресат не найден");
+    expect(root.querySelector(".chat-context-menu__item")?.textContent).toBe("Закрыть");
   });
 });

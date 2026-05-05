@@ -412,3 +412,36 @@ func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 		t.Fatal("repository Itemtypes.json does not contain Weapon")
 	}
 }
+
+// Проверяет, что отсутствующие файлы чат-таблиц дают пустые хранилища для первой серверной инициализации.
+func TestLoadServerDataCreatesEmptyChatTablesWhenFilesAreMissing(t *testing.T) {
+	workingDirectory := t.TempDir()
+	dataDirectory := filepath.Join(workingDirectory, "data")
+	if err := os.Mkdir(dataDirectory, 0o700); err != nil {
+		t.Fatalf("Mkdir returned error: %v", err)
+	}
+	for fileName, content := range map[string][]byte{
+		"Accounts.json":           []byte(`{"MaxID":0,"Items":{}}`),
+		"Characters.json":         []byte(`{"MaxID":0,"Items":{}}`),
+		"CosmicObjects.json":      []byte(`{"MaxID":0,"Items":{}}`),
+		"CosmicObjectTypes.json":  []byte(`{"MaxID":0,"Items":{}}`),
+		"CosmicObjectModels.json": []byte(`{"MaxID":0,"Items":{}}`),
+		"Itemtypes.json":          []byte(`{"MaxID":0,"Items":{}}`),
+	} {
+		if err := os.WriteFile(filepath.Join(dataDirectory, fileName), content, 0o600); err != nil {
+			t.Fatalf("WriteFile %s returned error: %v", fileName, err)
+		}
+	}
+
+	serverData, err := LoadServerData(workingDirectory)
+	if err != nil {
+		t.Fatalf("LoadServerData returned error: %v", err)
+	}
+
+	if serverData.Chats == nil || serverData.ChatMembers == nil || serverData.Messages == nil {
+		t.Fatal("chat runtime tables were not initialized")
+	}
+	if serverData.CommunityTypes == nil || serverData.CommunityChatRoles == nil || serverData.MessageTypes == nil {
+		t.Fatal("chat reference tables were not initialized")
+	}
+}
