@@ -59,7 +59,7 @@ export class GameUiRuntime {
     if (!target) {
       this.pressedControlId = null;
       this.focusedControlId = null;
-      return null;
+      return outsideAction(x, y);
     }
 
     this.pressedControlId = target.id;
@@ -140,3 +140,11 @@ const action = (type: GameUiAction["type"], control: GameUiControlState, x: numb
   result.controlRect = control.rect;
   return result;
 };
+
+const outsideAction = (x: number, y: number): GameUiAction => ({
+  type: "cancel",
+  controlId: "",
+  kind: "button",
+  x,
+  y,
+});

@@ -882,6 +882,9 @@ export class InputController {
 
   // Проверяет попадание игрового указателя в любую постоянную HUD-панель.
   private isCursorOverAnyHudPanel(): boolean {
+    if (this.uiRuntime.hitTest(this.cursorX, this.cursorY)) {
+      return true;
+    }
     for (const panel of document.querySelectorAll<HTMLElement>(".hud-panel")) {
       const rect = panel.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) {

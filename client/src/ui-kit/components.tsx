@@ -1,13 +1,13 @@
 import { For, Show, type JSX } from "solid-js";
 
-type Option = {
+export type UiKitOption = {
   // Значение, которое возвращает контрол при выборе.
   value: string;
   // Видимый текст пункта.
   label: string;
 };
 
-type TreeNode = Option & {
+type TreeNode = UiKitOption & {
   // Дочерние пункты дерева.
   children?: TreeNode[];
 };
@@ -36,20 +36,20 @@ type RadioGroupProps = {
   // Выбранное значение.
   value: string;
   // Доступные варианты.
-  options: Option[];
+  options: UiKitOption[];
 };
 
-type DropdownProps = {
+export type DropdownProps = {
   // Стабильный идентификатор выпадающего списка.
   id: string;
-  // Видимая подпись поля.
-  label: string;
+  // Видимая подпись поля. Если не задана, строка подписи не рисуется.
+  label?: string;
   // Показывает раскрытый список.
   open: boolean;
   // Выбранное значение.
   selectedValue: string;
   // Доступные варианты.
-  options: Option[];
+  options: UiKitOption[];
 };
 
 type ListBoxProps = {
@@ -58,7 +58,7 @@ type ListBoxProps = {
   // Выбранное значение.
   selectedValue: string;
   // Пункты списка.
-  items: Option[];
+  items: UiKitOption[];
 };
 
 type TreeViewProps = {
@@ -76,7 +76,7 @@ type VirtualListProps = {
   // Индекс первого видимого пункта в полном наборе.
   startIndex: number;
   // Видимые пункты окна.
-  items: Option[];
+  items: UiKitOption[];
 };
 
 type EditControlProps = {
@@ -104,7 +104,7 @@ type TabsProps = {
   // Выбранная вкладка.
   selectedValue: string;
   // Доступные вкладки.
-  tabs: Array<Option & {
+  tabs: Array<UiKitOption & {
     // Короткий маркер перед названием вкладки.
     marker?: JSX.Element;
     // Количественный индикатор в общем стиле UI Kit.
@@ -154,7 +154,7 @@ type ContextMenuProps = {
   // Стабильный идентификатор меню.
   id: string;
   // Пункты меню.
-  items: Option[];
+  items: UiKitOption[];
 };
 
 type ModalProps = {
@@ -196,12 +196,14 @@ export const RadioGroup = (props: RadioGroupProps) => (
 
 export const Dropdown = (props: DropdownProps) => (
   <div id={props.id} data-ui-kind="select" class={`ui-kit-control ui-kit-dropdown ${props.open ? "is-open" : ""}`}>
-    <div class="ui-kit-dropdown__label">{props.label}</div>
+    <Show when={(props.label ?? "").trim() !== ""}>
+      <div class="ui-kit-dropdown__label">{props.label}</div>
+    </Show>
     <div class="ui-kit-dropdown__value">{props.options.find((option) => option.value === props.selectedValue)?.label ?? ""}</div>
     <Show when={props.open}>
       <div class="ui-kit-dropdown__menu">
         <For each={props.options}>
-          {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
+          {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} data-ui-z-index="1000" class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
         </For>
       </div>
     </Show>

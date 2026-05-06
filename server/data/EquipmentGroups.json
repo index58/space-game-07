@@ -1,5 +1,5 @@
 {
-  "MaxID": 770,
+  "MaxID": 788,
   "Items": {
     "1": {
       "ID": 1,
@@ -155,72 +155,6 @@
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "747": {
-      "ID": 747,
-      "CosmicObjectID": 4,
-      "Title": "SimpleThruster",
-      "EquipmentItemModelID": 1,
-      "Count": 50,
-      "EnabledCount": 50,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "748": {
-      "ID": 748,
-      "CosmicObjectID": 4,
-      "Title": "SimpleTorquer",
-      "EquipmentItemModelID": 2,
-      "Count": 42,
-      "EnabledCount": 42,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "749": {
-      "ID": 749,
-      "CosmicObjectID": 4,
-      "Title": "LightCannon120mm",
-      "EquipmentItemModelID": 3,
-      "Count": 3,
-      "EnabledCount": 3,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "750": {
-      "ID": 750,
-      "CosmicObjectID": 4,
-      "Title": "CompactGenerator",
-      "EquipmentItemModelID": 4,
-      "Count": 18,
-      "EnabledCount": 18,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "751": {
-      "ID": 751,
-      "CosmicObjectID": 4,
-      "Title": "SmallMelitFuelTank",
-      "EquipmentItemModelID": 5,
-      "Count": 64,
-      "EnabledCount": 64,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "752": {
-      "ID": 752,
-      "CosmicObjectID": 4,
-      "Title": "SmallCargoContainer",
-      "EquipmentItemModelID": 6,
-      "Count": 6,
-      "EnabledCount": 6,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
     "765": {
       "ID": 765,
       "CosmicObjectID": 5,
@@ -279,6 +213,72 @@
     "770": {
       "ID": 770,
       "CosmicObjectID": 5,
+      "Title": "SmallCargoContainer",
+      "EquipmentItemModelID": 6,
+      "Count": 2,
+      "EnabledCount": 2,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "783": {
+      "ID": 783,
+      "CosmicObjectID": 4,
+      "Title": "SimpleThruster",
+      "EquipmentItemModelID": 1,
+      "Count": 23,
+      "EnabledCount": 23,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "784": {
+      "ID": 784,
+      "CosmicObjectID": 4,
+      "Title": "SimpleTorquer",
+      "EquipmentItemModelID": 2,
+      "Count": 6,
+      "EnabledCount": 6,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "785": {
+      "ID": 785,
+      "CosmicObjectID": 4,
+      "Title": "LightCannon120mm",
+      "EquipmentItemModelID": 3,
+      "Count": 1,
+      "EnabledCount": 1,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "786": {
+      "ID": 786,
+      "CosmicObjectID": 4,
+      "Title": "CompactGenerator",
+      "EquipmentItemModelID": 4,
+      "Count": 7,
+      "EnabledCount": 7,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "787": {
+      "ID": 787,
+      "CosmicObjectID": 4,
+      "Title": "SmallMelitFuelTank",
+      "EquipmentItemModelID": 5,
+      "Count": 25,
+      "EnabledCount": 25,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "788": {
+      "ID": 788,
+      "CosmicObjectID": 4,
       "Title": "SmallCargoContainer",
       "EquipmentItemModelID": 6,
       "Count": 2,

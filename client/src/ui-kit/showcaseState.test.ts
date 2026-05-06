@@ -13,6 +13,11 @@ const action = (controlId: string, kind: GameUiControlKind, value?: unknown): Ga
 });
 
 describe("ui kit showcase state", () => {
+  // Проверяет, что витрина открывается со свернутым выпадающим списком.
+  it("starts with closed dropdown", () => {
+    expect(createInitialUiKitDemoState().dropdownOpen).toBe(false);
+  });
+
   // Проверяет, что кнопки и переключатели изменяют состояние демонстрационной панели.
   it("applies button and toggle actions", () => {
     const first = createInitialUiKitDemoState();
@@ -34,6 +39,22 @@ describe("ui kit showcase state", () => {
     expect(afterDropdown.dropdownValue).toBe("one");
     expect(afterDropdown.dropdownOpen).toBe(false);
     expect(afterTabs.tabValue).toBe("one");
+  });
+
+  // Проверяет, что внешний клик закрывает раскрытый список без выбора нового пункта.
+  it("closes dropdown from outside click actions", () => {
+    const first = { ...createInitialUiKitDemoState(), dropdownOpen: true, dropdownValue: "two" };
+
+    const afterButton = applyUiKitDemoAction(first, action("ui-kit-demo-button", "button"));
+    const afterEmptyPanel = applyUiKitDemoAction(first, { ...action("", "button"), type: "cancel" });
+    const afterModalPanel = applyUiKitDemoAction(first, action("ui-kit-showcase-modal", "modal"));
+
+    expect(afterButton.dropdownOpen).toBe(false);
+    expect(afterButton.dropdownValue).toBe("two");
+    expect(afterEmptyPanel.dropdownOpen).toBe(false);
+    expect(afterEmptyPanel.dropdownValue).toBe("two");
+    expect(afterModalPanel.dropdownOpen).toBe(false);
+    expect(afterModalPanel.dropdownValue).toBe("two");
   });
 
   // Проверяет, что drag-подобные контролы дают видимое числовое изменение.

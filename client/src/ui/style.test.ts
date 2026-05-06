@@ -66,6 +66,25 @@ describe("HUD styles", () => {
     expect(label).toContain("color: rgba(216, 243, 255, 0.58);");
   });
 
+  // Проверяет, что раскрытый список UI Kit рисуется поверх панели и не участвует в её раскладке.
+  it("keeps ui kit dropdown menu out of panel flow", () => {
+    const dropdown = readCssBlock(".ui-kit-dropdown");
+    const dropdownMarker = readCssBlock(".ui-kit-dropdown::after");
+    const menu = readCssBlock(".ui-kit-dropdown__menu");
+
+    expect(dropdown).toContain("position: relative;");
+    expect(dropdown).toContain("padding-right: 2.1vh;");
+    expect(dropdownMarker).toContain("border-left: 0.35vh solid transparent;");
+    expect(dropdownMarker).toContain("border-right: 0.35vh solid transparent;");
+    expect(dropdownMarker).toContain("border-top: 0.45vh solid rgba(216, 243, 255, 0.82);");
+    expect(dropdownMarker).toContain("right: 0.75vh;");
+    expect(menu).toContain("position: absolute;");
+    expect(menu).toContain("top: calc(100% + 0.35vh);");
+    expect(menu).toContain("z-index: 2;");
+    expect(menu).toContain("background: rgb(5, 18, 28);");
+    expect(menu).toContain("border: 0.14vh solid rgba(130, 210, 255, 0.38);");
+  });
+
   it("uses smooth chat history movement and a dark solid game cursor", () => {
     const messageContent = readCssBlock(".chat-messages__content");
     const scrollbar = readCssBlock(".chat-scrollbar");

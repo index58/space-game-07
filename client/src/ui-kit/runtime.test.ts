@@ -78,4 +78,34 @@ describe("GameUiRuntime", () => {
     expect(runtime.pointerDown(10, 10, 0)).toBeNull();
     expect(runtime.pointerUp(10, 10, 0)).toEqual({ type: "click", controlId: "ok", kind: "button", x: 10, y: 10, controlRect: { left: 0, top: 0, width: 100, height: 40 } });
   });
+
+  // Проверяет, что клик мимо контролов отдаёт действие закрытия для раскрытых overlay-контролов.
+  it("emits cancel when pressing outside controls", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([control({ id: "ok" })]);
+
+    expect(runtime.pointerDown(150, 80, 0)).toEqual({ type: "cancel", controlId: "", kind: "button", x: 150, y: 80 });
+  });
+
+  // Проверяет, что пункт раскрытого списка получает клик выше корневого поля.
+  it("emits click for dropdown item above parent control", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([
+      control({ id: "select", kind: "select", rect: { left: 10, top: 10, width: 120, height: 40 }, zIndex: 1 }),
+      control({ id: "select-one", kind: "select", rect: { left: 10, top: 54, width: 120, height: 30 }, zIndex: 5, value: "one" }),
+    ]);
+
+    expect(runtime.pointerDown(20, 60, 0)).toBeNull();
+    expect(runtime.pointerUp(20, 60, 0)).toEqual({
+      type: "click",
+      controlId: "select-one",
+      kind: "select",
+      x: 20,
+      y: 60,
+      value: "one",
+      controlRect: { left: 10, top: 54, width: 120, height: 30 },
+    });
+  });
 });

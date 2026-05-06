@@ -516,6 +516,32 @@ describe("InputController", () => {
     expect(controller.consumeGameUiAction()).toMatchObject({ type: "click", controlId: "demo-button" });
   });
 
+  // Проверяет, что пункт выпадающего списка вне прямоугольника панели не считается кликом по космосу.
+  it("keeps UI kit showcase visible when clicking dropdown item outside panel bounds", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    addHudPanel({ left: 10, top: 10, right: 130, bottom: 50, width: 120, height: 40 });
+    controller.updateGameUiControls([{
+      id: "ui-kit-demo-select-one",
+      kind: "select",
+      rect: { left: 10, top: 54, width: 120, height: 30 },
+      zIndex: 5,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: "one",
+    }]);
+
+    pressKey("F9", "F9");
+    moveMouse(-492, -324);
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+
+    expect(controller.isUiKitShowcaseVisible()).toBe(true);
+    expect(controller.consumeGameUiAction()).toMatchObject({ type: "click", controlId: "ui-kit-demo-select-one", value: "one" });
+  });
+
   // Проверяет, что двойной клик игровым курсором по строке ввода выделяет слово.
   it("selects chat input word by game cursor double click", () => {
     const canvas = document.createElement("canvas");
