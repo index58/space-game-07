@@ -1,0 +1,180 @@
+{
+  "MaxID": 25,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "TitleRu": "Продольная тяга вперед",
+      "TitleEn": "Forward thrust",
+      "Acronym": "ThrustForward",
+      "Description": "Запрашивает движение управляемого корабля вперед по продольной оси."
+    },
+    "2": {
+      "ID": 2,
+      "TitleRu": "Продольная тяга назад",
+      "TitleEn": "Backward thrust",
+      "Acronym": "ThrustBackward",
+      "Description": "Запрашивает движение управляемого корабля назад по продольной оси."
+    },
+    "3": {
+      "ID": 3,
+      "TitleRu": "Поперечная тяга влево",
+      "TitleEn": "Left strafe thrust",
+      "Acronym": "ThrustLeft",
+      "Description": "Запрашивает движение управляемого корабля влево по поперечной оси."
+    },
+    "4": {
+      "ID": 4,
+      "TitleRu": "Поперечная тяга вправо",
+      "TitleEn": "Right strafe thrust",
+      "Acronym": "ThrustRight",
+      "Description": "Запрашивает движение управляемого корабля вправо по поперечной оси."
+    },
+    "5": {
+      "ID": 5,
+      "TitleRu": "Поворот по часовой стрелке",
+      "TitleEn": "Rotate clockwise",
+      "Acronym": "RotateClockwise",
+      "Description": "Увеличивает целевой угол поворота управляемого корабля."
+    },
+    "6": {
+      "ID": 6,
+      "TitleRu": "Поворот против часовой стрелки",
+      "TitleEn": "Rotate counterclockwise",
+      "Acronym": "RotateCounterclockwise",
+      "Description": "Уменьшает целевой угол поворота управляемого корабля."
+    },
+    "7": {
+      "ID": 7,
+      "TitleRu": "Контекстное колесо вверх",
+      "TitleEn": "Context wheel up",
+      "Acronym": "ContextWheelUp",
+      "Description": "При управлении кораблем приближает камеру, при фокусе чата прокручивает историю вверх."
+    },
+    "8": {
+      "ID": 8,
+      "TitleRu": "Контекстное колесо вниз",
+      "TitleEn": "Context wheel down",
+      "Acronym": "ContextWheelDown",
+      "Description": "При управлении кораблем отдаляет камеру, при фокусе чата прокручивает историю вниз."
+    },
+    "9": {
+      "ID": 9,
+      "TitleRu": "Предыдущий инструмент пилота",
+      "TitleEn": "Previous pilot tool",
+      "Acronym": "PreviousPilotTool",
+      "Description": "Сдвигает выбранную ячейку панели инструментов пилота к предыдущей."
+    },
+    "10": {
+      "ID": 10,
+      "TitleRu": "Следующий инструмент пилота",
+      "TitleEn": "Next pilot tool",
+      "Acronym": "NextPilotTool",
+      "Description": "Сдвигает выбранную ячейку панели инструментов пилота к следующей."
+    },
+    "11": {
+      "ID": 11,
+      "TitleRu": "Переключение якоря",
+      "TitleEn": "Toggle anchor",
+      "Acronym": "ToggleAnchor",
+      "Description": "Отправляет одноразовый запрос на переключение якоря управляемого корабля."
+    },
+    "12": {
+      "ID": 12,
+      "TitleRu": "Подтверждение строки чата",
+      "TitleEn": "Confirm chat input",
+      "Acronym": "ConfirmChatInput",
+      "Description": "Фокусирует строку чата, а при уже активной строке отправляет набранное сообщение или закрывает пустую строку."
+    },
+    "13": {
+      "ID": 13,
+      "TitleRu": "Отмена игрового ввода",
+      "TitleEn": "Cancel game input",
+      "Acronym": "CancelGameInput",
+      "Description": "Очищает активную строку ввода чата или возвращает браузерный указатель из игрового режима."
+    },
+    "14": {
+      "ID": 14,
+      "TitleRu": "Удаление символа слева",
+      "TitleEn": "Delete previous text character",
+      "Acronym": "DeletePreviousTextCharacter",
+      "Description": "Удаляет символ перед кареткой в строке чата."
+    },
+    "15": {
+      "ID": 15,
+      "TitleRu": "Удаление символа справа",
+      "TitleEn": "Delete next text character",
+      "Acronym": "DeleteNextTextCharacter",
+      "Description": "Удаляет символ после каретки в строке чата."
+    },
+    "16": {
+      "ID": 16,
+      "TitleRu": "Каретка чата влево",
+      "TitleEn": "Move chat caret left",
+      "Acronym": "MoveChatCaretLeft",
+      "Description": "Сдвигает каретку строки чата на один символ влево."
+    },
+    "17": {
+      "ID": 17,
+      "TitleRu": "Каретка чата вправо",
+      "TitleEn": "Move chat caret right",
+      "Acronym": "MoveChatCaretRight",
+      "Description": "Сдвигает каретку строки чата на один символ вправо."
+    },
+    "18": {
+      "ID": 18,
+      "TitleRu": "Каретка чата в начало",
+      "TitleEn": "Move chat caret to start",
+      "Acronym": "MoveChatCaretToStart",
+      "Description": "Переносит каретку строки чата в начало текста."
+    },
+    "19": {
+      "ID": 19,
+      "TitleRu": "Каретка чата в конец",
+      "TitleEn": "Move chat caret to end",
+      "Acronym": "MoveChatCaretToEnd",
+      "Description": "Переносит каретку строки чата в конец текста."
+    },
+    "20": {
+      "ID": 20,
+      "TitleRu": "Ввод печатного символа",
+      "TitleEn": "Type printable character",
+      "Acronym": "TypePrintableCharacter",
+      "Description": "Добавляет печатный символ в строку чата при активном фокусе ввода."
+    },
+    "21": {
+      "ID": 21,
+      "TitleRu": "Переключение отладки тел",
+      "TitleEn": "Toggle body polygon debug",
+      "Acronym": "ToggleBodyPolygonDebug",
+      "Description": "Включает или выключает отладочную отрисовку физических тел."
+    },
+    "22": {
+      "ID": 22,
+      "TitleRu": "Случайная смена корабля",
+      "TitleEn": "Random ship change",
+      "Acronym": "RandomShipChange",
+      "Description": "Отправляет одноразовый запрос на смену модели управляемого корабля."
+    },
+    "23": {
+      "ID": 23,
+      "TitleRu": "Переключение панели UI Kit",
+      "TitleEn": "Toggle UI Kit showcase",
+      "Acronym": "ToggleUiKitShowcase",
+      "Description": "Показывает или скрывает игровую отладочную панель компонентов UI Kit."
+    },
+    "24": {
+      "ID": 24,
+      "TitleRu": "Основное действие указателя",
+      "TitleEn": "Primary pointer action",
+      "Acronym": "PrimaryPointerAction",
+      "Description": "Запрашивает игровой режим, активирует HUD-контролы, выбирает вкладки чата, ставит каретку или начинает перетаскивание."
+    },
+    "25": {
+      "ID": 25,
+      "TitleRu": "Контекстное меню чата",
+      "TitleEn": "Chat context menu",
+      "Acronym": "ChatContextMenu",
+      "Description": "Открывает игровое контекстное меню вкладки чата."
+    }
+  }
+}

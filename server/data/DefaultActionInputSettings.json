@@ -1,0 +1,130 @@
+{
+  "MaxID": 25,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "ActionTypeID": 1,
+      "InputEventTypeID": 1
+    },
+    "2": {
+      "ID": 2,
+      "ActionTypeID": 2,
+      "InputEventTypeID": 2
+    },
+    "3": {
+      "ID": 3,
+      "ActionTypeID": 3,
+      "InputEventTypeID": 3
+    },
+    "4": {
+      "ID": 4,
+      "ActionTypeID": 4,
+      "InputEventTypeID": 4
+    },
+    "5": {
+      "ID": 5,
+      "ActionTypeID": 5,
+      "InputEventTypeID": 5
+    },
+    "6": {
+      "ID": 6,
+      "ActionTypeID": 6,
+      "InputEventTypeID": 6
+    },
+    "7": {
+      "ID": 7,
+      "ActionTypeID": 7,
+      "InputEventTypeID": 7
+    },
+    "8": {
+      "ID": 8,
+      "ActionTypeID": 8,
+      "InputEventTypeID": 8
+    },
+    "9": {
+      "ID": 9,
+      "ActionTypeID": 9,
+      "InputEventTypeID": 9
+    },
+    "10": {
+      "ID": 10,
+      "ActionTypeID": 10,
+      "InputEventTypeID": 10
+    },
+    "11": {
+      "ID": 11,
+      "ActionTypeID": 11,
+      "InputEventTypeID": 11
+    },
+    "12": {
+      "ID": 12,
+      "ActionTypeID": 12,
+      "InputEventTypeID": 12
+    },
+    "13": {
+      "ID": 13,
+      "ActionTypeID": 13,
+      "InputEventTypeID": 13
+    },
+    "14": {
+      "ID": 14,
+      "ActionTypeID": 14,
+      "InputEventTypeID": 14
+    },
+    "15": {
+      "ID": 15,
+      "ActionTypeID": 15,
+      "InputEventTypeID": 15
+    },
+    "16": {
+      "ID": 16,
+      "ActionTypeID": 16,
+      "InputEventTypeID": 16
+    },
+    "17": {
+      "ID": 17,
+      "ActionTypeID": 17,
+      "InputEventTypeID": 17
+    },
+    "18": {
+      "ID": 18,
+      "ActionTypeID": 18,
+      "InputEventTypeID": 18
+    },
+    "19": {
+      "ID": 19,
+      "ActionTypeID": 19,
+      "InputEventTypeID": 19
+    },
+    "20": {
+      "ID": 20,
+      "ActionTypeID": 20,
+      "InputEventTypeID": 20
+    },
+    "21": {
+      "ID": 21,
+      "ActionTypeID": 21,
+      "InputEventTypeID": 21
+    },
+    "22": {
+      "ID": 22,
+      "ActionTypeID": 22,
+      "InputEventTypeID": 22
+    },
+    "23": {
+      "ID": 23,
+      "ActionTypeID": 23,
+      "InputEventTypeID": 23
+    },
+    "24": {
+      "ID": 24,
+      "ActionTypeID": 24,
+      "InputEventTypeID": 24
+    },
+    "25": {
+      "ID": 25,
+      "ActionTypeID": 25,
+      "InputEventTypeID": 25
+    }
+  }
+}
