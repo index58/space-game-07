@@ -47,10 +47,23 @@ describe("HUD styles", () => {
     expect(readCssBlock(".hud-panel--left-bottom")).toContain("bottom: 1vh;");
     expect(readCssBlock(".hud-panel--left-middle")).toContain("left: 1vh;");
     expect(readCssBlock(".hud-panel--bottom-center")).toContain("bottom: 1vh;");
+    expect(readCssBlock(".hud-panel--right-middle")).toContain("right: 1vh;");
     expect(readCssBlock(".hud-panel--right-bottom")).toContain("right: 1vh;");
     expect(readCssBlock(".hud-panel--right-bottom")).toContain("bottom: 1vh;");
     expect(readCssBlock(".hud-panel--left-top")).toContain("left: 1vh;");
     expect(readCssBlock(".hud-panel--left-top")).toContain("top: 1vh;");
+  });
+
+  // Проверяет, что информационная панель наследует плотный HUD-стиль без отдельных отступов от края экрана.
+  it("styles information panel as compact HUD panel", () => {
+    const panel = readCssBlock(".information-panel");
+    const row = readCssBlock(".information-panel__row");
+    const label = readCssBlock(".information-panel__label");
+
+    expect(panel).toContain("width: 30vh;");
+    expect(panel).toContain("font: 1.05vh/1.25 Consolas, monospace;");
+    expect(row).toContain("grid-template-columns: 8.2vh minmax(0, 1fr);");
+    expect(label).toContain("color: rgba(216, 243, 255, 0.58);");
   });
 
   it("uses smooth chat history movement and a dark solid game cursor", () => {

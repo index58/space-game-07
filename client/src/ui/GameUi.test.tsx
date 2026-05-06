@@ -66,7 +66,8 @@ const referenceData = {
   CosmicObjectModel: {
     MaxID: 10,
     Items: {
-      "10": { ID: 10, CosmicObjectTypeID: 1 },
+      "10": { ID: 10, CosmicObjectTypeID: 1, TitleRu: "Корабль", TextureWidth: 40, TextureHeight: 40, TextureBodyOriginX: 20, TextureBodyOriginY: 20, TextureScale: 1, BodyWidth: 20, BodyLength: 20 },
+      "11": { ID: 11, CosmicObjectTypeID: 1, TitleRu: "Цель", TextureWidth: 40, TextureHeight: 40, TextureBodyOriginX: 20, TextureBodyOriginY: 20, TextureScale: 1, BodyWidth: 20, BodyLength: 20 },
     },
   },
   ItemModel: { MaxID: 0, Items: {} },
@@ -163,6 +164,26 @@ describe("GameUi", () => {
     expect(zone?.textContent).toBe("PVE");
     expect(Array.from(zone?.classList ?? [])).toContain("minimap-status__item");
     expect(Array.from(anchor?.classList ?? [])).toContain("minimap-status__item");
+  });
+
+  // Проверяет, что информационная панель появляется справа по объекту перед носом корабля.
+  it("renders information panel for object touched by forward probe", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const infoState = (): GameUiState => ({
+      ...state(),
+      objects: [
+        object({ ID: 1, CosmicObjectModelID: 10, X: 0, Y: 0, Rotation: 0 }),
+        object({ ID: 2, Title: "Target", CosmicObjectModelID: 11, X: 0, Y: 55 }),
+      ],
+    });
+
+    dispose = render(() => <GameUi state={infoState} />, root);
+
+    expect(root.querySelector(".information-panel")).not.toBeNull();
+    expect(Array.from(root.querySelector(".information-panel")?.classList ?? [])).toContain("hud-panel--right-middle");
+    expect(Array.from(root.querySelectorAll(".information-panel__label")).map((row) => row.textContent)).toEqual(["Название", "Модель"]);
+    expect(Array.from(root.querySelectorAll(".information-panel__value")).map((row) => row.textContent)).toEqual(["Target", "Цель"]);
   });
 
   it("renders chat panel with tabs, selected history and local input text", () => {

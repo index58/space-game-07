@@ -4,9 +4,10 @@ import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
 import { getMinimapView, type MinimapPointView } from "./minimap";
 import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
+import { getInformationPanelView, type InformationPanelRow } from "./informationPanel";
 import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, Tooltip, TreeView, VirtualList } from "../ui-kit/components";
 
-type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-bottom" | "left-top";
+type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-middle" | "right-bottom" | "left-top";
 
 type GameUiProps = {
   // Реактивное состояние всего игрового UI.
@@ -36,6 +37,7 @@ export const GameUi = (props: GameUiProps) => (
   <>
     <ObjectIndicatorsPanel selfObject={props.state().selfObject} />
     <ChatPanel state={props.state} />
+    <InformationPanel state={props.state} />
     <PilotToolbarPanel state={props.state} />
     <MinimapPanel state={props.state} />
     <DebugOverlay state={props.state} />
@@ -117,6 +119,16 @@ type MinimapPanelProps = {
   state: Accessor<GameUiState>;
 };
 
+type InformationPanelProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
+type InformationPanelRowProps = {
+  // Строка с подписью и значением для информационной панели.
+  row: InformationPanelRow;
+};
+
 type PilotToolbarPanelProps = {
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
@@ -159,6 +171,41 @@ const getPilotToolbarReadyState = (state: GameUiState): PilotToolbarReadyState |
     referenceData: state.referenceData,
   };
 };
+
+// Показывает краткую информацию об объекте, на который смотрит нос корабля.
+const InformationPanel = (props: InformationPanelProps) => {
+  const view = () => {
+    const state = props.state();
+    if (!state.selfObject || !state.referenceData) {
+      return null;
+    }
+    return getInformationPanelView({
+      selfObject: state.selfObject,
+      objects: state.objects,
+      referenceData: state.referenceData,
+    });
+  };
+
+  return (
+    <Show when={view()}>
+      {(panel) => (
+        <HudPanel position="right-middle" className="information-panel" ariaLabel="Информационная панель">
+          <For each={panel().rows}>
+            {(row) => <InformationPanelRow row={row} />}
+          </For>
+        </HudPanel>
+      )}
+    </Show>
+  );
+};
+
+// Рисует одну строку информационной панели.
+const InformationPanelRow = (props: InformationPanelRowProps) => (
+  <div class="information-panel__row">
+    <div class="information-panel__label">{props.row.label}</div>
+    <div class="information-panel__value">{props.row.value}</div>
+  </div>
+);
 
 // Показывает доступные вкладки, последние строки истории и локальную строку ввода.
 const ChatPanel = (props: ChatPanelProps) => {
