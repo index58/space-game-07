@@ -1,5 +1,5 @@
 {
-  "MaxID": 46,
+  "MaxID": 53,
   "Items": {
     "1": {
       "ID": 1,
@@ -414,6 +414,69 @@
       "Text": "Всем привет. Я новенький. Что за сервер? Что за игра? Как она вам? Стоит ли играть? У меня много вопросов)))",
       "Color": "D8F3FF",
       "SentTime": "2026-05-06T03:23:59.3053549+03:00"
+    },
+    "47": {
+      "ID": 47,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Всем привет. Я новеньыв.жмслфцуадцултцдултыяювдмтукюлмоятмд.явылкмтвя.дкплмв.дкмлвктдмлимабюьтпвдкмдвлкмдмлкдлмк",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T03:39:12.8408882+03:00"
+    },
+    "48": {
+      "ID": 48,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Ghbdtn",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T04:22:36.3035575+03:00"
+    },
+    "49": {
+      "ID": 49,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "вамлуькмуждлкмькв",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T04:46:39.2273807+03:00"
+    },
+    "50": {
+      "ID": 50,
+      "ChatID": 2,
+      "SenderCharacterID": 3,
+      "MessageTypeID": 1,
+      "Text": "вапмкиувикв",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T04:55:04.3539644+03:00"
+    },
+    "51": {
+      "ID": 51,
+      "ChatID": 2,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Это ты?",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T05:07:30.2938664+03:00"
+    },
+    "52": {
+      "ID": 52,
+      "ChatID": 2,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "А?",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T05:07:34.917361+03:00"
+    },
+    "53": {
+      "ID": 53,
+      "ChatID": 2,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Алло",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T05:07:43.6027291+03:00"
     }
   }
 }

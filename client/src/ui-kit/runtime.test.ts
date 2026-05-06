@@ -1,0 +1,81 @@
+import { describe, expect, it } from "vitest";
+import { GameUiRuntime } from "./runtime";
+import type { GameUiControlState } from "./types";
+
+const control = (partial: Partial<GameUiControlState> = {}): GameUiControlState => ({
+  // Создаёт минимальный видимый контрол для проверки маршрутизации игрового UI.
+  id: "control",
+  kind: "button",
+  rect: { left: 0, top: 0, width: 100, height: 40 },
+  zIndex: 0,
+  disabled: false,
+  visible: true,
+  focusable: true,
+  value: null,
+  ...partial,
+});
+
+describe("GameUiRuntime", () => {
+  // Проверяет, что попадание выбирает верхний видимый контрол, а не первый зарегистрированный.
+  it("hits the top visible control by z index", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([
+      control({ id: "bottom", zIndex: 1 }),
+      control({ id: "top", zIndex: 5 }),
+    ]);
+
+    expect(runtime.hitTest(10, 10)?.id).toBe("top");
+  });
+
+  // Проверяет, что недоступные и скрытые элементы не получают наведение и клики.
+  it("ignores disabled and hidden controls during hit test", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([
+      control({ id: "disabled", zIndex: 5, disabled: true }),
+      control({ id: "hidden", zIndex: 4, visible: false }),
+      control({ id: "active", zIndex: 1 }),
+    ]);
+
+    expect(runtime.hitTest(10, 10)?.id).toBe("active");
+  });
+
+  // Проверяет, что модальное окно перекрывает элементы за пределами своего слоя.
+  it("lets modal controls block lower controls outside modal bounds", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([
+      control({ id: "behind", zIndex: 1, rect: { left: 0, top: 0, width: 200, height: 200 } }),
+      control({ id: "modal", kind: "modal", zIndex: 10, rect: { left: 40, top: 40, width: 80, height: 80 }, focusable: false }),
+    ]);
+
+    expect(runtime.hitTest(10, 10)).toBeNull();
+    expect(runtime.hitTest(50, 50)?.id).toBe("modal");
+  });
+
+  // Проверяет, что перетаскивание остаётся у исходного контрола до отпускания кнопки.
+  it("keeps drag capture until mouse up", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([
+      control({ id: "drag", kind: "slider", rect: { left: 0, top: 0, width: 100, height: 20 } }),
+    ]);
+
+    const rect = { left: 0, top: 0, width: 100, height: 20 };
+
+    expect(runtime.pointerDown(10, 10, 0)).toEqual({ type: "dragStart", controlId: "drag", kind: "slider", x: 10, y: 10, controlRect: rect });
+    expect(runtime.pointerMove(300, 300)).toEqual({ type: "dragMove", controlId: "drag", kind: "slider", x: 300, y: 300, controlRect: rect });
+    expect(runtime.pointerUp(300, 300, 0)).toEqual({ type: "dragEnd", controlId: "drag", kind: "slider", x: 300, y: 300, controlRect: rect });
+  });
+
+  // Проверяет, что обычная кнопка создаёт действие клика только при отпускании над тем же элементом.
+  it("emits click for button press and release on same control", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([control({ id: "ok" })]);
+
+    expect(runtime.pointerDown(10, 10, 0)).toBeNull();
+    expect(runtime.pointerUp(10, 10, 0)).toEqual({ type: "click", controlId: "ok", kind: "button", x: 10, y: 10, controlRect: { left: 0, top: 0, width: 100, height: 40 } });
+  });
+});

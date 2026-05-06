@@ -1,9 +1,10 @@
-import { For, Match, Show, Switch, type Accessor, type JSX } from "solid-js";
+import { createEffect, createSignal, For, Match, onCleanup, onMount, Show, Switch, type Accessor, type JSX } from "solid-js";
 import type { GameUiState } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
 import { getMinimapView, type MinimapPointView } from "./minimap";
 import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
+import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, Tooltip, TreeView, VirtualList } from "../ui-kit/components";
 
 type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-bottom" | "left-top";
 
@@ -38,6 +39,7 @@ export const GameUi = (props: GameUiProps) => (
     <PilotToolbarPanel state={props.state} />
     <MinimapPanel state={props.state} />
     <DebugOverlay state={props.state} />
+    <UiKitShowcase state={props.state} />
     <GameCursor state={props.state} />
   </>
 );
@@ -130,6 +132,11 @@ type GameCursorProps = {
   state: Accessor<GameUiState>;
 };
 
+type UiKitShowcaseProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
 type PilotToolSlotProps = {
   // Данные одной ячейки панели инструментов пилота.
   slot: PilotToolSlotView;
@@ -156,8 +163,61 @@ const getPilotToolbarReadyState = (state: GameUiState): PilotToolbarReadyState |
 // Показывает доступные вкладки, последние строки истории и локальную строку ввода.
 const ChatPanel = (props: ChatPanelProps) => {
   const selectedTab = () => props.state().chatState?.tabs.find((tab) => tab.chatId === props.state().chatState?.selectedChatId) ?? null;
-  const chatCaretLeft = () => `calc(0.8vh + ${props.state().chatCursorIndex}ch)`;
   const chatErrorAnimationName = () => props.state().chatErrorSeq % 2 === 0 ? "chat-error-fade-even" : "chat-error-fade-odd";
+  const chatSelectionStart = () => Math.min(props.state().chatSelectionStart, props.state().chatSelectionEnd);
+  const chatSelectionEnd = () => Math.max(props.state().chatSelectionStart, props.state().chatSelectionEnd);
+  const chatTabs = () => (props.state().chatState?.tabs ?? []).map((chatTab) => ({
+    value: String(chatTab.chatId),
+    label: chatTab.title,
+    marker: chatTab.communityTypeAcronym === "Server" ? "S" : "D",
+    badge: (chatTab.unreadCount ?? 0) > 0 ? chatTab.unreadCount : undefined,
+  }));
+  let chatInputViewport: HTMLDivElement | undefined;
+  let chatInputTextMeasure: HTMLSpanElement | undefined;
+  let chatInputCaretMeasure: HTMLSpanElement | undefined;
+  const [chatInputMetrics, setChatInputMetrics] = createSignal({ textOffsetPx: 0, caretLeftPx: 0 });
+
+  // Рассчитывает горизонтальный сдвиг так, чтобы каретка оставалась внутри видимой части строки.
+  const updateChatInputMetrics = () => {
+    const viewportWidth = chatInputViewport?.getBoundingClientRect().width ?? 0;
+    const textWidth = chatInputTextMeasure?.getBoundingClientRect().width ?? 0;
+    const caretWidth = chatInputCaretMeasure?.getBoundingClientRect().width ?? 0;
+    if (viewportWidth <= 0) {
+      setChatInputMetrics({ textOffsetPx: 0, caretLeftPx: caretWidth });
+      return;
+    }
+
+    const edgePaddingPx = Math.min(12, viewportWidth * 0.08);
+    const maxOffsetPx = Math.max(0, Math.max(textWidth, caretWidth) - viewportWidth + edgePaddingPx);
+    const previousOffsetPx = chatInputMetrics().textOffsetPx;
+    let nextOffsetPx = previousOffsetPx;
+    if (caretWidth - nextOffsetPx > viewportWidth - edgePaddingPx) {
+      nextOffsetPx = caretWidth - viewportWidth + edgePaddingPx;
+    }
+    if (caretWidth - nextOffsetPx < edgePaddingPx) {
+      nextOffsetPx = caretWidth - edgePaddingPx;
+    }
+
+    const textOffsetPx = Math.max(0, Math.min(maxOffsetPx, nextOffsetPx));
+    setChatInputMetrics({
+      textOffsetPx,
+      caretLeftPx: Math.max(0, Math.min(viewportWidth, caretWidth - textOffsetPx)),
+    });
+  };
+
+  createEffect(() => {
+    props.state().chatInputText;
+    props.state().chatCursorIndex;
+    queueMicrotask(updateChatInputMetrics);
+  });
+
+  onMount(() => {
+    window.addEventListener("resize", updateChatInputMetrics);
+  });
+
+  onCleanup(() => {
+    window.removeEventListener("resize", updateChatInputMetrics);
+  });
 
   return (
     <Show when={props.state().chatState && selectedTab()}>
@@ -178,43 +238,51 @@ const ChatPanel = (props: ChatPanelProps) => {
               </For>
             </div>
             <Show when={props.state().chatScroll.visible}>
-              <div class={`chat-scrollbar ${props.state().chatScroll.dragging ? "is-dragging" : ""}`}>
-                <div
-                  class="chat-scrollbar__thumb"
-                  style={{
-                    top: `${props.state().chatScroll.thumbTopPercent}%`,
-                    height: `${props.state().chatScroll.thumbHeightPercent}%`,
-                  }}
-                />
-              </div>
+              <Scrollbar
+                id="chat-history-scrollbar"
+                className="chat-scrollbar"
+                thumbTopPercent={props.state().chatScroll.thumbTopPercent}
+                thumbHeightPercent={props.state().chatScroll.thumbHeightPercent}
+                dragging={props.state().chatScroll.dragging}
+              />
             </Show>
           </div>
-          <div class="chat-tabs">
-            <For each={props.state().chatState?.tabs ?? []}>
-              {(chatTab) => (
-                <div class={`chat-tab ${chatTab.chatId === tab().chatId ? "is-selected" : ""}`}>
-                  <span class="chat-tab__marker">{chatTab.communityTypeAcronym === "Server" ? "S" : "D"}</span>
-                  <span class="chat-tab__title">{chatTab.title}</span>
-                  <Show when={(chatTab.unreadCount ?? 0) > 0}>
-                    <span class="chat-tab__unread">{chatTab.unreadCount}</span>
-                  </Show>
-                </div>
-              )}
-            </For>
-          </div>
+          <Tabs
+            id="chat-tabs"
+            itemIdPrefix="chat-tab"
+            className="chat-tabs"
+            itemClassName="chat-tab"
+            selectedValue={String(tab().chatId)}
+            tabs={chatTabs()}
+          />
           <Show when={props.state().chatError}>
             {(error) => <div class="chat-error" style={{ "animation-name": chatErrorAnimationName() }}>{error()}</div>}
           </Show>
-          <div class={`chat-input ${props.state().chatInputFocused ? "is-focused" : ""}`}>
-            <span class="chat-input__text">{props.state().chatInputText}</span>
-            <Show when={props.state().chatInputFocused}>
-              <span class="chat-input__caret" style={{ left: chatCaretLeft() }} />
-            </Show>
+          <div id="chat-input" data-ui-kind="edit" class={`ui-kit-control ui-kit-edit chat-input ${props.state().chatInputFocused ? "is-focused" : ""}`}>
+            <div class="chat-input__viewport" ref={chatInputViewport}>
+              <span
+                class="chat-input__text"
+                style={{ transform: `translateX(${-chatInputMetrics().textOffsetPx}px)` }}
+              >
+                <span>{props.state().chatInputText.slice(0, chatSelectionStart())}</span>
+                <Show when={chatSelectionEnd() > chatSelectionStart()}>
+                  <span class="chat-input__selection">{props.state().chatInputText.slice(chatSelectionStart(), chatSelectionEnd())}</span>
+                </Show>
+                <span>{props.state().chatInputText.slice(chatSelectionEnd())}</span>
+              </span>
+              <span class="chat-input__measure" ref={chatInputTextMeasure} aria-hidden="true">{props.state().chatInputText}</span>
+              <span class="chat-input__measure" ref={chatInputCaretMeasure} aria-hidden="true">{props.state().chatInputText.slice(0, props.state().chatCursorIndex)}</span>
+              <Show when={props.state().chatInputFocused}>
+                <span class="chat-input__caret" style={{ left: `${chatInputMetrics().caretLeftPx}px` }} />
+              </Show>
+            </div>
           </div>
           <Show when={props.state().chatContextMenu}>
             {(menu) => (
               <div
-                class="chat-context-menu"
+                id="chat-context-menu"
+                data-ui-kind="menu"
+                class="ui-kit-control chat-context-menu"
                 style={{ left: `${menu().x}px`, top: `${menu().y}px` }}
               >
                 <div class={`chat-context-menu__item ${menu().communityTypeAcronym === "Duo" ? "" : "is-disabled"}`}>Закрыть</div>
@@ -231,6 +299,38 @@ const ChatPanel = (props: ChatPanelProps) => {
 const GameCursor = (props: GameCursorProps) => (
   <Show when={props.state().gameCursor.visible}>
     <div class="game-cursor" style={{ left: `${props.state().gameCursor.x}px`, top: `${props.state().gameCursor.y}px` }} />
+  </Show>
+);
+
+// Показывает отладочную витрину всех базовых контролов UI Kit.
+const UiKitShowcase = (props: UiKitShowcaseProps) => (
+  <Show when={props.state().uiKitShowcaseVisible}>
+    <HudPanel position="left-top" className="ui-kit-showcase" ariaLabel="UI Kit">
+      <Modal id="ui-kit-showcase-modal" title="UI Kit">
+        <div class="ui-kit-showcase__grid">
+          <Button id="ui-kit-demo-button" label={`Button ${props.state().uiKitDemoState.buttonClicks}`} state="hovered" />
+          <Button id="ui-kit-demo-icon-button" label="*" state="focused" />
+          <Checkbox id="ui-kit-demo-checkbox" label="Checkbox" checked={props.state().uiKitDemoState.checkboxChecked} />
+          <RadioGroup id="ui-kit-demo-radio" value={props.state().uiKitDemoState.radioValue} options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+          <Dropdown id="ui-kit-demo-select" label="Select" selectedValue={props.state().uiKitDemoState.dropdownValue} open={props.state().uiKitDemoState.dropdownOpen} options={[{ value: "one", label: "One" }, { value: "two", label: "Two" }]} />
+          <ListBox id="ui-kit-demo-list" selectedValue={props.state().uiKitDemoState.listValue} items={[{ value: "1", label: "One" }, { value: "2", label: "Two" }]} />
+          <TreeView id="ui-kit-demo-tree" selectedValue={props.state().uiKitDemoState.treeValue} nodes={[{ value: "root", label: "Root", children: [{ value: "child", label: "Child" }] }]} />
+          <VirtualList id="ui-kit-demo-virtual-list" startIndex={props.state().uiKitDemoState.virtualStartIndex} items={[{ value: "20", label: "Item 20" }, { value: "21", label: "Item 21" }]} />
+          <Tabs id="ui-kit-demo-tabs" selectedValue={props.state().uiKitDemoState.tabValue} tabs={[{ value: "one", label: "One" }, { value: "two", label: "Two", badge: 3 }]} />
+          <EditControl id="ui-kit-demo-edit" text={props.state().uiKitDemoState.editText} selectionStart={props.state().uiKitDemoState.editSelectionStart} selectionEnd={props.state().uiKitDemoState.editSelectionEnd} focused={true} />
+          <Scrollbar id="ui-kit-demo-scrollbar" thumbTopPercent={props.state().uiKitDemoState.scrollbarTopPercent} thumbHeightPercent={45} dragging={props.state().uiKitDemoState.scrollbarDrag !== null} />
+          <Slider id="ui-kit-demo-slider" value={props.state().uiKitDemoState.sliderValue} min={0} max={100} />
+          <NumericStepper id="ui-kit-demo-stepper" value={props.state().uiKitDemoState.stepperValue} />
+          <Splitter id="ui-kit-demo-splitter" vertical={props.state().uiKitDemoState.splitterVertical} />
+          <Show when={props.state().uiKitDemoState.menuOpen}>
+            <ContextMenu id="ui-kit-demo-menu" items={[{ value: "close", label: "Close" }]} />
+          </Show>
+          <Show when={props.state().uiKitDemoState.tooltipVisible}>
+            <Tooltip id="ui-kit-demo-tooltip" text="Tooltip" />
+          </Show>
+        </div>
+      </Modal>
+    </HudPanel>
   </Show>
 );
 

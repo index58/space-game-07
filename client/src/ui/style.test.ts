@@ -33,6 +33,7 @@ describe("HUD styles", () => {
     const anchorIcon = readCssBlock(".minimap-status__anchor-icon");
 
     expect(panel).toContain("--hud-icon-muted: rgba(216, 243, 255, 0.64);");
+    expect(panel).toContain("--hud-tab-height: 2.45vh;");
     expect(indicatorIcon).toContain("color: var(--hud-icon-muted);");
     expect(statusItem).toContain("color: var(--hud-icon-muted);");
     expect(indicatorSvg).toContain("width: 2.35vh;");
@@ -55,12 +56,15 @@ describe("HUD styles", () => {
   it("uses smooth chat history movement and a dark solid game cursor", () => {
     const messageContent = readCssBlock(".chat-messages__content");
     const scrollbar = readCssBlock(".chat-scrollbar");
-    const scrollbarThumb = readCssBlock(".chat-scrollbar__thumb");
-    const draggingScrollbarThumb = readCssBlock(".chat-scrollbar.is-dragging .chat-scrollbar__thumb");
+    const chatScrollbarInstance = readCssBlock(".ui-kit-scrollbar.chat-scrollbar");
+    const scrollbarThumb = readCssBlock(".ui-kit-scrollbar__thumb");
+    const draggingScrollbarThumb = readCssBlock(".ui-kit-scrollbar.is-dragging .ui-kit-scrollbar__thumb");
     const message = readCssBlock(".chat-message");
     const tabs = readCssBlock(".chat-tabs");
     const tab = readCssBlock(".chat-tab");
-    const unread = readCssBlock(".chat-tab__unread");
+    const uiKitTabs = readCssBlock(".ui-kit-tabs");
+    const uiKitTab = readCssBlock(".ui-kit-tab");
+    const uiKitBadge = readCssBlock(".ui-kit-tab__badge");
     const error = readCssBlock(".chat-error");
     const input = readCssBlock(".chat-input");
     const inputText = readCssBlock(".chat-input__text");
@@ -71,12 +75,22 @@ describe("HUD styles", () => {
     expect(messageContent).toContain("transition: transform 120ms ease-out;");
     expect(scrollbar).toContain("right: 0.25vh;");
     expect(scrollbar).toContain("width: 1.1vh;");
+    expect(chatScrollbarInstance).toContain("position: absolute;");
+    expect(chatScrollbarInstance).toContain("right: 0.25vh;");
+    expect(chatScrollbarInstance).toContain("min-height: 0;");
     expect(scrollbarThumb).toContain("transition: top 120ms ease-out, height 120ms ease-out;");
     expect(draggingScrollbarThumb).toContain("transition: none;");
+    expect(css).not.toContain(".chat-scrollbar__thumb");
     expect(message).toContain("font: 1.05vh/1.2 Consolas, monospace;");
-    expect(tabs).toContain("overflow: visible;");
+    expect(tabs).toContain("margin-top: 0.8vh;");
     expect(tab).toContain("flex: 0 0 14vh;");
-    expect(unread).toContain("top: 0.18vh;");
+    expect(uiKitTabs).toContain("height: var(--hud-tab-height);");
+    expect(uiKitTabs).toContain("overflow: visible;");
+    expect(uiKitTab).toContain("height: var(--hud-tab-height);");
+    expect(uiKitTab).toContain("max-height: var(--hud-tab-height);");
+    expect(readCssBlock(".ui-kit-tab__marker")).toContain("max-height: 1.6vh;");
+    expect(uiKitBadge).toContain("top: 0.18vh;");
+    expect(css).not.toContain(".chat-tab__unread");
     expect(error).toContain("position: absolute;");
     expect(error).toContain("animation-duration: 4.8s;");
     expect(css).toContain("@keyframes chat-error-fade-odd");

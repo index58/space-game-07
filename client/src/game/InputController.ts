@@ -1,5 +1,9 @@
 ﻿import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
 import type { ChatSendMessage, ChatStateMessage, ClientInputState } from "../network/protocol";
+import { GameUiRuntime } from "../ui-kit/runtime";
+import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
+import { TextEditController } from "../ui-kit/textEdit";
+import type { GameUiAction, GameUiControlState } from "../ui-kit/types";
 import { isFreshKeyDown, toShipInput } from "./inputState";
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
@@ -47,6 +51,7 @@ const chatPanelWidthVh = 48;
 const chatPanelHalfHeightVh = 17;
 const chatPanelPaddingVh = 1;
 const chatTabsGapBottomVh = 0.8;
+const chatTabHeightVh = 2.45;
 const chatMessagesHeightVh = 24;
 const chatMessagesBorderVh = 0.14;
 const chatScrollbarWidthVh = 1.1;
@@ -100,8 +105,8 @@ export class InputController {
   private chatScrollOffsetPx = 0;
   // Показывает, что левая кнопка двигает ползунок истории.
   private chatScrollbarDragActive = false;
-  // Вертикальное расстояние от указателя до верха ползунка при начале перетаскивания.
-  private chatScrollbarDragOffsetPx = 0;
+  // Состояние захвата ползунка истории.
+  private chatScrollbarDrag: ScrollbarDragState | null = null;
   // Последний рассчитанный вид полосы прокрутки.
   private chatScrollState: ChatScrollState = { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false };
   // Полный размер истории выбранной вкладки для расчета высоты прокрутки.
@@ -110,6 +115,18 @@ export class InputController {
   private scrolledChatId = 0;
   // Последнее сообщение выбранной вкладки для определения пополнения истории.
   private selectedChatLastMessageId = 0;
+  // Общий runtime интерактивных игровых контролов HUD.
+  private readonly uiRuntime = new GameUiRuntime();
+  // Очередь действий общего игрового UI.
+  private uiActions: GameUiAction[] = [];
+  // Показывает отладочное окно с примерами всех контролов.
+  private uiKitShowcaseVisible = false;
+  // Нативный движок редактирования строки чата.
+  private readonly chatEdit = new TextEditController({ id: "chat-input", mode: "singleLine" });
+  // Показывает, что игровой курсор сейчас выделяет текст чата мышью.
+  private chatEditDragActive = false;
+  // Позиция начала выделения текстового поля игровым курсором.
+  private chatEditDragAnchorIndex = 0;
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -122,7 +139,14 @@ export class InputController {
       if (!this.isPointerLocked()) {
         this.chatInputFocused = false;
         this.chatContextMenu = null;
+        this.chatEdit.blur();
         this.keys[event.code] = true;
+        return;
+      }
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "F9")) {
+        this.uiKitShowcaseVisible = !this.uiKitShowcaseVisible;
+        this.keys[event.code] = true;
+        event.preventDefault();
         return;
       }
       if (this.handleChatKeyDown(event)) {
@@ -157,6 +181,10 @@ export class InputController {
         }
         this.cursorX = clamp(this.cursorX + event.movementX, 0, Math.max(0, window.innerWidth - 1));
         this.cursorY = clamp(this.cursorY + event.movementY, 0, Math.max(0, window.innerHeight - 1));
+        this.enqueueUiAction(this.uiRuntime.pointerMove(this.cursorX, this.cursorY));
+        if (this.chatEditDragActive) {
+          this.updateChatEditSelectionFromCursor();
+        }
         if (this.chatScrollbarDragActive) {
           this.updateChatScrollFromCursor();
         }
@@ -202,6 +230,11 @@ export class InputController {
         this.chatContextMenu = null;
         return;
       }
+      this.enqueueUiAction(this.uiRuntime.pointerDown(this.cursorX, this.cursorY, event.button));
+      if (this.startChatEditPointerSelection(event.detail)) {
+        event.preventDefault();
+        return;
+      }
       if (this.closeChatContextMenuItem(this.cursorX, this.cursorY) || this.closeChatContextMenuItem(event.clientX, event.clientY)) {
         event.preventDefault();
         return;
@@ -223,8 +256,10 @@ export class InputController {
 
     window.addEventListener("mouseup", (event) => {
       if (event.button === 0) {
+        this.enqueueUiAction(this.uiRuntime.pointerUp(this.cursorX, this.cursorY, event.button));
+        this.chatEditDragActive = false;
         this.chatScrollbarDragActive = false;
-        this.chatScrollbarDragOffsetPx = 0;
+        this.chatScrollbarDrag = null;
       }
     });
 
@@ -241,6 +276,10 @@ export class InputController {
 
       void this.canvas.requestPointerLock();
     });
+
+    this.chatEdit.element().addEventListener("input", () => this.syncChatInputFromNativeEdit());
+    this.chatEdit.element().addEventListener("select", () => this.syncChatInputFromNativeEdit());
+    this.chatEdit.element().addEventListener("keyup", () => this.syncChatInputFromNativeEdit());
   }
 
   // Возвращает пользовательский уровень зума без пересчета в пиксели.
@@ -292,6 +331,16 @@ export class InputController {
     return this.chatCursorIndex;
   }
 
+  // Возвращает начало выделения в строке чата.
+  getChatSelectionStart(): number {
+    return this.chatEdit.snapshot().selectionStart;
+  }
+
+  // Возвращает конец выделения в строке чата.
+  getChatSelectionEnd(): number {
+    return this.chatEdit.snapshot().selectionEnd;
+  }
+
   // Возвращает состояние фокуса, чтобы HUD мог показать каретку.
   isChatInputFocused(): boolean {
     return this.chatInputFocused;
@@ -324,6 +373,21 @@ export class InputController {
   // Возвращает состояние полосы истории выбранной вкладки.
   getChatScrollState(): ChatScrollState {
     return this.chatScrollState;
+  }
+
+  // Обновляет registry общего UI runtime из актуально отрисованных HUD-контролов.
+  updateGameUiControls(controls: GameUiControlState[]): void {
+    this.uiRuntime.updateControls(controls);
+  }
+
+  // Возвращает очередное действие общего UI, если оно было создано игровым курсором.
+  consumeGameUiAction(): GameUiAction | null {
+    return this.uiActions.shift() ?? null;
+  }
+
+  // Возвращает видимость отладочной панели UI Kit.
+  isUiKitShowcaseVisible(): boolean {
+    return this.uiKitShowcaseVisible;
   }
 
   // Закрывает локальную вкладку дуэта без изменения серверных данных.
@@ -366,9 +430,11 @@ export class InputController {
     const isPointerLocked = this.isPointerLocked();
     if (!isPointerLocked) {
       this.chatInputFocused = false;
+      this.chatEdit.blur();
       this.chatContextMenu = null;
       this.chatScrollbarDragActive = false;
-      this.chatScrollbarDragOffsetPx = 0;
+      this.chatEditDragActive = false;
+      this.chatScrollbarDrag = null;
     }
     const canControlShip = isPointerLocked && !this.isGameCursorVisible();
     const input = toShipInput(canControlShip, this.keys, this.mouseDeltaX);
@@ -385,6 +451,7 @@ export class InputController {
     if (isFreshKeyDown(event.code, wasPressed, "Enter")) {
       if (!this.chatInputFocused) {
         this.chatInputFocused = true;
+        this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
         this.keys[event.code] = true;
         event.preventDefault();
         return true;
@@ -400,10 +467,21 @@ export class InputController {
       return false;
     }
 
+    if (event.target === this.chatEdit.element()) {
+      if (event.code === "Escape") {
+        this.clearChatInput();
+        event.preventDefault();
+        return true;
+      }
+      window.setTimeout(() => this.syncChatInputFromNativeEdit(), 0);
+      return true;
+    }
+
     if (event.code === "Backspace") {
       if (this.chatCursorIndex > 0) {
         this.chatInputText = `${this.chatInputText.slice(0, this.chatCursorIndex - 1)}${this.chatInputText.slice(this.chatCursorIndex)}`;
         this.chatCursorIndex -= 1;
+        this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
       }
       event.preventDefault();
       return true;
@@ -412,6 +490,7 @@ export class InputController {
     if (event.code === "Delete") {
       if (this.chatCursorIndex < this.chatInputText.length) {
         this.chatInputText = `${this.chatInputText.slice(0, this.chatCursorIndex)}${this.chatInputText.slice(this.chatCursorIndex + 1)}`;
+        this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
       }
       event.preventDefault();
       return true;
@@ -419,24 +498,28 @@ export class InputController {
 
     if (event.code === "ArrowLeft") {
       this.chatCursorIndex = Math.max(0, this.chatCursorIndex - 1);
+      this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
       event.preventDefault();
       return true;
     }
 
     if (event.code === "ArrowRight") {
       this.chatCursorIndex = Math.min(this.chatInputText.length, this.chatCursorIndex + 1);
+      this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
       event.preventDefault();
       return true;
     }
 
     if (event.code === "Home") {
       this.chatCursorIndex = 0;
+      this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
       event.preventDefault();
       return true;
     }
 
     if (event.code === "End") {
       this.chatCursorIndex = this.chatInputText.length;
+      this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
       event.preventDefault();
       return true;
     }
@@ -444,6 +527,7 @@ export class InputController {
     if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
       this.chatInputText = `${this.chatInputText.slice(0, this.chatCursorIndex)}${event.key}${this.chatInputText.slice(this.chatCursorIndex)}`;
       this.chatCursorIndex += event.key.length;
+      this.chatEdit.focus(this.chatInputText, this.chatCursorIndex, this.chatCursorIndex);
       event.preventDefault();
       return true;
     }
@@ -458,6 +542,7 @@ export class InputController {
       this.chatInputText = "";
       this.chatCursorIndex = 0;
       this.chatInputFocused = false;
+      this.chatEdit.blur();
       return;
     }
 
@@ -477,6 +562,7 @@ export class InputController {
     this.chatInputText = "";
     this.chatCursorIndex = 0;
     this.chatInputFocused = false;
+    this.chatEdit.blur();
   }
 
   // Проверяет, что системный указатель передан игровому canvas.
@@ -486,7 +572,22 @@ export class InputController {
 
   // Показывает, что игровой указатель нужен для текущего UI-взаимодействия.
   private isGameCursorVisible(): boolean {
-    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null);
+    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible);
+  }
+
+  // Сохраняет действие общего runtime до обработки сценой.
+  private enqueueUiAction(action: GameUiAction | null): void {
+    if (action) {
+      this.uiActions.push(action);
+    }
+  }
+
+  // Очищает локальную строку и закрывает native-редактор.
+  private clearChatInput(): void {
+    this.chatInputText = "";
+    this.chatCursorIndex = 0;
+    this.chatInputFocused = false;
+    this.chatEdit.blur();
   }
 
   // Открывает игровое меню, если правый клик попал в область вкладки.
@@ -563,7 +664,71 @@ export class InputController {
     this.chatInputText = "";
     this.chatCursorIndex = 0;
     this.chatContextMenu = null;
+    this.chatEdit.blur();
+    this.uiKitShowcaseVisible = false;
     return true;
+  }
+
+  // Начинает постановку каретки или выделение текста игровым курсором.
+  private startChatEditPointerSelection(clickCount: number): boolean {
+    if (!this.chatInputFocused || !this.isGameCursorVisible() || !this.isCursorOverChatInput()) {
+      return false;
+    }
+
+    const index = this.chatTextIndexAtCursor();
+    if (clickCount >= 2) {
+      this.chatEdit.focus(this.chatInputText, index, index);
+      this.chatEdit.selectWordAt(index);
+      this.syncChatInputFromNativeEdit();
+      return true;
+    }
+
+    this.chatEditDragActive = true;
+    this.chatEditDragAnchorIndex = index;
+    this.chatEdit.focus(this.chatInputText, index, index);
+    this.syncChatInputFromNativeEdit();
+    return true;
+  }
+
+  // Обновляет выделение при перетаскивании по строке ввода.
+  private updateChatEditSelectionFromCursor(): void {
+    const index = this.chatTextIndexAtCursor();
+    this.chatEdit.focus(this.chatInputText, this.chatEditDragAnchorIndex, index);
+    this.syncChatInputFromNativeEdit();
+  }
+
+  // Проверяет попадание игрового курсора в визуальную строку ввода.
+  private isCursorOverChatInput(): boolean {
+    const rect = document.getElementById("chat-input")?.getBoundingClientRect();
+    return Boolean(rect &&
+      this.cursorX >= rect.left &&
+      this.cursorX <= rect.right &&
+      this.cursorY >= rect.top &&
+      this.cursorY <= rect.bottom);
+  }
+
+  // Находит ближайшую позицию текста в строке чата по координате игрового курсора.
+  private chatTextIndexAtCursor(): number {
+    const viewport = document.querySelector<HTMLElement>("#chat-input .chat-input__viewport");
+    const text = document.querySelector<HTMLElement>("#chat-input .chat-input__text");
+    const measure = document.querySelector<HTMLElement>("#chat-input .chat-input__measure");
+    const viewportRect = viewport?.getBoundingClientRect();
+    if (!viewportRect || this.chatInputText.length === 0) {
+      return this.chatInputText.length;
+    }
+
+    const textWidth = measure?.getBoundingClientRect().width ?? this.chatInputText.length * 8;
+    const charWidth = Math.max(1, textWidth / Math.max(1, this.chatInputText.length));
+    const transform = text?.style.transform ?? "";
+    const offset = Number(transform.match(/translateX\((-?\d+(?:\.\d+)?)px\)/)?.[1] ?? 0);
+    const localX = this.cursorX - viewportRect.left - offset;
+    return clamp(Math.round(localX / charWidth), 0, this.chatInputText.length);
+  }
+
+  private syncChatInputFromNativeEdit(): void {
+    const snapshot = this.chatEdit.snapshot();
+    this.chatInputText = snapshot.text;
+    this.chatCursorIndex = snapshot.selectionEnd;
   }
 
   // Находит вкладку по координатам с теми же размерами, что использует HUD.
@@ -578,7 +743,7 @@ export class InputController {
     const tabLeft = panelLeft + chatPanelPaddingVh * vh;
     const tabTop = panelTop + (chatPanelPaddingVh + chatMessagesHeightVh + chatTabsGapBottomVh) * vh;
     const tabWidth = 14 * vh;
-    const tabHeight = 3 * vh;
+    const tabHeight = chatTabHeightVh * vh;
     const tabGap = 0.5 * vh;
 
     if (y < tabTop || y > tabTop + tabHeight || x < tabLeft) {
@@ -622,7 +787,7 @@ export class InputController {
       return;
     }
 
-    const viewportHeightPx = chatMessagesHeightVh * window.innerHeight / 100;
+    const viewportHeightPx = this.chatMessagesViewportHeightPx();
     const contentHeightPx = this.selectedChatContentHeightPx();
     const thumbHeightPercent = Math.max(14, (viewportHeightPx / contentHeightPx) * 100);
     const freeTrackPercent = 100 - thumbHeightPercent;
@@ -646,8 +811,13 @@ export class InputController {
       return false;
     }
 
-    const thumb = this.chatScrollbarThumbRect();
-    this.chatScrollbarDragOffsetPx = clamp(this.cursorY - thumb.top, 0, thumb.height);
+    const track = this.chatScrollbarTrackRect();
+    this.chatScrollbarDrag = startScrollbarDrag({
+      top: track.top,
+      height: track.height,
+      thumbTopPercent: this.chatScrollState.thumbTopPercent,
+      thumbHeightPercent: this.chatScrollState.thumbHeightPercent,
+    }, this.cursorY);
     this.chatScrollbarDragActive = true;
     return true;
   }
@@ -660,27 +830,44 @@ export class InputController {
       return;
     }
 
-    const track = this.chatScrollbarTrackRect();
-    const thumbHeightPx = track.height * this.chatScrollState.thumbHeightPercent / 100;
-    const availableTrackPx = Math.max(0, track.height - thumbHeightPx);
-    if (availableTrackPx <= 0) {
+    if (!this.chatScrollbarDrag) {
       this.chatScrollOffsetPx = 0;
       return;
     }
 
-    const thumbTopPx = clamp(this.cursorY - this.chatScrollbarDragOffsetPx, track.top, track.top + availableTrackPx);
-    const ratio = (thumbTopPx - track.top) / availableTrackPx;
-    this.chatScrollOffsetPx = (1 - ratio) * maxOffsetPx;
+    const track = this.chatScrollbarTrackRect();
+    const thumbTopPercent = getScrollbarThumbTopPercentFromCursor({
+      top: track.top,
+      height: track.height,
+      thumbHeightPercent: this.chatScrollState.thumbHeightPercent,
+      drag: this.chatScrollbarDrag,
+    }, this.cursorY);
+    this.chatScrollOffsetPx = getScrollOffsetFromThumbTopPercent({
+      thumbTopPercent,
+      thumbHeightPercent: this.chatScrollState.thumbHeightPercent,
+      maxOffsetPx,
+      reverse: true,
+    });
   }
 
   // Возвращает максимальный локальный сдвиг истории выбранной вкладки.
   private selectedChatMaxScrollOffset(): number {
-    return Math.max(0, this.selectedChatContentHeightPx() - chatMessagesHeightVh * window.innerHeight / 100);
+    return Math.max(0, this.selectedChatContentHeightPx() - this.chatMessagesViewportHeightPx());
   }
 
-  // Оценивает высоту истории в пикселях по текущему размеру шрифта HUD.
+  // Возвращает видимую высоту истории без внутренних отступов блока сообщений.
+  private chatMessagesViewportHeightPx(): number {
+    const vh = window.innerHeight / 100;
+    const rect = document.querySelector<HTMLElement>(".chat-messages")?.getBoundingClientRect();
+    const height = (rect?.height && rect.height > 0) ? rect.height : chatMessagesHeightVh * vh;
+    return Math.max(0, height - chatScrollbarVerticalInsetVh * vh);
+  }
+
+  // Возвращает фактическую высоту истории, а до отрисовки использует оценку по числу сообщений.
   private selectedChatContentHeightPx(): number {
-    return this.selectedChatMessageCount * chatEstimatedMessageHeightVh * window.innerHeight / 100;
+    const measuredHeight = document.querySelector<HTMLElement>(".chat-messages__content")?.getBoundingClientRect().height ?? 0;
+    const estimatedHeight = this.selectedChatMessageCount * chatEstimatedMessageHeightVh * window.innerHeight / 100;
+    return Math.max(measuredHeight, estimatedHeight);
   }
 
   // Проверяет попадание игрового указателя в панель чата.
@@ -730,19 +917,6 @@ export class InputController {
       top: rect.top + border + chatScrollbarTopInsetVh * vh,
       width,
       height: rect.height - border * 2 - chatScrollbarVerticalInsetVh * vh,
-    };
-  }
-
-  // Возвращает экранную область ползунка истории.
-  private chatScrollbarThumbRect(): { left: number; top: number; width: number; height: number } {
-    const track = this.chatScrollbarTrackRect();
-    const top = track.top + track.height * this.chatScrollState.thumbTopPercent / 100;
-    const height = track.height * this.chatScrollState.thumbHeightPercent / 100;
-    return {
-      left: track.left,
-      top,
-      width: track.width,
-      height,
     };
   }
 

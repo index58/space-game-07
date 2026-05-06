@@ -21,6 +21,14 @@ const releaseKey = (code: string) => {
   window.dispatchEvent(new KeyboardEvent("keyup", { code }));
 };
 
+const pressInputKey = (element: HTMLElement, code: string, key = "") => {
+  element.dispatchEvent(new KeyboardEvent("keydown", { code, key, bubbles: true }));
+};
+
+const waitForNativeEditSync = () => new Promise((resolve) => {
+  window.setTimeout(resolve, 0);
+});
+
 const moveMouse = (movementX: number, movementY: number) => {
   const event = new MouseEvent("mousemove");
   Object.defineProperty(event, "movementX", { configurable: true, value: movementX });
@@ -44,6 +52,85 @@ const addHudPanel = (rect: Partial<DOMRect> = {}) => {
   } as DOMRect);
   document.body.append(panel);
   return panel;
+};
+
+const addChatInputDom = () => {
+  const input = document.createElement("div");
+  input.id = "chat-input";
+  input.getBoundingClientRect = () => ({
+    x: 500,
+    y: 370,
+    left: 500,
+    top: 370,
+    right: 620,
+    bottom: 400,
+    width: 120,
+    height: 30,
+    toJSON: () => ({}),
+  } as DOMRect);
+  const viewport = document.createElement("div");
+  viewport.className = "chat-input__viewport";
+  viewport.getBoundingClientRect = () => ({
+    x: 505,
+    y: 370,
+    left: 505,
+    top: 370,
+    right: 615,
+    bottom: 400,
+    width: 110,
+    height: 30,
+    toJSON: () => ({}),
+  } as DOMRect);
+  const text = document.createElement("span");
+  text.className = "chat-input__text";
+  text.style.transform = "translateX(0px)";
+  const measure = document.createElement("span");
+  measure.className = "chat-input__measure";
+  measure.getBoundingClientRect = () => ({
+    x: 0,
+    y: 0,
+    left: 0,
+    top: 0,
+    right: 70,
+    bottom: 20,
+    width: 70,
+    height: 20,
+    toJSON: () => ({}),
+  } as DOMRect);
+  viewport.append(text, measure);
+  input.append(viewport);
+  document.body.append(input);
+};
+
+const addChatMessagesDom = (contentHeight: number) => {
+  const messagesPanel = document.createElement("div");
+  messagesPanel.className = "chat-messages";
+  messagesPanel.getBoundingClientRect = () => ({
+    x: 10,
+    y: 100,
+    left: 10,
+    top: 100,
+    right: 490,
+    bottom: 340,
+    width: 480,
+    height: 240,
+    toJSON: () => ({}),
+  } as DOMRect);
+  const content = document.createElement("div");
+  content.className = "chat-messages__content";
+  content.getBoundingClientRect = () => ({
+    x: 18,
+    y: 0,
+    left: 18,
+    top: 0,
+    right: 450,
+    bottom: contentHeight,
+    width: 432,
+    height: contentHeight,
+    toJSON: () => ({}),
+  } as DOMRect);
+  messagesPanel.append(content);
+  document.body.append(messagesPanel);
 };
 
 const setViewportHeight = (height: number) => {
@@ -379,6 +466,111 @@ describe("InputController", () => {
   });
 
   // Проверяет, что клик по космосу закрывает чатовый UI-режим и возвращает управление кораблем.
+  // Проверяет, что витрина UI Kit включает игровой курсор и блокирует управление кораблём.
+  it("shows game cursor and suppresses ship controls while UI kit showcase is visible", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("F9", "F9");
+    pressKey("KeyW", "w");
+
+    expect(controller.isUiKitShowcaseVisible()).toBe(true);
+    expect(controller.getGameCursor().visible).toBe(true);
+    expect(controller.consumeShipInput().thrustForward).toBe(false);
+  });
+
+  // Проверяет, что витрина UI Kit открывается даже когда фокус находится в строке чата.
+  it("toggles UI kit showcase while chat input is focused", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    pressKey("F9", "F9");
+
+    expect(controller.isUiKitShowcaseVisible()).toBe(true);
+  });
+
+  // Проверяет, что общий runtime отдаёт действие по зарегистрированному HUD-контролу.
+  it("queues game UI runtime actions from registered controls", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.updateGameUiControls([{
+      id: "demo-button",
+      kind: "button",
+      rect: { left: 500, top: 370, width: 60, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("F9", "F9");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+
+    expect(controller.consumeGameUiAction()).toMatchObject({ type: "click", controlId: "demo-button" });
+  });
+
+  // Проверяет, что двойной клик игровым курсором по строке ввода выделяет слово.
+  it("selects chat input word by game cursor double click", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    addChatInputDom();
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    for (const character of "abc def") {
+      pressKey(`Key${character.toUpperCase()}`, character);
+    }
+    moveMouse(28, 0);
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0, detail: 2 }));
+
+    expect(controller.getChatSelectionStart()).toBe(4);
+    expect(controller.getChatSelectionEnd()).toBe(7);
+  });
+
+  // Проверяет, что навигационные клавиши native textarea обновляют видимую каретку HUD.
+  it("syncs chat cursor after native arrow home and end keys", async () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    for (const character of "abcd") {
+      pressKey(`Key${character.toUpperCase()}`, character);
+    }
+
+    const textarea = document.querySelector<HTMLTextAreaElement>("[data-ui-kit-edit-id='chat-input']");
+    if (!textarea) {
+      throw new Error("Нативное поле чата не создано.");
+    }
+
+    textarea.setSelectionRange(4, 4);
+    pressInputKey(textarea, "ArrowLeft", "ArrowLeft");
+    textarea.setSelectionRange(3, 3);
+    await waitForNativeEditSync();
+    expect(controller.getChatCursorIndex()).toBe(3);
+
+    textarea.setSelectionRange(3, 3);
+    pressInputKey(textarea, "Home", "Home");
+    textarea.setSelectionRange(0, 0);
+    await waitForNativeEditSync();
+    expect(controller.getChatCursorIndex()).toBe(0);
+
+    textarea.setSelectionRange(0, 0);
+    pressInputKey(textarea, "End", "End");
+    textarea.setSelectionRange(4, 4);
+    await waitForNativeEditSync();
+    expect(controller.getChatCursorIndex()).toBe(4);
+  });
+
   it("leaves chat UI mode by clicking space outside HUD", () => {
     setViewportWidth(1000);
     setViewportHeight(1000);
@@ -589,6 +781,37 @@ describe("InputController", () => {
   });
 
   // Проверяет, что левая кромка видимой полосы участвует в захвате, а не отрезается рамкой блока сообщений.
+  // Проверяет, что длинные перенесенные строки увеличивают максимальную прокрутку до фактического верха истории.
+  it("uses measured wrapped chat content height for maximum scroll", () => {
+    setViewportWidth(1000);
+    setViewportHeight(1000);
+    addChatMessagesDom(620);
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: messages(20) }],
+    });
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    moveMouse(-300, 0);
+    for (let index = 0; index < 20; index += 1) {
+      wheel(-100, false);
+    }
+    controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: messages(20) }],
+    });
+
+    expect(controller.getChatScrollState().contentOffsetPx).toBe(396);
+    expect(controller.getChatScrollState().thumbTopPercent).toBe(0);
+  });
+
+  // Проверяет, что левая кромка видимой полосы участвует в захвате.
   it("starts chat scrollbar drag on the visible left edge", () => {
     setViewportWidth(1000);
     setViewportHeight(1000);

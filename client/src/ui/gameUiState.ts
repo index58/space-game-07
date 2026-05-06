@@ -1,6 +1,8 @@
 import { createSignal, type Accessor } from "solid-js";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
 import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
+import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
+import type { GameUiControlState } from "../ui-kit/types";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
@@ -23,6 +25,10 @@ export type GameUiState = {
   chatInputText: string;
   // Позиция каретки внутри локальной строки ввода.
   chatCursorIndex: number;
+  // Начало выделенного диапазона в строке чата.
+  chatSelectionStart: number;
+  // Конец выделенного диапазона в строке чата.
+  chatSelectionEnd: number;
   // Признак направления печатных клавиш в панель чата.
   chatInputFocused: boolean;
   // Последняя ошибка отправки текста, полученная от сервера.
@@ -35,6 +41,12 @@ export type GameUiState = {
   gameCursor: GameCursorState;
   // Состояние полосы прокрутки выбранного чата.
   chatScroll: ChatScrollState;
+  // Показывает отладочную панель примеров единого UI Kit.
+  uiKitShowcaseVisible: boolean;
+  // Состояние интерактивных примеров единого UI Kit.
+  uiKitDemoState: UiKitDemoState;
+  // Последний снимок зарегистрированных интерактивных контролов HUD.
+  uiControls: GameUiControlState[];
   // Текущая частота кадров.
   fps: number;
   // Рассчитанный масштаб камеры.
@@ -59,12 +71,17 @@ const initialGameUiState: GameUiState = {
   chatState: null,
   chatInputText: "",
   chatCursorIndex: 0,
+  chatSelectionStart: 0,
+  chatSelectionEnd: 0,
   chatInputFocused: false,
   chatError: null,
   chatErrorSeq: 0,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
+  uiKitShowcaseVisible: false,
+  uiKitDemoState: createInitialUiKitDemoState(),
+  uiControls: [],
   fps: 0,
   zoom: 1,
 };

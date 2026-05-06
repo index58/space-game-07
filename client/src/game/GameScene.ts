@@ -17,6 +17,8 @@ import type {
 import { fetchReferenceData } from "../network/referenceData";
 import type { GameUiController } from "../ui/gameUiState";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
+import { applyUiKitDemoAction, createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
+import type { GameUiControlKind, GameUiControlState } from "../ui-kit/types";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
 import { InputController } from "./InputController";
 
@@ -50,6 +52,8 @@ export class GameScene extends Phaser.Scene {
   private zoomScale = getViewportZoomScale(INITIAL_ZOOM, 1000);
   // Выбранный индекс среди десяти ячеек панели пилота.
   private selectedPilotToolIndex = 0;
+  // Состояние интерактивной витрины базовых контролов UI Kit.
+  private uiKitDemoState: UiKitDemoState = createInitialUiKitDemoState();
 
   constructor(
     // Мост передачи состояния из Phaser в SolidJS UI.
@@ -114,6 +118,7 @@ export class GameScene extends Phaser.Scene {
     if (chatSelectAction) {
       this.gameClient?.selectChat(chatSelectAction.chatId);
     }
+    this.consumeGameUiActions();
     const selfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
@@ -131,15 +136,21 @@ export class GameScene extends Phaser.Scene {
         chatState: null,
         chatInputText: "",
         chatCursorIndex: 0,
+        chatSelectionStart: 0,
+        chatSelectionEnd: 0,
         chatInputFocused: false,
         chatError: null,
         chatErrorSeq: 0,
         chatContextMenu: null,
         gameCursor: this.inputController.getGameCursor(),
         chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
+        uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
+        uiKitDemoState: this.uiKitDemoState,
+        uiControls: [],
         fps: this.game.loop.actualFps,
         zoom: this.zoomScale,
       });
+      this.inputController.updateGameUiControls(this.collectGameUiControls());
       return;
     }
 
@@ -160,15 +171,21 @@ export class GameScene extends Phaser.Scene {
       chatState,
       chatInputText: this.inputController.getChatInputText(),
       chatCursorIndex: this.inputController.getChatCursorIndex(),
+      chatSelectionStart: this.inputController.getChatSelectionStart(),
+      chatSelectionEnd: this.inputController.getChatSelectionEnd(),
       chatInputFocused: this.inputController.isChatInputFocused(),
       chatError: this.gameClient?.getLatestChatError() ?? null,
       chatErrorSeq: this.gameClient?.getLatestChatErrorSeq() ?? 0,
       chatContextMenu: this.inputController.getChatContextMenu(),
       gameCursor: this.inputController.getGameCursor(),
       chatScroll: this.inputController.getChatScrollState(),
+      uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
+      uiKitDemoState: this.uiKitDemoState,
+      uiControls: [],
       fps: this.game.loop.actualFps,
       zoom: this.zoomScale,
     });
+    this.inputController.updateGameUiControls(this.collectGameUiControls());
   }
 
   // Показывает фон и статус, пока нет валидного снимка объекта игрока.
@@ -355,4 +372,40 @@ export class GameScene extends Phaser.Scene {
   private textureScaleForObject(object: CosmicObject): number {
     return this.modelForObject(object)?.TextureScale ?? 4;
   }
+
+  // Собирает реальные DOM-границы UI Kit, чтобы игровой курсор работал без pointer events.
+  private collectGameUiControls(): GameUiControlState[] {
+    return Array.from(document.querySelectorAll<HTMLElement>(".ui-kit-control"))
+      .map((element, index): GameUiControlState | null => {
+        const rect = element.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) {
+          return null;
+        }
+        return {
+          id: element.id || `ui-kit-control-${index}`,
+          kind: uiKind(element.dataset.uiKind),
+          rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+          zIndex: Number(element.dataset.uiZIndex ?? index),
+          disabled: element.classList.contains("is-disabled"),
+          visible: true,
+          focusable: element.dataset.uiFocusable !== "false",
+          value: element.dataset.uiValue ?? null,
+        };
+      })
+      .filter((control): control is GameUiControlState => control !== null);
+  }
+
+  // Применяет накопленные действия общего UI к локальной витрине контролов.
+  private consumeGameUiActions(): void {
+    let action = this.inputController.consumeGameUiAction();
+    while (action) {
+      this.uiKitDemoState = applyUiKitDemoAction(this.uiKitDemoState, action);
+      action = this.inputController.consumeGameUiAction();
+    }
+  }
 }
+
+const uiKind = (value: string | undefined): GameUiControlKind => {
+  const allowed = new Set<GameUiControlKind>(["edit", "button", "checkbox", "radio", "select", "list", "tree", "tabs", "menu", "modal", "tooltip", "scrollbar", "slider", "stepper", "hotkey", "splitter", "dragItem"]);
+  return value && allowed.has(value as GameUiControlKind) ? value as GameUiControlKind : "button";
+};

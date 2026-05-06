@@ -2,6 +2,7 @@ import { render } from "solid-js/web";
 import { createSignal } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import type { CosmicObject, ReferenceDataMessage } from "../network/protocol";
+import { createInitialUiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiState } from "./gameUiState";
 import { GameUi } from "./GameUi";
 
@@ -75,6 +76,18 @@ const referenceData = {
   SchemaComponent: { MaxID: 0, Items: {} },
 } as unknown as ReferenceDataMessage;
 
+const rect = (width: number): DOMRect => ({
+  x: 0,
+  y: 0,
+  left: 0,
+  top: 0,
+  right: width,
+  bottom: 20,
+  width,
+  height: 20,
+  toJSON: () => ({}),
+} as DOMRect);
+
 const state = (): GameUiState => ({
   status: "connected",
   selfObject: object(),
@@ -86,12 +99,17 @@ const state = (): GameUiState => ({
   chatState: null,
   chatInputText: "",
   chatCursorIndex: 0,
+  chatSelectionStart: 0,
+  chatSelectionEnd: 0,
   chatInputFocused: false,
   chatError: null,
   chatErrorSeq: 0,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
+  uiKitShowcaseVisible: false,
+  uiKitDemoState: createInitialUiKitDemoState(),
+  uiControls: [],
   fps: 60,
   zoom: 4,
 });
@@ -185,16 +203,101 @@ describe("GameUi", () => {
     expect(root.querySelector(".chat-panel")).not.toBeNull();
     expect(Array.from(root.querySelectorAll(".chat-tab")).map((tab) => tab.textContent)).toEqual(["SServer3", "DPilot2"]);
     expect(root.querySelector(".chat-tab.is-selected")?.textContent).toBe("DPilot2");
-    expect(root.querySelector(".chat-tab__unread")?.textContent).toBe("3");
+    expect(root.querySelector(".chat-tab .ui-kit-tab__badge")?.textContent).toBe("3");
     expect(Array.from(root.querySelectorAll(".chat-message__text")).map((message) => message.textContent)).toEqual(["old", "new"]);
     expect(root.querySelector(".chat-input__text")?.textContent).toBe("draft");
-    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("calc(2ch + 0.8vh)");
+    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("0px");
     expect(root.querySelector(".chat-error")?.textContent).toBe("Адресат не найден");
     expect(root.querySelector(".chat-context-menu__item")?.textContent).toBe("Закрыть");
-    expect(root.querySelector(".chat-scrollbar__thumb")).not.toBeNull();
+    expect(root.querySelector(".chat-scrollbar .ui-kit-scrollbar__thumb")).not.toBeNull();
     expect(Array.from(root.querySelector(".chat-scrollbar")?.classList ?? [])).toContain("is-dragging");
     expect(root.querySelector<HTMLElement>(".chat-messages__content")?.style.transform).toBe("translateY(42px)");
     expect(root.querySelector(".game-cursor")).not.toBeNull();
+  });
+
+  // Проверяет, что отладочная витрина UI Kit показывает расширенный набор контролов.
+  it("renders UI kit showcase with reusable controls", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({ ...state(), uiKitShowcaseVisible: true, uiKitDemoState: { ...state().uiKitDemoState, buttonClicks: 2, checkboxChecked: false, tabValue: "one" } })} />, root);
+
+    expect(root.querySelector(".ui-kit-showcase")).not.toBeNull();
+    expect(root.querySelector(".ui-kit-button")?.textContent).toBe("Button 2");
+    expect(Array.from(root.querySelector(".ui-kit-checkbox")?.classList ?? [])).not.toContain("is-checked");
+    expect(root.querySelector(".ui-kit-dropdown")).not.toBeNull();
+    expect(root.querySelector(".ui-kit-tree")).not.toBeNull();
+    expect(root.querySelector(".ui-kit-tab.is-selected")?.textContent).toBe("One");
+    expect(root.querySelector(".ui-kit-slider")).not.toBeNull();
+    expect(root.querySelector(".ui-kit-tooltip")).not.toBeNull();
+  });
+
+  // Проверяет, что длинная строка сдвигается влево и оставляет каретку внутри поля ввода.
+  it("keeps long chat input caret inside viewport by moving text", async () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const [chatState, setChatState] = createSignal<GameUiState>({
+      ...state(),
+      chatState: {
+        type: "chatState",
+        selectedChatId: 1,
+        tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", unreadCount: 0, messages: [] }],
+      },
+      chatInputText: "abcdefghijklmnopqrstuvwxyz0123456789",
+      chatCursorIndex: 29,
+      chatInputFocused: true,
+    });
+
+    dispose = render(() => <GameUi state={chatState} />, root);
+    const viewport = root.querySelector<HTMLElement>(".chat-input__viewport");
+    const textMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[0];
+    const caretMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[1];
+    if (!viewport || !textMeasure || !caretMeasure) {
+      throw new Error("Строка ввода чата не отрисована.");
+    }
+    viewport.getBoundingClientRect = () => rect(100);
+    textMeasure.getBoundingClientRect = () => rect(260);
+    caretMeasure.getBoundingClientRect = () => rect(210);
+
+    setChatState({ ...chatState(), chatCursorIndex: 30 });
+    await Promise.resolve();
+
+    expect(root.querySelector<HTMLElement>(".chat-input__text")?.style.transform).toBe("translateX(-118px)");
+    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("92px");
+  });
+
+  // Проверяет, что каретка в конце длинной строки не обрезается правой границей поля.
+  it("keeps long chat input caret visible at text end", async () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const [chatState, setChatState] = createSignal<GameUiState>({
+      ...state(),
+      chatState: {
+        type: "chatState",
+        selectedChatId: 1,
+        tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", unreadCount: 0, messages: [] }],
+      },
+      chatInputText: "abcdefghijklmnopqrstuvwxyz0123456789",
+      chatCursorIndex: 35,
+      chatInputFocused: true,
+    });
+
+    dispose = render(() => <GameUi state={chatState} />, root);
+    const viewport = root.querySelector<HTMLElement>(".chat-input__viewport");
+    const textMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[0];
+    const caretMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[1];
+    if (!viewport || !textMeasure || !caretMeasure) {
+      throw new Error("Строка ввода чата не отрисована.");
+    }
+    viewport.getBoundingClientRect = () => rect(100);
+    textMeasure.getBoundingClientRect = () => rect(260);
+    caretMeasure.getBoundingClientRect = () => rect(260);
+
+    setChatState({ ...chatState(), chatCursorIndex: 36 });
+    await Promise.resolve();
+
+    expect(root.querySelector<HTMLElement>(".chat-input__text")?.style.transform).toBe("translateX(-168px)");
+    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("92px");
   });
 
   it("remounts repeated chat error when sequence changes", () => {
