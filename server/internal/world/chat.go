@@ -102,6 +102,9 @@ func (world *World) ensureChatData() {
 	if world.data.Messages == nil {
 		world.data.Messages = data.NewMessages()
 	}
+	if world.data.MessageReads == nil {
+		world.data.MessageReads = data.NewMessageReads()
+	}
 	if world.data.MessageTypes == nil {
 		world.data.MessageTypes = data.NewMessageTypes()
 	}
@@ -178,6 +181,8 @@ func (world *World) chatStateLocked(account *data.Account, character *data.Chara
 	if selectedChatID == 0 || !chatTabExists(tabs, selectedChatID) {
 		selectedChatID = tabs[0].ChatID
 	}
+	world.markChatReadLocked(character.ID, selectedChatID)
+	tabs = world.chatTabsForCharacterLocked(account, character)
 	return game.ChatState{
 		Type:           "chatState",
 		Tabs:           tabs,
@@ -228,8 +233,40 @@ func (world *World) chatTabLocked(character *data.Character, chat *data.Chat) ga
 		Title:                title,
 		CommunityTypeAcronym: communityType.Acronym,
 		DuoChatKey:           chat.DuoChatKey,
+		UnreadCount:          world.unreadMessageCountLocked(character.ID, chat.ID, messages),
 		Messages:             world.chatMessagesLocked(messages),
 	}
+}
+
+// markChatReadLocked сохраняет, что персонаж видел последнюю строку выбранного чата.
+func (world *World) markChatReadLocked(characterID int64, chatID int64) {
+	if world.data.MessageReads == nil {
+		return
+	}
+	messages := world.data.Messages.GetByChatID(chatID)
+	lastMessageID := int64(0)
+	if len(messages) > 0 {
+		lastMessageID = messages[len(messages)-1].ID
+	}
+	_, _ = world.data.MessageReads.SetLastRead(characterID, chatID, lastMessageID)
+}
+
+// unreadMessageCountLocked считает строки после сохраненной позиции чтения.
+func (world *World) unreadMessageCountLocked(characterID int64, chatID int64, messages []*data.Message) int64 {
+	if world.data.MessageReads == nil {
+		return 0
+	}
+	messageRead, ok := world.data.MessageReads.GetByCharacterAndChat(characterID, chatID)
+	if !ok {
+		return int64(len(messages))
+	}
+	var count int64
+	for _, message := range messages {
+		if message.ID > messageRead.LastReadMessageID {
+			count++
+		}
+	}
+	return count
 }
 
 // chatMessagesLocked переводит серверные записи в сетевое представление.

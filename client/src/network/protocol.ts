@@ -42,6 +42,14 @@ export type ChatSendMessage = {
   text: string;
 };
 
+// Сообщает серверу, какую вкладку игрок выбрал и прочитал.
+export type ChatSelectMessage = {
+  // Вид команды, по которому сервер отличает выбор вкладки.
+  type: "chatSelect";
+  // Выбранный игроком чат.
+  chatId: number;
+};
+
 // Описывает одну строку истории в панели чата.
 export type ChatMessage = {
   // Уникальный числовой идентификатор записи.
@@ -72,6 +80,8 @@ export type ChatTab = {
   communityTypeAcronym: string;
   // Ключ личной переписки двух персонажей.
   duoChatKey: string;
+  // Количество сообщений, которые появились после последнего чтения.
+  unreadCount?: number;
   // Последние строки истории в порядке от старых к новым.
   messages: ChatMessage[];
 };

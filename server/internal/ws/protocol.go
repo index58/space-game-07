@@ -24,6 +24,12 @@ type ChatSendMessage struct {
 	Text           string `json:"text"`                     // Содержимое, которое будет записано в историю.
 }
 
+// Передает выбор вкладки чата и тем самым подтверждает прочтение ее истории.
+type ChatSelectMessage struct {
+	Type   string `json:"type"`   // Вид пакета для маршрутизации входящей команды.
+	ChatID int64  `json:"chatId"` // Чат, который игрок выбрал в панели.
+}
+
 // Передает ошибку чата отдельным сетевым пакетом.
 type ChatErrorMessage struct {
 	Type    string `json:"type"`    // Вид пакета для отдельной обработки на клиенте.
@@ -63,6 +69,20 @@ func DecodeChatSendMessage(payload []byte) (ChatSendMessage, bool) {
 
 	if message.Type != "chatSend" {
 		return ChatSendMessage{}, false
+	}
+
+	return message, true
+}
+
+// Разбирает клиентский JSON и пропускает только выбор вкладки чата.
+func DecodeChatSelectMessage(payload []byte) (ChatSelectMessage, bool) {
+	var message ChatSelectMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ChatSelectMessage{}, false
+	}
+
+	if message.Type != "chatSelect" || message.ChatID <= 0 {
+		return ChatSelectMessage{}, false
 	}
 
 	return message, true

@@ -96,6 +96,23 @@ type Messages struct {
 	ByChatID map[int64][]*Message `json:"-"` // Быстрый поиск сообщений указанного чата.
 }
 
+// MessageRead хранит последнюю прочитанную строку конкретного персонажа в конкретном чате.
+type MessageRead struct {
+	ID                int64     `json:"ID"`                // Уникальный числовой идентификатор записи.
+	CharacterID       int64     `json:"CharacterID"`       // Персонаж, для которого сохранена позиция чтения.
+	ChatID            int64     `json:"ChatID"`            // Чат, внутри которого сохранена позиция чтения.
+	LastReadMessageID int64     `json:"LastReadMessageID"` // Последнее прочитанное сообщение этого чата.
+	ReadTime          time.Time `json:"ReadTime"`          // Момент обновления позиции чтения.
+}
+
+// MessageReads хранит позиции чтения и индексирует их по паре персонажа и чата.
+type MessageReads struct {
+	MaxID int64                  `json:"MaxID"` // Последний выданный числовой идентификатор записей.
+	Items map[int64]*MessageRead `json:"Items"` // Основное хранилище записей по числовому идентификатору.
+
+	ByCharacterAndChat map[string]*MessageRead `json:"-"` // Быстрый поиск позиции чтения по персонажу и чату.
+}
+
 // MessageType хранит тип сообщения для визуального оформления.
 type MessageType struct {
 	ID      int64  `json:"ID"`      // Уникальный числовой идентификатор записи.
@@ -140,6 +157,12 @@ func NewMessages() *Messages {
 	messages := &Messages{}
 	messages.ensureMaps()
 	return messages
+}
+
+func NewMessageReads() *MessageReads {
+	reads := &MessageReads{}
+	reads.ensureMaps()
+	return reads
 }
 
 func NewMessageTypes() *MessageTypes {
@@ -661,6 +684,104 @@ func (messages *Messages) addIndexes(message *Message) {
 	messages.ByChatID[message.ChatID] = append(messages.ByChatID[message.ChatID], message)
 }
 
+func (reads *MessageReads) SetLastRead(characterID int64, chatID int64, messageID int64) (*MessageRead, error) {
+	if characterID <= 0 {
+		return nil, errors.New("character ID is empty")
+	}
+	if chatID <= 0 {
+		return nil, errors.New("chat ID is empty")
+	}
+	reads.ensureMaps()
+	if existing := reads.ByCharacterAndChat[messageReadKey(characterID, chatID)]; existing != nil {
+		if messageID > existing.LastReadMessageID {
+			existing.LastReadMessageID = messageID
+		}
+		existing.ReadTime = time.Now()
+		return existing, nil
+	}
+	reads.MaxID++
+	messageRead := &MessageRead{
+		ID:                reads.MaxID,
+		CharacterID:       characterID,
+		ChatID:            chatID,
+		LastReadMessageID: messageID,
+		ReadTime:          time.Now(),
+	}
+	reads.Items[messageRead.ID] = messageRead
+	reads.addIndexes(messageRead)
+	return messageRead, nil
+}
+
+func (reads *MessageReads) GetByCharacterAndChat(characterID int64, chatID int64) (*MessageRead, bool) {
+	reads.ensureMaps()
+	messageRead, ok := reads.ByCharacterAndChat[messageReadKey(characterID, chatID)]
+	return messageRead, ok
+}
+
+func (reads *MessageReads) RebuildIndexes() error {
+	reads.ensureItems()
+	reads.ByCharacterAndChat = map[string]*MessageRead{}
+	var maxID int64
+	for _, id := range sortedTableItemIDs(reads.Items) {
+		messageRead := reads.Items[id]
+		if messageRead == nil {
+			return fmt.Errorf("message read with ID %d is nil", id)
+		}
+		if messageRead.ID != id || messageRead.CharacterID <= 0 || messageRead.ChatID <= 0 {
+			return fmt.Errorf("message read with ID %d is invalid", id)
+		}
+		if existing := reads.ByCharacterAndChat[messageReadKey(messageRead.CharacterID, messageRead.ChatID)]; existing != nil && existing.ID != messageRead.ID {
+			return fmt.Errorf("message read with ID %d is not unique", id)
+		}
+		if id > maxID {
+			maxID = id
+		}
+		reads.addIndexes(messageRead)
+	}
+	if reads.MaxID < maxID {
+		reads.MaxID = maxID
+	}
+	return nil
+}
+
+func (reads *MessageReads) LoadFromFile(path string) error {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	loaded := MessageReads{}
+	if err := json.Unmarshal(content, &loaded); err != nil {
+		return err
+	}
+	if err := loaded.RebuildIndexes(); err != nil {
+		return err
+	}
+	*reads = loaded
+	return nil
+}
+
+func (reads *MessageReads) SaveToFile(path string) error {
+	reads.ensureMaps()
+	return saveTableWithOrderedItems(path, reads.MaxID, reads.Items)
+}
+
+func (reads *MessageReads) ensureMaps() {
+	reads.ensureItems()
+	if reads.ByCharacterAndChat == nil {
+		reads.ByCharacterAndChat = map[string]*MessageRead{}
+	}
+}
+
+func (reads *MessageReads) ensureItems() {
+	if reads.Items == nil {
+		reads.Items = map[int64]*MessageRead{}
+	}
+}
+
+func (reads *MessageReads) addIndexes(messageRead *MessageRead) {
+	reads.ByCharacterAndChat[messageReadKey(messageRead.CharacterID, messageRead.ChatID)] = messageRead
+}
+
 func (types *MessageTypes) Add(messageType *MessageType) (*MessageType, error) {
 	if messageType == nil {
 		return nil, errors.New("message type is nil")
@@ -761,6 +882,10 @@ func chatCommunityKey(communityTypeID int64, communityID int64) string {
 
 func chatMemberPairKey(chatID int64, characterID int64) string {
 	return fmt.Sprintf("%d:%d", chatID, characterID)
+}
+
+func messageReadKey(characterID int64, chatID int64) string {
+	return fmt.Sprintf("%d:%d", characterID, chatID)
 }
 
 func communityRoleKey(communityTypeID int64, acronym string) string {

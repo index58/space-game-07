@@ -1,4 +1,5 @@
 import { render } from "solid-js/web";
+import { createSignal } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import type { CosmicObject, ReferenceDataMessage } from "../network/protocol";
 import type { GameUiState } from "./gameUiState";
@@ -84,8 +85,10 @@ const state = (): GameUiState => ({
   textureFilePath: null,
   chatState: null,
   chatInputText: "",
+  chatCursorIndex: 0,
   chatInputFocused: false,
   chatError: null,
+  chatErrorSeq: 0,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
@@ -153,12 +156,13 @@ describe("GameUi", () => {
         type: "chatState",
         selectedChatId: 2,
         tabs: [
-          { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: [] },
+          { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", unreadCount: 3, messages: [] },
           {
             chatId: 2,
             title: "Pilot2",
             communityTypeAcronym: "Duo",
             duoChatKey: "1:2",
+            unreadCount: 0,
             messages: [
               { id: 10, chatId: 2, senderCharacterId: 1, senderNickname: "Pilot1", messageTypeAcronym: "FromCharacter", text: "old", color: "D8F3FF", sentTime: "" },
               { id: 11, chatId: 2, senderCharacterId: 2, senderNickname: "Pilot2", messageTypeAcronym: "FromCharacter", text: "new", color: "E8FFD8", sentTime: "" },
@@ -167,8 +171,10 @@ describe("GameUi", () => {
         ],
       },
       chatInputText: "draft",
+      chatCursorIndex: 2,
       chatInputFocused: true,
       chatError: "Адресат не найден",
+      chatErrorSeq: 1,
       chatContextMenu: { chatId: 2, communityTypeAcronym: "Duo", x: 120, y: 220 },
       gameCursor: { visible: true, x: 320, y: 240 },
       chatScroll: { visible: true, thumbTopPercent: 25, thumbHeightPercent: 60, contentOffsetPx: 42, dragging: true },
@@ -177,15 +183,41 @@ describe("GameUi", () => {
     dispose = render(() => <GameUi state={chatState} />, root);
 
     expect(root.querySelector(".chat-panel")).not.toBeNull();
-    expect(Array.from(root.querySelectorAll(".chat-tab")).map((tab) => tab.textContent)).toEqual(["SServer", "DPilot2"]);
+    expect(Array.from(root.querySelectorAll(".chat-tab")).map((tab) => tab.textContent)).toEqual(["SServer3", "DPilot2"]);
     expect(root.querySelector(".chat-tab.is-selected")?.textContent).toBe("DPilot2");
+    expect(root.querySelector(".chat-tab__unread")?.textContent).toBe("3");
     expect(Array.from(root.querySelectorAll(".chat-message__text")).map((message) => message.textContent)).toEqual(["old", "new"]);
     expect(root.querySelector(".chat-input__text")?.textContent).toBe("draft");
+    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("calc(2ch + 0.8vh)");
     expect(root.querySelector(".chat-error")?.textContent).toBe("Адресат не найден");
     expect(root.querySelector(".chat-context-menu__item")?.textContent).toBe("Закрыть");
     expect(root.querySelector(".chat-scrollbar__thumb")).not.toBeNull();
     expect(Array.from(root.querySelector(".chat-scrollbar")?.classList ?? [])).toContain("is-dragging");
     expect(root.querySelector<HTMLElement>(".chat-messages__content")?.style.transform).toBe("translateY(42px)");
     expect(root.querySelector(".game-cursor")).not.toBeNull();
+  });
+
+  it("remounts repeated chat error when sequence changes", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const [chatState, setChatState] = createSignal<GameUiState>({
+      ...state(),
+      chatState: {
+        type: "chatState",
+        selectedChatId: 1,
+        tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", unreadCount: 0, messages: [] }],
+      },
+      chatError: "Адресат не найден",
+      chatErrorSeq: 1,
+    });
+
+    dispose = render(() => <GameUi state={chatState} />, root);
+    const firstError = root.querySelector<HTMLElement>(".chat-error");
+    expect(firstError?.style.animationName).toBe("chat-error-fade-odd");
+    setChatState({ ...chatState(), chatErrorSeq: 2 });
+
+    expect(root.querySelector(".chat-error")).toBe(firstError);
+    expect(root.querySelector<HTMLElement>(".chat-error")?.style.animationName).toBe("chat-error-fade-even");
+    expect(root.querySelector(".chat-error")?.textContent).toBe("Адресат не найден");
   });
 });

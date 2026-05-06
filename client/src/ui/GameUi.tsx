@@ -156,21 +156,13 @@ const getPilotToolbarReadyState = (state: GameUiState): PilotToolbarReadyState |
 // Показывает доступные вкладки, последние строки истории и локальную строку ввода.
 const ChatPanel = (props: ChatPanelProps) => {
   const selectedTab = () => props.state().chatState?.tabs.find((tab) => tab.chatId === props.state().chatState?.selectedChatId) ?? null;
+  const chatCaretLeft = () => `calc(0.8vh + ${props.state().chatCursorIndex}ch)`;
+  const chatErrorAnimationName = () => props.state().chatErrorSeq % 2 === 0 ? "chat-error-fade-even" : "chat-error-fade-odd";
 
   return (
     <Show when={props.state().chatState && selectedTab()}>
       {(tab) => (
         <HudPanel position="left-middle" className="chat-panel" ariaLabel="Чат">
-          <div class="chat-tabs">
-            <For each={props.state().chatState?.tabs ?? []}>
-              {(chatTab) => (
-                <div class={`chat-tab ${chatTab.chatId === tab().chatId ? "is-selected" : ""}`}>
-                  <span class="chat-tab__marker">{chatTab.communityTypeAcronym === "Server" ? "S" : "D"}</span>
-                  <span class="chat-tab__title">{chatTab.title}</span>
-                </div>
-              )}
-            </For>
-          </div>
           <div class="chat-messages">
             <div
               class="chat-messages__content"
@@ -197,13 +189,26 @@ const ChatPanel = (props: ChatPanelProps) => {
               </div>
             </Show>
           </div>
+          <div class="chat-tabs">
+            <For each={props.state().chatState?.tabs ?? []}>
+              {(chatTab) => (
+                <div class={`chat-tab ${chatTab.chatId === tab().chatId ? "is-selected" : ""}`}>
+                  <span class="chat-tab__marker">{chatTab.communityTypeAcronym === "Server" ? "S" : "D"}</span>
+                  <span class="chat-tab__title">{chatTab.title}</span>
+                  <Show when={(chatTab.unreadCount ?? 0) > 0}>
+                    <span class="chat-tab__unread">{chatTab.unreadCount}</span>
+                  </Show>
+                </div>
+              )}
+            </For>
+          </div>
           <Show when={props.state().chatError}>
-            {(error) => <div class="chat-error">{error()}</div>}
+            {(error) => <div class="chat-error" style={{ "animation-name": chatErrorAnimationName() }}>{error()}</div>}
           </Show>
           <div class={`chat-input ${props.state().chatInputFocused ? "is-focused" : ""}`}>
             <span class="chat-input__text">{props.state().chatInputText}</span>
             <Show when={props.state().chatInputFocused}>
-              <span class="chat-input__caret" />
+              <span class="chat-input__caret" style={{ left: chatCaretLeft() }} />
             </Show>
           </div>
           <Show when={props.state().chatContextMenu}>

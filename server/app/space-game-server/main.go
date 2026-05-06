@@ -46,6 +46,7 @@ func main() {
 		CommunityTypes:          serverData.CommunityTypes,
 		CommunityChatRoles:      serverData.CommunityChatRoles,
 		Messages:                serverData.Messages,
+		MessageReads:            serverData.MessageReads,
 		MessageTypes:            serverData.MessageTypes,
 	})
 	hub := transport.NewHub(gameWorld)

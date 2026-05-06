@@ -37,6 +37,7 @@ type Data struct {
 	CommunityTypes          *data.CommunityTypes          // Справочник типов сообществ.
 	CommunityChatRoles      *data.CommunityChatRoles      // Справочник ролей в чатах сообществ.
 	Messages                *data.Messages                // Сообщения чатов.
+	MessageReads            *data.MessageReads            // Позиции чтения сообщений персонажами.
 	MessageTypes            *data.MessageTypes            // Справочник типов сообщений.
 }
 
@@ -559,6 +560,11 @@ func (world *World) SaveData(workingDirectory string) error {
 	}
 	if world.data.Messages != nil {
 		if err := world.data.Messages.SaveToFile(filepath.Join(dataDirectory, "Messages.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.MessageReads != nil {
+		if err := world.data.MessageReads.SaveToFile(filepath.Join(dataDirectory, "MessageReads.json")); err != nil {
 			return err
 		}
 	}

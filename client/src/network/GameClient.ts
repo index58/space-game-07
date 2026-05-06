@@ -1,6 +1,7 @@
 ﻿import type {
   AuthMessage,
   ChatErrorMessage,
+  ChatSelectMessage,
   ChatSendMessage,
   ChatStateMessage,
   ClientInputMessage,
@@ -174,6 +175,8 @@ export class GameClient {
   private latestChatState: ChatStateMessage | null = null;
   // Последняя ошибка отправки текста.
   private latestChatError: string | null = null;
+  // Порядковый номер последней ошибки, чтобы UI мог перезапустить одинаковую плашку.
+  private latestChatErrorSeq = 0;
   // Последнее состояние управления, готовое к отправке.
   private latestInput: ClientInputState = emptyInput();
   // Последний выданный порядковый номер пакета ввода.
@@ -218,6 +221,11 @@ export class GameClient {
     return this.latestChatError;
   }
 
+  // Возвращает счетчик ошибок панели чата.
+  getLatestChatErrorSeq(): number {
+    return this.latestChatErrorSeq;
+  }
+
   // Обновляет состояние клавиш и накапливает относительный поворот мыши до отправки.
   setInput(input: ClientInputState): void {
     this.latestInput = {
@@ -251,6 +259,20 @@ export class GameClient {
     const payload: ChatSendMessage = {
       type: "chatSend",
       ...message,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+  }
+
+  // Сообщает серверу, что игрок выбрал вкладку чата.
+  selectChat(chatId: number): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
+    const payload: ChatSelectMessage = {
+      type: "chatSelect",
+      chatId,
     };
 
     this.socket.send(JSON.stringify(payload));
@@ -327,6 +349,7 @@ export class GameClient {
 
     if (isChatErrorMessage(parsed)) {
       this.latestChatError = parsed.message;
+      this.latestChatErrorSeq++;
     }
   }
 

@@ -84,6 +84,18 @@ func TestDecodeChatSendMessageRejectsOtherTypes(t *testing.T) {
 	}
 }
 
+// Проверяет, что выбор вкладки чата читает ID выбранного чата из JSON.
+func TestDecodeChatSelectMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeChatSelectMessage([]byte(`{"type":"chatSelect","chatId":7}`))
+
+	if !ok {
+		t.Fatalf("chat selection was not accepted")
+	}
+	if message.ChatID != 7 {
+		t.Fatalf("decoded chat selection mismatch: %+v", message)
+	}
+}
+
 // Проверяет, что состояние чата кодируется с согласованными именами полей.
 func TestEncodeChatStateMessageUsesAgreedCamelCaseFields(t *testing.T) {
 	payload, err := transport.EncodeChatStateMessage(game.ChatState{
@@ -94,6 +106,7 @@ func TestEncodeChatStateMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				ChatID:               3,
 				Title:                "Server",
 				CommunityTypeAcronym: "Server",
+				UnreadCount:          2,
 				Messages: []game.ChatMessage{
 					{ID: 9, ChatID: 3, SenderNickname: "Pilot1", Text: "hello"},
 				},
@@ -110,6 +123,7 @@ func TestEncodeChatStateMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		`"selectedChatId":3`,
 		`"chatId":3`,
 		`"communityTypeAcronym":"Server"`,
+		`"unreadCount":2`,
 		`"senderNickname":"Pilot1"`,
 	} {
 		if !strings.Contains(jsonText, field) {

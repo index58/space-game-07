@@ -1,5 +1,5 @@
 {
-  "MaxID": 37,
+  "MaxID": 46,
   "Items": {
     "1": {
       "ID": 1,
@@ -333,6 +333,87 @@
       "Text": "Привет",
       "Color": "D8F3FF",
       "SentTime": "2026-05-05T23:42:20.2527738+03:00"
+    },
+    "38": {
+      "ID": 38,
+      "ChatID": 2,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Алё, чувак",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:01:35.7546867+03:00"
+    },
+    "39": {
+      "ID": 39,
+      "ChatID": 2,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Эй)",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:07:51.9616658+03:00"
+    },
+    "40": {
+      "ID": 40,
+      "ChatID": 2,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Ну как ты там?",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:13:30.1754798+03:00"
+    },
+    "41": {
+      "ID": 41,
+      "ChatID": 2,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "@ВВВв",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:13:58.4939645+03:00"
+    },
+    "42": {
+      "ID": 42,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "rgrg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:17:05.9386439+03:00"
+    },
+    "43": {
+      "ID": 43,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "dfjkwenbf/wlkg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:23:01.207523+03:00"
+    },
+    "44": {
+      "ID": 44,
+      "ChatID": 2,
+      "SenderCharacterID": 3,
+      "MessageTypeID": 1,
+      "Text": "cgrs",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:23:47.8467115+03:00"
+    },
+    "45": {
+      "ID": 45,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "ghy",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T01:58:14.1592455+03:00"
+    },
+    "46": {
+      "ID": 46,
+      "ChatID": 1,
+      "SenderCharacterID": 2,
+      "MessageTypeID": 1,
+      "Text": "Всем привет. Я новенький. Что за сервер? Что за игра? Как она вам? Стоит ли играть? У меня много вопросов)))",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-06T03:23:59.3053549+03:00"
     }
   }
 }

@@ -21,10 +21,14 @@ export type GameUiState = {
   chatState: ChatStateMessage | null;
   // Локальная строка ввода, которую HUD только показывает.
   chatInputText: string;
+  // Позиция каретки внутри локальной строки ввода.
+  chatCursorIndex: number;
   // Признак направления печатных клавиш в панель чата.
   chatInputFocused: boolean;
   // Последняя ошибка отправки текста, полученная от сервера.
   chatError: string | null;
+  // Порядковый номер ошибки, чтобы одинаковый текст заново запускал анимацию.
+  chatErrorSeq: number;
   // Открытое игровое меню вкладки, если игрок вызвал его правым кликом.
   chatContextMenu: ChatContextMenuState | null;
   // Положение и видимость игрового указателя мыши.
@@ -54,8 +58,10 @@ const initialGameUiState: GameUiState = {
   textureFilePath: null,
   chatState: null,
   chatInputText: "",
+  chatCursorIndex: 0,
   chatInputFocused: false,
   chatError: null,
+  chatErrorSeq: 0,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },

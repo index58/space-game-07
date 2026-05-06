@@ -316,6 +316,69 @@ func TestSendDuoChatMessageUsesAccountNicknameAndDuoKey(t *testing.T) {
 	}
 }
 
+// Проверяет, что входящий дуэт не меняет выбранный чат получателя и учитывается как непрочитанный.
+func TestIncomingDuoMessageKeepsRecipientSelectionAndUpdatesUnreadCount(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "pilot2@email.net", Nickname: "Pilot2", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 3}
+	if err := serverData.Accounts.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Characters.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("sender account was not connected")
+	}
+	if _, ok := gameWorld.ConnectAccount(2); !ok {
+		t.Fatalf("recipient account was not connected")
+	}
+	recipientState, ok := gameWorld.ChatStateForAccount(2, 0)
+	if !ok {
+		t.Fatalf("recipient chat state is not available")
+	}
+	serverChatID := recipientState.SelectedChatID
+
+	if _, _, chatError := gameWorld.SendChatMessage(1, 0, "Pilot2", "Личное сообщение"); chatError != "" {
+		t.Fatalf("SendChatMessage returned error: %s", chatError)
+	}
+	recipientState, ok = gameWorld.ChatStateForAccount(2, serverChatID)
+	if !ok {
+		t.Fatalf("recipient chat state is not available after incoming message")
+	}
+
+	if recipientState.SelectedChatID != serverChatID {
+		t.Fatalf("selected chat = %d, want server chat %d", recipientState.SelectedChatID, serverChatID)
+	}
+	var duoTab *game.ChatTab
+	for index := range recipientState.Tabs {
+		if recipientState.Tabs[index].CommunityTypeAcronym == "Duo" {
+			duoTab = &recipientState.Tabs[index]
+		}
+	}
+	if duoTab == nil {
+		t.Fatalf("recipient duo tab was not opened")
+	}
+	if duoTab.UnreadCount != 1 {
+		t.Fatalf("duo unread count = %d, want 1", duoTab.UnreadCount)
+	}
+
+	readState, ok := gameWorld.ChatStateForAccount(2, duoTab.ChatID)
+	if !ok || readState.SelectedChatID != duoTab.ChatID {
+		t.Fatalf("recipient could not select duo chat")
+	}
+	var readDuoTab *game.ChatTab
+	for index := range readState.Tabs {
+		if readState.Tabs[index].ChatID == duoTab.ChatID {
+			readDuoTab = &readState.Tabs[index]
+		}
+	}
+	if readDuoTab == nil || readDuoTab.UnreadCount != 0 {
+		t.Fatalf("duo unread count after selection = %+v, want 0", readDuoTab)
+	}
+}
+
 // Проверяет, что неизвестный ник аккаунта дает ошибку без создания сообщения.
 func TestSendDuoChatMessageRejectsUnknownAccountNickname(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))

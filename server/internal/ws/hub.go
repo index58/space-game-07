@@ -10,12 +10,13 @@ import (
 
 // Хранит одно WebSocket-подключение и служебные каналы записи.
 type Client struct {
-	connection *websocket.Conn // Активное сетевое соединение с браузером.
-	accountID  int64           // Подключенный аккаунт, которому принадлежит соединение.
-	objectID   int64           // Объект мира, которым управляет подключенный аккаунт.
-	send       chan []byte     // Очередь исходящих сообщений для отдельной горутины записи.
-	done       chan struct{}   // Сигнал завершения чтения, записи и очистки соединения.
-	closeOnce  sync.Once       // Защита от повторного закрытия служебного канала.
+	connection     *websocket.Conn // Активное сетевое соединение с браузером.
+	accountID      int64           // Подключенный аккаунт, которому принадлежит соединение.
+	objectID       int64           // Объект мира, которым управляет подключенный аккаунт.
+	selectedChatID int64           // Последняя выбранная вкладка чата в этом браузере.
+	send           chan []byte     // Очередь исходящих сообщений для отдельной горутины записи.
+	done           chan struct{}   // Сигнал завершения чтения, записи и очистки соединения.
+	closeOnce      sync.Once       // Защита от повторного закрытия служебного канала.
 }
 
 // Координирует все активные WebSocket-клиенты вокруг одного игрового мира.
@@ -52,6 +53,7 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initi
 		client.send <- payload
 	}
 	if chatState, ok := hub.world.ChatStateForAccount(accountID, 0); ok {
+		client.selectedChatID = chatState.SelectedChatID
 		if payload, err := EncodeChatStateMessage(chatState); err == nil {
 			client.send <- payload
 		}
@@ -109,6 +111,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeChatSendMessage(payload); ok {
 				hub.handleChatSend(client, message)
 			}
+			if message, ok := DecodeChatSelectMessage(payload); ok {
+				hub.handleChatSelect(client, message)
+			}
 			continue
 		}
 
@@ -131,21 +136,40 @@ func (hub *Hub) handleChatSend(client *Client, message ChatSendMessage) {
 	if len(recipientIDs) == 0 {
 		recipientIDs = []int64{client.accountID}
 	}
-	for _, accountID := range recipientIDs {
-		state := chatState
-		if accountID != client.accountID {
-			var ok bool
-			state, ok = hub.world.ChatStateForAccount(accountID, chatState.SelectedChatID)
-			if !ok {
-				continue
-			}
+	client.selectedChatID = chatState.SelectedChatID
+	hub.mu.Lock()
+	clients := make([]*Client, 0, len(hub.clients))
+	for recipient := range hub.clients {
+		if containsAccountID(recipientIDs, recipient.accountID) {
+			clients = append(clients, recipient)
+		}
+	}
+	hub.mu.Unlock()
+	for _, recipient := range clients {
+		state, ok := hub.world.ChatStateForAccount(recipient.accountID, recipient.selectedChatID)
+		if !ok {
+			continue
 		}
 		payload, err := EncodeChatStateMessage(state)
 		if err != nil {
 			continue
 		}
-		hub.sendToAccount(accountID, payload)
+		hub.sendToClient(recipient, payload)
 	}
+}
+
+// Обрабатывает выбор вкладки и возвращает состояние с обновленной позицией чтения.
+func (hub *Hub) handleChatSelect(client *Client, message ChatSelectMessage) {
+	chatState, ok := hub.world.ChatStateForAccount(client.accountID, message.ChatID)
+	if !ok {
+		return
+	}
+	client.selectedChatID = chatState.SelectedChatID
+	payload, err := EncodeChatStateMessage(chatState)
+	if err != nil {
+		return
+	}
+	hub.sendToClient(client, payload)
 }
 
 // Кладет пакет в очередь конкретного подключения.
@@ -172,6 +196,16 @@ func (hub *Hub) sendToAccount(accountID int64, payload []byte) {
 	for _, client := range clients {
 		hub.sendToClient(client, payload)
 	}
+}
+
+// Проверяет, что список получателей содержит указанный аккаунт.
+func containsAccountID(accountIDs []int64, accountID int64) bool {
+	for _, candidateID := range accountIDs {
+		if candidateID == accountID {
+			return true
+		}
+	}
+	return false
 }
 
 // Пишет исходящие снимки в WebSocket, пока клиент не отключился.

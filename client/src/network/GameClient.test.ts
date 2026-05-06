@@ -342,6 +342,25 @@ describe("GameClient", () => {
     socket.onmessage?.({ data: JSON.stringify({ type: "chatError", message: "Адресат не найден" }) });
 
     expect(client.getLatestChatError()).toBe("Адресат не найден");
+    expect(client.getLatestChatErrorSeq()).toBe(1);
+
+    client.destroy();
+  });
+
+  it("increments chat error sequence for repeated same refusal", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "chatError", message: "Адресат не найден" }) });
+    socket.onmessage?.({ data: JSON.stringify({ type: "chatError", message: "Адресат не найден" }) });
+
+    expect(client.getLatestChatError()).toBe("Адресат не найден");
+    expect(client.getLatestChatErrorSeq()).toBe(2);
 
     client.destroy();
   });
@@ -361,6 +380,23 @@ describe("GameClient", () => {
 
     expect(JSON.parse(socket.sent[0])).toEqual({ type: "chatSend", chatId: 3, text: "hello" });
     expect(JSON.parse(socket.sent[1])).toEqual({ type: "chatSend", targetNickname: "Pilot2", text: "private" });
+
+    client.destroy();
+  });
+
+  it("sends chat selection while connected", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    client.selectChat(7);
+
+    expect(JSON.parse(socket.sent[0])).toEqual({ type: "chatSelect", chatId: 7 });
 
     client.destroy();
   });

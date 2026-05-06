@@ -110,6 +110,10 @@ export class GameScene extends Phaser.Scene {
     if (chatAction) {
       this.gameClient?.sendChatMessage(chatAction);
     }
+    const chatSelectAction = this.inputController.consumeChatSelectAction();
+    if (chatSelectAction) {
+      this.gameClient?.selectChat(chatSelectAction.chatId);
+    }
     const selfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
@@ -126,8 +130,10 @@ export class GameScene extends Phaser.Scene {
         textureFilePath: null,
         chatState: null,
         chatInputText: "",
+        chatCursorIndex: 0,
         chatInputFocused: false,
         chatError: null,
+        chatErrorSeq: 0,
         chatContextMenu: null,
         gameCursor: this.inputController.getGameCursor(),
         chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
@@ -153,8 +159,10 @@ export class GameScene extends Phaser.Scene {
       textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
       chatState,
       chatInputText: this.inputController.getChatInputText(),
+      chatCursorIndex: this.inputController.getChatCursorIndex(),
       chatInputFocused: this.inputController.isChatInputFocused(),
       chatError: this.gameClient?.getLatestChatError() ?? null,
+      chatErrorSeq: this.gameClient?.getLatestChatErrorSeq() ?? 0,
       chatContextMenu: this.inputController.getChatContextMenu(),
       gameCursor: this.inputController.getGameCursor(),
       chatScroll: this.inputController.getChatScrollState(),

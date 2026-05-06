@@ -30,6 +30,7 @@ const chatMembersFileName = "ChatMembers.json"
 const communityTypesFileName = "CommunityTypes.json"
 const communityChatRolesFileName = "CommunityChatRoles.json"
 const messagesFileName = "Messages.json"
+const messageReadsFileName = "MessageReads.json"
 const messageTypesFileName = "MessageTypes.json"
 
 // Хранит таблицу, для которой на сервере пока нет отдельной предметной модели.
@@ -68,6 +69,7 @@ type ServerData struct {
 	CommunityTypes          *data.CommunityTypes          // Загруженный справочник типов сообществ.
 	CommunityChatRoles      *data.CommunityChatRoles      // Загруженный справочник ролей в чатах сообществ.
 	Messages                *data.Messages                // Загруженные сообщения чатов.
+	MessageReads            *data.MessageReads            // Загруженные позиции чтения сообщений персонажами.
 	MessageTypes            *data.MessageTypes            // Загруженный справочник типов сообщений.
 }
 
@@ -169,6 +171,10 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 	if err != nil {
 		return nil, err
 	}
+	messageReads, err := loadOptionalMessageReads(filepath.Join(dataDirectory, messageReadsFileName))
+	if err != nil {
+		return nil, err
+	}
 	messageTypes, err := loadOptionalMessageTypes(filepath.Join(dataDirectory, messageTypesFileName))
 	if err != nil {
 		return nil, err
@@ -196,6 +202,7 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		CommunityTypes:          communityTypes,
 		CommunityChatRoles:      communityChatRoles,
 		Messages:                messages,
+		MessageReads:            messageReads,
 		MessageTypes:            messageTypes,
 	}, nil
 }
@@ -338,6 +345,18 @@ func loadOptionalMessages(path string) (*data.Messages, error) {
 		return nil, err
 	}
 	return messages, nil
+}
+
+// Загружает необязательную таблицу прочтений сообщений или возвращает пустое хранилище до появления файла.
+func loadOptionalMessageReads(path string) (*data.MessageReads, error) {
+	reads := data.NewMessageReads()
+	if err := reads.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewMessageReads(), nil
+		}
+		return nil, err
+	}
+	return reads, nil
 }
 
 // Загружает необязательный справочник типов сообщений или возвращает пустое хранилище до появления файла.

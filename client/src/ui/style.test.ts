@@ -58,6 +58,13 @@ describe("HUD styles", () => {
     const scrollbarThumb = readCssBlock(".chat-scrollbar__thumb");
     const draggingScrollbarThumb = readCssBlock(".chat-scrollbar.is-dragging .chat-scrollbar__thumb");
     const message = readCssBlock(".chat-message");
+    const tabs = readCssBlock(".chat-tabs");
+    const tab = readCssBlock(".chat-tab");
+    const unread = readCssBlock(".chat-tab__unread");
+    const error = readCssBlock(".chat-error");
+    const input = readCssBlock(".chat-input");
+    const inputText = readCssBlock(".chat-input__text");
+    const inputCaret = readCssBlock(".chat-input__caret");
     const cursor = readCssBlock(".game-cursor");
     const cursorHighlight = readCssBlock(".game-cursor::after");
 
@@ -67,6 +74,17 @@ describe("HUD styles", () => {
     expect(scrollbarThumb).toContain("transition: top 120ms ease-out, height 120ms ease-out;");
     expect(draggingScrollbarThumb).toContain("transition: none;");
     expect(message).toContain("font: 1.05vh/1.2 Consolas, monospace;");
+    expect(tabs).toContain("overflow: visible;");
+    expect(tab).toContain("flex: 0 0 14vh;");
+    expect(unread).toContain("top: 0.18vh;");
+    expect(error).toContain("position: absolute;");
+    expect(error).toContain("animation-duration: 4.8s;");
+    expect(css).toContain("@keyframes chat-error-fade-odd");
+    expect(css).toContain("@keyframes chat-error-fade-even");
+    expect(input).toContain("position: relative;");
+    expect(inputText).not.toContain("display: flex;");
+    expect(inputCaret).toContain("position: absolute;");
+    expect(inputCaret).toContain("min-width: 2px;");
     expect(cursor).toContain("#252c32");
     expect(cursor).toContain("clip-path: polygon(0 0, 0 82%, 31% 58%, 50% 100%, 64% 94%, 45% 54%, 76% 54%);");
     expect(cursorHighlight).not.toContain("border-left");

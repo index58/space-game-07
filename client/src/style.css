@@ -139,6 +139,7 @@ body {
 }
 
 .chat-panel {
+  position: relative;
   width: min(48vh, 42vw);
   min-width: 34vh;
   padding: 1vh;
@@ -148,16 +149,19 @@ body {
   display: flex;
   gap: 0.5vh;
   min-height: 3vh;
-  overflow: hidden;
+  margin-top: 0.8vh;
+  overflow: visible;
 }
 
 .chat-tab {
+  position: relative;
   display: grid;
   grid-template-columns: 2vh minmax(0, 1fr);
   align-items: center;
   gap: 0.45vh;
-  min-width: 0;
-  max-width: 14vh;
+  flex: 0 0 14vh;
+  width: 14vh;
+  min-width: 14vh;
   height: 3vh;
   padding: 0 0.7vh;
   box-sizing: border-box;
@@ -187,10 +191,27 @@ body {
   white-space: nowrap;
 }
 
+.chat-tab__unread {
+  position: absolute;
+  top: 0.18vh;
+  right: 0.18vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.45vh;
+  height: 1.45vh;
+  padding: 0 0.35vh;
+  box-sizing: border-box;
+  color: #fff4f4;
+  background: #b7192f;
+  border: 0.12vh solid rgba(255, 230, 230, 0.86);
+  border-radius: 50%;
+  font: 0.85vh/1 Consolas, monospace;
+}
+
 .chat-messages {
   position: relative;
   height: 24vh;
-  margin-top: 0.8vh;
   overflow: hidden;
   padding: 0.8vh 1.6vh 0.8vh 0.8vh;
   box-sizing: border-box;
@@ -256,13 +277,25 @@ body {
 }
 
 .chat-error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.55vh);
   min-height: 2vh;
-  margin-top: 0.7vh;
+  padding: 0.55vh 0.8vh;
+  box-sizing: border-box;
   color: #ffd4d4;
+  background: rgba(24, 5, 9, 0.88);
+  border: 0.14vh solid rgba(255, 120, 120, 0.38);
   font: 1.15vh/1.25 Consolas, monospace;
+  pointer-events: none;
+  animation-duration: 4.8s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
 
 .chat-input {
+  position: relative;
   display: flex;
   align-items: center;
   min-height: 3.1vh;
@@ -284,14 +317,41 @@ body {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: pre;
 }
 
 .chat-input__caret {
-  width: 0.14vh;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: max(0.14vh, 2px);
+  min-width: 2px;
   height: 1.6vh;
-  margin-left: 0.2vh;
   background: rgba(238, 250, 255, 0.88);
+}
+
+@keyframes chat-error-fade-odd {
+  0% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes chat-error-fade-even {
+  0% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .chat-context-menu {

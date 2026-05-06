@@ -4,6 +4,11 @@ import { isFreshKeyDown, toShipInput } from "./inputState";
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
 
+export type ChatSelectAction = {
+  // Чат, который игрок выбрал игровым указателем.
+  chatId: number;
+};
+
 export type ChatContextMenuState = {
   // Чат, к которому относится открытое меню.
   chatId: number;
@@ -41,7 +46,6 @@ const hudEdgeVh = 1;
 const chatPanelWidthVh = 48;
 const chatPanelHalfHeightVh = 17;
 const chatPanelPaddingVh = 1;
-const chatTabsHeightVh = 3;
 const chatTabsGapBottomVh = 0.8;
 const chatMessagesHeightVh = 24;
 const chatMessagesBorderVh = 0.14;
@@ -76,8 +80,12 @@ export class InputController {
   private chatCursorIndex = 0;
   // Последний выбранный сервером или локальным вводом чат.
   private selectedChatId = 0;
+  // Показывает, что локальный выбор вкладки ждет подтверждения сервера.
+  private chatSelectionPending = false;
   // Очередь одноразовых команд отправки текста.
   private chatActions: ChatInputAction[] = [];
+  // Очередь одноразовых команд выбора вкладки.
+  private chatSelectActions: ChatSelectAction[] = [];
   // Локально закрытые дуэты, которые не должны отображаться в HUD.
   private readonly closedDuoChatIds = new Set<number>();
   // Последнее состояние вкладок для hit-test игрового указателя.
@@ -194,15 +202,23 @@ export class InputController {
         this.chatContextMenu = null;
         return;
       }
+      if (this.closeChatContextMenuItem(this.cursorX, this.cursorY) || this.closeChatContextMenuItem(event.clientX, event.clientY)) {
+        event.preventDefault();
+        return;
+      }
       if (this.startChatScrollbarDrag()) {
         event.preventDefault();
         return;
       }
-      if (this.closeChatContextMenuItem(this.cursorX, this.cursorY) || this.closeChatContextMenuItem(event.clientX, event.clientY)) {
+      if (this.selectChatTabAtCursor()) {
         event.preventDefault();
-      } else {
-        this.chatContextMenu = null;
+        return;
       }
+      if (this.closeUiModeFromSpaceClick()) {
+        event.preventDefault();
+        return;
+      }
+      this.chatContextMenu = null;
     });
 
     window.addEventListener("mouseup", (event) => {
@@ -239,7 +255,7 @@ export class InputController {
     }
 
     const tabs = chatState.tabs
-      .filter((tab) => tab.communityTypeAcronym === "Server" || !this.closedDuoChatIds.has(tab.chatId))
+      .filter((tab) => tab.communityTypeAcronym === "Server" || !this.closedDuoChatIds.has(tab.chatId) || (tab.unreadCount ?? 0) > 0)
       .map((tab) => ({ ...tab, messages: [...tab.messages] }));
     if (tabs.length === 0) {
       this.selectedChatId = 0;
@@ -251,7 +267,10 @@ export class InputController {
       return this.visibleChatState;
     }
 
-    if (chatState.selectedChatId && !this.closedDuoChatIds.has(chatState.selectedChatId)) {
+    if (this.chatSelectionPending && chatState.selectedChatId === this.selectedChatId) {
+      this.chatSelectionPending = false;
+    }
+    if (!this.chatSelectionPending && chatState.selectedChatId && !this.closedDuoChatIds.has(chatState.selectedChatId)) {
       this.selectedChatId = chatState.selectedChatId;
     }
     if (!tabs.some((tab) => tab.chatId === this.selectedChatId)) {
@@ -268,6 +287,11 @@ export class InputController {
     return this.chatInputText;
   }
 
+  // Возвращает позицию каретки внутри локальной строки.
+  getChatCursorIndex(): number {
+    return this.chatCursorIndex;
+  }
+
   // Возвращает состояние фокуса, чтобы HUD мог показать каретку.
   isChatInputFocused(): boolean {
     return this.chatInputFocused;
@@ -276,6 +300,11 @@ export class InputController {
   // Выдает одну готовую команду отправки текста.
   consumeChatAction(): ChatInputAction | null {
     return this.chatActions.shift() ?? null;
+  }
+
+  // Выдает одну готовую команду выбора вкладки.
+  consumeChatSelectAction(): ChatSelectAction | null {
+    return this.chatSelectActions.shift() ?? null;
   }
 
   // Возвращает открытое меню вкладки для отображения в SolidJS.
@@ -400,6 +429,18 @@ export class InputController {
       return true;
     }
 
+    if (event.code === "Home") {
+      this.chatCursorIndex = 0;
+      event.preventDefault();
+      return true;
+    }
+
+    if (event.code === "End") {
+      this.chatCursorIndex = this.chatInputText.length;
+      event.preventDefault();
+      return true;
+    }
+
     if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
       this.chatInputText = `${this.chatInputText.slice(0, this.chatCursorIndex)}${event.key}${this.chatInputText.slice(this.chatCursorIndex)}`;
       this.chatCursorIndex += event.key.length;
@@ -420,11 +461,11 @@ export class InputController {
       return;
     }
 
-    const directMessage = text.match(/^@([^\s]+)\s+(.+)$/);
+    const directMessage = text.match(/^@(?:"([^"]+)"|([^\s]+))\s+([\s\S]+)$/);
     if (directMessage) {
       this.chatActions.push({
-        targetNickname: directMessage[1],
-        text: directMessage[2].trim(),
+        targetNickname: directMessage[1] ?? directMessage[2],
+        text: directMessage[3].trim(),
       });
     } else {
       this.chatActions.push({
@@ -491,6 +532,40 @@ export class InputController {
     return true;
   }
 
+  // Выбирает вкладку под игровым указателем и ставит сетевое подтверждение чтения в очередь.
+  private selectChatTabAtCursor(): boolean {
+    if (!this.isGameCursorVisible()) {
+      return false;
+    }
+
+    const tab = this.chatTabAtPoint(this.cursorX, this.cursorY);
+    if (!tab) {
+      return false;
+    }
+
+    this.selectedChatId = tab.chatId;
+    this.chatSelectionPending = true;
+    this.chatContextMenu = null;
+    this.chatSelectActions.push({ chatId: tab.chatId });
+    return true;
+  }
+
+  // Возвращает ввод корабля кликом по космосу вне панелей и меню.
+  private closeUiModeFromSpaceClick(): boolean {
+    if (!this.isGameCursorVisible()) {
+      return false;
+    }
+    if (this.isCursorOverAnyHudPanel() || this.chatContextMenu !== null) {
+      return false;
+    }
+
+    this.chatInputFocused = false;
+    this.chatInputText = "";
+    this.chatCursorIndex = 0;
+    this.chatContextMenu = null;
+    return true;
+  }
+
   // Находит вкладку по координатам с теми же размерами, что использует HUD.
   private chatTabAtPoint(x: number, y: number): ChatStateMessage["tabs"][number] | null {
     if (!this.visibleChatState || this.visibleChatState.tabs.length === 0) {
@@ -501,7 +576,7 @@ export class InputController {
     const panelLeft = hudEdgeVh * vh;
     const panelTop = window.innerHeight / 2 - chatPanelHalfHeightVh * vh;
     const tabLeft = panelLeft + chatPanelPaddingVh * vh;
-    const tabTop = panelTop + chatPanelPaddingVh * vh;
+    const tabTop = panelTop + (chatPanelPaddingVh + chatMessagesHeightVh + chatTabsGapBottomVh) * vh;
     const tabWidth = 14 * vh;
     const tabHeight = 3 * vh;
     const tabGap = 0.5 * vh;
@@ -618,6 +693,23 @@ export class InputController {
     return this.cursorX >= left && this.cursorX <= left + width && this.cursorY >= top && this.cursorY <= top + height;
   }
 
+  // Проверяет попадание игрового указателя в любую постоянную HUD-панель.
+  private isCursorOverAnyHudPanel(): boolean {
+    for (const panel of document.querySelectorAll<HTMLElement>(".hud-panel")) {
+      const rect = panel.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) {
+        continue;
+      }
+      if (this.cursorX >= rect.left &&
+        this.cursorX <= rect.right &&
+        this.cursorY >= rect.top &&
+        this.cursorY <= rect.bottom) {
+        return true;
+      }
+    }
+    return this.isCursorOverChatPanel();
+  }
+
   // Проверяет попадание игрового указателя в видимую полосу истории.
   private isCursorOverChatScrollbarTrack(): boolean {
     const track = this.chatScrollbarTrackRect();
@@ -661,7 +753,7 @@ export class InputController {
     const panelTop = window.innerHeight / 2 - chatPanelHalfHeightVh * vh;
     return {
       left: panelLeft + chatPanelPaddingVh * vh,
-      top: panelTop + (chatPanelPaddingVh + chatTabsHeightVh + chatTabsGapBottomVh) * vh,
+      top: panelTop + chatPanelPaddingVh * vh,
       width: (chatPanelWidthVh - chatPanelPaddingVh * 2) * vh,
       height: chatMessagesHeightVh * vh,
     };
