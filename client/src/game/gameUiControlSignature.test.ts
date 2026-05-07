@@ -1,0 +1,97 @@
+import { describe, expect, it } from "vitest";
+import type { GameUiState } from "../ui/gameUiState";
+import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
+
+const scrollState = {
+  visible: false,
+  thumbTopPercent: 0,
+  thumbHeightPercent: 100,
+  contentOffsetPx: 0,
+  dragging: false,
+};
+
+const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
+  status: "connected",
+  selfObject: null,
+  objects: [],
+  equipmentGroups: [],
+  selectedPilotToolIndex: 0,
+  referenceData: null,
+  textureFilePath: null,
+  chatState: null,
+  chatInputText: "",
+  chatCursorIndex: 0,
+  chatSelectionStart: 0,
+  chatSelectionEnd: 0,
+  chatInputFocused: false,
+  chatError: null,
+  chatErrorSeq: 0,
+  chatContextMenu: null,
+  gameCursor: { visible: true, x: 100, y: 100 },
+  chatScroll: scrollState,
+  uiKitShowcaseVisible: false,
+  settingsVisible: true,
+  inputSettingsValues: { 1: 1 },
+  openInputSettingsActionId: null,
+  inputSettingsError: null,
+  inputSettingsSaving: false,
+  inputSettingsScroll: scrollState,
+  inputSettingsDropdownScroll: scrollState,
+  uiKitDemoState: {
+    buttonClicks: 0,
+    checkboxChecked: true,
+    radioValue: "a",
+    dropdownOpen: false,
+    dropdownValue: "one",
+    listValue: "1",
+    treeValue: "root",
+    virtualStartIndex: 20,
+    tabValue: "one",
+    editText: "text",
+    editSelectionStart: 1,
+    editSelectionEnd: 3,
+    scrollbarTopPercent: 20,
+    scrollbarDrag: null,
+    sliderValue: 30,
+    stepperValue: 7,
+    splitterVertical: true,
+    menuOpen: false,
+    tooltipVisible: false,
+  },
+  uiControls: [],
+  fps: 180,
+  zoom: 4,
+  ...partial,
+});
+
+const viewport = {
+  width: 1200,
+  height: 800,
+  scaleWidth: 1200,
+  scaleHeight: 800,
+};
+
+describe("getGameUiControlLayoutSignature", () => {
+  // Проверяет, что частые значения кадра не заставляют заново измерять DOM-контролы.
+  it("ignores frame-only fields", () => {
+    const first = getGameUiControlLayoutSignature(state(), viewport);
+    const second = getGameUiControlLayoutSignature(state({
+      fps: 81,
+      gameCursor: { visible: true, x: 700, y: 500 },
+      zoom: 5,
+    }), viewport);
+
+    expect(second).toBe(first);
+  });
+
+  // Проверяет, что изменение раскладки окна настроек помечает геометрию UI устаревшей.
+  it("changes when settings layout changes", () => {
+    const first = getGameUiControlLayoutSignature(state(), viewport);
+    const second = getGameUiControlLayoutSignature(state({
+      openInputSettingsActionId: 1,
+      inputSettingsDropdownScroll: { ...scrollState, visible: true, contentOffsetPx: 32 },
+    }), viewport);
+
+    expect(second).not.toBe(first);
+  });
+});

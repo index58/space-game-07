@@ -408,6 +408,51 @@ describe("InputController", () => {
     expect(controller.consumeChatSelectAction()).toEqual({ chatId: 2 });
   });
 
+  // Проверяет, что внешний клик раскрытого списка не проходит в лежащую ниже вкладку чата.
+  it("blocks chat tab selection under dropdown outside blocker", () => {
+    setViewportWidth(1000);
+    setViewportHeight(1000);
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [
+        { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: [] },
+        { chatId: 2, title: "Pilot2", communityTypeAcronym: "Duo", duoChatKey: "1:2", messages: [] },
+      ],
+    });
+    controller.updateGameUiControls([
+      {
+        id: "settings-input-select-1-outside-blocker",
+        kind: "modal",
+        rect: { left: 0, top: 0, width: 1000, height: 1000 },
+        zIndex: 900,
+        disabled: false,
+        visible: true,
+        focusable: false,
+        value: null,
+      },
+    ]);
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    moveMouse(-315, 105);
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    const visibleState = controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [
+        { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: [] },
+        { chatId: 2, title: "Pilot2", communityTypeAcronym: "Duo", duoChatKey: "1:2", messages: [] },
+      ],
+    });
+
+    expect(visibleState?.selectedChatId).toBe(1);
+    expect(controller.consumeChatSelectAction()).toBeNull();
+  });
+
   it("ignores game keyboard and wheel input while system pointer is unlocked", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);

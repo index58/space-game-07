@@ -79,11 +79,12 @@ describe("HUD styles", () => {
     expect(dropdownMarker).toContain("border-right: 0.35vh solid transparent;");
     expect(dropdownMarker).toContain("border-top: 0.45vh solid rgba(216, 243, 255, 0.82);");
     expect(dropdownMarker).toContain("right: 0.75vh;");
-    expect(menu).toContain("position: absolute;");
-    expect(menu).toContain("top: 100%;");
-    expect(menu).toContain("z-index: 2;");
-    expect(menu).toContain("background: rgb(5, 18, 28);");
-    expect(menu).toContain("border: 0.14vh solid rgba(130, 210, 255, 0.38);");
+    expect(menu).toContain("position: fixed;");
+    expect(menu).toContain("z-index: 19;");
+    expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(menu).toContain("background: rgb(18, 44, 60);");
+    expect(menu).toContain("border: 0.18vh solid rgba(180, 232, 255, 0.72);");
+    expect(menu).toContain("box-shadow: 0 0.5vh 1.4vh rgba(0, 4, 8, 0.72), inset 0 0 0 0.12vh rgba(238, 250, 255, 0.08);");
     expect(scrollbar).toContain("z-index: 30;");
   });
 
@@ -93,8 +94,8 @@ describe("HUD styles", () => {
     const body = readCssBlock(".settings-modal-layer .ui-kit-modal__body");
     const settings = readCssBlock(".settings-modal");
     const table = readCssBlock(".settings-input-table");
-    const menu = readCssBlock(".settings-input-row .ui-kit-dropdown__menu");
-    const viewport = readCssBlock(".settings-input-row .ui-kit-dropdown__menu-viewport");
+    const menu = readCssBlock(".ui-kit-dropdown__menu");
+    const viewport = readCssBlock(".ui-kit-dropdown__menu[id^=\"settings-input-select-\"] .ui-kit-dropdown__menu-viewport");
     const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar");
 
     expect(modal).toContain("grid-template-rows: auto minmax(0, 1fr);");
@@ -105,6 +106,7 @@ describe("HUD styles", () => {
     expect(settings).toContain("min-height: 0;");
     expect(table).toContain("overflow: hidden;");
     expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(menu).toContain("position: fixed;");
     expect(menu).not.toContain("max-height: 22vh;");
     expect(viewport).toContain("height: 22vh;");
     expect(viewport).toContain("max-height: 22vh;");

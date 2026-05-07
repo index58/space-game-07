@@ -247,7 +247,12 @@ export class InputController {
         this.chatContextMenu = null;
         return;
       }
+      const uiTarget = this.uiRuntime.hitTest(this.cursorX, this.cursorY);
       this.enqueueUiAction(this.uiRuntime.pointerDown(this.cursorX, this.cursorY, event.button));
+      if (this.isDropdownOutsideBlocker(uiTarget)) {
+        event.preventDefault();
+        return;
+      }
       if (this.startChatEditPointerSelection(event.detail)) {
         event.preventDefault();
         return;
@@ -619,6 +624,11 @@ export class InputController {
     if (action) {
       this.uiActions.push(action);
     }
+  }
+
+  // Узнает слой, который должен только закрыть раскрытый список и не запускать нижний UI.
+  private isDropdownOutsideBlocker(control: GameUiControlState | null): boolean {
+    return control?.id.endsWith("-outside-blocker") ?? false;
   }
 
   // Очищает локальную строку и закрывает native-редактор.

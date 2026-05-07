@@ -1,4 +1,5 @@
-import { For, Show, type JSX } from "solid-js";
+import { createEffect, createSignal, For, onCleanup, Show, type JSX } from "solid-js";
+import { Portal } from "solid-js/web";
 
 export type UiKitOption = {
   // Значение, которое возвращает контрол при выборе.
@@ -63,6 +64,15 @@ export type DropdownProps = {
     // Показывает активное перетаскивание ползунка.
     dragging: boolean;
   };
+};
+
+type DropdownMenuPosition = {
+  // Горизонтальная координата меню в пикселях окна.
+  leftPx: number;
+  // Верхняя координата меню в пикселях окна.
+  topPx: number;
+  // Ширина меню в пикселях окна.
+  widthPx: number;
 };
 
 type ListBoxProps = {
@@ -207,34 +217,68 @@ export const RadioGroup = (props: RadioGroupProps) => (
   </div>
 );
 
-export const Dropdown = (props: DropdownProps) => (
-  <div id={props.id} data-ui-kind="select" class={`ui-kit-control ui-kit-dropdown ${props.open ? "is-open" : ""}`}>
-    <Show when={(props.label ?? "").trim() !== ""}>
-      <div class="ui-kit-dropdown__label">{props.label}</div>
-    </Show>
-    <div class="ui-kit-dropdown__value">{props.options.find((option) => option.value === props.selectedValue)?.label ?? ""}</div>
-    <Show when={props.open}>
-      <div class="ui-kit-dropdown__menu">
-        <div class="ui-kit-dropdown__menu-viewport">
-          <div class="ui-kit-dropdown__menu-content" style={{ transform: `translateY(-${props.menuScroll?.contentOffsetPx ?? 0}px)` }}>
-            <For each={props.options}>
-              {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} data-ui-z-index="1000" class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
-            </For>
+export const Dropdown = (props: DropdownProps) => {
+  let rootElement: HTMLDivElement | undefined;
+  const [menuPosition, setMenuPosition] = createSignal<DropdownMenuPosition>({ leftPx: 0, topPx: 0, widthPx: 0 });
+
+  const updateMenuPosition = () => {
+    const rect = rootElement?.getBoundingClientRect();
+    if (!rect) {
+      return;
+    }
+    setMenuPosition({ leftPx: rect.left, topPx: rect.bottom, widthPx: rect.width });
+  };
+
+  createEffect(() => {
+    const open = props.open;
+    const selectedValue = props.selectedValue;
+    const optionCount = props.options.length;
+    const scrollVisible = props.menuScroll?.visible;
+    void selectedValue;
+    void optionCount;
+    void scrollVisible;
+    if (!open) {
+      return;
+    }
+
+    updateMenuPosition();
+    window.addEventListener("resize", updateMenuPosition);
+    onCleanup(() => window.removeEventListener("resize", updateMenuPosition));
+  });
+
+  return (
+    <div ref={(element) => { rootElement = element; }} id={props.id} data-ui-kind="select" class={`ui-kit-control ui-kit-dropdown ${props.open ? "is-open" : ""}`}>
+      <Show when={(props.label ?? "").trim() !== ""}>
+        <div class="ui-kit-dropdown__label">{props.label}</div>
+      </Show>
+      <div class="ui-kit-dropdown__value">{props.options.find((option) => option.value === props.selectedValue)?.label ?? ""}</div>
+      <Show when={props.open}>
+        <Portal>
+          {/* Экранный слой забирает внешний клик у нижних контролов и оставляет активными пункты меню. */}
+          <div id={`${props.id}-outside-blocker`} data-ui-kind="modal" data-ui-z-index="900" data-ui-focusable="false" class="ui-kit-control ui-kit-dropdown__outside-blocker" />
+          <div id={`${props.id}-menu`} class="ui-kit-dropdown__menu" style={dropdownMenuStyle(menuPosition())}>
+            <div class="ui-kit-dropdown__menu-viewport">
+              <div class="ui-kit-dropdown__menu-content" style={{ transform: `translateY(-${props.menuScroll?.contentOffsetPx ?? 0}px)` }}>
+                <For each={props.options}>
+                  {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} data-ui-z-index="1000" class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
+                </For>
+              </div>
+            </div>
+            <Show when={props.menuScroll?.visible}>
+              <Scrollbar
+                id={`${props.id}-scrollbar`}
+                className="ui-kit-dropdown-scrollbar"
+                thumbTopPercent={props.menuScroll?.thumbTopPercent ?? 0}
+                thumbHeightPercent={props.menuScroll?.thumbHeightPercent ?? 100}
+                dragging={props.menuScroll?.dragging ?? false}
+              />
+            </Show>
           </div>
-        </div>
-        <Show when={props.menuScroll?.visible}>
-          <Scrollbar
-            id={`${props.id}-scrollbar`}
-            className="ui-kit-dropdown-scrollbar"
-            thumbTopPercent={props.menuScroll?.thumbTopPercent ?? 0}
-            thumbHeightPercent={props.menuScroll?.thumbHeightPercent ?? 100}
-            dragging={props.menuScroll?.dragging ?? false}
-          />
-        </Show>
-      </div>
-    </Show>
-  </div>
-);
+        </Portal>
+      </Show>
+    </div>
+  );
+};
 
 export const ListBox = (props: ListBoxProps) => (
   <div id={props.id} data-ui-kind="list" class="ui-kit-control ui-kit-list">
@@ -333,5 +377,11 @@ export const Tooltip = (props: TooltipProps) => (
 export const HotkeyCapture = EditControl;
 
 const stateClass = (state: ButtonProps["state"]): string => state && state !== "normal" ? `is-${state}` : "";
+
+const dropdownMenuStyle = (position: DropdownMenuPosition): JSX.CSSProperties => ({
+  left: `${position.leftPx}px`,
+  top: `${position.topPx}px`,
+  width: `${position.widthPx}px`,
+});
 
 const flattenTree = (nodes: TreeNode[]): TreeNode[] => nodes.flatMap((node) => [node, ...flattenTree(node.children ?? [])]);

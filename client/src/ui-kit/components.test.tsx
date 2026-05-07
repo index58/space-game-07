@@ -44,7 +44,7 @@ describe("ui-kit components", () => {
       </>
     ), root);
 
-    expect(root.querySelector(".ui-kit-dropdown__menu")).not.toBeNull();
+    expect(document.body.querySelector(".ui-kit-dropdown__menu")).not.toBeNull();
     expect(root.querySelector(".ui-kit-list__item.is-selected")?.textContent).toBe("Two");
     expect(root.querySelector(".ui-kit-tree__item.is-selected")?.textContent).toBe("Child");
     expect(root.querySelector(".ui-kit-virtual-list__index")?.textContent).toBe("10");
@@ -59,8 +59,82 @@ describe("ui-kit components", () => {
       <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
     ), root);
 
-    expect(root.querySelector<HTMLElement>("#select-a")?.dataset.uiZIndex).toBe("1000");
-    expect(root.querySelector<HTMLElement>("#select-b")?.dataset.uiZIndex).toBe("1000");
+    expect(document.body.querySelector<HTMLElement>("#select-a")?.dataset.uiZIndex).toBe("1000");
+    expect(document.body.querySelector<HTMLElement>("#select-b")?.dataset.uiZIndex).toBe("1000");
+  });
+
+  // Проверяет, что раскрытый список получает экранный перехватчик для внешнего клика.
+  it("renders dropdown outside click blocker under options", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => (
+      <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+    ), root);
+
+    const blocker = document.body.querySelector<HTMLElement>("#select-outside-blocker");
+    expect(blocker?.dataset.uiKind).toBe("modal");
+    expect(blocker?.dataset.uiZIndex).toBe("900");
+    expect(document.body.querySelector<HTMLElement>("#select-a")?.dataset.uiZIndex).toBe("1000");
+  });
+
+  // Проверяет, что экранный перехватчик не ограничивается таблицей настроек.
+  it("portals dropdown outside click blocker out of settings clipping containers", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => (
+      <div class="settings-input-table">
+        <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+      </div>
+    ), root);
+
+    const blocker = document.body.querySelector<HTMLElement>("#select-outside-blocker");
+    expect(blocker?.closest(".settings-input-table")).toBeNull();
+    expect(blocker ? document.body.contains(blocker) : false).toBe(true);
+  });
+
+  // Проверяет, что раскрытое меню не обрезается контейнерами модального окна настроек.
+  it("portals dropdown menu out of settings clipping containers", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => (
+      <div class="settings-input-table">
+        <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+      </div>
+    ), root);
+
+    const menu = document.body.querySelector<HTMLElement>("#select-menu");
+    expect(menu?.closest(".settings-input-table")).toBeNull();
+    expect(menu ? document.body.contains(menu) : false).toBe(true);
+  });
+
+  // Проверяет, что вынесенное меню привязано к экранным границам исходного поля.
+  it("positions portaled dropdown menu at trigger screen rect", async () => {
+    const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
+      if (this.id === "select") {
+        return { x: 120, y: 300, left: 120, top: 300, right: 360, bottom: 332, width: 240, height: 32, toJSON: () => ({}) } as DOMRect;
+      }
+      return originalGetBoundingClientRect.call(this);
+    };
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    try {
+      dispose = render(() => (
+        <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+      ), root);
+      await Promise.resolve();
+
+      const menu = document.body.querySelector<HTMLElement>("#select-menu");
+      expect(menu?.style.left).toBe("120px");
+      expect(menu?.style.top).toBe("332px");
+      expect(menu?.style.width).toBe("240px");
+    } finally {
+      HTMLElement.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+    }
   });
 
   // Проверяет, что пустая подпись выпадающего списка не занимает отдельную строку.

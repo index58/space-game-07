@@ -108,4 +108,18 @@ describe("GameUiRuntime", () => {
       controlRect: { left: 10, top: 54, width: 120, height: 30 },
     });
   });
+
+  // Проверяет, что перехватчик раскрытого списка забирает внешний клик у нижнего элемента.
+  it("uses dropdown outside blocker above lower controls", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([
+      control({ id: "button", kind: "button", rect: { left: 0, top: 0, width: 200, height: 200 }, zIndex: 1 }),
+      control({ id: "select-outside-blocker", kind: "modal", rect: { left: 0, top: 0, width: 300, height: 300 }, zIndex: 900, focusable: false }),
+      control({ id: "select-one", kind: "select", rect: { left: 10, top: 54, width: 120, height: 30 }, zIndex: 1000, value: "one" }),
+    ]);
+
+    expect(runtime.hitTest(150, 150)?.id).toBe("select-outside-blocker");
+    expect(runtime.hitTest(20, 60)?.id).toBe("select-one");
+  });
 });

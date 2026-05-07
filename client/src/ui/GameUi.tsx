@@ -1,4 +1,5 @@
-import { createEffect, createSignal, For, Match, onCleanup, onMount, Show, Switch, type Accessor, type JSX } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Match, onCleanup, onMount, Show, Switch, type Accessor, type JSX } from "solid-js";
+import { Portal } from "solid-js/web";
 import type { GameUiState } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
@@ -352,7 +353,9 @@ const ChatPanel = (props: ChatPanelProps) => {
 // Рисует серый игровой указатель поверх HUD, когда системный указатель захвачен игрой.
 const GameCursor = (props: GameCursorProps) => (
   <Show when={props.state().gameCursor.visible}>
-    <div class="game-cursor" style={{ left: `${props.state().gameCursor.x}px`, top: `${props.state().gameCursor.y}px` }} />
+    <Portal>
+      <div class="game-cursor" style={{ left: `${props.state().gameCursor.x}px`, top: `${props.state().gameCursor.y}px` }} />
+    </Portal>
   </Show>
 );
 
@@ -390,8 +393,8 @@ const UiKitShowcase = (props: UiKitShowcaseProps) => (
 
 // Показывает окно настроек аккаунта поверх игрового HUD.
 const SettingsModal = (props: SettingsModalProps) => {
-  const rows = () => getInputSettingsRows(props.state().referenceData, props.state().inputSettingsValues);
-  const options = () => getInputEventOptions(props.state().referenceData);
+  const rows = createMemo(() => getInputSettingsRows(props.state().referenceData, props.state().inputSettingsValues));
+  const options = createMemo(() => getInputEventOptions(props.state().referenceData));
   return (
     <Show when={props.state().settingsVisible}>
       <div class="settings-modal-layer">

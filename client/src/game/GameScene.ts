@@ -15,13 +15,15 @@ import type {
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
-import type { GameUiController } from "../ui/gameUiState";
+import type { GameUiController, GameUiState } from "../ui/gameUiState";
 import { getInputBindingMap, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
 import { applyUiKitDemoAction, createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiAction, GameUiControlKind, GameUiControlState } from "../ui-kit/types";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
+import { FrameRateMeter } from "./frameRateMeter";
+import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
 import { InputController, type ChatScrollState } from "./InputController";
 
 const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
@@ -38,6 +40,8 @@ export class GameScene extends Phaser.Scene {
   private objectSprites = new Map<number, Phaser.GameObjects.Image>();
   // Векторный слой отладочной отрисовки физических тел.
   private bodyPolygonGraphics!: Phaser.GameObjects.Graphics;
+  // Измеряет простую среднюю частоту кадров за последнюю секунду.
+  private frameRateMeter = new FrameRateMeter();
   // Включает показ серверных физических тел поверх текстур.
   private bodyPolygonDebugVisible = false;
   // Тайловое изображение космоса под всеми объектами.
@@ -82,6 +86,10 @@ export class GameScene extends Phaser.Scene {
   private settingsDropdownScrollOffsetPx = 0;
   // Захват ползунка раскрытого списка событий ввода.
   private settingsDropdownScrollbarDrag: ScrollbarDragState | null = null;
+  // Последняя раскладка DOM-контролов, для которой уже обновлен hit-test.
+  private lastGameUiControlLayoutSignature = "";
+  // Количество ближайших кадров, в которых нужно перечитать DOM после изменения раскладки.
+  private gameUiControlRefreshFrames = 0;
 
   constructor(
     // Мост передачи состояния из Phaser в SolidJS UI.
@@ -119,7 +127,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Каждый кадр отправляет свежий ввод и рисует последний серверный снимок мира.
-  update(_time: number, _deltaMs: number): void {
+  update(time: number, _deltaMs: number): void {
+    const measuredFps = this.frameRateMeter.recordFrame(time);
     const input = this.inputController.consumeShipInput();
     this.gameClient?.setInput(input);
     if (this.inputController.consumeRandomShipChangeRequest()) {
@@ -186,10 +195,10 @@ export class GameScene extends Phaser.Scene {
         inputSettingsDropdownScroll,
         uiKitDemoState: this.uiKitDemoState,
         uiControls: [],
-        fps: this.game.loop.actualFps,
+        fps: measuredFps,
         zoom: this.zoomScale,
       });
-      this.inputController.updateGameUiControls(this.collectGameUiControls());
+      this.updateGameUiControlsIfNeeded(this.gameUi.state());
       return;
     }
 
@@ -228,10 +237,10 @@ export class GameScene extends Phaser.Scene {
       inputSettingsDropdownScroll,
       uiKitDemoState: this.uiKitDemoState,
       uiControls: [],
-      fps: this.game.loop.actualFps,
+      fps: measuredFps,
       zoom: this.zoomScale,
     });
-    this.inputController.updateGameUiControls(this.collectGameUiControls());
+    this.updateGameUiControlsIfNeeded(this.gameUi.state());
   }
 
   // Показывает фон и статус, пока нет валидного снимка объекта игрока.
@@ -446,6 +455,26 @@ export class GameScene extends Phaser.Scene {
         };
       })
       .filter((control): control is GameUiControlState => control !== null);
+  }
+
+  // Обновляет hit-test DOM-контролов только после изменения раскладки UI, а не на каждом кадре.
+  private updateGameUiControlsIfNeeded(state: GameUiState): void {
+    const signature = getGameUiControlLayoutSignature(state, {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      scaleWidth: this.scale.width,
+      scaleHeight: this.scale.height,
+    });
+    if (signature !== this.lastGameUiControlLayoutSignature) {
+      this.lastGameUiControlLayoutSignature = signature;
+      this.gameUiControlRefreshFrames = 2;
+    }
+    if (this.gameUiControlRefreshFrames <= 0) {
+      return;
+    }
+
+    this.gameUiControlRefreshFrames--;
+    this.inputController.updateGameUiControls(this.collectGameUiControls());
   }
 
   // Применяет накопленные действия общего UI к локальной витрине контролов.

@@ -1,4 +1,5 @@
-import { createSignal, type Accessor } from "solid-js";
+import type { Accessor } from "solid-js";
+import { createStore } from "solid-js/store";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
 import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
@@ -109,10 +110,10 @@ const initialGameUiState: GameUiState = {
 
 // Создаёт единый мост состояния между Phaser-сценой и SolidJS.
 export const createGameUiController = (): GameUiController => {
-  const [state, setState] = createSignal<GameUiState>(initialGameUiState);
+  const [state, setState] = createStore<GameUiState>(initialGameUiState);
 
   return {
-    state,
+    state: () => state,
     update: setState,
   };
 };

@@ -1,0 +1,55 @@
+import type { GameUiState } from "../ui/gameUiState";
+
+export type GameUiControlLayoutViewport = {
+  // Ширина браузерного окна в пикселях.
+  width: number;
+  // Высота браузерного окна в пикселях.
+  height: number;
+  // Ширина Phaser-области в пикселях.
+  scaleWidth: number;
+  // Высота Phaser-области в пикселях.
+  scaleHeight: number;
+};
+
+// Собирает только те признаки, которые могут изменить набор или геометрию DOM-контролов.
+export const getGameUiControlLayoutSignature = (
+  state: GameUiState,
+  viewport: GameUiControlLayoutViewport,
+): string => JSON.stringify({
+  viewport,
+  status: state.status,
+  hasSelfObject: state.selfObject !== null,
+  chat: {
+    selectedChatId: state.chatState?.selectedChatId ?? null,
+    tabIds: state.chatState?.tabs.map((tab) => `${tab.chatId}:${tab.unreadCount ?? 0}`).join(",") ?? "",
+    inputFocused: state.chatInputFocused,
+    contextMenu: state.chatContextMenu ? {
+      chatId: state.chatContextMenu.chatId,
+      x: state.chatContextMenu.x,
+      y: state.chatContextMenu.y,
+    } : null,
+    scrollbarVisible: state.chatScroll.visible,
+  },
+  showcase: {
+    visible: state.uiKitShowcaseVisible,
+    state: state.uiKitDemoState,
+  },
+  settings: {
+    visible: state.settingsVisible,
+    actionCount: state.referenceData?.ActionType.MaxID ?? 0,
+    inputEventCount: state.referenceData?.InputEventType.MaxID ?? 0,
+    openActionId: state.openInputSettingsActionId,
+    saving: state.inputSettingsSaving,
+    hasError: state.inputSettingsError !== null,
+    listScroll: scrollSignature(state.inputSettingsScroll),
+    dropdownScroll: scrollSignature(state.inputSettingsDropdownScroll),
+  },
+});
+
+const scrollSignature = (scroll: GameUiState["inputSettingsScroll"]) => ({
+  visible: scroll.visible,
+  thumbTopPercent: scroll.thumbTopPercent,
+  thumbHeightPercent: scroll.thumbHeightPercent,
+  contentOffsetPx: scroll.contentOffsetPx,
+  dragging: scroll.dragging,
+});

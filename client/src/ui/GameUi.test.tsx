@@ -3,7 +3,7 @@ import { createSignal } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import type { CosmicObject, ReferenceDataMessage } from "../network/protocol";
 import { createInitialUiKitDemoState } from "../ui-kit/showcaseState";
-import type { GameUiState } from "./gameUiState";
+import { createGameUiController, type GameUiState } from "./gameUiState";
 import { GameUi } from "./GameUi";
 
 let dispose: (() => void) | null = null;
@@ -258,7 +258,20 @@ describe("GameUi", () => {
     expect(root.querySelector(".chat-scrollbar .ui-kit-scrollbar__thumb")).not.toBeNull();
     expect(Array.from(root.querySelector(".chat-scrollbar")?.classList ?? [])).toContain("is-dragging");
     expect(root.querySelector<HTMLElement>(".chat-messages__content")?.style.transform).toBe("translateY(42px)");
-    expect(root.querySelector(".game-cursor")).not.toBeNull();
+    expect(document.body.querySelector(".game-cursor")).not.toBeNull();
+  });
+
+  // Проверяет, что игровой указатель не попадает в слой HUD, который ниже портальных меню.
+  it("portals game cursor above body-level overlays", () => {
+    const root = document.createElement("div");
+    root.id = "ui-root";
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({ ...state(), gameCursor: { visible: true, x: 320, y: 240 } })} />, root);
+
+    const cursor = document.body.querySelector<HTMLElement>(".game-cursor");
+    expect(cursor?.closest("#ui-root")).toBeNull();
+    expect(cursor ? document.body.contains(cursor) : false).toBe(true);
   });
 
   // Проверяет, что отладочная витрина UI Kit показывает расширенный набор контролов.
@@ -276,6 +289,32 @@ describe("GameUi", () => {
     expect(root.querySelector(".ui-kit-tab.is-selected")?.textContent).toBe("One");
     expect(root.querySelector(".ui-kit-slider")).not.toBeNull();
     expect(root.querySelector(".ui-kit-tooltip")).not.toBeNull();
+  });
+
+  // Проверяет, что частые счетчики кадра не пересоздают строки окна настроек.
+  it("keeps settings rows mounted when only frame counters change", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const controller = createGameUiController();
+    controller.update({
+      ...state(),
+      settingsVisible: true,
+      gameCursor: { visible: true, x: 320, y: 240 },
+      fps: 180,
+    });
+
+    dispose = render(() => <GameUi state={controller.state} />, root);
+
+    const row = root.querySelector(".settings-input-row");
+    const dropdown = root.querySelector(".settings-input-row .ui-kit-dropdown");
+    controller.update({
+      ...controller.state(),
+      gameCursor: { visible: true, x: 360, y: 260 },
+      fps: 81,
+    });
+
+    expect(root.querySelector(".settings-input-row")).toBe(row);
+    expect(root.querySelector(".settings-input-row .ui-kit-dropdown")).toBe(dropdown);
   });
 
   // Проверяет, что длинная строка сдвигается влево и оставляет каретку внутри поля ввода.

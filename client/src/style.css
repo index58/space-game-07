@@ -428,14 +428,23 @@ body {
 
 .ui-kit-dropdown__menu {
   /* Меню лежит поверх панели и не меняет её высоту при раскрытии. */
-  position: absolute;
-  left: -0.14vh;
-  right: -0.14vh;
-  top: 100%;
-  z-index: 2;
+  position: fixed;
+  z-index: 19;
   box-sizing: border-box;
-  background: rgb(5, 18, 28);
-  border: 0.14vh solid rgba(130, 210, 255, 0.38);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  background: rgb(18, 44, 60);
+  border: 0.18vh solid rgba(180, 232, 255, 0.72);
+  box-shadow: 0 0.5vh 1.4vh rgba(0, 4, 8, 0.72), inset 0 0 0 0.12vh rgba(238, 250, 255, 0.08);
+}
+
+.ui-kit-dropdown__outside-blocker {
+  /* Невидимый слой нужен только для hit-test игрового курсора при раскрытом меню. */
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: transparent;
+  border: 0;
 }
 
 .ui-kit-dropdown__menu-viewport {
@@ -723,22 +732,13 @@ body {
   white-space: nowrap;
 }
 
-.settings-input-row .ui-kit-dropdown__menu {
-  left: -0.14vh;
-  right: auto;
-  top: 100%;
-  width: 100%;
-  grid-template-columns: minmax(0, 1fr);
-  z-index: 20;
-}
-
-.settings-input-row .ui-kit-dropdown__menu-viewport {
+.ui-kit-dropdown__menu[id^="settings-input-select-"] .ui-kit-dropdown__menu-viewport {
   height: 22vh;
   max-height: 22vh;
   padding-right: 1.45vh;
 }
 
-.settings-input-row .ui-kit-dropdown__item {
+.ui-kit-dropdown__menu[id^="settings-input-select-"] .ui-kit-dropdown__item {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
