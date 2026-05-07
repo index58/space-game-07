@@ -50,6 +50,34 @@ export type ChatSelectMessage = {
   chatId: number;
 };
 
+export type InputSettingPayload = {
+  // Игровое действие, для которого задан ввод.
+  actionTypeId: number;
+  // Событие ввода, выбранное для действия.
+  inputEventTypeId: number;
+};
+
+export type InputSettingsMessage = {
+  // Вид сообщения с текущими настройками аккаунта.
+  type: "inputSettings";
+  // Сохраненные привязки текущего аккаунта.
+  settings: InputSettingPayload[];
+};
+
+export type InputSettingsSaveMessage = {
+  // Вид команды сохранения настроек ввода.
+  type: "inputSettingsSave";
+  // Полный список выбранных привязок.
+  settings: InputSettingPayload[];
+};
+
+export type InputSettingsErrorMessage = {
+  // Вид сообщения с ошибкой сохранения настроек.
+  type: "inputSettingsError";
+  // Текст ошибки для окна настроек.
+  message: string;
+};
+
 // Описывает одну строку истории в панели чата.
 export type ChatMessage = {
   // Уникальный числовой идентификатор записи.
@@ -282,6 +310,45 @@ export type ItemModelReference = Record<string, unknown> & {
   MagazineCapacity?: number;
 };
 
+export type ActionTypeReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Русское название действия.
+  TitleRu: string;
+  // Английское название действия.
+  TitleEn: string;
+  // Неизменяемый строковый идентификатор действия.
+  Acronym: string;
+  // Пояснение действия.
+  Description?: string;
+};
+
+export type InputEventTypeReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Русское название события.
+  TitleRu: string;
+  // Английское название события.
+  TitleEn: string;
+  // Неизменяемый строковый идентификатор события.
+  Acronym: string;
+  // Системное строковое значение браузерного события.
+  SystemStringValue: string;
+  // Системное числовое значение, если оно есть.
+  SystemIntegerValue: number;
+  // Пояснение события.
+  Description?: string;
+};
+
+export type DefaultActionInputSettingReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Действие, выполняемое по умолчанию.
+  ActionTypeID: number;
+  // Событие ввода для действия по умолчанию.
+  InputEventTypeID: number;
+};
+
 // Является полным пакетом справочников, загружаемым перед подключением к миру.
 export type ReferenceDataMessage = {
   // Вид сообщения, по которому клиент проверяет назначение ответа.
@@ -304,4 +371,10 @@ export type ReferenceDataMessage = {
   Schema: ReferenceTable;
   // Справочник компонентов схем.
   SchemaComponent: ReferenceTable;
+  // Справочник игровых действий.
+  ActionType: ReferenceTable<ActionTypeReference>;
+  // Справочник событий ввода.
+  InputEventType: ReferenceTable<InputEventTypeReference>;
+  // Привязки ввода по умолчанию.
+  DefaultActionInputSetting: ReferenceTable<DefaultActionInputSettingReference>;
 };

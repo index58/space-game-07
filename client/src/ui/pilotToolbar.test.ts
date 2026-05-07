@@ -76,6 +76,9 @@ const referenceData: ReferenceDataMessage = {
   BlueprintComponent: { MaxID: 0, Items: {} },
   Schema: { MaxID: 0, Items: {} },
   SchemaComponent: { MaxID: 0, Items: {} },
+  ActionType: { MaxID: 0, Items: {} },
+  InputEventType: { MaxID: 0, Items: {} },
+  DefaultActionInputSetting: { MaxID: 0, Items: {} },
 };
 
 describe("pilot toolbar", () => {

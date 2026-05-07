@@ -8,14 +8,12 @@ body {
   background: #000;
 }
 
-#game-root,
-#ui-root {
-  width: 100%;
-  height: 100%;
-}
-
 #ui-root {
   /* Игровой DOM UI лежит поверх canvas, но мышь остаётся во владении игрового ввода. */
+  --hud-icon-muted: rgba(216, 243, 255, 0.64);
+  --hud-icon-active: rgba(238, 250, 255, 0.95);
+  --hud-control-bg: rgba(5, 18, 28, 0.9);
+  --hud-tab-height: 2.45vh;
   position: fixed;
   inset: 0;
   z-index: 10;
@@ -24,10 +22,6 @@ body {
 
 .hud-panel {
   /* Единый технический каркас всех неинтерактивных HUD-панелей игрового режима. */
-  --hud-icon-muted: rgba(216, 243, 255, 0.64);
-  --hud-icon-active: rgba(238, 250, 255, 0.95);
-  --hud-control-bg: rgba(5, 18, 28, 0.9);
-  --hud-tab-height: 2.45vh;
   position: fixed;
   box-sizing: border-box;
   color: #d8f3ff;
@@ -337,6 +331,12 @@ body {
   pointer-events: none;
 }
 
+#game-root,
+#ui-root {
+  width: 100%;
+  height: 100%;
+}
+
 .ui-kit-button,
 .ui-kit-checkbox,
 .ui-kit-radio__option,
@@ -431,11 +431,21 @@ body {
   position: absolute;
   left: -0.14vh;
   right: -0.14vh;
-  top: calc(100% + 0.35vh);
+  top: 100%;
   z-index: 2;
   box-sizing: border-box;
   background: rgb(5, 18, 28);
   border: 0.14vh solid rgba(130, 210, 255, 0.38);
+}
+
+.ui-kit-dropdown__menu-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.ui-kit-dropdown__menu-content {
+  display: grid;
+  gap: 0.25vh;
 }
 
 .ui-kit-dropdown__item,
@@ -510,6 +520,9 @@ body {
 }
 
 .ui-kit-tab__label {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -538,6 +551,7 @@ body {
   width: 1.1vh;
   min-height: 8vh;
   background: rgba(216, 243, 255, 0.08);
+  z-index: 30;
 }
 
 .ui-kit-scrollbar.chat-scrollbar {
@@ -546,6 +560,16 @@ body {
   top: 0.8vh;
   width: 1.1vh;
   height: calc(100% - 1.6vh);
+  min-height: 0;
+}
+
+.ui-kit-scrollbar.ui-kit-dropdown-scrollbar,
+.ui-kit-scrollbar.settings-input-scrollbar {
+  position: absolute;
+  right: 0.25vh;
+  top: 0.35vh;
+  width: 1.1vh;
+  height: calc(100% - 0.7vh);
   min-height: 0;
 }
 
@@ -608,6 +632,133 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.7vh;
   align-items: start;
+}
+
+.settings-modal-layer {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: min(118vh, calc(100vw - 4vh));
+  height: min(48vh, calc(100vh - 4vh));
+  transform: translate(-50%, -50%);
+  z-index: 18;
+  pointer-events: none;
+}
+
+.settings-modal-layer .ui-kit-modal {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgb(5, 18, 28);
+}
+
+.settings-modal-layer .ui-kit-modal__body {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.settings-modal {
+  display: grid;
+  grid-template-rows: var(--hud-tab-height) minmax(0, 1fr) auto;
+  gap: 0.9vh;
+  height: 100%;
+  min-height: 0;
+}
+
+.settings-tabs {
+  align-self: start;
+}
+
+.settings-input-table {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  padding-right: 1.65vh;
+}
+
+.settings-input-table__content {
+  display: grid;
+  grid-auto-rows: minmax(2.45vh, auto);
+  gap: 0.25vh;
+  align-content: start;
+}
+
+.settings-input-row {
+  display: grid;
+  grid-template-columns: minmax(22vh, 0.48fr) minmax(36vh, 0.52fr);
+  gap: 0.8vh;
+  align-items: start;
+}
+
+.settings-input-row__action {
+  min-height: 2.35vh;
+  padding: 0.35vh 0.6vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: #d8f3ff;
+  background: rgba(216, 243, 255, 0.06);
+  border: 0.14vh solid rgba(130, 210, 255, 0.18);
+  font: 0.95vh/1.25 Consolas, monospace;
+}
+
+.settings-input-row .ui-kit-dropdown {
+  min-height: 2.35vh;
+  padding-top: 0.35vh;
+  padding-bottom: 0.35vh;
+  font-size: 0.95vh;
+}
+
+.settings-input-row .ui-kit-dropdown {
+  width: 100%;
+  min-width: 0;
+}
+
+.settings-input-row .ui-kit-dropdown__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-input-row .ui-kit-dropdown__menu {
+  left: -0.14vh;
+  right: auto;
+  top: 100%;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr);
+  z-index: 20;
+}
+
+.settings-input-row .ui-kit-dropdown__menu-viewport {
+  height: 22vh;
+  max-height: 22vh;
+  padding-right: 1.45vh;
+}
+
+.settings-input-row .ui-kit-dropdown__item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1vh;
+}
+
+.settings-modal__error {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: #ffb3b3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 1.05vh/1.3 Consolas, monospace;
 }
 
 @keyframes chat-error-fade-odd {

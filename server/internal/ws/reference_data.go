@@ -11,16 +11,19 @@ import (
 
 // Описывает пакет справочников, который клиент получает перед подключением к игровому потоку.
 type ReferenceDataResponse struct {
-	Type               string                     `json:"type"`               // Тип сообщения для проверки клиентского контракта.
-	NpcClan            *storage.RawReferenceTable `json:"NpcClan"`            // Справочник NPC-кланов.
-	CosmicObjectType   *data.CosmicObjectTypes    `json:"CosmicObjectType"`   // Справочник типов космических объектов.
-	Itemtype           *data.Itemtypes            `json:"Itemtype"`           // Справочник типов предметов.
-	CosmicObjectModel  *data.CosmicObjectModels   `json:"CosmicObjectModel"`  // Справочник моделей космических объектов.
-	ItemModel          *data.ItemModels           `json:"ItemModel"`          // Справочник моделей предметов.
-	Blueprint          *storage.RawReferenceTable `json:"Blueprint"`          // Справочник чертежей объектов.
-	BlueprintComponent *storage.RawReferenceTable `json:"BlueprintComponent"` // Справочник компонентов чертежей.
-	Schema             *storage.RawReferenceTable `json:"Schema"`             // Справочник схем предметов.
-	SchemaComponent    *storage.RawReferenceTable `json:"SchemaComponent"`    // Справочник компонентов схем.
+	Type                      string                           `json:"type"`                      // Тип сообщения для проверки клиентского контракта.
+	NpcClan                   *storage.RawReferenceTable       `json:"NpcClan"`                   // Справочник NPC-кланов.
+	CosmicObjectType          *data.CosmicObjectTypes          `json:"CosmicObjectType"`          // Справочник типов космических объектов.
+	Itemtype                  *data.Itemtypes                  `json:"Itemtype"`                  // Справочник типов предметов.
+	CosmicObjectModel         *data.CosmicObjectModels         `json:"CosmicObjectModel"`         // Справочник моделей космических объектов.
+	ItemModel                 *data.ItemModels                 `json:"ItemModel"`                 // Справочник моделей предметов.
+	Blueprint                 *storage.RawReferenceTable       `json:"Blueprint"`                 // Справочник чертежей объектов.
+	BlueprintComponent        *storage.RawReferenceTable       `json:"BlueprintComponent"`        // Справочник компонентов чертежей.
+	Schema                    *storage.RawReferenceTable       `json:"Schema"`                    // Справочник схем предметов.
+	SchemaComponent           *storage.RawReferenceTable       `json:"SchemaComponent"`           // Справочник компонентов схем.
+	ActionType                *data.ActionTypes                `json:"ActionType"`                // Справочник игровых действий.
+	InputEventType            *data.InputEventTypes            `json:"InputEventType"`            // Справочник событий ввода.
+	DefaultActionInputSetting *data.DefaultActionInputSettings `json:"DefaultActionInputSetting"` // Привязки ввода по умолчанию.
 }
 
 // Создает HTTP-обработчик для выдачи всех справочников одним запросом при входе клиента.
@@ -46,16 +49,19 @@ func NewReferenceDataHandler(serverData *storage.ServerData) http.Handler {
 // Собирает ответ без клиентских таблиц и без серверных индексов, скрытых JSON-тегами.
 func NewReferenceDataResponse(serverData *storage.ServerData) ReferenceDataResponse {
 	return ReferenceDataResponse{
-		Type:               "referenceData",
-		NpcClan:            serverData.NpcClans,
-		CosmicObjectType:   serverData.CosmicObjectTypes,
-		Itemtype:           serverData.Itemtypes,
-		CosmicObjectModel:  serverData.CosmicObjectModels,
-		ItemModel:          serverData.ItemModels,
-		Blueprint:          serverData.Blueprints,
-		BlueprintComponent: serverData.BlueprintComponents,
-		Schema:             serverData.Schemas,
-		SchemaComponent:    serverData.SchemaComponents,
+		Type:                      "referenceData",
+		NpcClan:                   serverData.NpcClans,
+		CosmicObjectType:          serverData.CosmicObjectTypes,
+		Itemtype:                  serverData.Itemtypes,
+		CosmicObjectModel:         serverData.CosmicObjectModels,
+		ItemModel:                 serverData.ItemModels,
+		Blueprint:                 serverData.Blueprints,
+		BlueprintComponent:        serverData.BlueprintComponents,
+		Schema:                    serverData.Schemas,
+		SchemaComponent:           serverData.SchemaComponents,
+		ActionType:                serverData.ActionTypes,
+		InputEventType:            serverData.InputEventTypes,
+		DefaultActionInputSetting: serverData.DefaultActionInputSettings,
 	}
 }
 

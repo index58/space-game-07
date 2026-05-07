@@ -39,7 +39,10 @@ const isReferenceDataMessage = (value: unknown): value is ReferenceDataMessage =
     isReferenceTable(message.Blueprint) &&
     isReferenceTable(message.BlueprintComponent) &&
     isReferenceTable(message.Schema) &&
-    isReferenceTable(message.SchemaComponent);
+    isReferenceTable(message.SchemaComponent) &&
+    isReferenceTable(message.ActionType) &&
+    isReferenceTable(message.InputEventType) &&
+    isReferenceTable(message.DefaultActionInputSetting);
 };
 
 // Загружает справочники с сервера и не допускает запуск клиента с неполным пакетом данных.

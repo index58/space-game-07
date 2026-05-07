@@ -25,6 +25,9 @@ const referenceDataPayload = () => ({
   BlueprintComponent: emptyTable(),
   Schema: emptyTable(),
   SchemaComponent: emptyTable(),
+  ActionType: emptyTable(),
+  InputEventType: emptyTable(),
+  DefaultActionInputSetting: emptyTable(),
 });
 
 describe("fetchReferenceData", () => {

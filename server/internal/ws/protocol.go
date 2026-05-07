@@ -3,6 +3,7 @@ package ws
 import (
 	"encoding/json"
 
+	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 )
 
@@ -34,6 +35,30 @@ type ChatSelectMessage struct {
 type ChatErrorMessage struct {
 	Type    string `json:"type"`    // Вид пакета для отдельной обработки на клиенте.
 	Message string `json:"message"` // Текст, который можно показать игроку в панели.
+}
+
+// InputSettingPayload передает одну аккаунтную привязку действия к событию.
+type InputSettingPayload struct {
+	ActionTypeID     int64 `json:"actionTypeId"`     // Игровое действие, для которого задан ввод.
+	InputEventTypeID int64 `json:"inputEventTypeId"` // Событие ввода, выбранное для действия.
+}
+
+// InputSettingsMessage передает текущие сохраненные привязки аккаунта.
+type InputSettingsMessage struct {
+	Type     string                `json:"type"`     // Вид пакета для клиентского маршрутизатора.
+	Settings []InputSettingPayload `json:"settings"` // Список привязок текущего аккаунта.
+}
+
+// InputSettingsSaveMessage передает новые привязки аккаунта на сервер.
+type InputSettingsSaveMessage struct {
+	Type     string                `json:"type"`     // Вид команды для сохранения настроек ввода.
+	Settings []InputSettingPayload `json:"settings"` // Полный список выбранных привязок.
+}
+
+// InputSettingsErrorMessage передает причину отказа сохранения настроек.
+type InputSettingsErrorMessage struct {
+	Type    string `json:"type"`    // Вид пакета для клиентского маршрутизатора.
+	Message string `json:"message"` // Текст ошибки для окна настроек.
 }
 
 // Разбирает клиентский JSON и пропускает только сообщения управления кораблем.
@@ -88,6 +113,20 @@ func DecodeChatSelectMessage(payload []byte) (ChatSelectMessage, bool) {
 	return message, true
 }
 
+// Разбирает клиентский JSON и пропускает только сохранение настроек ввода.
+func DecodeInputSettingsSaveMessage(payload []byte) (InputSettingsSaveMessage, bool) {
+	var message InputSettingsSaveMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return InputSettingsSaveMessage{}, false
+	}
+
+	if message.Type != "inputSettingsSave" {
+		return InputSettingsSaveMessage{}, false
+	}
+
+	return message, true
+}
+
 // Сериализует снимок мира в формат WebSocket-сообщения.
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
@@ -102,6 +141,29 @@ func EncodeChatStateMessage(chatState game.ChatState) ([]byte, error) {
 func EncodeChatErrorMessage(message string) ([]byte, error) {
 	return json.Marshal(ChatErrorMessage{
 		Type:    "chatError",
+		Message: message,
+	})
+}
+
+// Сериализует текущие настройки ввода аккаунта.
+func EncodeInputSettingsMessage(settings []data.AccountActionInputSetting) ([]byte, error) {
+	payload := InputSettingsMessage{
+		Type:     "inputSettings",
+		Settings: make([]InputSettingPayload, 0, len(settings)),
+	}
+	for _, setting := range settings {
+		payload.Settings = append(payload.Settings, InputSettingPayload{
+			ActionTypeID:     setting.ActionTypeID,
+			InputEventTypeID: setting.InputEventTypeID,
+		})
+	}
+	return json.Marshal(payload)
+}
+
+// Сериализует причину отказа сохранения настроек ввода.
+func EncodeInputSettingsErrorMessage(message string) ([]byte, error) {
+	return json.Marshal(InputSettingsErrorMessage{
+		Type:    "inputSettingsError",
 		Message: message,
 	})
 }

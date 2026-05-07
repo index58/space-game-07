@@ -21,24 +21,28 @@ const (
 
 // Собирает справочники и игровые сущности, нужные симуляции мира.
 type Data struct {
-	Accounts                *data.Accounts                // Учетные записи, доступные игровой симуляции.
-	Characters              *data.Characters              // Персонажи, доступные игровой симуляции.
-	CosmicObjects           *data.CosmicObjects           // Экземпляры объектов, участвующие в мире.
-	CosmicObjectTypes       *data.CosmicObjectTypes       // Справочник типов объектов для правил мира.
-	CosmicObjectModels      *data.CosmicObjectModels      // Справочник моделей объектов для физики и отображения.
-	Itemtypes               *data.Itemtypes               // Справочник типов предметов для серверной логики.
-	ItemModels              *data.ItemModels              // Справочник моделей предметов для оборудования и содержимого контейнеров.
-	EquipmentGroups         *data.EquipmentGroups         // Группы оборудования, установленные на объектах мира.
-	ItemGroups              *data.ItemGroups              // Группы предметов внутри контейнерного оборудования.
-	Assemblies              *data.Assemblies              // Справочник сборок для расчета характеристик кораблей.
-	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Группы оборудования, заданные в сборках.
-	Chats                   *data.Chats                   // Чаты игрового мира.
-	ChatMembers             *data.ChatMembers             // Участники чатов.
-	CommunityTypes          *data.CommunityTypes          // Справочник типов сообществ.
-	CommunityChatRoles      *data.CommunityChatRoles      // Справочник ролей в чатах сообществ.
-	Messages                *data.Messages                // Сообщения чатов.
-	MessageReads            *data.MessageReads            // Позиции чтения сообщений персонажами.
-	MessageTypes            *data.MessageTypes            // Справочник типов сообщений.
+	Accounts                   *data.Accounts                   // Учетные записи, доступные игровой симуляции.
+	Characters                 *data.Characters                 // Персонажи, доступные игровой симуляции.
+	CosmicObjects              *data.CosmicObjects              // Экземпляры объектов, участвующие в мире.
+	CosmicObjectTypes          *data.CosmicObjectTypes          // Справочник типов объектов для правил мира.
+	CosmicObjectModels         *data.CosmicObjectModels         // Справочник моделей объектов для физики и отображения.
+	Itemtypes                  *data.Itemtypes                  // Справочник типов предметов для серверной логики.
+	ItemModels                 *data.ItemModels                 // Справочник моделей предметов для оборудования и содержимого контейнеров.
+	EquipmentGroups            *data.EquipmentGroups            // Группы оборудования, установленные на объектах мира.
+	ItemGroups                 *data.ItemGroups                 // Группы предметов внутри контейнерного оборудования.
+	Assemblies                 *data.Assemblies                 // Справочник сборок для расчета характеристик кораблей.
+	AssemblyEquipmentGroups    *data.AssemblyEquipmentGroups    // Группы оборудования, заданные в сборках.
+	Chats                      *data.Chats                      // Чаты игрового мира.
+	ChatMembers                *data.ChatMembers                // Участники чатов.
+	CommunityTypes             *data.CommunityTypes             // Справочник типов сообществ.
+	CommunityChatRoles         *data.CommunityChatRoles         // Справочник ролей в чатах сообществ.
+	Messages                   *data.Messages                   // Сообщения чатов.
+	MessageReads               *data.MessageReads               // Позиции чтения сообщений персонажами.
+	MessageTypes               *data.MessageTypes               // Справочник типов сообщений.
+	ActionTypes                *data.ActionTypes                // Справочник игровых действий для настроек ввода.
+	InputEventTypes            *data.InputEventTypes            // Справочник событий ввода для настроек.
+	DefaultActionInputSettings *data.DefaultActionInputSettings // Привязки ввода по умолчанию.
+	AccountActionInputSettings *data.AccountActionInputSettings // Привязки ввода, выбранные аккаунтами.
 }
 
 // Управляет подключенными аккаунтами, вводом игроков и пошаговой симуляцией объектов.
@@ -570,6 +574,26 @@ func (world *World) SaveData(workingDirectory string) error {
 	}
 	if world.data.MessageTypes != nil {
 		if err := world.data.MessageTypes.SaveToFile(filepath.Join(dataDirectory, "MessageTypes.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.ActionTypes != nil {
+		if err := world.data.ActionTypes.SaveToFile(filepath.Join(dataDirectory, "ActionTypes.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.InputEventTypes != nil {
+		if err := world.data.InputEventTypes.SaveToFile(filepath.Join(dataDirectory, "InputEventTypes.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.DefaultActionInputSettings != nil {
+		if err := world.data.DefaultActionInputSettings.SaveToFile(filepath.Join(dataDirectory, "DefaultActionInputSettings.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.AccountActionInputSettings != nil {
+		if err := world.data.AccountActionInputSettings.SaveToFile(filepath.Join(dataDirectory, "AccountActionInputSettings.json")); err != nil {
 			return err
 		}
 	}

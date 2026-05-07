@@ -43,6 +43,20 @@ export type GameUiState = {
   chatScroll: ChatScrollState;
   // Показывает отладочную панель примеров единого UI Kit.
   uiKitShowcaseVisible: boolean;
+  // Показывает модальное окно настроек игрока.
+  settingsVisible: boolean;
+  // Черновик выбранных привязок ввода по ID действия.
+  inputSettingsValues: Record<number, number>;
+  // ID действия с раскрытым списком событий ввода.
+  openInputSettingsActionId: number | null;
+  // Последняя ошибка сохранения настроек ввода.
+  inputSettingsError: string | null;
+  // Признак ожидания подтверждения сохранения настроек.
+  inputSettingsSaving: boolean;
+  // Состояние прокрутки списка действий в окне настроек.
+  inputSettingsScroll: ChatScrollState;
+  // Состояние прокрутки раскрытого списка событий ввода.
+  inputSettingsDropdownScroll: ChatScrollState;
   // Состояние интерактивных примеров единого UI Kit.
   uiKitDemoState: UiKitDemoState;
   // Последний снимок зарегистрированных интерактивных контролов HUD.
@@ -80,6 +94,13 @@ const initialGameUiState: GameUiState = {
   gameCursor: { visible: false, x: 0, y: 0 },
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
+  settingsVisible: false,
+  inputSettingsValues: {},
+  openInputSettingsActionId: null,
+  inputSettingsError: null,
+  inputSettingsSaving: false,
+  inputSettingsScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
+  inputSettingsDropdownScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitDemoState: createInitialUiKitDemoState(),
   uiControls: [],
   fps: 0,

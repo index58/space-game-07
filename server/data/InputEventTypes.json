@@ -1,1644 +1,1643 @@
-﻿{
-    "MaxID":  182,
-    "Items":  {
-                  "1":  {
-                            "ID":  1,
-                            "TitleRu":  "Клавиша W",
-                            "TitleEn":  "Keyboard W",
-                            "Acronym":  "KeyboardKeyW",
-                            "SystemStringValue":  "KeyboardEvent.code:KeyW",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Нажатие и удержание клавиши W."
-                        },
-                  "2":  {
-                            "ID":  2,
-                            "TitleRu":  "Клавиша S",
-                            "TitleEn":  "Keyboard S",
-                            "Acronym":  "KeyboardKeyS",
-                            "SystemStringValue":  "KeyboardEvent.code:KeyS",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Нажатие и удержание клавиши S."
-                        },
-                  "3":  {
-                            "ID":  3,
-                            "TitleRu":  "Клавиша A",
-                            "TitleEn":  "Keyboard A",
-                            "Acronym":  "KeyboardKeyA",
-                            "SystemStringValue":  "KeyboardEvent.code:KeyA",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Нажатие и удержание клавиши A."
-                        },
-                  "4":  {
-                            "ID":  4,
-                            "TitleRu":  "Клавиша D",
-                            "TitleEn":  "Keyboard D",
-                            "Acronym":  "KeyboardKeyD",
-                            "SystemStringValue":  "KeyboardEvent.code:KeyD",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Нажатие и удержание клавиши D."
-                        },
-                  "5":  {
-                            "ID":  5,
-                            "TitleRu":  "Движение мыши вправо",
-                            "TitleEn":  "Mouse move right",
-                            "Acronym":  "MouseMoveRight",
-                            "SystemStringValue":  "MouseEvent.movementX>0",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Относительное движение мыши вправо при захваченном указателе."
-                        },
-                  "6":  {
-                            "ID":  6,
-                            "TitleRu":  "Движение мыши влево",
-                            "TitleEn":  "Mouse move left",
-                            "Acronym":  "MouseMoveLeft",
-                            "SystemStringValue":  "MouseEvent.movementX<0",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Относительное движение мыши влево при захваченном указателе."
-                        },
-                  "7":  {
-                            "ID":  7,
-                            "TitleRu":  "Колесо мыши вверх",
-                            "TitleEn":  "Mouse wheel up",
-                            "Acronym":  "MouseScrollUp",
-                            "SystemStringValue":  "WheelEvent.deltaY<0",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Прокрутка колеса мыши вверх без удержания Shift."
-                        },
-                  "8":  {
-                            "ID":  8,
-                            "TitleRu":  "Колесо мыши вниз",
-                            "TitleEn":  "Mouse wheel down",
-                            "Acronym":  "MouseScrollDown",
-                            "SystemStringValue":  "WheelEvent.deltaY>0",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Прокрутка колеса мыши вниз без удержания Shift."
-                        },
-                  "9":  {
-                            "ID":  9,
-                            "TitleRu":  "Shift и колесо мыши вверх",
-                            "TitleEn":  "Shift and mouse wheel up",
-                            "Acronym":  "KeyboardShiftMouseScrollUp",
-                            "SystemStringValue":  "KeyboardEvent.shiftKey&&WheelEvent.deltaY<0",
-                            "SystemIntegerValue":  0,
-                            "Description":  "Прокрутка колеса мыши вверх при удержанном Shift."
-                        },
-                  "10":  {
-                             "ID":  10,
-                             "TitleRu":  "Shift и колесо мыши вниз",
-                             "TitleEn":  "Shift and mouse wheel down",
-                             "Acronym":  "KeyboardShiftMouseScrollDown",
-                             "SystemStringValue":  "KeyboardEvent.shiftKey&&WheelEvent.deltaY>0",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Прокрутка колеса мыши вниз при удержанном Shift."
-                         },
-                  "11":  {
-                             "ID":  11,
-                             "TitleRu":  "Клавиша P",
-                             "TitleEn":  "Keyboard P",
-                             "Acronym":  "KeyboardKeyP",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyP",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Первичное нажатие клавиши P."
-                         },
-                  "12":  {
-                             "ID":  12,
-                             "TitleRu":  "Клавиша Enter",
-                             "TitleEn":  "Keyboard Enter",
-                             "Acronym":  "KeyboardEnter",
-                             "SystemStringValue":  "KeyboardEvent.code:Enter",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Первичное нажатие клавиши Enter."
-                         },
-                  "13":  {
-                             "ID":  13,
-                             "TitleRu":  "Клавиша Escape",
-                             "TitleEn":  "Keyboard Escape",
-                             "Acronym":  "KeyboardEscape",
-                             "SystemStringValue":  "KeyboardEvent.code:Escape",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Нажатие клавиши Escape."
-                         },
-                  "14":  {
-                             "ID":  14,
-                             "TitleRu":  "Клавиша Backspace",
-                             "TitleEn":  "Keyboard Backspace",
-                             "Acronym":  "KeyboardBackspace",
-                             "SystemStringValue":  "KeyboardEvent.code:Backspace",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Нажатие клавиши Backspace."
-                         },
-                  "15":  {
-                             "ID":  15,
-                             "TitleRu":  "Клавиша Delete",
-                             "TitleEn":  "Keyboard Delete",
-                             "Acronym":  "KeyboardDelete",
-                             "SystemStringValue":  "KeyboardEvent.code:Delete",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Нажатие клавиши Delete."
-                         },
-                  "16":  {
-                             "ID":  16,
-                             "TitleRu":  "Клавиша ArrowLeft",
-                             "TitleEn":  "Keyboard ArrowLeft",
-                             "Acronym":  "KeyboardArrowLeft",
-                             "SystemStringValue":  "KeyboardEvent.code:ArrowLeft",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Нажатие клавиши стрелки влево."
-                         },
-                  "17":  {
-                             "ID":  17,
-                             "TitleRu":  "Клавиша ArrowRight",
-                             "TitleEn":  "Keyboard ArrowRight",
-                             "Acronym":  "KeyboardArrowRight",
-                             "SystemStringValue":  "KeyboardEvent.code:ArrowRight",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Нажатие клавиши стрелки вправо."
-                         },
-                  "18":  {
-                             "ID":  18,
-                             "TitleRu":  "Клавиша Home",
-                             "TitleEn":  "Keyboard Home",
-                             "Acronym":  "KeyboardHome",
-                             "SystemStringValue":  "KeyboardEvent.code:Home",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Нажатие клавиши Home."
-                         },
-                  "19":  {
-                             "ID":  19,
-                             "TitleRu":  "Клавиша End",
-                             "TitleEn":  "Keyboard End",
-                             "Acronym":  "KeyboardEnd",
-                             "SystemStringValue":  "KeyboardEvent.code:End",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Нажатие клавиши End."
-                         },
-                  "20":  {
-                             "ID":  20,
-                             "TitleRu":  "Печатный символ",
-                             "TitleEn":  "Printable character",
-                             "Acronym":  "KeyboardPrintableCharacter",
-                             "SystemStringValue":  "KeyboardEvent.key.length:1",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Печатная клавиша без Ctrl, Alt и Meta."
-                         },
-                  "21":  {
-                             "ID":  21,
-                             "TitleRu":  "Клавиша O",
-                             "TitleEn":  "Keyboard O",
-                             "Acronym":  "KeyboardKeyO",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyO",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Первичное нажатие клавиши O."
-                         },
-                  "22":  {
-                             "ID":  22,
-                             "TitleRu":  "Клавиша Backslash",
-                             "TitleEn":  "Keyboard Backslash",
-                             "Acronym":  "KeyboardBackslash",
-                             "SystemStringValue":  "KeyboardEvent.code:Backslash",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Первичное нажатие клавиши обратной косой черты."
-                         },
-                  "23":  {
-                             "ID":  23,
-                             "TitleRu":  "Клавиша F9",
-                             "TitleEn":  "Keyboard F9",
-                             "Acronym":  "KeyboardF9",
-                             "SystemStringValue":  "KeyboardEvent.code:F9",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Первичное нажатие клавиши F9."
-                         },
-                  "24":  {
-                             "ID":  24,
-                             "TitleRu":  "Левая кнопка мыши",
-                             "TitleEn":  "Left mouse button",
-                             "Acronym":  "MouseKey0",
-                             "SystemStringValue":  "MouseEvent.button:0",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Клик или нажатие левой кнопки мыши."
-                         },
-                  "25":  {
-                             "ID":  25,
-                             "TitleRu":  "Правая кнопка мыши",
-                             "TitleEn":  "Right mouse button",
-                             "Acronym":  "MouseKey2",
-                             "SystemStringValue":  "MouseEvent.button:2",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Контекстный клик правой кнопкой мыши."
-                         },
-                  "26":  {
-                             "ID":  26,
-                             "TitleRu":  "Клавиша Backquote",
-                             "TitleEn":  "Keyboard Backquote",
-                             "Acronym":  "KeyboardBackquote",
-                             "SystemStringValue":  "KeyboardEvent.code:Backquote",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Backquote."
-                         },
-                  "27":  {
-                             "ID":  27,
-                             "TitleRu":  "Клавиша BracketLeft",
-                             "TitleEn":  "Keyboard BracketLeft",
-                             "Acronym":  "KeyboardBracketLeft",
-                             "SystemStringValue":  "KeyboardEvent.code:BracketLeft",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом BracketLeft."
-                         },
-                  "28":  {
-                             "ID":  28,
-                             "TitleRu":  "Клавиша BracketRight",
-                             "TitleEn":  "Keyboard BracketRight",
-                             "Acronym":  "KeyboardBracketRight",
-                             "SystemStringValue":  "KeyboardEvent.code:BracketRight",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом BracketRight."
-                         },
-                  "29":  {
-                             "ID":  29,
-                             "TitleRu":  "Клавиша Comma",
-                             "TitleEn":  "Keyboard Comma",
-                             "Acronym":  "KeyboardComma",
-                             "SystemStringValue":  "KeyboardEvent.code:Comma",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Comma."
-                         },
-                  "30":  {
-                             "ID":  30,
-                             "TitleRu":  "Клавиша Digit0",
-                             "TitleEn":  "Keyboard Digit0",
-                             "Acronym":  "KeyboardDigit0",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit0",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit0."
-                         },
-                  "31":  {
-                             "ID":  31,
-                             "TitleRu":  "Клавиша Digit1",
-                             "TitleEn":  "Keyboard Digit1",
-                             "Acronym":  "KeyboardDigit1",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit1",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit1."
-                         },
-                  "32":  {
-                             "ID":  32,
-                             "TitleRu":  "Клавиша Digit2",
-                             "TitleEn":  "Keyboard Digit2",
-                             "Acronym":  "KeyboardDigit2",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit2",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit2."
-                         },
-                  "33":  {
-                             "ID":  33,
-                             "TitleRu":  "Клавиша Digit3",
-                             "TitleEn":  "Keyboard Digit3",
-                             "Acronym":  "KeyboardDigit3",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit3",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit3."
-                         },
-                  "34":  {
-                             "ID":  34,
-                             "TitleRu":  "Клавиша Digit4",
-                             "TitleEn":  "Keyboard Digit4",
-                             "Acronym":  "KeyboardDigit4",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit4",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit4."
-                         },
-                  "35":  {
-                             "ID":  35,
-                             "TitleRu":  "Клавиша Digit5",
-                             "TitleEn":  "Keyboard Digit5",
-                             "Acronym":  "KeyboardDigit5",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit5",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit5."
-                         },
-                  "36":  {
-                             "ID":  36,
-                             "TitleRu":  "Клавиша Digit6",
-                             "TitleEn":  "Keyboard Digit6",
-                             "Acronym":  "KeyboardDigit6",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit6",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit6."
-                         },
-                  "37":  {
-                             "ID":  37,
-                             "TitleRu":  "Клавиша Digit7",
-                             "TitleEn":  "Keyboard Digit7",
-                             "Acronym":  "KeyboardDigit7",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit7",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit7."
-                         },
-                  "38":  {
-                             "ID":  38,
-                             "TitleRu":  "Клавиша Digit8",
-                             "TitleEn":  "Keyboard Digit8",
-                             "Acronym":  "KeyboardDigit8",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit8",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit8."
-                         },
-                  "39":  {
-                             "ID":  39,
-                             "TitleRu":  "Клавиша Digit9",
-                             "TitleEn":  "Keyboard Digit9",
-                             "Acronym":  "KeyboardDigit9",
-                             "SystemStringValue":  "KeyboardEvent.code:Digit9",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Digit9."
-                         },
-                  "40":  {
-                             "ID":  40,
-                             "TitleRu":  "Клавиша Equal",
-                             "TitleEn":  "Keyboard Equal",
-                             "Acronym":  "KeyboardEqual",
-                             "SystemStringValue":  "KeyboardEvent.code:Equal",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Equal."
-                         },
-                  "41":  {
-                             "ID":  41,
-                             "TitleRu":  "Клавиша IntlBackslash",
-                             "TitleEn":  "Keyboard IntlBackslash",
-                             "Acronym":  "KeyboardIntlBackslash",
-                             "SystemStringValue":  "KeyboardEvent.code:IntlBackslash",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом IntlBackslash."
-                         },
-                  "42":  {
-                             "ID":  42,
-                             "TitleRu":  "Клавиша IntlRo",
-                             "TitleEn":  "Keyboard IntlRo",
-                             "Acronym":  "KeyboardIntlRo",
-                             "SystemStringValue":  "KeyboardEvent.code:IntlRo",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом IntlRo."
-                         },
-                  "43":  {
-                             "ID":  43,
-                             "TitleRu":  "Клавиша IntlYen",
-                             "TitleEn":  "Keyboard IntlYen",
-                             "Acronym":  "KeyboardIntlYen",
-                             "SystemStringValue":  "KeyboardEvent.code:IntlYen",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом IntlYen."
-                         },
-                  "44":  {
-                             "ID":  44,
-                             "TitleRu":  "Клавиша KeyB",
-                             "TitleEn":  "Keyboard KeyB",
-                             "Acronym":  "KeyboardKeyB",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyB",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyB."
-                         },
-                  "45":  {
-                             "ID":  45,
-                             "TitleRu":  "Клавиша KeyC",
-                             "TitleEn":  "Keyboard KeyC",
-                             "Acronym":  "KeyboardKeyC",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyC",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyC."
-                         },
-                  "46":  {
-                             "ID":  46,
-                             "TitleRu":  "Клавиша KeyE",
-                             "TitleEn":  "Keyboard KeyE",
-                             "Acronym":  "KeyboardKeyE",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyE",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyE."
-                         },
-                  "47":  {
-                             "ID":  47,
-                             "TitleRu":  "Клавиша KeyF",
-                             "TitleEn":  "Keyboard KeyF",
-                             "Acronym":  "KeyboardKeyF",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyF",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyF."
-                         },
-                  "48":  {
-                             "ID":  48,
-                             "TitleRu":  "Клавиша KeyG",
-                             "TitleEn":  "Keyboard KeyG",
-                             "Acronym":  "KeyboardKeyG",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyG",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyG."
-                         },
-                  "49":  {
-                             "ID":  49,
-                             "TitleRu":  "Клавиша KeyH",
-                             "TitleEn":  "Keyboard KeyH",
-                             "Acronym":  "KeyboardKeyH",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyH",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyH."
-                         },
-                  "50":  {
-                             "ID":  50,
-                             "TitleRu":  "Клавиша KeyI",
-                             "TitleEn":  "Keyboard KeyI",
-                             "Acronym":  "KeyboardKeyI",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyI",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyI."
-                         },
-                  "51":  {
-                             "ID":  51,
-                             "TitleRu":  "Клавиша KeyJ",
-                             "TitleEn":  "Keyboard KeyJ",
-                             "Acronym":  "KeyboardKeyJ",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyJ",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyJ."
-                         },
-                  "52":  {
-                             "ID":  52,
-                             "TitleRu":  "Клавиша KeyK",
-                             "TitleEn":  "Keyboard KeyK",
-                             "Acronym":  "KeyboardKeyK",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyK",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyK."
-                         },
-                  "53":  {
-                             "ID":  53,
-                             "TitleRu":  "Клавиша KeyL",
-                             "TitleEn":  "Keyboard KeyL",
-                             "Acronym":  "KeyboardKeyL",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyL",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyL."
-                         },
-                  "54":  {
-                             "ID":  54,
-                             "TitleRu":  "Клавиша KeyM",
-                             "TitleEn":  "Keyboard KeyM",
-                             "Acronym":  "KeyboardKeyM",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyM",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyM."
-                         },
-                  "55":  {
-                             "ID":  55,
-                             "TitleRu":  "Клавиша KeyN",
-                             "TitleEn":  "Keyboard KeyN",
-                             "Acronym":  "KeyboardKeyN",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyN",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyN."
-                         },
-                  "56":  {
-                             "ID":  56,
-                             "TitleRu":  "Клавиша KeyQ",
-                             "TitleEn":  "Keyboard KeyQ",
-                             "Acronym":  "KeyboardKeyQ",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyQ",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyQ."
-                         },
-                  "57":  {
-                             "ID":  57,
-                             "TitleRu":  "Клавиша KeyR",
-                             "TitleEn":  "Keyboard KeyR",
-                             "Acronym":  "KeyboardKeyR",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyR",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyR."
-                         },
-                  "58":  {
-                             "ID":  58,
-                             "TitleRu":  "Клавиша KeyT",
-                             "TitleEn":  "Keyboard KeyT",
-                             "Acronym":  "KeyboardKeyT",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyT",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyT."
-                         },
-                  "59":  {
-                             "ID":  59,
-                             "TitleRu":  "Клавиша KeyU",
-                             "TitleEn":  "Keyboard KeyU",
-                             "Acronym":  "KeyboardKeyU",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyU",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyU."
-                         },
-                  "60":  {
-                             "ID":  60,
-                             "TitleRu":  "Клавиша KeyV",
-                             "TitleEn":  "Keyboard KeyV",
-                             "Acronym":  "KeyboardKeyV",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyV",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyV."
-                         },
-                  "61":  {
-                             "ID":  61,
-                             "TitleRu":  "Клавиша KeyX",
-                             "TitleEn":  "Keyboard KeyX",
-                             "Acronym":  "KeyboardKeyX",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyX",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyX."
-                         },
-                  "62":  {
-                             "ID":  62,
-                             "TitleRu":  "Клавиша KeyY",
-                             "TitleEn":  "Keyboard KeyY",
-                             "Acronym":  "KeyboardKeyY",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyY",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyY."
-                         },
-                  "63":  {
-                             "ID":  63,
-                             "TitleRu":  "Клавиша KeyZ",
-                             "TitleEn":  "Keyboard KeyZ",
-                             "Acronym":  "KeyboardKeyZ",
-                             "SystemStringValue":  "KeyboardEvent.code:KeyZ",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KeyZ."
-                         },
-                  "64":  {
-                             "ID":  64,
-                             "TitleRu":  "Клавиша Minus",
-                             "TitleEn":  "Keyboard Minus",
-                             "Acronym":  "KeyboardMinus",
-                             "SystemStringValue":  "KeyboardEvent.code:Minus",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Minus."
-                         },
-                  "65":  {
-                             "ID":  65,
-                             "TitleRu":  "Клавиша Period",
-                             "TitleEn":  "Keyboard Period",
-                             "Acronym":  "KeyboardPeriod",
-                             "SystemStringValue":  "KeyboardEvent.code:Period",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Period."
-                         },
-                  "66":  {
-                             "ID":  66,
-                             "TitleRu":  "Клавиша Quote",
-                             "TitleEn":  "Keyboard Quote",
-                             "Acronym":  "KeyboardQuote",
-                             "SystemStringValue":  "KeyboardEvent.code:Quote",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Quote."
-                         },
-                  "67":  {
-                             "ID":  67,
-                             "TitleRu":  "Клавиша Semicolon",
-                             "TitleEn":  "Keyboard Semicolon",
-                             "Acronym":  "KeyboardSemicolon",
-                             "SystemStringValue":  "KeyboardEvent.code:Semicolon",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Semicolon."
-                         },
-                  "68":  {
-                             "ID":  68,
-                             "TitleRu":  "Клавиша Slash",
-                             "TitleEn":  "Keyboard Slash",
-                             "Acronym":  "KeyboardSlash",
-                             "SystemStringValue":  "KeyboardEvent.code:Slash",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Slash."
-                         },
-                  "69":  {
-                             "ID":  69,
-                             "TitleRu":  "Клавиша AltLeft",
-                             "TitleEn":  "Keyboard AltLeft",
-                             "Acronym":  "KeyboardAltLeft",
-                             "SystemStringValue":  "KeyboardEvent.code:AltLeft",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом AltLeft."
-                         },
-                  "70":  {
-                             "ID":  70,
-                             "TitleRu":  "Клавиша AltRight",
-                             "TitleEn":  "Keyboard AltRight",
-                             "Acronym":  "KeyboardAltRight",
-                             "SystemStringValue":  "KeyboardEvent.code:AltRight",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом AltRight."
-                         },
-                  "71":  {
-                             "ID":  71,
-                             "TitleRu":  "Клавиша CapsLock",
-                             "TitleEn":  "Keyboard CapsLock",
-                             "Acronym":  "KeyboardCapsLock",
-                             "SystemStringValue":  "KeyboardEvent.code:CapsLock",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом CapsLock."
-                         },
-                  "72":  {
-                             "ID":  72,
-                             "TitleRu":  "Клавиша ContextMenu",
-                             "TitleEn":  "Keyboard ContextMenu",
-                             "Acronym":  "KeyboardContextMenu",
-                             "SystemStringValue":  "KeyboardEvent.code:ContextMenu",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом ContextMenu."
-                         },
-                  "73":  {
-                             "ID":  73,
-                             "TitleRu":  "Клавиша ControlLeft",
-                             "TitleEn":  "Keyboard ControlLeft",
-                             "Acronym":  "KeyboardControlLeft",
-                             "SystemStringValue":  "KeyboardEvent.code:ControlLeft",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом ControlLeft."
-                         },
-                  "74":  {
-                             "ID":  74,
-                             "TitleRu":  "Клавиша ControlRight",
-                             "TitleEn":  "Keyboard ControlRight",
-                             "Acronym":  "KeyboardControlRight",
-                             "SystemStringValue":  "KeyboardEvent.code:ControlRight",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом ControlRight."
-                         },
-                  "75":  {
-                             "ID":  75,
-                             "TitleRu":  "Клавиша MetaLeft",
-                             "TitleEn":  "Keyboard MetaLeft",
-                             "Acronym":  "KeyboardMetaLeft",
-                             "SystemStringValue":  "KeyboardEvent.code:MetaLeft",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом MetaLeft."
-                         },
-                  "76":  {
-                             "ID":  76,
-                             "TitleRu":  "Клавиша MetaRight",
-                             "TitleEn":  "Keyboard MetaRight",
-                             "Acronym":  "KeyboardMetaRight",
-                             "SystemStringValue":  "KeyboardEvent.code:MetaRight",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом MetaRight."
-                         },
-                  "77":  {
-                             "ID":  77,
-                             "TitleRu":  "Клавиша ShiftLeft",
-                             "TitleEn":  "Keyboard ShiftLeft",
-                             "Acronym":  "KeyboardShiftLeft",
-                             "SystemStringValue":  "KeyboardEvent.code:ShiftLeft",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом ShiftLeft."
-                         },
-                  "78":  {
-                             "ID":  78,
-                             "TitleRu":  "Клавиша ShiftRight",
-                             "TitleEn":  "Keyboard ShiftRight",
-                             "Acronym":  "KeyboardShiftRight",
-                             "SystemStringValue":  "KeyboardEvent.code:ShiftRight",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом ShiftRight."
-                         },
-                  "79":  {
-                             "ID":  79,
-                             "TitleRu":  "Клавиша Space",
-                             "TitleEn":  "Keyboard Space",
-                             "Acronym":  "KeyboardSpace",
-                             "SystemStringValue":  "KeyboardEvent.code:Space",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Space."
-                         },
-                  "80":  {
-                             "ID":  80,
-                             "TitleRu":  "Клавиша Tab",
-                             "TitleEn":  "Keyboard Tab",
-                             "Acronym":  "KeyboardTab",
-                             "SystemStringValue":  "KeyboardEvent.code:Tab",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Tab."
-                         },
-                  "81":  {
-                             "ID":  81,
-                             "TitleRu":  "Клавиша Convert",
-                             "TitleEn":  "Keyboard Convert",
-                             "Acronym":  "KeyboardConvert",
-                             "SystemStringValue":  "KeyboardEvent.code:Convert",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Convert."
-                         },
-                  "82":  {
-                             "ID":  82,
-                             "TitleRu":  "Клавиша KanaMode",
-                             "TitleEn":  "Keyboard KanaMode",
-                             "Acronym":  "KeyboardKanaMode",
-                             "SystemStringValue":  "KeyboardEvent.code:KanaMode",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом KanaMode."
-                         },
-                  "83":  {
-                             "ID":  83,
-                             "TitleRu":  "Клавиша Lang1",
-                             "TitleEn":  "Keyboard Lang1",
-                             "Acronym":  "KeyboardLang1",
-                             "SystemStringValue":  "KeyboardEvent.code:Lang1",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Lang1."
-                         },
-                  "84":  {
-                             "ID":  84,
-                             "TitleRu":  "Клавиша Lang2",
-                             "TitleEn":  "Keyboard Lang2",
-                             "Acronym":  "KeyboardLang2",
-                             "SystemStringValue":  "KeyboardEvent.code:Lang2",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Lang2."
-                         },
-                  "85":  {
-                             "ID":  85,
-                             "TitleRu":  "Клавиша Lang3",
-                             "TitleEn":  "Keyboard Lang3",
-                             "Acronym":  "KeyboardLang3",
-                             "SystemStringValue":  "KeyboardEvent.code:Lang3",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Lang3."
-                         },
-                  "86":  {
-                             "ID":  86,
-                             "TitleRu":  "Клавиша Lang4",
-                             "TitleEn":  "Keyboard Lang4",
-                             "Acronym":  "KeyboardLang4",
-                             "SystemStringValue":  "KeyboardEvent.code:Lang4",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Lang4."
-                         },
-                  "87":  {
-                             "ID":  87,
-                             "TitleRu":  "Клавиша Lang5",
-                             "TitleEn":  "Keyboard Lang5",
-                             "Acronym":  "KeyboardLang5",
-                             "SystemStringValue":  "KeyboardEvent.code:Lang5",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Lang5."
-                         },
-                  "88":  {
-                             "ID":  88,
-                             "TitleRu":  "Клавиша NonConvert",
-                             "TitleEn":  "Keyboard NonConvert",
-                             "Acronym":  "KeyboardNonConvert",
-                             "SystemStringValue":  "KeyboardEvent.code:NonConvert",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом NonConvert."
-                         },
-                  "89":  {
-                             "ID":  89,
-                             "TitleRu":  "Клавиша Help",
-                             "TitleEn":  "Keyboard Help",
-                             "Acronym":  "KeyboardHelp",
-                             "SystemStringValue":  "KeyboardEvent.code:Help",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Help."
-                         },
-                  "90":  {
-                             "ID":  90,
-                             "TitleRu":  "Клавиша Insert",
-                             "TitleEn":  "Keyboard Insert",
-                             "Acronym":  "KeyboardInsert",
-                             "SystemStringValue":  "KeyboardEvent.code:Insert",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Insert."
-                         },
-                  "91":  {
-                             "ID":  91,
-                             "TitleRu":  "Клавиша PageDown",
-                             "TitleEn":  "Keyboard PageDown",
-                             "Acronym":  "KeyboardPageDown",
-                             "SystemStringValue":  "KeyboardEvent.code:PageDown",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом PageDown."
-                         },
-                  "92":  {
-                             "ID":  92,
-                             "TitleRu":  "Клавиша PageUp",
-                             "TitleEn":  "Keyboard PageUp",
-                             "Acronym":  "KeyboardPageUp",
-                             "SystemStringValue":  "KeyboardEvent.code:PageUp",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом PageUp."
-                         },
-                  "93":  {
-                             "ID":  93,
-                             "TitleRu":  "Клавиша ArrowDown",
-                             "TitleEn":  "Keyboard ArrowDown",
-                             "Acronym":  "KeyboardArrowDown",
-                             "SystemStringValue":  "KeyboardEvent.code:ArrowDown",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом ArrowDown."
-                         },
-                  "94":  {
-                             "ID":  94,
-                             "TitleRu":  "Клавиша ArrowUp",
-                             "TitleEn":  "Keyboard ArrowUp",
-                             "Acronym":  "KeyboardArrowUp",
-                             "SystemStringValue":  "KeyboardEvent.code:ArrowUp",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом ArrowUp."
-                         },
-                  "95":  {
-                             "ID":  95,
-                             "TitleRu":  "Клавиша NumLock",
-                             "TitleEn":  "Keyboard NumLock",
-                             "Acronym":  "KeyboardNumLock",
-                             "SystemStringValue":  "KeyboardEvent.code:NumLock",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом NumLock."
-                         },
-                  "96":  {
-                             "ID":  96,
-                             "TitleRu":  "Клавиша Numpad0",
-                             "TitleEn":  "Keyboard Numpad0",
-                             "Acronym":  "KeyboardNumpad0",
-                             "SystemStringValue":  "KeyboardEvent.code:Numpad0",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Numpad0."
-                         },
-                  "97":  {
-                             "ID":  97,
-                             "TitleRu":  "Клавиша Numpad1",
-                             "TitleEn":  "Keyboard Numpad1",
-                             "Acronym":  "KeyboardNumpad1",
-                             "SystemStringValue":  "KeyboardEvent.code:Numpad1",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Numpad1."
-                         },
-                  "98":  {
-                             "ID":  98,
-                             "TitleRu":  "Клавиша Numpad2",
-                             "TitleEn":  "Keyboard Numpad2",
-                             "Acronym":  "KeyboardNumpad2",
-                             "SystemStringValue":  "KeyboardEvent.code:Numpad2",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Numpad2."
-                         },
-                  "99":  {
-                             "ID":  99,
-                             "TitleRu":  "Клавиша Numpad3",
-                             "TitleEn":  "Keyboard Numpad3",
-                             "Acronym":  "KeyboardNumpad3",
-                             "SystemStringValue":  "KeyboardEvent.code:Numpad3",
-                             "SystemIntegerValue":  0,
-                             "Description":  "Событие клавиатуры с DOM-кодом Numpad3."
-                         },
-                  "100":  {
-                              "ID":  100,
-                              "TitleRu":  "Клавиша Numpad4",
-                              "TitleEn":  "Keyboard Numpad4",
-                              "Acronym":  "KeyboardNumpad4",
-                              "SystemStringValue":  "KeyboardEvent.code:Numpad4",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Numpad4."
-                          },
-                  "101":  {
-                              "ID":  101,
-                              "TitleRu":  "Клавиша Numpad5",
-                              "TitleEn":  "Keyboard Numpad5",
-                              "Acronym":  "KeyboardNumpad5",
-                              "SystemStringValue":  "KeyboardEvent.code:Numpad5",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Numpad5."
-                          },
-                  "102":  {
-                              "ID":  102,
-                              "TitleRu":  "Клавиша Numpad6",
-                              "TitleEn":  "Keyboard Numpad6",
-                              "Acronym":  "KeyboardNumpad6",
-                              "SystemStringValue":  "KeyboardEvent.code:Numpad6",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Numpad6."
-                          },
-                  "103":  {
-                              "ID":  103,
-                              "TitleRu":  "Клавиша Numpad7",
-                              "TitleEn":  "Keyboard Numpad7",
-                              "Acronym":  "KeyboardNumpad7",
-                              "SystemStringValue":  "KeyboardEvent.code:Numpad7",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Numpad7."
-                          },
-                  "104":  {
-                              "ID":  104,
-                              "TitleRu":  "Клавиша Numpad8",
-                              "TitleEn":  "Keyboard Numpad8",
-                              "Acronym":  "KeyboardNumpad8",
-                              "SystemStringValue":  "KeyboardEvent.code:Numpad8",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Numpad8."
-                          },
-                  "105":  {
-                              "ID":  105,
-                              "TitleRu":  "Клавиша Numpad9",
-                              "TitleEn":  "Keyboard Numpad9",
-                              "Acronym":  "KeyboardNumpad9",
-                              "SystemStringValue":  "KeyboardEvent.code:Numpad9",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Numpad9."
-                          },
-                  "106":  {
-                              "ID":  106,
-                              "TitleRu":  "Клавиша NumpadAdd",
-                              "TitleEn":  "Keyboard NumpadAdd",
-                              "Acronym":  "KeyboardNumpadAdd",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadAdd",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadAdd."
-                          },
-                  "107":  {
-                              "ID":  107,
-                              "TitleRu":  "Клавиша NumpadBackspace",
-                              "TitleEn":  "Keyboard NumpadBackspace",
-                              "Acronym":  "KeyboardNumpadBackspace",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadBackspace",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadBackspace."
-                          },
-                  "108":  {
-                              "ID":  108,
-                              "TitleRu":  "Клавиша NumpadClear",
-                              "TitleEn":  "Keyboard NumpadClear",
-                              "Acronym":  "KeyboardNumpadClear",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadClear",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadClear."
-                          },
-                  "109":  {
-                              "ID":  109,
-                              "TitleRu":  "Клавиша NumpadClearEntry",
-                              "TitleEn":  "Keyboard NumpadClearEntry",
-                              "Acronym":  "KeyboardNumpadClearEntry",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadClearEntry",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadClearEntry."
-                          },
-                  "110":  {
-                              "ID":  110,
-                              "TitleRu":  "Клавиша NumpadComma",
-                              "TitleEn":  "Keyboard NumpadComma",
-                              "Acronym":  "KeyboardNumpadComma",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadComma",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadComma."
-                          },
-                  "111":  {
-                              "ID":  111,
-                              "TitleRu":  "Клавиша NumpadDecimal",
-                              "TitleEn":  "Keyboard NumpadDecimal",
-                              "Acronym":  "KeyboardNumpadDecimal",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadDecimal",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadDecimal."
-                          },
-                  "112":  {
-                              "ID":  112,
-                              "TitleRu":  "Клавиша NumpadDivide",
-                              "TitleEn":  "Keyboard NumpadDivide",
-                              "Acronym":  "KeyboardNumpadDivide",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadDivide",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadDivide."
-                          },
-                  "113":  {
-                              "ID":  113,
-                              "TitleRu":  "Клавиша NumpadEnter",
-                              "TitleEn":  "Keyboard NumpadEnter",
-                              "Acronym":  "KeyboardNumpadEnter",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadEnter",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadEnter."
-                          },
-                  "114":  {
-                              "ID":  114,
-                              "TitleRu":  "Клавиша NumpadEqual",
-                              "TitleEn":  "Keyboard NumpadEqual",
-                              "Acronym":  "KeyboardNumpadEqual",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadEqual",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadEqual."
-                          },
-                  "115":  {
-                              "ID":  115,
-                              "TitleRu":  "Клавиша NumpadHash",
-                              "TitleEn":  "Keyboard NumpadHash",
-                              "Acronym":  "KeyboardNumpadHash",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadHash",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadHash."
-                          },
-                  "116":  {
-                              "ID":  116,
-                              "TitleRu":  "Клавиша NumpadMemoryAdd",
-                              "TitleEn":  "Keyboard NumpadMemoryAdd",
-                              "Acronym":  "KeyboardNumpadMemoryAdd",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadMemoryAdd",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadMemoryAdd."
-                          },
-                  "117":  {
-                              "ID":  117,
-                              "TitleRu":  "Клавиша NumpadMemoryClear",
-                              "TitleEn":  "Keyboard NumpadMemoryClear",
-                              "Acronym":  "KeyboardNumpadMemoryClear",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadMemoryClear",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadMemoryClear."
-                          },
-                  "118":  {
-                              "ID":  118,
-                              "TitleRu":  "Клавиша NumpadMemoryRecall",
-                              "TitleEn":  "Keyboard NumpadMemoryRecall",
-                              "Acronym":  "KeyboardNumpadMemoryRecall",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadMemoryRecall",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadMemoryRecall."
-                          },
-                  "119":  {
-                              "ID":  119,
-                              "TitleRu":  "Клавиша NumpadMemoryStore",
-                              "TitleEn":  "Keyboard NumpadMemoryStore",
-                              "Acronym":  "KeyboardNumpadMemoryStore",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadMemoryStore",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadMemoryStore."
-                          },
-                  "120":  {
-                              "ID":  120,
-                              "TitleRu":  "Клавиша NumpadMemorySubtract",
-                              "TitleEn":  "Keyboard NumpadMemorySubtract",
-                              "Acronym":  "KeyboardNumpadMemorySubtract",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadMemorySubtract",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadMemorySubtract."
-                          },
-                  "121":  {
-                              "ID":  121,
-                              "TitleRu":  "Клавиша NumpadMultiply",
-                              "TitleEn":  "Keyboard NumpadMultiply",
-                              "Acronym":  "KeyboardNumpadMultiply",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadMultiply",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadMultiply."
-                          },
-                  "122":  {
-                              "ID":  122,
-                              "TitleRu":  "Клавиша NumpadParenLeft",
-                              "TitleEn":  "Keyboard NumpadParenLeft",
-                              "Acronym":  "KeyboardNumpadParenLeft",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadParenLeft",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadParenLeft."
-                          },
-                  "123":  {
-                              "ID":  123,
-                              "TitleRu":  "Клавиша NumpadParenRight",
-                              "TitleEn":  "Keyboard NumpadParenRight",
-                              "Acronym":  "KeyboardNumpadParenRight",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadParenRight",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadParenRight."
-                          },
-                  "124":  {
-                              "ID":  124,
-                              "TitleRu":  "Клавиша NumpadStar",
-                              "TitleEn":  "Keyboard NumpadStar",
-                              "Acronym":  "KeyboardNumpadStar",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadStar",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadStar."
-                          },
-                  "125":  {
-                              "ID":  125,
-                              "TitleRu":  "Клавиша NumpadSubtract",
-                              "TitleEn":  "Keyboard NumpadSubtract",
-                              "Acronym":  "KeyboardNumpadSubtract",
-                              "SystemStringValue":  "KeyboardEvent.code:NumpadSubtract",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом NumpadSubtract."
-                          },
-                  "126":  {
-                              "ID":  126,
-                              "TitleRu":  "Клавиша F1",
-                              "TitleEn":  "Keyboard F1",
-                              "Acronym":  "KeyboardF1",
-                              "SystemStringValue":  "KeyboardEvent.code:F1",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F1."
-                          },
-                  "127":  {
-                              "ID":  127,
-                              "TitleRu":  "Клавиша F2",
-                              "TitleEn":  "Keyboard F2",
-                              "Acronym":  "KeyboardF2",
-                              "SystemStringValue":  "KeyboardEvent.code:F2",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F2."
-                          },
-                  "128":  {
-                              "ID":  128,
-                              "TitleRu":  "Клавиша F3",
-                              "TitleEn":  "Keyboard F3",
-                              "Acronym":  "KeyboardF3",
-                              "SystemStringValue":  "KeyboardEvent.code:F3",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F3."
-                          },
-                  "129":  {
-                              "ID":  129,
-                              "TitleRu":  "Клавиша F4",
-                              "TitleEn":  "Keyboard F4",
-                              "Acronym":  "KeyboardF4",
-                              "SystemStringValue":  "KeyboardEvent.code:F4",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F4."
-                          },
-                  "130":  {
-                              "ID":  130,
-                              "TitleRu":  "Клавиша F5",
-                              "TitleEn":  "Keyboard F5",
-                              "Acronym":  "KeyboardF5",
-                              "SystemStringValue":  "KeyboardEvent.code:F5",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F5."
-                          },
-                  "131":  {
-                              "ID":  131,
-                              "TitleRu":  "Клавиша F6",
-                              "TitleEn":  "Keyboard F6",
-                              "Acronym":  "KeyboardF6",
-                              "SystemStringValue":  "KeyboardEvent.code:F6",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F6."
-                          },
-                  "132":  {
-                              "ID":  132,
-                              "TitleRu":  "Клавиша F7",
-                              "TitleEn":  "Keyboard F7",
-                              "Acronym":  "KeyboardF7",
-                              "SystemStringValue":  "KeyboardEvent.code:F7",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F7."
-                          },
-                  "133":  {
-                              "ID":  133,
-                              "TitleRu":  "Клавиша F8",
-                              "TitleEn":  "Keyboard F8",
-                              "Acronym":  "KeyboardF8",
-                              "SystemStringValue":  "KeyboardEvent.code:F8",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F8."
-                          },
-                  "134":  {
-                              "ID":  134,
-                              "TitleRu":  "Клавиша F10",
-                              "TitleEn":  "Keyboard F10",
-                              "Acronym":  "KeyboardF10",
-                              "SystemStringValue":  "KeyboardEvent.code:F10",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F10."
-                          },
-                  "135":  {
-                              "ID":  135,
-                              "TitleRu":  "Клавиша F11",
-                              "TitleEn":  "Keyboard F11",
-                              "Acronym":  "KeyboardF11",
-                              "SystemStringValue":  "KeyboardEvent.code:F11",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F11."
-                          },
-                  "136":  {
-                              "ID":  136,
-                              "TitleRu":  "Клавиша F12",
-                              "TitleEn":  "Keyboard F12",
-                              "Acronym":  "KeyboardF12",
-                              "SystemStringValue":  "KeyboardEvent.code:F12",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом F12."
-                          },
-                  "137":  {
-                              "ID":  137,
-                              "TitleRu":  "Клавиша Fn",
-                              "TitleEn":  "Keyboard Fn",
-                              "Acronym":  "KeyboardFn",
-                              "SystemStringValue":  "KeyboardEvent.code:Fn",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Fn."
-                          },
-                  "138":  {
-                              "ID":  138,
-                              "TitleRu":  "Клавиша FnLock",
-                              "TitleEn":  "Keyboard FnLock",
-                              "Acronym":  "KeyboardFnLock",
-                              "SystemStringValue":  "KeyboardEvent.code:FnLock",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом FnLock."
-                          },
-                  "139":  {
-                              "ID":  139,
-                              "TitleRu":  "Клавиша PrintScreen",
-                              "TitleEn":  "Keyboard PrintScreen",
-                              "Acronym":  "KeyboardPrintScreen",
-                              "SystemStringValue":  "KeyboardEvent.code:PrintScreen",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом PrintScreen."
-                          },
-                  "140":  {
-                              "ID":  140,
-                              "TitleRu":  "Клавиша ScrollLock",
-                              "TitleEn":  "Keyboard ScrollLock",
-                              "Acronym":  "KeyboardScrollLock",
-                              "SystemStringValue":  "KeyboardEvent.code:ScrollLock",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом ScrollLock."
-                          },
-                  "141":  {
-                              "ID":  141,
-                              "TitleRu":  "Клавиша Pause",
-                              "TitleEn":  "Keyboard Pause",
-                              "Acronym":  "KeyboardPause",
-                              "SystemStringValue":  "KeyboardEvent.code:Pause",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Pause."
-                          },
-                  "142":  {
-                              "ID":  142,
-                              "TitleRu":  "Клавиша BrowserBack",
-                              "TitleEn":  "Keyboard BrowserBack",
-                              "Acronym":  "KeyboardBrowserBack",
-                              "SystemStringValue":  "KeyboardEvent.code:BrowserBack",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом BrowserBack."
-                          },
-                  "143":  {
-                              "ID":  143,
-                              "TitleRu":  "Клавиша BrowserFavorites",
-                              "TitleEn":  "Keyboard BrowserFavorites",
-                              "Acronym":  "KeyboardBrowserFavorites",
-                              "SystemStringValue":  "KeyboardEvent.code:BrowserFavorites",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом BrowserFavorites."
-                          },
-                  "144":  {
-                              "ID":  144,
-                              "TitleRu":  "Клавиша BrowserForward",
-                              "TitleEn":  "Keyboard BrowserForward",
-                              "Acronym":  "KeyboardBrowserForward",
-                              "SystemStringValue":  "KeyboardEvent.code:BrowserForward",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом BrowserForward."
-                          },
-                  "145":  {
-                              "ID":  145,
-                              "TitleRu":  "Клавиша BrowserHome",
-                              "TitleEn":  "Keyboard BrowserHome",
-                              "Acronym":  "KeyboardBrowserHome",
-                              "SystemStringValue":  "KeyboardEvent.code:BrowserHome",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом BrowserHome."
-                          },
-                  "146":  {
-                              "ID":  146,
-                              "TitleRu":  "Клавиша BrowserRefresh",
-                              "TitleEn":  "Keyboard BrowserRefresh",
-                              "Acronym":  "KeyboardBrowserRefresh",
-                              "SystemStringValue":  "KeyboardEvent.code:BrowserRefresh",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом BrowserRefresh."
-                          },
-                  "147":  {
-                              "ID":  147,
-                              "TitleRu":  "Клавиша BrowserSearch",
-                              "TitleEn":  "Keyboard BrowserSearch",
-                              "Acronym":  "KeyboardBrowserSearch",
-                              "SystemStringValue":  "KeyboardEvent.code:BrowserSearch",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом BrowserSearch."
-                          },
-                  "148":  {
-                              "ID":  148,
-                              "TitleRu":  "Клавиша BrowserStop",
-                              "TitleEn":  "Keyboard BrowserStop",
-                              "Acronym":  "KeyboardBrowserStop",
-                              "SystemStringValue":  "KeyboardEvent.code:BrowserStop",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом BrowserStop."
-                          },
-                  "149":  {
-                              "ID":  149,
-                              "TitleRu":  "Клавиша Eject",
-                              "TitleEn":  "Keyboard Eject",
-                              "Acronym":  "KeyboardEject",
-                              "SystemStringValue":  "KeyboardEvent.code:Eject",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Eject."
-                          },
-                  "150":  {
-                              "ID":  150,
-                              "TitleRu":  "Клавиша LaunchApp1",
-                              "TitleEn":  "Keyboard LaunchApp1",
-                              "Acronym":  "KeyboardLaunchApp1",
-                              "SystemStringValue":  "KeyboardEvent.code:LaunchApp1",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом LaunchApp1."
-                          },
-                  "151":  {
-                              "ID":  151,
-                              "TitleRu":  "Клавиша LaunchApp2",
-                              "TitleEn":  "Keyboard LaunchApp2",
-                              "Acronym":  "KeyboardLaunchApp2",
-                              "SystemStringValue":  "KeyboardEvent.code:LaunchApp2",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом LaunchApp2."
-                          },
-                  "152":  {
-                              "ID":  152,
-                              "TitleRu":  "Клавиша LaunchMail",
-                              "TitleEn":  "Keyboard LaunchMail",
-                              "Acronym":  "KeyboardLaunchMail",
-                              "SystemStringValue":  "KeyboardEvent.code:LaunchMail",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом LaunchMail."
-                          },
-                  "153":  {
-                              "ID":  153,
-                              "TitleRu":  "Клавиша MediaPlayPause",
-                              "TitleEn":  "Keyboard MediaPlayPause",
-                              "Acronym":  "KeyboardMediaPlayPause",
-                              "SystemStringValue":  "KeyboardEvent.code:MediaPlayPause",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом MediaPlayPause."
-                          },
-                  "154":  {
-                              "ID":  154,
-                              "TitleRu":  "Клавиша MediaSelect",
-                              "TitleEn":  "Keyboard MediaSelect",
-                              "Acronym":  "KeyboardMediaSelect",
-                              "SystemStringValue":  "KeyboardEvent.code:MediaSelect",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом MediaSelect."
-                          },
-                  "155":  {
-                              "ID":  155,
-                              "TitleRu":  "Клавиша MediaStop",
-                              "TitleEn":  "Keyboard MediaStop",
-                              "Acronym":  "KeyboardMediaStop",
-                              "SystemStringValue":  "KeyboardEvent.code:MediaStop",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом MediaStop."
-                          },
-                  "156":  {
-                              "ID":  156,
-                              "TitleRu":  "Клавиша MediaTrackNext",
-                              "TitleEn":  "Keyboard MediaTrackNext",
-                              "Acronym":  "KeyboardMediaTrackNext",
-                              "SystemStringValue":  "KeyboardEvent.code:MediaTrackNext",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом MediaTrackNext."
-                          },
-                  "157":  {
-                              "ID":  157,
-                              "TitleRu":  "Клавиша MediaTrackPrevious",
-                              "TitleEn":  "Keyboard MediaTrackPrevious",
-                              "Acronym":  "KeyboardMediaTrackPrevious",
-                              "SystemStringValue":  "KeyboardEvent.code:MediaTrackPrevious",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом MediaTrackPrevious."
-                          },
-                  "158":  {
-                              "ID":  158,
-                              "TitleRu":  "Клавиша Power",
-                              "TitleEn":  "Keyboard Power",
-                              "Acronym":  "KeyboardPower",
-                              "SystemStringValue":  "KeyboardEvent.code:Power",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Power."
-                          },
-                  "159":  {
-                              "ID":  159,
-                              "TitleRu":  "Клавиша Sleep",
-                              "TitleEn":  "Keyboard Sleep",
-                              "Acronym":  "KeyboardSleep",
-                              "SystemStringValue":  "KeyboardEvent.code:Sleep",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Sleep."
-                          },
-                  "160":  {
-                              "ID":  160,
-                              "TitleRu":  "Клавиша AudioVolumeDown",
-                              "TitleEn":  "Keyboard AudioVolumeDown",
-                              "Acronym":  "KeyboardAudioVolumeDown",
-                              "SystemStringValue":  "KeyboardEvent.code:AudioVolumeDown",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом AudioVolumeDown."
-                          },
-                  "161":  {
-                              "ID":  161,
-                              "TitleRu":  "Клавиша AudioVolumeMute",
-                              "TitleEn":  "Keyboard AudioVolumeMute",
-                              "Acronym":  "KeyboardAudioVolumeMute",
-                              "SystemStringValue":  "KeyboardEvent.code:AudioVolumeMute",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом AudioVolumeMute."
-                          },
-                  "162":  {
-                              "ID":  162,
-                              "TitleRu":  "Клавиша AudioVolumeUp",
-                              "TitleEn":  "Keyboard AudioVolumeUp",
-                              "Acronym":  "KeyboardAudioVolumeUp",
-                              "SystemStringValue":  "KeyboardEvent.code:AudioVolumeUp",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом AudioVolumeUp."
-                          },
-                  "163":  {
-                              "ID":  163,
-                              "TitleRu":  "Клавиша WakeUp",
-                              "TitleEn":  "Keyboard WakeUp",
-                              "Acronym":  "KeyboardWakeUp",
-                              "SystemStringValue":  "KeyboardEvent.code:WakeUp",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом WakeUp."
-                          },
-                  "164":  {
-                              "ID":  164,
-                              "TitleRu":  "Клавиша Hyper",
-                              "TitleEn":  "Keyboard Hyper",
-                              "Acronym":  "KeyboardHyper",
-                              "SystemStringValue":  "KeyboardEvent.code:Hyper",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Hyper."
-                          },
-                  "165":  {
-                              "ID":  165,
-                              "TitleRu":  "Клавиша Super",
-                              "TitleEn":  "Keyboard Super",
-                              "Acronym":  "KeyboardSuper",
-                              "SystemStringValue":  "KeyboardEvent.code:Super",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Super."
-                          },
-                  "166":  {
-                              "ID":  166,
-                              "TitleRu":  "Клавиша Turbo",
-                              "TitleEn":  "Keyboard Turbo",
-                              "Acronym":  "KeyboardTurbo",
-                              "SystemStringValue":  "KeyboardEvent.code:Turbo",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Turbo."
-                          },
-                  "167":  {
-                              "ID":  167,
-                              "TitleRu":  "Клавиша Abort",
-                              "TitleEn":  "Keyboard Abort",
-                              "Acronym":  "KeyboardAbort",
-                              "SystemStringValue":  "KeyboardEvent.code:Abort",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Abort."
-                          },
-                  "168":  {
-                              "ID":  168,
-                              "TitleRu":  "Клавиша Resume",
-                              "TitleEn":  "Keyboard Resume",
-                              "Acronym":  "KeyboardResume",
-                              "SystemStringValue":  "KeyboardEvent.code:Resume",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Resume."
-                          },
-                  "169":  {
-                              "ID":  169,
-                              "TitleRu":  "Клавиша Suspend",
-                              "TitleEn":  "Keyboard Suspend",
-                              "Acronym":  "KeyboardSuspend",
-                              "SystemStringValue":  "KeyboardEvent.code:Suspend",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Suspend."
-                          },
-                  "170":  {
-                              "ID":  170,
-                              "TitleRu":  "Клавиша Again",
-                              "TitleEn":  "Keyboard Again",
-                              "Acronym":  "KeyboardAgain",
-                              "SystemStringValue":  "KeyboardEvent.code:Again",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Again."
-                          },
-                  "171":  {
-                              "ID":  171,
-                              "TitleRu":  "Клавиша Copy",
-                              "TitleEn":  "Keyboard Copy",
-                              "Acronym":  "KeyboardCopy",
-                              "SystemStringValue":  "KeyboardEvent.code:Copy",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Copy."
-                          },
-                  "172":  {
-                              "ID":  172,
-                              "TitleRu":  "Клавиша Cut",
-                              "TitleEn":  "Keyboard Cut",
-                              "Acronym":  "KeyboardCut",
-                              "SystemStringValue":  "KeyboardEvent.code:Cut",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Cut."
-                          },
-                  "173":  {
-                              "ID":  173,
-                              "TitleRu":  "Клавиша Find",
-                              "TitleEn":  "Keyboard Find",
-                              "Acronym":  "KeyboardFind",
-                              "SystemStringValue":  "KeyboardEvent.code:Find",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Find."
-                          },
-                  "174":  {
-                              "ID":  174,
-                              "TitleRu":  "Клавиша Open",
-                              "TitleEn":  "Keyboard Open",
-                              "Acronym":  "KeyboardOpen",
-                              "SystemStringValue":  "KeyboardEvent.code:Open",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Open."
-                          },
-                  "175":  {
-                              "ID":  175,
-                              "TitleRu":  "Клавиша Paste",
-                              "TitleEn":  "Keyboard Paste",
-                              "Acronym":  "KeyboardPaste",
-                              "SystemStringValue":  "KeyboardEvent.code:Paste",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Paste."
-                          },
-                  "176":  {
-                              "ID":  176,
-                              "TitleRu":  "Клавиша Props",
-                              "TitleEn":  "Keyboard Props",
-                              "Acronym":  "KeyboardProps",
-                              "SystemStringValue":  "KeyboardEvent.code:Props",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Props."
-                          },
-                  "177":  {
-                              "ID":  177,
-                              "TitleRu":  "Клавиша Select",
-                              "TitleEn":  "Keyboard Select",
-                              "Acronym":  "KeyboardSelect",
-                              "SystemStringValue":  "KeyboardEvent.code:Select",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Select."
-                          },
-                  "178":  {
-                              "ID":  178,
-                              "TitleRu":  "Клавиша Undo",
-                              "TitleEn":  "Keyboard Undo",
-                              "Acronym":  "KeyboardUndo",
-                              "SystemStringValue":  "KeyboardEvent.code:Undo",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Undo."
-                          },
-                  "179":  {
-                              "ID":  179,
-                              "TitleRu":  "Клавиша Hiragana",
-                              "TitleEn":  "Keyboard Hiragana",
-                              "Acronym":  "KeyboardHiragana",
-                              "SystemStringValue":  "KeyboardEvent.code:Hiragana",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Hiragana."
-                          },
-                  "180":  {
-                              "ID":  180,
-                              "TitleRu":  "Клавиша Katakana",
-                              "TitleEn":  "Keyboard Katakana",
-                              "Acronym":  "KeyboardKatakana",
-                              "SystemStringValue":  "KeyboardEvent.code:Katakana",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Событие клавиатуры с DOM-кодом Katakana."
-                          },
-                  "181":  {
-                              "ID":  181,
-                              "TitleRu":  "Движение мыши вверх",
-                              "TitleEn":  "Mouse move up",
-                              "Acronym":  "MouseMoveUp",
-                              "SystemStringValue":  "MouseEvent.movementY<0",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Относительное движение мыши вверх при захваченном указателе."
-                          },
-                  "182":  {
-                              "ID":  182,
-                              "TitleRu":  "Движение мыши вниз",
-                              "TitleEn":  "Mouse move down",
-                              "Acronym":  "MouseMoveDown",
-                              "SystemStringValue":  "MouseEvent.movementY>0",
-                              "SystemIntegerValue":  0,
-                              "Description":  "Относительное движение мыши вниз при захваченном указателе."
-                          }
-              }
+{
+  "MaxID": 182,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "TitleRu": "W",
+      "TitleEn": "W",
+      "Acronym": "KeyboardKeyW",
+      "SystemStringValue": "KeyboardEvent.code:KeyW",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие и удержание клавиши W."
+    },
+    "2": {
+      "ID": 2,
+      "TitleRu": "S",
+      "TitleEn": "S",
+      "Acronym": "KeyboardKeyS",
+      "SystemStringValue": "KeyboardEvent.code:KeyS",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие и удержание клавиши S."
+    },
+    "3": {
+      "ID": 3,
+      "TitleRu": "A",
+      "TitleEn": "A",
+      "Acronym": "KeyboardKeyA",
+      "SystemStringValue": "KeyboardEvent.code:KeyA",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие и удержание клавиши A."
+    },
+    "4": {
+      "ID": 4,
+      "TitleRu": "D",
+      "TitleEn": "D",
+      "Acronym": "KeyboardKeyD",
+      "SystemStringValue": "KeyboardEvent.code:KeyD",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие и удержание клавиши D."
+    },
+    "5": {
+      "ID": 5,
+      "TitleRu": "Движение мыши вправо",
+      "TitleEn": "Mouse move right",
+      "Acronym": "MouseMoveRight",
+      "SystemStringValue": "MouseEvent.movementX\u003e0",
+      "SystemIntegerValue": 0,
+      "Description": "Относительное движение мыши вправо при захваченном указателе."
+    },
+    "6": {
+      "ID": 6,
+      "TitleRu": "Движение мыши влево",
+      "TitleEn": "Mouse move left",
+      "Acronym": "MouseMoveLeft",
+      "SystemStringValue": "MouseEvent.movementX\u003c0",
+      "SystemIntegerValue": 0,
+      "Description": "Относительное движение мыши влево при захваченном указателе."
+    },
+    "7": {
+      "ID": 7,
+      "TitleRu": "Колесо мыши вверх",
+      "TitleEn": "Mouse wheel up",
+      "Acronym": "MouseScrollUp",
+      "SystemStringValue": "WheelEvent.deltaY\u003c0",
+      "SystemIntegerValue": 0,
+      "Description": "Прокрутка колеса мыши вверх без удержания Shift."
+    },
+    "8": {
+      "ID": 8,
+      "TitleRu": "Колесо мыши вниз",
+      "TitleEn": "Mouse wheel down",
+      "Acronym": "MouseScrollDown",
+      "SystemStringValue": "WheelEvent.deltaY\u003e0",
+      "SystemIntegerValue": 0,
+      "Description": "Прокрутка колеса мыши вниз без удержания Shift."
+    },
+    "9": {
+      "ID": 9,
+      "TitleRu": "Shift и колесо мыши вверх",
+      "TitleEn": "Shift and mouse wheel up",
+      "Acronym": "KeyboardShiftMouseScrollUp",
+      "SystemStringValue": "KeyboardEvent.shiftKey\u0026\u0026WheelEvent.deltaY\u003c0",
+      "SystemIntegerValue": 0,
+      "Description": "Прокрутка колеса мыши вверх при удержанном Shift."
+    },
+    "10": {
+      "ID": 10,
+      "TitleRu": "Shift и колесо мыши вниз",
+      "TitleEn": "Shift and mouse wheel down",
+      "Acronym": "KeyboardShiftMouseScrollDown",
+      "SystemStringValue": "KeyboardEvent.shiftKey\u0026\u0026WheelEvent.deltaY\u003e0",
+      "SystemIntegerValue": 0,
+      "Description": "Прокрутка колеса мыши вниз при удержанном Shift."
+    },
+    "11": {
+      "ID": 11,
+      "TitleRu": "P",
+      "TitleEn": "P",
+      "Acronym": "KeyboardKeyP",
+      "SystemStringValue": "KeyboardEvent.code:KeyP",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши P."
+    },
+    "12": {
+      "ID": 12,
+      "TitleRu": "Enter",
+      "TitleEn": "Enter",
+      "Acronym": "KeyboardEnter",
+      "SystemStringValue": "KeyboardEvent.code:Enter",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши Enter."
+    },
+    "13": {
+      "ID": 13,
+      "TitleRu": "Escape",
+      "TitleEn": "Escape",
+      "Acronym": "KeyboardEscape",
+      "SystemStringValue": "KeyboardEvent.code:Escape",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие клавиши Escape."
+    },
+    "14": {
+      "ID": 14,
+      "TitleRu": "Backspace",
+      "TitleEn": "Backspace",
+      "Acronym": "KeyboardBackspace",
+      "SystemStringValue": "KeyboardEvent.code:Backspace",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие клавиши Backspace."
+    },
+    "15": {
+      "ID": 15,
+      "TitleRu": "Delete",
+      "TitleEn": "Delete",
+      "Acronym": "KeyboardDelete",
+      "SystemStringValue": "KeyboardEvent.code:Delete",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие клавиши Delete."
+    },
+    "16": {
+      "ID": 16,
+      "TitleRu": "ArrowLeft",
+      "TitleEn": "ArrowLeft",
+      "Acronym": "KeyboardArrowLeft",
+      "SystemStringValue": "KeyboardEvent.code:ArrowLeft",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие клавиши стрелки влево."
+    },
+    "17": {
+      "ID": 17,
+      "TitleRu": "ArrowRight",
+      "TitleEn": "ArrowRight",
+      "Acronym": "KeyboardArrowRight",
+      "SystemStringValue": "KeyboardEvent.code:ArrowRight",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие клавиши стрелки вправо."
+    },
+    "18": {
+      "ID": 18,
+      "TitleRu": "Home",
+      "TitleEn": "Home",
+      "Acronym": "KeyboardHome",
+      "SystemStringValue": "KeyboardEvent.code:Home",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие клавиши Home."
+    },
+    "19": {
+      "ID": 19,
+      "TitleRu": "End",
+      "TitleEn": "End",
+      "Acronym": "KeyboardEnd",
+      "SystemStringValue": "KeyboardEvent.code:End",
+      "SystemIntegerValue": 0,
+      "Description": "Нажатие клавиши End."
+    },
+    "20": {
+      "ID": 20,
+      "TitleRu": "Печатный символ",
+      "TitleEn": "Printable character",
+      "Acronym": "KeyboardPrintableCharacter",
+      "SystemStringValue": "KeyboardEvent.key.length:1",
+      "SystemIntegerValue": 0,
+      "Description": "Печатная клавиша без Ctrl, Alt и Meta."
+    },
+    "21": {
+      "ID": 21,
+      "TitleRu": "O",
+      "TitleEn": "O",
+      "Acronym": "KeyboardKeyO",
+      "SystemStringValue": "KeyboardEvent.code:KeyO",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши O."
+    },
+    "22": {
+      "ID": 22,
+      "TitleRu": "Backslash",
+      "TitleEn": "Backslash",
+      "Acronym": "KeyboardBackslash",
+      "SystemStringValue": "KeyboardEvent.code:Backslash",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши обратной косой черты."
+    },
+    "23": {
+      "ID": 23,
+      "TitleRu": "F9",
+      "TitleEn": "F9",
+      "Acronym": "KeyboardF9",
+      "SystemStringValue": "KeyboardEvent.code:F9",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши F9."
+    },
+    "24": {
+      "ID": 24,
+      "TitleRu": "Левая кнопка мыши",
+      "TitleEn": "Left mouse button",
+      "Acronym": "MouseKey0",
+      "SystemStringValue": "MouseEvent.button:0",
+      "SystemIntegerValue": 0,
+      "Description": "Клик или нажатие левой кнопки мыши."
+    },
+    "25": {
+      "ID": 25,
+      "TitleRu": "Правая кнопка мыши",
+      "TitleEn": "Right mouse button",
+      "Acronym": "MouseKey2",
+      "SystemStringValue": "MouseEvent.button:2",
+      "SystemIntegerValue": 0,
+      "Description": "Контекстный клик правой кнопкой мыши."
+    },
+    "26": {
+      "ID": 26,
+      "TitleRu": "Backquote",
+      "TitleEn": "Backquote",
+      "Acronym": "KeyboardBackquote",
+      "SystemStringValue": "KeyboardEvent.code:Backquote",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Backquote."
+    },
+    "27": {
+      "ID": 27,
+      "TitleRu": "BracketLeft",
+      "TitleEn": "BracketLeft",
+      "Acronym": "KeyboardBracketLeft",
+      "SystemStringValue": "KeyboardEvent.code:BracketLeft",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BracketLeft."
+    },
+    "28": {
+      "ID": 28,
+      "TitleRu": "BracketRight",
+      "TitleEn": "BracketRight",
+      "Acronym": "KeyboardBracketRight",
+      "SystemStringValue": "KeyboardEvent.code:BracketRight",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BracketRight."
+    },
+    "29": {
+      "ID": 29,
+      "TitleRu": "Comma",
+      "TitleEn": "Comma",
+      "Acronym": "KeyboardComma",
+      "SystemStringValue": "KeyboardEvent.code:Comma",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Comma."
+    },
+    "30": {
+      "ID": 30,
+      "TitleRu": "Digit0",
+      "TitleEn": "Digit0",
+      "Acronym": "KeyboardDigit0",
+      "SystemStringValue": "KeyboardEvent.code:Digit0",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit0."
+    },
+    "31": {
+      "ID": 31,
+      "TitleRu": "Digit1",
+      "TitleEn": "Digit1",
+      "Acronym": "KeyboardDigit1",
+      "SystemStringValue": "KeyboardEvent.code:Digit1",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit1."
+    },
+    "32": {
+      "ID": 32,
+      "TitleRu": "Digit2",
+      "TitleEn": "Digit2",
+      "Acronym": "KeyboardDigit2",
+      "SystemStringValue": "KeyboardEvent.code:Digit2",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit2."
+    },
+    "33": {
+      "ID": 33,
+      "TitleRu": "Digit3",
+      "TitleEn": "Digit3",
+      "Acronym": "KeyboardDigit3",
+      "SystemStringValue": "KeyboardEvent.code:Digit3",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit3."
+    },
+    "34": {
+      "ID": 34,
+      "TitleRu": "Digit4",
+      "TitleEn": "Digit4",
+      "Acronym": "KeyboardDigit4",
+      "SystemStringValue": "KeyboardEvent.code:Digit4",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit4."
+    },
+    "35": {
+      "ID": 35,
+      "TitleRu": "Digit5",
+      "TitleEn": "Digit5",
+      "Acronym": "KeyboardDigit5",
+      "SystemStringValue": "KeyboardEvent.code:Digit5",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit5."
+    },
+    "36": {
+      "ID": 36,
+      "TitleRu": "Digit6",
+      "TitleEn": "Digit6",
+      "Acronym": "KeyboardDigit6",
+      "SystemStringValue": "KeyboardEvent.code:Digit6",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit6."
+    },
+    "37": {
+      "ID": 37,
+      "TitleRu": "Digit7",
+      "TitleEn": "Digit7",
+      "Acronym": "KeyboardDigit7",
+      "SystemStringValue": "KeyboardEvent.code:Digit7",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit7."
+    },
+    "38": {
+      "ID": 38,
+      "TitleRu": "Digit8",
+      "TitleEn": "Digit8",
+      "Acronym": "KeyboardDigit8",
+      "SystemStringValue": "KeyboardEvent.code:Digit8",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit8."
+    },
+    "39": {
+      "ID": 39,
+      "TitleRu": "Digit9",
+      "TitleEn": "Digit9",
+      "Acronym": "KeyboardDigit9",
+      "SystemStringValue": "KeyboardEvent.code:Digit9",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Digit9."
+    },
+    "40": {
+      "ID": 40,
+      "TitleRu": "Equal",
+      "TitleEn": "Equal",
+      "Acronym": "KeyboardEqual",
+      "SystemStringValue": "KeyboardEvent.code:Equal",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Equal."
+    },
+    "41": {
+      "ID": 41,
+      "TitleRu": "IntlBackslash",
+      "TitleEn": "IntlBackslash",
+      "Acronym": "KeyboardIntlBackslash",
+      "SystemStringValue": "KeyboardEvent.code:IntlBackslash",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом IntlBackslash."
+    },
+    "42": {
+      "ID": 42,
+      "TitleRu": "IntlRo",
+      "TitleEn": "IntlRo",
+      "Acronym": "KeyboardIntlRo",
+      "SystemStringValue": "KeyboardEvent.code:IntlRo",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом IntlRo."
+    },
+    "43": {
+      "ID": 43,
+      "TitleRu": "IntlYen",
+      "TitleEn": "IntlYen",
+      "Acronym": "KeyboardIntlYen",
+      "SystemStringValue": "KeyboardEvent.code:IntlYen",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом IntlYen."
+    },
+    "44": {
+      "ID": 44,
+      "TitleRu": "B",
+      "TitleEn": "B",
+      "Acronym": "KeyboardKeyB",
+      "SystemStringValue": "KeyboardEvent.code:KeyB",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyB."
+    },
+    "45": {
+      "ID": 45,
+      "TitleRu": "C",
+      "TitleEn": "C",
+      "Acronym": "KeyboardKeyC",
+      "SystemStringValue": "KeyboardEvent.code:KeyC",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyC."
+    },
+    "46": {
+      "ID": 46,
+      "TitleRu": "E",
+      "TitleEn": "E",
+      "Acronym": "KeyboardKeyE",
+      "SystemStringValue": "KeyboardEvent.code:KeyE",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyE."
+    },
+    "47": {
+      "ID": 47,
+      "TitleRu": "F",
+      "TitleEn": "F",
+      "Acronym": "KeyboardKeyF",
+      "SystemStringValue": "KeyboardEvent.code:KeyF",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyF."
+    },
+    "48": {
+      "ID": 48,
+      "TitleRu": "G",
+      "TitleEn": "G",
+      "Acronym": "KeyboardKeyG",
+      "SystemStringValue": "KeyboardEvent.code:KeyG",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyG."
+    },
+    "49": {
+      "ID": 49,
+      "TitleRu": "H",
+      "TitleEn": "H",
+      "Acronym": "KeyboardKeyH",
+      "SystemStringValue": "KeyboardEvent.code:KeyH",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyH."
+    },
+    "50": {
+      "ID": 50,
+      "TitleRu": "I",
+      "TitleEn": "I",
+      "Acronym": "KeyboardKeyI",
+      "SystemStringValue": "KeyboardEvent.code:KeyI",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyI."
+    },
+    "51": {
+      "ID": 51,
+      "TitleRu": "J",
+      "TitleEn": "J",
+      "Acronym": "KeyboardKeyJ",
+      "SystemStringValue": "KeyboardEvent.code:KeyJ",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyJ."
+    },
+    "52": {
+      "ID": 52,
+      "TitleRu": "K",
+      "TitleEn": "K",
+      "Acronym": "KeyboardKeyK",
+      "SystemStringValue": "KeyboardEvent.code:KeyK",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyK."
+    },
+    "53": {
+      "ID": 53,
+      "TitleRu": "L",
+      "TitleEn": "L",
+      "Acronym": "KeyboardKeyL",
+      "SystemStringValue": "KeyboardEvent.code:KeyL",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyL."
+    },
+    "54": {
+      "ID": 54,
+      "TitleRu": "M",
+      "TitleEn": "M",
+      "Acronym": "KeyboardKeyM",
+      "SystemStringValue": "KeyboardEvent.code:KeyM",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyM."
+    },
+    "55": {
+      "ID": 55,
+      "TitleRu": "N",
+      "TitleEn": "N",
+      "Acronym": "KeyboardKeyN",
+      "SystemStringValue": "KeyboardEvent.code:KeyN",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyN."
+    },
+    "56": {
+      "ID": 56,
+      "TitleRu": "Q",
+      "TitleEn": "Q",
+      "Acronym": "KeyboardKeyQ",
+      "SystemStringValue": "KeyboardEvent.code:KeyQ",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyQ."
+    },
+    "57": {
+      "ID": 57,
+      "TitleRu": "R",
+      "TitleEn": "R",
+      "Acronym": "KeyboardKeyR",
+      "SystemStringValue": "KeyboardEvent.code:KeyR",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyR."
+    },
+    "58": {
+      "ID": 58,
+      "TitleRu": "T",
+      "TitleEn": "T",
+      "Acronym": "KeyboardKeyT",
+      "SystemStringValue": "KeyboardEvent.code:KeyT",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyT."
+    },
+    "59": {
+      "ID": 59,
+      "TitleRu": "U",
+      "TitleEn": "U",
+      "Acronym": "KeyboardKeyU",
+      "SystemStringValue": "KeyboardEvent.code:KeyU",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyU."
+    },
+    "60": {
+      "ID": 60,
+      "TitleRu": "V",
+      "TitleEn": "V",
+      "Acronym": "KeyboardKeyV",
+      "SystemStringValue": "KeyboardEvent.code:KeyV",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyV."
+    },
+    "61": {
+      "ID": 61,
+      "TitleRu": "X",
+      "TitleEn": "X",
+      "Acronym": "KeyboardKeyX",
+      "SystemStringValue": "KeyboardEvent.code:KeyX",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyX."
+    },
+    "62": {
+      "ID": 62,
+      "TitleRu": "Y",
+      "TitleEn": "Y",
+      "Acronym": "KeyboardKeyY",
+      "SystemStringValue": "KeyboardEvent.code:KeyY",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyY."
+    },
+    "63": {
+      "ID": 63,
+      "TitleRu": "Z",
+      "TitleEn": "Z",
+      "Acronym": "KeyboardKeyZ",
+      "SystemStringValue": "KeyboardEvent.code:KeyZ",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KeyZ."
+    },
+    "64": {
+      "ID": 64,
+      "TitleRu": "Minus",
+      "TitleEn": "Minus",
+      "Acronym": "KeyboardMinus",
+      "SystemStringValue": "KeyboardEvent.code:Minus",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Minus."
+    },
+    "65": {
+      "ID": 65,
+      "TitleRu": "Period",
+      "TitleEn": "Period",
+      "Acronym": "KeyboardPeriod",
+      "SystemStringValue": "KeyboardEvent.code:Period",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Period."
+    },
+    "66": {
+      "ID": 66,
+      "TitleRu": "Quote",
+      "TitleEn": "Quote",
+      "Acronym": "KeyboardQuote",
+      "SystemStringValue": "KeyboardEvent.code:Quote",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Quote."
+    },
+    "67": {
+      "ID": 67,
+      "TitleRu": "Semicolon",
+      "TitleEn": "Semicolon",
+      "Acronym": "KeyboardSemicolon",
+      "SystemStringValue": "KeyboardEvent.code:Semicolon",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Semicolon."
+    },
+    "68": {
+      "ID": 68,
+      "TitleRu": "Slash",
+      "TitleEn": "Slash",
+      "Acronym": "KeyboardSlash",
+      "SystemStringValue": "KeyboardEvent.code:Slash",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Slash."
+    },
+    "69": {
+      "ID": 69,
+      "TitleRu": "AltLeft",
+      "TitleEn": "AltLeft",
+      "Acronym": "KeyboardAltLeft",
+      "SystemStringValue": "KeyboardEvent.code:AltLeft",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом AltLeft."
+    },
+    "70": {
+      "ID": 70,
+      "TitleRu": "AltRight",
+      "TitleEn": "AltRight",
+      "Acronym": "KeyboardAltRight",
+      "SystemStringValue": "KeyboardEvent.code:AltRight",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом AltRight."
+    },
+    "71": {
+      "ID": 71,
+      "TitleRu": "CapsLock",
+      "TitleEn": "CapsLock",
+      "Acronym": "KeyboardCapsLock",
+      "SystemStringValue": "KeyboardEvent.code:CapsLock",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом CapsLock."
+    },
+    "72": {
+      "ID": 72,
+      "TitleRu": "ContextMenu",
+      "TitleEn": "ContextMenu",
+      "Acronym": "KeyboardContextMenu",
+      "SystemStringValue": "KeyboardEvent.code:ContextMenu",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ContextMenu."
+    },
+    "73": {
+      "ID": 73,
+      "TitleRu": "ControlLeft",
+      "TitleEn": "ControlLeft",
+      "Acronym": "KeyboardControlLeft",
+      "SystemStringValue": "KeyboardEvent.code:ControlLeft",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ControlLeft."
+    },
+    "74": {
+      "ID": 74,
+      "TitleRu": "ControlRight",
+      "TitleEn": "ControlRight",
+      "Acronym": "KeyboardControlRight",
+      "SystemStringValue": "KeyboardEvent.code:ControlRight",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ControlRight."
+    },
+    "75": {
+      "ID": 75,
+      "TitleRu": "MetaLeft",
+      "TitleEn": "MetaLeft",
+      "Acronym": "KeyboardMetaLeft",
+      "SystemStringValue": "KeyboardEvent.code:MetaLeft",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом MetaLeft."
+    },
+    "76": {
+      "ID": 76,
+      "TitleRu": "MetaRight",
+      "TitleEn": "MetaRight",
+      "Acronym": "KeyboardMetaRight",
+      "SystemStringValue": "KeyboardEvent.code:MetaRight",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом MetaRight."
+    },
+    "77": {
+      "ID": 77,
+      "TitleRu": "ShiftLeft",
+      "TitleEn": "ShiftLeft",
+      "Acronym": "KeyboardShiftLeft",
+      "SystemStringValue": "KeyboardEvent.code:ShiftLeft",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ShiftLeft."
+    },
+    "78": {
+      "ID": 78,
+      "TitleRu": "ShiftRight",
+      "TitleEn": "ShiftRight",
+      "Acronym": "KeyboardShiftRight",
+      "SystemStringValue": "KeyboardEvent.code:ShiftRight",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ShiftRight."
+    },
+    "79": {
+      "ID": 79,
+      "TitleRu": "Space",
+      "TitleEn": "Space",
+      "Acronym": "KeyboardSpace",
+      "SystemStringValue": "KeyboardEvent.code:Space",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Space."
+    },
+    "80": {
+      "ID": 80,
+      "TitleRu": "Tab",
+      "TitleEn": "Tab",
+      "Acronym": "KeyboardTab",
+      "SystemStringValue": "KeyboardEvent.code:Tab",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Tab."
+    },
+    "81": {
+      "ID": 81,
+      "TitleRu": "Convert",
+      "TitleEn": "Convert",
+      "Acronym": "KeyboardConvert",
+      "SystemStringValue": "KeyboardEvent.code:Convert",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Convert."
+    },
+    "82": {
+      "ID": 82,
+      "TitleRu": "KanaMode",
+      "TitleEn": "KanaMode",
+      "Acronym": "KeyboardKanaMode",
+      "SystemStringValue": "KeyboardEvent.code:KanaMode",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом KanaMode."
+    },
+    "83": {
+      "ID": 83,
+      "TitleRu": "Lang1",
+      "TitleEn": "Lang1",
+      "Acronym": "KeyboardLang1",
+      "SystemStringValue": "KeyboardEvent.code:Lang1",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Lang1."
+    },
+    "84": {
+      "ID": 84,
+      "TitleRu": "Lang2",
+      "TitleEn": "Lang2",
+      "Acronym": "KeyboardLang2",
+      "SystemStringValue": "KeyboardEvent.code:Lang2",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Lang2."
+    },
+    "85": {
+      "ID": 85,
+      "TitleRu": "Lang3",
+      "TitleEn": "Lang3",
+      "Acronym": "KeyboardLang3",
+      "SystemStringValue": "KeyboardEvent.code:Lang3",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Lang3."
+    },
+    "86": {
+      "ID": 86,
+      "TitleRu": "Lang4",
+      "TitleEn": "Lang4",
+      "Acronym": "KeyboardLang4",
+      "SystemStringValue": "KeyboardEvent.code:Lang4",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Lang4."
+    },
+    "87": {
+      "ID": 87,
+      "TitleRu": "Lang5",
+      "TitleEn": "Lang5",
+      "Acronym": "KeyboardLang5",
+      "SystemStringValue": "KeyboardEvent.code:Lang5",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Lang5."
+    },
+    "88": {
+      "ID": 88,
+      "TitleRu": "NonConvert",
+      "TitleEn": "NonConvert",
+      "Acronym": "KeyboardNonConvert",
+      "SystemStringValue": "KeyboardEvent.code:NonConvert",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NonConvert."
+    },
+    "89": {
+      "ID": 89,
+      "TitleRu": "Help",
+      "TitleEn": "Help",
+      "Acronym": "KeyboardHelp",
+      "SystemStringValue": "KeyboardEvent.code:Help",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Help."
+    },
+    "90": {
+      "ID": 90,
+      "TitleRu": "Insert",
+      "TitleEn": "Insert",
+      "Acronym": "KeyboardInsert",
+      "SystemStringValue": "KeyboardEvent.code:Insert",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Insert."
+    },
+    "91": {
+      "ID": 91,
+      "TitleRu": "PageDown",
+      "TitleEn": "PageDown",
+      "Acronym": "KeyboardPageDown",
+      "SystemStringValue": "KeyboardEvent.code:PageDown",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом PageDown."
+    },
+    "92": {
+      "ID": 92,
+      "TitleRu": "PageUp",
+      "TitleEn": "PageUp",
+      "Acronym": "KeyboardPageUp",
+      "SystemStringValue": "KeyboardEvent.code:PageUp",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом PageUp."
+    },
+    "93": {
+      "ID": 93,
+      "TitleRu": "ArrowDown",
+      "TitleEn": "ArrowDown",
+      "Acronym": "KeyboardArrowDown",
+      "SystemStringValue": "KeyboardEvent.code:ArrowDown",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ArrowDown."
+    },
+    "94": {
+      "ID": 94,
+      "TitleRu": "ArrowUp",
+      "TitleEn": "ArrowUp",
+      "Acronym": "KeyboardArrowUp",
+      "SystemStringValue": "KeyboardEvent.code:ArrowUp",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ArrowUp."
+    },
+    "95": {
+      "ID": 95,
+      "TitleRu": "NumLock",
+      "TitleEn": "NumLock",
+      "Acronym": "KeyboardNumLock",
+      "SystemStringValue": "KeyboardEvent.code:NumLock",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumLock."
+    },
+    "96": {
+      "ID": 96,
+      "TitleRu": "Numpad0",
+      "TitleEn": "Numpad0",
+      "Acronym": "KeyboardNumpad0",
+      "SystemStringValue": "KeyboardEvent.code:Numpad0",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad0."
+    },
+    "97": {
+      "ID": 97,
+      "TitleRu": "Numpad1",
+      "TitleEn": "Numpad1",
+      "Acronym": "KeyboardNumpad1",
+      "SystemStringValue": "KeyboardEvent.code:Numpad1",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad1."
+    },
+    "98": {
+      "ID": 98,
+      "TitleRu": "Numpad2",
+      "TitleEn": "Numpad2",
+      "Acronym": "KeyboardNumpad2",
+      "SystemStringValue": "KeyboardEvent.code:Numpad2",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad2."
+    },
+    "99": {
+      "ID": 99,
+      "TitleRu": "Numpad3",
+      "TitleEn": "Numpad3",
+      "Acronym": "KeyboardNumpad3",
+      "SystemStringValue": "KeyboardEvent.code:Numpad3",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad3."
+    },
+    "100": {
+      "ID": 100,
+      "TitleRu": "Numpad4",
+      "TitleEn": "Numpad4",
+      "Acronym": "KeyboardNumpad4",
+      "SystemStringValue": "KeyboardEvent.code:Numpad4",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad4."
+    },
+    "101": {
+      "ID": 101,
+      "TitleRu": "Numpad5",
+      "TitleEn": "Numpad5",
+      "Acronym": "KeyboardNumpad5",
+      "SystemStringValue": "KeyboardEvent.code:Numpad5",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad5."
+    },
+    "102": {
+      "ID": 102,
+      "TitleRu": "Numpad6",
+      "TitleEn": "Numpad6",
+      "Acronym": "KeyboardNumpad6",
+      "SystemStringValue": "KeyboardEvent.code:Numpad6",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad6."
+    },
+    "103": {
+      "ID": 103,
+      "TitleRu": "Numpad7",
+      "TitleEn": "Numpad7",
+      "Acronym": "KeyboardNumpad7",
+      "SystemStringValue": "KeyboardEvent.code:Numpad7",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad7."
+    },
+    "104": {
+      "ID": 104,
+      "TitleRu": "Numpad8",
+      "TitleEn": "Numpad8",
+      "Acronym": "KeyboardNumpad8",
+      "SystemStringValue": "KeyboardEvent.code:Numpad8",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad8."
+    },
+    "105": {
+      "ID": 105,
+      "TitleRu": "Numpad9",
+      "TitleEn": "Numpad9",
+      "Acronym": "KeyboardNumpad9",
+      "SystemStringValue": "KeyboardEvent.code:Numpad9",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Numpad9."
+    },
+    "106": {
+      "ID": 106,
+      "TitleRu": "NumpadAdd",
+      "TitleEn": "NumpadAdd",
+      "Acronym": "KeyboardNumpadAdd",
+      "SystemStringValue": "KeyboardEvent.code:NumpadAdd",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadAdd."
+    },
+    "107": {
+      "ID": 107,
+      "TitleRu": "NumpadBackspace",
+      "TitleEn": "NumpadBackspace",
+      "Acronym": "KeyboardNumpadBackspace",
+      "SystemStringValue": "KeyboardEvent.code:NumpadBackspace",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadBackspace."
+    },
+    "108": {
+      "ID": 108,
+      "TitleRu": "NumpadClear",
+      "TitleEn": "NumpadClear",
+      "Acronym": "KeyboardNumpadClear",
+      "SystemStringValue": "KeyboardEvent.code:NumpadClear",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadClear."
+    },
+    "109": {
+      "ID": 109,
+      "TitleRu": "NumpadClearEntry",
+      "TitleEn": "NumpadClearEntry",
+      "Acronym": "KeyboardNumpadClearEntry",
+      "SystemStringValue": "KeyboardEvent.code:NumpadClearEntry",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadClearEntry."
+    },
+    "110": {
+      "ID": 110,
+      "TitleRu": "NumpadComma",
+      "TitleEn": "NumpadComma",
+      "Acronym": "KeyboardNumpadComma",
+      "SystemStringValue": "KeyboardEvent.code:NumpadComma",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadComma."
+    },
+    "111": {
+      "ID": 111,
+      "TitleRu": "NumpadDecimal",
+      "TitleEn": "NumpadDecimal",
+      "Acronym": "KeyboardNumpadDecimal",
+      "SystemStringValue": "KeyboardEvent.code:NumpadDecimal",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadDecimal."
+    },
+    "112": {
+      "ID": 112,
+      "TitleRu": "NumpadDivide",
+      "TitleEn": "NumpadDivide",
+      "Acronym": "KeyboardNumpadDivide",
+      "SystemStringValue": "KeyboardEvent.code:NumpadDivide",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadDivide."
+    },
+    "113": {
+      "ID": 113,
+      "TitleRu": "NumpadEnter",
+      "TitleEn": "NumpadEnter",
+      "Acronym": "KeyboardNumpadEnter",
+      "SystemStringValue": "KeyboardEvent.code:NumpadEnter",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadEnter."
+    },
+    "114": {
+      "ID": 114,
+      "TitleRu": "NumpadEqual",
+      "TitleEn": "NumpadEqual",
+      "Acronym": "KeyboardNumpadEqual",
+      "SystemStringValue": "KeyboardEvent.code:NumpadEqual",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadEqual."
+    },
+    "115": {
+      "ID": 115,
+      "TitleRu": "NumpadHash",
+      "TitleEn": "NumpadHash",
+      "Acronym": "KeyboardNumpadHash",
+      "SystemStringValue": "KeyboardEvent.code:NumpadHash",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadHash."
+    },
+    "116": {
+      "ID": 116,
+      "TitleRu": "NumpadMemoryAdd",
+      "TitleEn": "NumpadMemoryAdd",
+      "Acronym": "KeyboardNumpadMemoryAdd",
+      "SystemStringValue": "KeyboardEvent.code:NumpadMemoryAdd",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadMemoryAdd."
+    },
+    "117": {
+      "ID": 117,
+      "TitleRu": "NumpadMemoryClear",
+      "TitleEn": "NumpadMemoryClear",
+      "Acronym": "KeyboardNumpadMemoryClear",
+      "SystemStringValue": "KeyboardEvent.code:NumpadMemoryClear",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadMemoryClear."
+    },
+    "118": {
+      "ID": 118,
+      "TitleRu": "NumpadMemoryRecall",
+      "TitleEn": "NumpadMemoryRecall",
+      "Acronym": "KeyboardNumpadMemoryRecall",
+      "SystemStringValue": "KeyboardEvent.code:NumpadMemoryRecall",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadMemoryRecall."
+    },
+    "119": {
+      "ID": 119,
+      "TitleRu": "NumpadMemoryStore",
+      "TitleEn": "NumpadMemoryStore",
+      "Acronym": "KeyboardNumpadMemoryStore",
+      "SystemStringValue": "KeyboardEvent.code:NumpadMemoryStore",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadMemoryStore."
+    },
+    "120": {
+      "ID": 120,
+      "TitleRu": "NumpadMemorySubtract",
+      "TitleEn": "NumpadMemorySubtract",
+      "Acronym": "KeyboardNumpadMemorySubtract",
+      "SystemStringValue": "KeyboardEvent.code:NumpadMemorySubtract",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadMemorySubtract."
+    },
+    "121": {
+      "ID": 121,
+      "TitleRu": "NumpadMultiply",
+      "TitleEn": "NumpadMultiply",
+      "Acronym": "KeyboardNumpadMultiply",
+      "SystemStringValue": "KeyboardEvent.code:NumpadMultiply",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadMultiply."
+    },
+    "122": {
+      "ID": 122,
+      "TitleRu": "NumpadParenLeft",
+      "TitleEn": "NumpadParenLeft",
+      "Acronym": "KeyboardNumpadParenLeft",
+      "SystemStringValue": "KeyboardEvent.code:NumpadParenLeft",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadParenLeft."
+    },
+    "123": {
+      "ID": 123,
+      "TitleRu": "NumpadParenRight",
+      "TitleEn": "NumpadParenRight",
+      "Acronym": "KeyboardNumpadParenRight",
+      "SystemStringValue": "KeyboardEvent.code:NumpadParenRight",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadParenRight."
+    },
+    "124": {
+      "ID": 124,
+      "TitleRu": "NumpadStar",
+      "TitleEn": "NumpadStar",
+      "Acronym": "KeyboardNumpadStar",
+      "SystemStringValue": "KeyboardEvent.code:NumpadStar",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadStar."
+    },
+    "125": {
+      "ID": 125,
+      "TitleRu": "NumpadSubtract",
+      "TitleEn": "NumpadSubtract",
+      "Acronym": "KeyboardNumpadSubtract",
+      "SystemStringValue": "KeyboardEvent.code:NumpadSubtract",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом NumpadSubtract."
+    },
+    "126": {
+      "ID": 126,
+      "TitleRu": "F1",
+      "TitleEn": "F1",
+      "Acronym": "KeyboardF1",
+      "SystemStringValue": "KeyboardEvent.code:F1",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F1."
+    },
+    "127": {
+      "ID": 127,
+      "TitleRu": "F2",
+      "TitleEn": "F2",
+      "Acronym": "KeyboardF2",
+      "SystemStringValue": "KeyboardEvent.code:F2",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F2."
+    },
+    "128": {
+      "ID": 128,
+      "TitleRu": "F3",
+      "TitleEn": "F3",
+      "Acronym": "KeyboardF3",
+      "SystemStringValue": "KeyboardEvent.code:F3",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F3."
+    },
+    "129": {
+      "ID": 129,
+      "TitleRu": "F4",
+      "TitleEn": "F4",
+      "Acronym": "KeyboardF4",
+      "SystemStringValue": "KeyboardEvent.code:F4",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F4."
+    },
+    "130": {
+      "ID": 130,
+      "TitleRu": "F5",
+      "TitleEn": "F5",
+      "Acronym": "KeyboardF5",
+      "SystemStringValue": "KeyboardEvent.code:F5",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F5."
+    },
+    "131": {
+      "ID": 131,
+      "TitleRu": "F6",
+      "TitleEn": "F6",
+      "Acronym": "KeyboardF6",
+      "SystemStringValue": "KeyboardEvent.code:F6",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F6."
+    },
+    "132": {
+      "ID": 132,
+      "TitleRu": "F7",
+      "TitleEn": "F7",
+      "Acronym": "KeyboardF7",
+      "SystemStringValue": "KeyboardEvent.code:F7",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F7."
+    },
+    "133": {
+      "ID": 133,
+      "TitleRu": "F8",
+      "TitleEn": "F8",
+      "Acronym": "KeyboardF8",
+      "SystemStringValue": "KeyboardEvent.code:F8",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F8."
+    },
+    "134": {
+      "ID": 134,
+      "TitleRu": "F10",
+      "TitleEn": "F10",
+      "Acronym": "KeyboardF10",
+      "SystemStringValue": "KeyboardEvent.code:F10",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F10."
+    },
+    "135": {
+      "ID": 135,
+      "TitleRu": "F11",
+      "TitleEn": "F11",
+      "Acronym": "KeyboardF11",
+      "SystemStringValue": "KeyboardEvent.code:F11",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F11."
+    },
+    "136": {
+      "ID": 136,
+      "TitleRu": "F12",
+      "TitleEn": "F12",
+      "Acronym": "KeyboardF12",
+      "SystemStringValue": "KeyboardEvent.code:F12",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом F12."
+    },
+    "137": {
+      "ID": 137,
+      "TitleRu": "Fn",
+      "TitleEn": "Fn",
+      "Acronym": "KeyboardFn",
+      "SystemStringValue": "KeyboardEvent.code:Fn",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Fn."
+    },
+    "138": {
+      "ID": 138,
+      "TitleRu": "FnLock",
+      "TitleEn": "FnLock",
+      "Acronym": "KeyboardFnLock",
+      "SystemStringValue": "KeyboardEvent.code:FnLock",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом FnLock."
+    },
+    "139": {
+      "ID": 139,
+      "TitleRu": "PrintScreen",
+      "TitleEn": "PrintScreen",
+      "Acronym": "KeyboardPrintScreen",
+      "SystemStringValue": "KeyboardEvent.code:PrintScreen",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом PrintScreen."
+    },
+    "140": {
+      "ID": 140,
+      "TitleRu": "ScrollLock",
+      "TitleEn": "ScrollLock",
+      "Acronym": "KeyboardScrollLock",
+      "SystemStringValue": "KeyboardEvent.code:ScrollLock",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом ScrollLock."
+    },
+    "141": {
+      "ID": 141,
+      "TitleRu": "Pause",
+      "TitleEn": "Pause",
+      "Acronym": "KeyboardPause",
+      "SystemStringValue": "KeyboardEvent.code:Pause",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Pause."
+    },
+    "142": {
+      "ID": 142,
+      "TitleRu": "BrowserBack",
+      "TitleEn": "BrowserBack",
+      "Acronym": "KeyboardBrowserBack",
+      "SystemStringValue": "KeyboardEvent.code:BrowserBack",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BrowserBack."
+    },
+    "143": {
+      "ID": 143,
+      "TitleRu": "BrowserFavorites",
+      "TitleEn": "BrowserFavorites",
+      "Acronym": "KeyboardBrowserFavorites",
+      "SystemStringValue": "KeyboardEvent.code:BrowserFavorites",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BrowserFavorites."
+    },
+    "144": {
+      "ID": 144,
+      "TitleRu": "BrowserForward",
+      "TitleEn": "BrowserForward",
+      "Acronym": "KeyboardBrowserForward",
+      "SystemStringValue": "KeyboardEvent.code:BrowserForward",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BrowserForward."
+    },
+    "145": {
+      "ID": 145,
+      "TitleRu": "BrowserHome",
+      "TitleEn": "BrowserHome",
+      "Acronym": "KeyboardBrowserHome",
+      "SystemStringValue": "KeyboardEvent.code:BrowserHome",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BrowserHome."
+    },
+    "146": {
+      "ID": 146,
+      "TitleRu": "BrowserRefresh",
+      "TitleEn": "BrowserRefresh",
+      "Acronym": "KeyboardBrowserRefresh",
+      "SystemStringValue": "KeyboardEvent.code:BrowserRefresh",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BrowserRefresh."
+    },
+    "147": {
+      "ID": 147,
+      "TitleRu": "BrowserSearch",
+      "TitleEn": "BrowserSearch",
+      "Acronym": "KeyboardBrowserSearch",
+      "SystemStringValue": "KeyboardEvent.code:BrowserSearch",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BrowserSearch."
+    },
+    "148": {
+      "ID": 148,
+      "TitleRu": "BrowserStop",
+      "TitleEn": "BrowserStop",
+      "Acronym": "KeyboardBrowserStop",
+      "SystemStringValue": "KeyboardEvent.code:BrowserStop",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом BrowserStop."
+    },
+    "149": {
+      "ID": 149,
+      "TitleRu": "Eject",
+      "TitleEn": "Eject",
+      "Acronym": "KeyboardEject",
+      "SystemStringValue": "KeyboardEvent.code:Eject",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Eject."
+    },
+    "150": {
+      "ID": 150,
+      "TitleRu": "LaunchApp1",
+      "TitleEn": "LaunchApp1",
+      "Acronym": "KeyboardLaunchApp1",
+      "SystemStringValue": "KeyboardEvent.code:LaunchApp1",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом LaunchApp1."
+    },
+    "151": {
+      "ID": 151,
+      "TitleRu": "LaunchApp2",
+      "TitleEn": "LaunchApp2",
+      "Acronym": "KeyboardLaunchApp2",
+      "SystemStringValue": "KeyboardEvent.code:LaunchApp2",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом LaunchApp2."
+    },
+    "152": {
+      "ID": 152,
+      "TitleRu": "LaunchMail",
+      "TitleEn": "LaunchMail",
+      "Acronym": "KeyboardLaunchMail",
+      "SystemStringValue": "KeyboardEvent.code:LaunchMail",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом LaunchMail."
+    },
+    "153": {
+      "ID": 153,
+      "TitleRu": "MediaPlayPause",
+      "TitleEn": "MediaPlayPause",
+      "Acronym": "KeyboardMediaPlayPause",
+      "SystemStringValue": "KeyboardEvent.code:MediaPlayPause",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом MediaPlayPause."
+    },
+    "154": {
+      "ID": 154,
+      "TitleRu": "MediaSelect",
+      "TitleEn": "MediaSelect",
+      "Acronym": "KeyboardMediaSelect",
+      "SystemStringValue": "KeyboardEvent.code:MediaSelect",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом MediaSelect."
+    },
+    "155": {
+      "ID": 155,
+      "TitleRu": "MediaStop",
+      "TitleEn": "MediaStop",
+      "Acronym": "KeyboardMediaStop",
+      "SystemStringValue": "KeyboardEvent.code:MediaStop",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом MediaStop."
+    },
+    "156": {
+      "ID": 156,
+      "TitleRu": "MediaTrackNext",
+      "TitleEn": "MediaTrackNext",
+      "Acronym": "KeyboardMediaTrackNext",
+      "SystemStringValue": "KeyboardEvent.code:MediaTrackNext",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом MediaTrackNext."
+    },
+    "157": {
+      "ID": 157,
+      "TitleRu": "MediaTrackPrevious",
+      "TitleEn": "MediaTrackPrevious",
+      "Acronym": "KeyboardMediaTrackPrevious",
+      "SystemStringValue": "KeyboardEvent.code:MediaTrackPrevious",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом MediaTrackPrevious."
+    },
+    "158": {
+      "ID": 158,
+      "TitleRu": "Power",
+      "TitleEn": "Power",
+      "Acronym": "KeyboardPower",
+      "SystemStringValue": "KeyboardEvent.code:Power",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Power."
+    },
+    "159": {
+      "ID": 159,
+      "TitleRu": "Sleep",
+      "TitleEn": "Sleep",
+      "Acronym": "KeyboardSleep",
+      "SystemStringValue": "KeyboardEvent.code:Sleep",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Sleep."
+    },
+    "160": {
+      "ID": 160,
+      "TitleRu": "AudioVolumeDown",
+      "TitleEn": "AudioVolumeDown",
+      "Acronym": "KeyboardAudioVolumeDown",
+      "SystemStringValue": "KeyboardEvent.code:AudioVolumeDown",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом AudioVolumeDown."
+    },
+    "161": {
+      "ID": 161,
+      "TitleRu": "AudioVolumeMute",
+      "TitleEn": "AudioVolumeMute",
+      "Acronym": "KeyboardAudioVolumeMute",
+      "SystemStringValue": "KeyboardEvent.code:AudioVolumeMute",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом AudioVolumeMute."
+    },
+    "162": {
+      "ID": 162,
+      "TitleRu": "AudioVolumeUp",
+      "TitleEn": "AudioVolumeUp",
+      "Acronym": "KeyboardAudioVolumeUp",
+      "SystemStringValue": "KeyboardEvent.code:AudioVolumeUp",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом AudioVolumeUp."
+    },
+    "163": {
+      "ID": 163,
+      "TitleRu": "WakeUp",
+      "TitleEn": "WakeUp",
+      "Acronym": "KeyboardWakeUp",
+      "SystemStringValue": "KeyboardEvent.code:WakeUp",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом WakeUp."
+    },
+    "164": {
+      "ID": 164,
+      "TitleRu": "Hyper",
+      "TitleEn": "Hyper",
+      "Acronym": "KeyboardHyper",
+      "SystemStringValue": "KeyboardEvent.code:Hyper",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Hyper."
+    },
+    "165": {
+      "ID": 165,
+      "TitleRu": "Super",
+      "TitleEn": "Super",
+      "Acronym": "KeyboardSuper",
+      "SystemStringValue": "KeyboardEvent.code:Super",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Super."
+    },
+    "166": {
+      "ID": 166,
+      "TitleRu": "Turbo",
+      "TitleEn": "Turbo",
+      "Acronym": "KeyboardTurbo",
+      "SystemStringValue": "KeyboardEvent.code:Turbo",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Turbo."
+    },
+    "167": {
+      "ID": 167,
+      "TitleRu": "Abort",
+      "TitleEn": "Abort",
+      "Acronym": "KeyboardAbort",
+      "SystemStringValue": "KeyboardEvent.code:Abort",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Abort."
+    },
+    "168": {
+      "ID": 168,
+      "TitleRu": "Resume",
+      "TitleEn": "Resume",
+      "Acronym": "KeyboardResume",
+      "SystemStringValue": "KeyboardEvent.code:Resume",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Resume."
+    },
+    "169": {
+      "ID": 169,
+      "TitleRu": "Suspend",
+      "TitleEn": "Suspend",
+      "Acronym": "KeyboardSuspend",
+      "SystemStringValue": "KeyboardEvent.code:Suspend",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Suspend."
+    },
+    "170": {
+      "ID": 170,
+      "TitleRu": "Again",
+      "TitleEn": "Again",
+      "Acronym": "KeyboardAgain",
+      "SystemStringValue": "KeyboardEvent.code:Again",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Again."
+    },
+    "171": {
+      "ID": 171,
+      "TitleRu": "Copy",
+      "TitleEn": "Copy",
+      "Acronym": "KeyboardCopy",
+      "SystemStringValue": "KeyboardEvent.code:Copy",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Copy."
+    },
+    "172": {
+      "ID": 172,
+      "TitleRu": "Cut",
+      "TitleEn": "Cut",
+      "Acronym": "KeyboardCut",
+      "SystemStringValue": "KeyboardEvent.code:Cut",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Cut."
+    },
+    "173": {
+      "ID": 173,
+      "TitleRu": "Find",
+      "TitleEn": "Find",
+      "Acronym": "KeyboardFind",
+      "SystemStringValue": "KeyboardEvent.code:Find",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Find."
+    },
+    "174": {
+      "ID": 174,
+      "TitleRu": "Open",
+      "TitleEn": "Open",
+      "Acronym": "KeyboardOpen",
+      "SystemStringValue": "KeyboardEvent.code:Open",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Open."
+    },
+    "175": {
+      "ID": 175,
+      "TitleRu": "Paste",
+      "TitleEn": "Paste",
+      "Acronym": "KeyboardPaste",
+      "SystemStringValue": "KeyboardEvent.code:Paste",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Paste."
+    },
+    "176": {
+      "ID": 176,
+      "TitleRu": "Props",
+      "TitleEn": "Props",
+      "Acronym": "KeyboardProps",
+      "SystemStringValue": "KeyboardEvent.code:Props",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Props."
+    },
+    "177": {
+      "ID": 177,
+      "TitleRu": "Select",
+      "TitleEn": "Select",
+      "Acronym": "KeyboardSelect",
+      "SystemStringValue": "KeyboardEvent.code:Select",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Select."
+    },
+    "178": {
+      "ID": 178,
+      "TitleRu": "Undo",
+      "TitleEn": "Undo",
+      "Acronym": "KeyboardUndo",
+      "SystemStringValue": "KeyboardEvent.code:Undo",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Undo."
+    },
+    "179": {
+      "ID": 179,
+      "TitleRu": "Hiragana",
+      "TitleEn": "Hiragana",
+      "Acronym": "KeyboardHiragana",
+      "SystemStringValue": "KeyboardEvent.code:Hiragana",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Hiragana."
+    },
+    "180": {
+      "ID": 180,
+      "TitleRu": "Katakana",
+      "TitleEn": "Katakana",
+      "Acronym": "KeyboardKatakana",
+      "SystemStringValue": "KeyboardEvent.code:Katakana",
+      "SystemIntegerValue": 0,
+      "Description": "Событие клавиатуры с DOM-кодом Katakana."
+    },
+    "181": {
+      "ID": 181,
+      "TitleRu": "Движение мыши вверх",
+      "TitleEn": "Mouse move up",
+      "Acronym": "MouseMoveUp",
+      "SystemStringValue": "MouseEvent.movementY\u003c0",
+      "SystemIntegerValue": 0,
+      "Description": "Относительное движение мыши вверх при захваченном указателе."
+    },
+    "182": {
+      "ID": 182,
+      "TitleRu": "Движение мыши вниз",
+      "TitleEn": "Mouse move down",
+      "Acronym": "MouseMoveDown",
+      "SystemStringValue": "MouseEvent.movementY\u003e0",
+      "SystemIntegerValue": 0,
+      "Description": "Относительное движение мыши вниз при захваченном указателе."
+    }
+  }
 }
-

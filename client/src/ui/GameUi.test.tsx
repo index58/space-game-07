@@ -75,6 +75,24 @@ const referenceData = {
   BlueprintComponent: { MaxID: 0, Items: {} },
   Schema: { MaxID: 0, Items: {} },
   SchemaComponent: { MaxID: 0, Items: {} },
+  ActionType: {
+    MaxID: 1,
+    Items: {
+      "1": { ID: 1, TitleRu: "Продольная тяга вперед", TitleEn: "Forward thrust", Acronym: "ThrustForward" },
+    },
+  },
+  InputEventType: {
+    MaxID: 1,
+    Items: {
+      "1": { ID: 1, TitleRu: "Клавиша W", TitleEn: "Keyboard W", Acronym: "KeyboardKeyW", SystemStringValue: "KeyboardEvent.code:KeyW", SystemIntegerValue: 0 },
+    },
+  },
+  DefaultActionInputSetting: {
+    MaxID: 1,
+    Items: {
+      "1": { ID: 1, ActionTypeID: 1, InputEventTypeID: 1 },
+    },
+  },
 } as unknown as ReferenceDataMessage;
 
 const rect = (width: number): DOMRect => ({
@@ -109,6 +127,13 @@ const state = (): GameUiState => ({
   gameCursor: { visible: false, x: 0, y: 0 },
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
+  settingsVisible: false,
+  inputSettingsValues: { 1: 1 },
+  openInputSettingsActionId: null,
+  inputSettingsError: null,
+  inputSettingsSaving: false,
+  inputSettingsScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
+  inputSettingsDropdownScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitDemoState: createInitialUiKitDemoState(),
   uiControls: [],
   fps: 60,

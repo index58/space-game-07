@@ -50,6 +50,19 @@ export type DropdownProps = {
   selectedValue: string;
   // Доступные варианты.
   options: UiKitOption[];
+  // Состояние прокрутки раскрытого меню.
+  menuScroll?: {
+    // Показывает, что пункты не помещаются по высоте.
+    visible: boolean;
+    // Верх ползунка в процентах высоты полосы.
+    thumbTopPercent: number;
+    // Высота ползунка в процентах высоты полосы.
+    thumbHeightPercent: number;
+    // Вертикальный сдвиг списка пунктов.
+    contentOffsetPx: number;
+    // Показывает активное перетаскивание ползунка.
+    dragging: boolean;
+  };
 };
 
 type ListBoxProps = {
@@ -202,9 +215,22 @@ export const Dropdown = (props: DropdownProps) => (
     <div class="ui-kit-dropdown__value">{props.options.find((option) => option.value === props.selectedValue)?.label ?? ""}</div>
     <Show when={props.open}>
       <div class="ui-kit-dropdown__menu">
-        <For each={props.options}>
-          {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} data-ui-z-index="1000" class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
-        </For>
+        <div class="ui-kit-dropdown__menu-viewport">
+          <div class="ui-kit-dropdown__menu-content" style={{ transform: `translateY(-${props.menuScroll?.contentOffsetPx ?? 0}px)` }}>
+            <For each={props.options}>
+              {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} data-ui-z-index="1000" class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
+            </For>
+          </div>
+        </div>
+        <Show when={props.menuScroll?.visible}>
+          <Scrollbar
+            id={`${props.id}-scrollbar`}
+            className="ui-kit-dropdown-scrollbar"
+            thumbTopPercent={props.menuScroll?.thumbTopPercent ?? 0}
+            thumbHeightPercent={props.menuScroll?.thumbHeightPercent ?? 100}
+            dragging={props.menuScroll?.dragging ?? false}
+          />
+        </Show>
       </div>
     </Show>
   </div>
@@ -265,7 +291,7 @@ export const Tabs = (props: TabsProps) => (
 );
 
 export const Scrollbar = (props: ScrollbarProps) => (
-  <div id={props.id} data-ui-kind="scrollbar" class={`ui-kit-control ui-kit-scrollbar ${props.className ?? ""} ${props.dragging ? "is-dragging" : ""}`}>
+  <div id={props.id} data-ui-kind="scrollbar" data-ui-z-index="1100" class={`ui-kit-control ui-kit-scrollbar ${props.className ?? ""} ${props.dragging ? "is-dragging" : ""}`}>
     <div class="ui-kit-scrollbar__thumb" style={{ top: `${props.thumbTopPercent}%`, height: `${props.thumbHeightPercent}%` }} />
   </div>
 );

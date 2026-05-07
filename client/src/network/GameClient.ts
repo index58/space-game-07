@@ -7,6 +7,10 @@
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
+  InputSettingsErrorMessage,
+  InputSettingsMessage,
+  InputSettingsSaveMessage,
+  InputSettingPayload,
   RandomShipMessage,
   SnapshotMessage,
 } from "./protocol";
@@ -146,6 +150,30 @@ const isChatErrorMessage = (message: unknown): message is ChatErrorMessage => {
   return chatError.type === "chatError" && typeof chatError.message === "string";
 };
 
+// Проверяет пакет настроек ввода перед передачей в окно настроек.
+const isInputSettingsMessage = (message: unknown): message is InputSettingsMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const inputSettings = message as InputSettingsMessage;
+
+  return inputSettings.type === "inputSettings" &&
+    Array.isArray(inputSettings.settings) &&
+    inputSettings.settings.every((setting) => typeof setting.actionTypeId === "number" && typeof setting.inputEventTypeId === "number");
+};
+
+// Проверяет пакет ошибки настроек перед отображением в окне.
+const isInputSettingsErrorMessage = (message: unknown): message is InputSettingsErrorMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const error = message as InputSettingsErrorMessage;
+
+  return error.type === "inputSettingsError" && typeof error.message === "string";
+};
+
 // Сохраняет секрет, если окружение предоставляет браузерное хранилище.
 const storeAccountToken = (token: string): void => {
   if (typeof localStorage === "undefined") {
@@ -177,6 +205,14 @@ export class GameClient {
   private latestChatError: string | null = null;
   // Порядковый номер последней ошибки, чтобы UI мог перезапустить одинаковую плашку.
   private latestChatErrorSeq = 0;
+  // Последние сохраненные сервером привязки ввода текущего аккаунта.
+  private latestInputSettings: InputSettingPayload[] = [];
+  // Порядковый номер пакета настроек для синхронизации локального окна.
+  private latestInputSettingsSeq = 0;
+  // Последняя ошибка сохранения настроек ввода.
+  private latestInputSettingsError: string | null = null;
+  // Порядковый номер ошибки настроек для повторного показа одинакового текста.
+  private latestInputSettingsErrorSeq = 0;
   // Последнее состояние управления, готовое к отправке.
   private latestInput: ClientInputState = emptyInput();
   // Последний выданный порядковый номер пакета ввода.
@@ -226,6 +262,26 @@ export class GameClient {
     return this.latestChatErrorSeq;
   }
 
+  // Возвращает последние сохраненные сервером привязки ввода.
+  getLatestInputSettings(): InputSettingPayload[] {
+    return this.latestInputSettings;
+  }
+
+  // Возвращает счетчик обновлений привязок ввода.
+  getLatestInputSettingsSeq(): number {
+    return this.latestInputSettingsSeq;
+  }
+
+  // Возвращает последнюю ошибку сохранения настроек ввода.
+  getLatestInputSettingsError(): string | null {
+    return this.latestInputSettingsError;
+  }
+
+  // Возвращает счетчик ошибок сохранения настроек ввода.
+  getLatestInputSettingsErrorSeq(): number {
+    return this.latestInputSettingsErrorSeq;
+  }
+
   // Обновляет состояние клавиш и накапливает относительный поворот мыши до отправки.
   setInput(input: ClientInputState): void {
     this.latestInput = {
@@ -273,6 +329,20 @@ export class GameClient {
     const payload: ChatSelectMessage = {
       type: "chatSelect",
       chatId,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+  }
+
+  // Отправляет полный набор выбранных привязок ввода текущего аккаунта.
+  saveInputSettings(settings: InputSettingPayload[]): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
+    const payload: InputSettingsSaveMessage = {
+      type: "inputSettingsSave",
+      settings,
     };
 
     this.socket.send(JSON.stringify(payload));
@@ -350,6 +420,19 @@ export class GameClient {
     if (isChatErrorMessage(parsed)) {
       this.latestChatError = parsed.message;
       this.latestChatErrorSeq++;
+      return;
+    }
+
+    if (isInputSettingsMessage(parsed)) {
+      this.latestInputSettings = parsed.settings;
+      this.latestInputSettingsSeq++;
+      this.latestInputSettingsError = null;
+      return;
+    }
+
+    if (isInputSettingsErrorMessage(parsed)) {
+      this.latestInputSettingsError = parsed.message;
+      this.latestInputSettingsErrorSeq++;
     }
   }
 

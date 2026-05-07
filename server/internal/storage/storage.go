@@ -32,6 +32,10 @@ const communityChatRolesFileName = "CommunityChatRoles.json"
 const messagesFileName = "Messages.json"
 const messageReadsFileName = "MessageReads.json"
 const messageTypesFileName = "MessageTypes.json"
+const actionTypesFileName = "ActionTypes.json"
+const inputEventTypesFileName = "InputEventTypes.json"
+const defaultActionInputSettingsFileName = "DefaultActionInputSettings.json"
+const accountActionInputSettingsFileName = "AccountActionInputSettings.json"
 
 // Хранит таблицу, для которой на сервере пока нет отдельной предметной модели.
 type RawReferenceTable struct {
@@ -48,29 +52,33 @@ func NewRawReferenceTable() *RawReferenceTable {
 
 // Объединяет данные сервера, загружаемые из JSON-файлов при старте.
 type ServerData struct {
-	Accounts                *data.Accounts                // Загруженные учетные записи игроков.
-	Characters              *data.Characters              // Загруженные персонажи игроков.
-	CosmicObjects           *data.CosmicObjects           // Загруженные экземпляры объектов мира.
-	CosmicObjectTypes       *data.CosmicObjectTypes       // Загруженный справочник типов космических объектов.
-	CosmicObjectModels      *data.CosmicObjectModels      // Загруженный справочник моделей космических объектов.
-	Itemtypes               *data.Itemtypes               // Загруженный справочник типов предметов.
-	EquipmentGroups         *data.EquipmentGroups         // Загруженные группы оборудования космических объектов.
-	ItemGroups              *data.ItemGroups              // Загруженные группы предметов внутри контейнеров.
-	Assemblies              *data.Assemblies              // Загруженный справочник сборок космических объектов.
-	AssemblyEquipmentGroups *data.AssemblyEquipmentGroups // Загруженный справочник оборудования сборок.
-	NpcClans                *RawReferenceTable            // Загруженный справочник NPC-кланов.
-	ItemModels              *data.ItemModels              // Загруженный справочник моделей предметов.
-	Blueprints              *RawReferenceTable            // Загруженный справочник чертежей объектов.
-	BlueprintComponents     *RawReferenceTable            // Загруженный справочник компонентов чертежей.
-	Schemas                 *RawReferenceTable            // Загруженный справочник схем предметов.
-	SchemaComponents        *RawReferenceTable            // Загруженный справочник компонентов схем.
-	Chats                   *data.Chats                   // Загруженные чаты игрового мира.
-	ChatMembers             *data.ChatMembers             // Загруженные участники чатов.
-	CommunityTypes          *data.CommunityTypes          // Загруженный справочник типов сообществ.
-	CommunityChatRoles      *data.CommunityChatRoles      // Загруженный справочник ролей в чатах сообществ.
-	Messages                *data.Messages                // Загруженные сообщения чатов.
-	MessageReads            *data.MessageReads            // Загруженные позиции чтения сообщений персонажами.
-	MessageTypes            *data.MessageTypes            // Загруженный справочник типов сообщений.
+	Accounts                   *data.Accounts                   // Загруженные учетные записи игроков.
+	Characters                 *data.Characters                 // Загруженные персонажи игроков.
+	CosmicObjects              *data.CosmicObjects              // Загруженные экземпляры объектов мира.
+	CosmicObjectTypes          *data.CosmicObjectTypes          // Загруженный справочник типов космических объектов.
+	CosmicObjectModels         *data.CosmicObjectModels         // Загруженный справочник моделей космических объектов.
+	Itemtypes                  *data.Itemtypes                  // Загруженный справочник типов предметов.
+	EquipmentGroups            *data.EquipmentGroups            // Загруженные группы оборудования космических объектов.
+	ItemGroups                 *data.ItemGroups                 // Загруженные группы предметов внутри контейнеров.
+	Assemblies                 *data.Assemblies                 // Загруженный справочник сборок космических объектов.
+	AssemblyEquipmentGroups    *data.AssemblyEquipmentGroups    // Загруженный справочник оборудования сборок.
+	NpcClans                   *RawReferenceTable               // Загруженный справочник NPC-кланов.
+	ItemModels                 *data.ItemModels                 // Загруженный справочник моделей предметов.
+	Blueprints                 *RawReferenceTable               // Загруженный справочник чертежей объектов.
+	BlueprintComponents        *RawReferenceTable               // Загруженный справочник компонентов чертежей.
+	Schemas                    *RawReferenceTable               // Загруженный справочник схем предметов.
+	SchemaComponents           *RawReferenceTable               // Загруженный справочник компонентов схем.
+	Chats                      *data.Chats                      // Загруженные чаты игрового мира.
+	ChatMembers                *data.ChatMembers                // Загруженные участники чатов.
+	CommunityTypes             *data.CommunityTypes             // Загруженный справочник типов сообществ.
+	CommunityChatRoles         *data.CommunityChatRoles         // Загруженный справочник ролей в чатах сообществ.
+	Messages                   *data.Messages                   // Загруженные сообщения чатов.
+	MessageReads               *data.MessageReads               // Загруженные позиции чтения сообщений персонажами.
+	MessageTypes               *data.MessageTypes               // Загруженный справочник типов сообщений.
+	ActionTypes                *data.ActionTypes                // Загруженный справочник игровых действий.
+	InputEventTypes            *data.InputEventTypes            // Загруженный справочник событий ввода.
+	DefaultActionInputSettings *data.DefaultActionInputSettings // Загруженные привязки ввода по умолчанию.
+	AccountActionInputSettings *data.AccountActionInputSettings // Загруженные аккаунтные привязки ввода.
 }
 
 // Загружает все JSON-файлы данных сервера из указанного рабочего каталога.
@@ -179,31 +187,51 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 	if err != nil {
 		return nil, err
 	}
+	actionTypes, err := loadOptionalActionTypes(filepath.Join(dataDirectory, actionTypesFileName))
+	if err != nil {
+		return nil, err
+	}
+	inputEventTypes, err := loadOptionalInputEventTypes(filepath.Join(dataDirectory, inputEventTypesFileName))
+	if err != nil {
+		return nil, err
+	}
+	defaultActionInputSettings, err := loadOptionalDefaultActionInputSettings(filepath.Join(dataDirectory, defaultActionInputSettingsFileName))
+	if err != nil {
+		return nil, err
+	}
+	accountActionInputSettings, err := loadOptionalAccountActionInputSettings(filepath.Join(dataDirectory, accountActionInputSettingsFileName))
+	if err != nil {
+		return nil, err
+	}
 
 	return &ServerData{
-		Accounts:                accounts,
-		Characters:              characters,
-		CosmicObjects:           cosmicObjects,
-		CosmicObjectTypes:       cosmicObjectTypes,
-		CosmicObjectModels:      cosmicObjectModels,
-		Itemtypes:               itemtypes,
-		EquipmentGroups:         equipmentGroups,
-		ItemGroups:              itemGroups,
-		Assemblies:              assemblies,
-		AssemblyEquipmentGroups: assemblyEquipmentGroups,
-		NpcClans:                npcClans,
-		ItemModels:              itemModels,
-		Blueprints:              blueprints,
-		BlueprintComponents:     blueprintComponents,
-		Schemas:                 schemas,
-		SchemaComponents:        schemaComponents,
-		Chats:                   chats,
-		ChatMembers:             chatMembers,
-		CommunityTypes:          communityTypes,
-		CommunityChatRoles:      communityChatRoles,
-		Messages:                messages,
-		MessageReads:            messageReads,
-		MessageTypes:            messageTypes,
+		Accounts:                   accounts,
+		Characters:                 characters,
+		CosmicObjects:              cosmicObjects,
+		CosmicObjectTypes:          cosmicObjectTypes,
+		CosmicObjectModels:         cosmicObjectModels,
+		Itemtypes:                  itemtypes,
+		EquipmentGroups:            equipmentGroups,
+		ItemGroups:                 itemGroups,
+		Assemblies:                 assemblies,
+		AssemblyEquipmentGroups:    assemblyEquipmentGroups,
+		NpcClans:                   npcClans,
+		ItemModels:                 itemModels,
+		Blueprints:                 blueprints,
+		BlueprintComponents:        blueprintComponents,
+		Schemas:                    schemas,
+		SchemaComponents:           schemaComponents,
+		Chats:                      chats,
+		ChatMembers:                chatMembers,
+		CommunityTypes:             communityTypes,
+		CommunityChatRoles:         communityChatRoles,
+		Messages:                   messages,
+		MessageReads:               messageReads,
+		MessageTypes:               messageTypes,
+		ActionTypes:                actionTypes,
+		InputEventTypes:            inputEventTypes,
+		DefaultActionInputSettings: defaultActionInputSettings,
+		AccountActionInputSettings: accountActionInputSettings,
 	}, nil
 }
 
@@ -369,4 +397,52 @@ func loadOptionalMessageTypes(path string) (*data.MessageTypes, error) {
 		return nil, err
 	}
 	return types, nil
+}
+
+// Загружает необязательный справочник игровых действий или возвращает пустое хранилище до появления файла.
+func loadOptionalActionTypes(path string) (*data.ActionTypes, error) {
+	types := data.NewActionTypes()
+	if err := types.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewActionTypes(), nil
+		}
+		return nil, err
+	}
+	return types, nil
+}
+
+// Загружает необязательный справочник событий ввода или возвращает пустое хранилище до появления файла.
+func loadOptionalInputEventTypes(path string) (*data.InputEventTypes, error) {
+	types := data.NewInputEventTypes()
+	if err := types.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewInputEventTypes(), nil
+		}
+		return nil, err
+	}
+	return types, nil
+}
+
+// Загружает необязательные привязки ввода по умолчанию или возвращает пустое хранилище до появления файла.
+func loadOptionalDefaultActionInputSettings(path string) (*data.DefaultActionInputSettings, error) {
+	settings := data.NewDefaultActionInputSettings()
+	if err := settings.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewDefaultActionInputSettings(), nil
+		}
+		return nil, err
+	}
+	return settings, nil
+}
+
+// Загружает необязательные аккаунтные привязки ввода или возвращает пустое хранилище до появления файла.
+func loadOptionalAccountActionInputSettings(path string) (*data.AccountActionInputSettings, error) {
+	settings := data.NewAccountActionInputSettings()
+	if err := settings.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewAccountActionInputSettings(), nil
+		}
+		return nil, err
+	}
+	return settings, nil
 }

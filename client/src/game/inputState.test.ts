@@ -33,6 +33,15 @@ describe("toShipInput", () => {
       -2 * MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL,
     );
   });
+
+  it("использует переназначенную клавишу для продольной тяги", () => {
+    const input = toShipInput(true, { ArrowUp: true, KeyW: false }, 0, {
+      ThrustForward: "KeyboardEvent.code:ArrowUp",
+    });
+
+    expect(input.thrustForward).toBe(true);
+    expect(input.thrustBackward).toBe(false);
+  });
 });
 
 describe("isFreshKeyDown", () => {

@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 	"space-game-07-server/internal/world"
 )
@@ -57,6 +58,9 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initi
 		if payload, err := EncodeChatStateMessage(chatState); err == nil {
 			client.send <- payload
 		}
+	}
+	if payload, err := EncodeInputSettingsMessage(hub.world.AccountInputSettings(accountID)); err == nil {
+		client.send <- payload
 	}
 
 	hub.mu.Lock()
@@ -114,11 +118,39 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeChatSelectMessage(payload); ok {
 				hub.handleChatSelect(client, message)
 			}
+			if message, ok := DecodeInputSettingsSaveMessage(payload); ok {
+				hub.handleInputSettingsSave(client, message)
+			}
 			continue
 		}
 
 		hub.world.SetInput(client.accountID, input)
 	}
+}
+
+// Обрабатывает сохранение настроек ввода и возвращает актуальное состояние аккаунта.
+func (hub *Hub) handleInputSettingsSave(client *Client, message InputSettingsSaveMessage) {
+	settings := make([]data.AccountActionInputSetting, 0, len(message.Settings))
+	for _, item := range message.Settings {
+		settings = append(settings, data.AccountActionInputSetting{
+			ActionTypeID:     item.ActionTypeID,
+			InputEventTypeID: item.InputEventTypeID,
+		})
+	}
+	saved, err := hub.world.SaveAccountInputSettings(client.accountID, settings)
+	if err != nil {
+		payload, encodeErr := EncodeInputSettingsErrorMessage(err.Error())
+		if encodeErr != nil {
+			return
+		}
+		hub.sendToClient(client, payload)
+		return
+	}
+	payload, err := EncodeInputSettingsMessage(saved)
+	if err != nil {
+		return
+	}
+	hub.sendToAccount(client.accountID, payload)
 }
 
 // Обрабатывает отправку текста и рассылает обновления вкладок всем доступным получателям.

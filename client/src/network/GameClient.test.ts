@@ -384,6 +384,46 @@ describe("GameClient", () => {
     client.destroy();
   });
 
+  it("stores and sends input settings messages", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "inputSettings", settings: [{ actionTypeId: 1, inputEventTypeId: 2 }] }) });
+    socket.onopen?.();
+    client.saveInputSettings([{ actionTypeId: 1, inputEventTypeId: 3 }]);
+
+    expect(client.getLatestInputSettings()).toEqual([{ actionTypeId: 1, inputEventTypeId: 2 }]);
+    expect(client.getLatestInputSettingsSeq()).toBe(1);
+    expect(JSON.parse(socket.sent[0])).toEqual({
+      type: "inputSettingsSave",
+      settings: [{ actionTypeId: 1, inputEventTypeId: 3 }],
+    });
+
+    client.destroy();
+  });
+
+  it("stores latest input settings error from server refusal", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "inputSettingsError", message: "bad settings" }) });
+
+    expect(client.getLatestInputSettingsError()).toBe("bad settings");
+    expect(client.getLatestInputSettingsErrorSeq()).toBe(1);
+
+    client.destroy();
+  });
+
   it("sends chat selection while connected", () => {
     FakeWebSocket.instances = [];
     const client = new GameClient({

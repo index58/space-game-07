@@ -4,7 +4,7 @@ import { GameUiRuntime } from "../ui-kit/runtime";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
 import { TextEditController } from "../ui-kit/textEdit";
 import type { GameUiAction, GameUiControlState } from "../ui-kit/types";
-import { isFreshKeyDown, toShipInput } from "./inputState";
+import { isFreshKeyboardBinding, isFreshKeyDown, toShipInput, type InputBindingMap } from "./inputState";
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
 
@@ -121,6 +121,12 @@ export class InputController {
   private uiActions: GameUiAction[] = [];
   // Показывает отладочное окно с примерами всех контролов.
   private uiKitShowcaseVisible = false;
+  // Показывает окно настроек игрока.
+  private settingsVisible = false;
+  // Накопленная прокрутка окна настроек игровым колесом.
+  private settingsWheelDeltaY = 0;
+  // Текущие системные привязки действий, полученные из настроек аккаунта.
+  private inputBindings: InputBindingMap = {};
   // Нативный движок редактирования строки чата.
   private readonly chatEdit = new TextEditController({ id: "chat-input", mode: "singleLine" });
   // Показывает, что игровой курсор сейчас выделяет текст чата мышью.
@@ -143,7 +149,13 @@ export class InputController {
         this.keys[event.code] = true;
         return;
       }
-      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "F9")) {
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "F10") || isFreshKeyboardBinding(event.code, Boolean(this.keys[event.code]), this.inputBindings.ToggleSettingsWindow)) {
+        this.settingsVisible = !this.settingsVisible;
+        this.keys[event.code] = true;
+        event.preventDefault();
+        return;
+      }
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "F9") || isFreshKeyboardBinding(event.code, Boolean(this.keys[event.code]), this.inputBindings.ToggleUiKitShowcase)) {
         this.uiKitShowcaseVisible = !this.uiKitShowcaseVisible;
         this.keys[event.code] = true;
         event.preventDefault();
@@ -157,13 +169,13 @@ export class InputController {
         event.preventDefault();
         return;
       }
-      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "Backslash")) {
+      if (isFreshKeyboardBinding(event.code, Boolean(this.keys[event.code]), this.inputBindings.RandomShipChange) || isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "Backslash")) {
         this.randomShipChangeRequested = true;
       }
-      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyO")) {
+      if (isFreshKeyboardBinding(event.code, Boolean(this.keys[event.code]), this.inputBindings.ToggleBodyPolygonDebug) || isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyO")) {
         this.bodyPolygonDebugToggleRequested = true;
       }
-      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyP")) {
+      if (isFreshKeyboardBinding(event.code, Boolean(this.keys[event.code]), this.inputBindings.ToggleAnchor) || isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyP")) {
         this.anchorToggleRequested = true;
       }
 
@@ -196,6 +208,11 @@ export class InputController {
       "wheel",
       (event) => {
         if (!this.isPointerLocked()) {
+          return;
+        }
+        if (this.settingsVisible) {
+          this.settingsWheelDeltaY += event.deltaY;
+          event.preventDefault();
           return;
         }
         if (this.chatInputFocused && this.isCursorOverChatPanel()) {
@@ -390,6 +407,28 @@ export class InputController {
     return this.uiKitShowcaseVisible;
   }
 
+  // Возвращает видимость окна настроек.
+  isSettingsVisible(): boolean {
+    return this.settingsVisible;
+  }
+
+  // Закрывает окно настроек после внешнего UI-действия.
+  closeSettings(): void {
+    this.settingsVisible = false;
+  }
+
+  // Возвращает прокрутку окна настроек и сразу начинает новое накопление.
+  consumeSettingsWheelDeltaY(): number {
+    const delta = this.settingsWheelDeltaY;
+    this.settingsWheelDeltaY = 0;
+    return delta;
+  }
+
+  // Обновляет привязки, используемые фактическим вводом.
+  updateInputBindings(bindings: InputBindingMap): void {
+    this.inputBindings = bindings;
+  }
+
   // Закрывает локальную вкладку дуэта без изменения серверных данных.
   closeChatTab(chatId: number, communityTypeAcronym: string): void {
     if (communityTypeAcronym !== "Duo") {
@@ -437,7 +476,7 @@ export class InputController {
       this.chatScrollbarDrag = null;
     }
     const canControlShip = isPointerLocked && !this.isGameCursorVisible();
-    const input = toShipInput(canControlShip, this.keys, this.mouseDeltaX);
+    const input = toShipInput(canControlShip, this.keys, this.mouseDeltaX, this.inputBindings);
     input.toggleAnchor = canControlShip && this.anchorToggleRequested;
     this.mouseDeltaX = 0;
     this.anchorToggleRequested = false;
@@ -572,7 +611,7 @@ export class InputController {
 
   // Показывает, что игровой указатель нужен для текущего UI-взаимодействия.
   private isGameCursorVisible(): boolean {
-    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible);
+    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible || this.settingsVisible);
   }
 
   // Сохраняет действие общего runtime до обработки сценой.
@@ -666,6 +705,7 @@ export class InputController {
     this.chatContextMenu = null;
     this.chatEdit.blur();
     this.uiKitShowcaseVisible = false;
+    this.settingsVisible = false;
     return true;
   }
 

@@ -5,6 +5,7 @@ import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicator
 import { getMinimapView, type MinimapPointView } from "./minimap";
 import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
 import { getInformationPanelView, type InformationPanelRow } from "./informationPanel";
+import { getInputEventOptions, getInputSettingsRows } from "./inputSettings";
 import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, Tooltip, TreeView, VirtualList } from "../ui-kit/components";
 
 type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-middle" | "right-bottom" | "left-top";
@@ -42,6 +43,7 @@ export const GameUi = (props: GameUiProps) => (
     <MinimapPanel state={props.state} />
     <DebugOverlay state={props.state} />
     <UiKitShowcase state={props.state} />
+    <SettingsModal state={props.state} />
     <GameCursor state={props.state} />
   </>
 );
@@ -145,6 +147,11 @@ type GameCursorProps = {
 };
 
 type UiKitShowcaseProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
+type SettingsModalProps = {
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
 };
@@ -380,6 +387,56 @@ const UiKitShowcase = (props: UiKitShowcaseProps) => (
     </HudPanel>
   </Show>
 );
+
+// Показывает окно настроек аккаунта поверх игрового HUD.
+const SettingsModal = (props: SettingsModalProps) => {
+  const rows = () => getInputSettingsRows(props.state().referenceData, props.state().inputSettingsValues);
+  const options = () => getInputEventOptions(props.state().referenceData);
+  return (
+    <Show when={props.state().settingsVisible}>
+      <div class="settings-modal-layer">
+        <Modal id="settings-modal" title="Настройки">
+          <div class="settings-modal">
+            <Tabs id="settings-tabs" itemIdPrefix="settings-tab" className="settings-tabs" selectedValue="input" tabs={[{ value: "input", label: "Ввод" }]} />
+            <div class="settings-input-table">
+              <div class="settings-input-table__content" style={{ transform: `translateY(-${props.state().inputSettingsScroll.contentOffsetPx}px)` }}>
+                <For each={rows()}>
+                  {(row) => (
+                    <div class="settings-input-row">
+                      <div class="settings-input-row__action">{row.actionTitle}</div>
+                      <Dropdown
+                        id={`settings-input-select-${row.actionTypeId}`}
+                        selectedValue={String(row.inputEventTypeId)}
+                        open={props.state().openInputSettingsActionId === row.actionTypeId}
+                        options={options()}
+                        menuScroll={props.state().inputSettingsDropdownScroll}
+                      />
+                    </div>
+                  )}
+                </For>
+              </div>
+              <Show when={props.state().inputSettingsScroll.visible}>
+                <Scrollbar
+                  id="settings-input-scrollbar"
+                  className="settings-input-scrollbar"
+                  thumbTopPercent={props.state().inputSettingsScroll.thumbTopPercent}
+                  thumbHeightPercent={props.state().inputSettingsScroll.thumbHeightPercent}
+                  dragging={props.state().inputSettingsScroll.dragging}
+                />
+              </Show>
+            </div>
+            <div class="settings-modal__footer">
+              <Show when={props.state().inputSettingsError}>
+                {(error) => <div class="settings-modal__error">{error()}</div>}
+              </Show>
+              <Button id="settings-save-button" label={props.state().inputSettingsSaving ? "Сохранение" : "Сохранить"} />
+            </div>
+          </div>
+        </Modal>
+      </div>
+    </Show>
+  );
+};
 
 // Показывает десять ячеек инструментов пилота в центральной нижней части экрана.
 const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (

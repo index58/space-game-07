@@ -26,14 +26,14 @@ describe("HUD styles", () => {
   });
 
   it("uses one muted icon style for object indicators and status icons", () => {
-    const panel = readCssBlock(".hud-panel");
+    const root = readCssBlock("#ui-root");
     const indicatorIcon = readCssBlock(".object-indicator__icon");
     const indicatorSvg = readCssBlock(".object-indicator__icon svg");
     const statusItem = readCssBlock(".minimap-status__item");
     const anchorIcon = readCssBlock(".minimap-status__anchor-icon");
 
-    expect(panel).toContain("--hud-icon-muted: rgba(216, 243, 255, 0.64);");
-    expect(panel).toContain("--hud-tab-height: 2.45vh;");
+    expect(root).toContain("--hud-icon-muted: rgba(216, 243, 255, 0.64);");
+    expect(root).toContain("--hud-tab-height: 2.45vh;");
     expect(indicatorIcon).toContain("color: var(--hud-icon-muted);");
     expect(statusItem).toContain("color: var(--hud-icon-muted);");
     expect(indicatorSvg).toContain("width: 2.35vh;");
@@ -71,6 +71,7 @@ describe("HUD styles", () => {
     const dropdown = readCssBlock(".ui-kit-dropdown");
     const dropdownMarker = readCssBlock(".ui-kit-dropdown::after");
     const menu = readCssBlock(".ui-kit-dropdown__menu");
+    const scrollbar = readCssBlock(".ui-kit-scrollbar");
 
     expect(dropdown).toContain("position: relative;");
     expect(dropdown).toContain("padding-right: 2.1vh;");
@@ -79,10 +80,36 @@ describe("HUD styles", () => {
     expect(dropdownMarker).toContain("border-top: 0.45vh solid rgba(216, 243, 255, 0.82);");
     expect(dropdownMarker).toContain("right: 0.75vh;");
     expect(menu).toContain("position: absolute;");
-    expect(menu).toContain("top: calc(100% + 0.35vh);");
+    expect(menu).toContain("top: 100%;");
     expect(menu).toContain("z-index: 2;");
     expect(menu).toContain("background: rgb(5, 18, 28);");
     expect(menu).toContain("border: 0.14vh solid rgba(130, 210, 255, 0.38);");
+    expect(scrollbar).toContain("z-index: 30;");
+  });
+
+  // Проверяет, что раскрытый список настроек имеет фиксированное окно и использует единую полосу прокрутки.
+  it("keeps settings dropdown as a single scrollable column", () => {
+    const modal = readCssBlock(".settings-modal-layer .ui-kit-modal");
+    const body = readCssBlock(".settings-modal-layer .ui-kit-modal__body");
+    const settings = readCssBlock(".settings-modal");
+    const table = readCssBlock(".settings-input-table");
+    const menu = readCssBlock(".settings-input-row .ui-kit-dropdown__menu");
+    const viewport = readCssBlock(".settings-input-row .ui-kit-dropdown__menu-viewport");
+    const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar");
+
+    expect(modal).toContain("grid-template-rows: auto minmax(0, 1fr);");
+    expect(modal).toContain("overflow: hidden;");
+    expect(body).toContain("min-height: 0;");
+    expect(body).toContain("overflow: hidden;");
+    expect(settings).toContain("height: 100%;");
+    expect(settings).toContain("min-height: 0;");
+    expect(table).toContain("overflow: hidden;");
+    expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(menu).not.toContain("max-height: 22vh;");
+    expect(viewport).toContain("height: 22vh;");
+    expect(viewport).toContain("max-height: 22vh;");
+    expect(sharedScrollbars).toContain("position: absolute;");
+    expect(sharedScrollbars).toContain("min-height: 0;");
   });
 
   it("uses smooth chat history movement and a dark solid game cursor", () => {
@@ -121,6 +148,8 @@ describe("HUD styles", () => {
     expect(uiKitTab).toContain("height: var(--hud-tab-height);");
     expect(uiKitTab).toContain("max-height: var(--hud-tab-height);");
     expect(readCssBlock(".ui-kit-tab__marker")).toContain("max-height: 1.6vh;");
+    expect(readCssBlock(".ui-kit-tab__label")).toContain("align-items: center;");
+    expect(readCssBlock(".ui-kit-tab__label")).toContain("height: 100%;");
     expect(uiKitBadge).toContain("top: 0.18vh;");
     expect(css).not.toContain(".chat-tab__unread");
     expect(error).toContain("position: absolute;");

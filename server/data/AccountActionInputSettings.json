@@ -1,4 +1,161 @@
 {
-  "MaxID": 0,
-  "Items": {}
+  "MaxID": 104,
+  "Items": {
+    "79": {
+      "ID": 79,
+      "AccountID": 2,
+      "ActionTypeID": 1,
+      "InputEventTypeID": 1
+    },
+    "80": {
+      "ID": 80,
+      "AccountID": 2,
+      "ActionTypeID": 2,
+      "InputEventTypeID": 2
+    },
+    "81": {
+      "ID": 81,
+      "AccountID": 2,
+      "ActionTypeID": 3,
+      "InputEventTypeID": 3
+    },
+    "82": {
+      "ID": 82,
+      "AccountID": 2,
+      "ActionTypeID": 4,
+      "InputEventTypeID": 4
+    },
+    "83": {
+      "ID": 83,
+      "AccountID": 2,
+      "ActionTypeID": 5,
+      "InputEventTypeID": 5
+    },
+    "84": {
+      "ID": 84,
+      "AccountID": 2,
+      "ActionTypeID": 6,
+      "InputEventTypeID": 6
+    },
+    "85": {
+      "ID": 85,
+      "AccountID": 2,
+      "ActionTypeID": 7,
+      "InputEventTypeID": 7
+    },
+    "86": {
+      "ID": 86,
+      "AccountID": 2,
+      "ActionTypeID": 8,
+      "InputEventTypeID": 8
+    },
+    "87": {
+      "ID": 87,
+      "AccountID": 2,
+      "ActionTypeID": 9,
+      "InputEventTypeID": 9
+    },
+    "88": {
+      "ID": 88,
+      "AccountID": 2,
+      "ActionTypeID": 10,
+      "InputEventTypeID": 10
+    },
+    "89": {
+      "ID": 89,
+      "AccountID": 2,
+      "ActionTypeID": 11,
+      "InputEventTypeID": 11
+    },
+    "90": {
+      "ID": 90,
+      "AccountID": 2,
+      "ActionTypeID": 12,
+      "InputEventTypeID": 12
+    },
+    "91": {
+      "ID": 91,
+      "AccountID": 2,
+      "ActionTypeID": 13,
+      "InputEventTypeID": 13
+    },
+    "92": {
+      "ID": 92,
+      "AccountID": 2,
+      "ActionTypeID": 14,
+      "InputEventTypeID": 14
+    },
+    "93": {
+      "ID": 93,
+      "AccountID": 2,
+      "ActionTypeID": 15,
+      "InputEventTypeID": 15
+    },
+    "94": {
+      "ID": 94,
+      "AccountID": 2,
+      "ActionTypeID": 16,
+      "InputEventTypeID": 16
+    },
+    "95": {
+      "ID": 95,
+      "AccountID": 2,
+      "ActionTypeID": 17,
+      "InputEventTypeID": 17
+    },
+    "96": {
+      "ID": 96,
+      "AccountID": 2,
+      "ActionTypeID": 18,
+      "InputEventTypeID": 18
+    },
+    "97": {
+      "ID": 97,
+      "AccountID": 2,
+      "ActionTypeID": 19,
+      "InputEventTypeID": 19
+    },
+    "98": {
+      "ID": 98,
+      "AccountID": 2,
+      "ActionTypeID": 20,
+      "InputEventTypeID": 20
+    },
+    "99": {
+      "ID": 99,
+      "AccountID": 2,
+      "ActionTypeID": 21,
+      "InputEventTypeID": 21
+    },
+    "100": {
+      "ID": 100,
+      "AccountID": 2,
+      "ActionTypeID": 22,
+      "InputEventTypeID": 22
+    },
+    "101": {
+      "ID": 101,
+      "AccountID": 2,
+      "ActionTypeID": 23,
+      "InputEventTypeID": 23
+    },
+    "102": {
+      "ID": 102,
+      "AccountID": 2,
+      "ActionTypeID": 24,
+      "InputEventTypeID": 24
+    },
+    "103": {
+      "ID": 103,
+      "AccountID": 2,
+      "ActionTypeID": 25,
+      "InputEventTypeID": 25
+    },
+    "104": {
+      "ID": 104,
+      "AccountID": 2,
+      "ActionTypeID": 26,
+      "InputEventTypeID": 134
+    }
+  }
 }

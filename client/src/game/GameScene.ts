@@ -16,13 +16,21 @@ import type {
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
 import type { GameUiController } from "../ui/gameUiState";
+import { getInputBindingMap, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
+import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
 import { applyUiKitDemoAction, createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
-import type { GameUiControlKind, GameUiControlState } from "../ui-kit/types";
+import type { GameUiAction, GameUiControlKind, GameUiControlState } from "../ui-kit/types";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
-import { InputController } from "./InputController";
+import { InputController, type ChatScrollState } from "./InputController";
 
 const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
+// Базовая высота строки настроек ввода в единицах высоты экрана.
+const SETTINGS_INPUT_ROW_HEIGHT_VH = 2.7;
+// Базовая высота пункта раскрытого списка в единицах высоты экрана.
+const SETTINGS_DROPDOWN_ITEM_HEIGHT_VH = 2.55;
+// Видимая высота раскрытого списка в единицах высоты экрана.
+const SETTINGS_DROPDOWN_VIEWPORT_HEIGHT_VH = 22;
 
 // Связывает Phaser-отрисовку, сетевой клиент, ввод и SolidJS UI-слой.
 export class GameScene extends Phaser.Scene {
@@ -54,6 +62,26 @@ export class GameScene extends Phaser.Scene {
   private selectedPilotToolIndex = 0;
   // Состояние интерактивной витрины базовых контролов UI Kit.
   private uiKitDemoState: UiKitDemoState = createInitialUiKitDemoState();
+  // Черновик настроек ввода, показанный в модальном окне.
+  private inputSettingsValues: Record<number, number> = {};
+  // Последний примененный номер серверных настроек ввода.
+  private inputSettingsSeq = -1;
+  // ID действия с раскрытым выпадающим списком в окне настроек.
+  private openInputSettingsActionId: number | null = null;
+  // Последний примененный номер ошибки сохранения настроек.
+  private inputSettingsErrorSeq = -1;
+  // Текст ошибки сохранения настроек.
+  private inputSettingsError: string | null = null;
+  // Показывает ожидание ответа сервера после нажатия кнопки сохранения.
+  private inputSettingsSaving = false;
+  // Вертикальный сдвиг списка действий в окне настроек.
+  private settingsInputScrollOffsetPx = 0;
+  // Захват ползунка списка действий.
+  private settingsInputScrollbarDrag: ScrollbarDragState | null = null;
+  // Вертикальный сдвиг раскрытого списка событий ввода.
+  private settingsDropdownScrollOffsetPx = 0;
+  // Захват ползунка раскрытого списка событий ввода.
+  private settingsDropdownScrollbarDrag: ScrollbarDragState | null = null;
 
   constructor(
     // Мост передачи состояния из Phaser в SolidJS UI.
@@ -107,6 +135,7 @@ export class GameScene extends Phaser.Scene {
     const pilotToolSelectionDelta = this.inputController.consumePilotToolSelectionDelta();
 
     const status = this.gameClient?.getStatus() ?? "connecting";
+    this.syncInputSettingsFromServer();
     const snapshot = this.gameClient?.getLatestSnapshot() ?? null;
     const isWorldReady = status === "connected" && Boolean(snapshot);
     const chatState = isWorldReady ? this.inputController.getVisibleChatState(this.gameClient?.getLatestChatState() ?? null) : null;
@@ -119,6 +148,9 @@ export class GameScene extends Phaser.Scene {
       this.gameClient?.selectChat(chatSelectAction.chatId);
     }
     this.consumeGameUiActions();
+    this.consumeSettingsWheel();
+    const inputSettingsScroll = this.getSettingsInputScrollState();
+    const inputSettingsDropdownScroll = this.getSettingsDropdownScrollState();
     const selfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
@@ -145,6 +177,13 @@ export class GameScene extends Phaser.Scene {
         gameCursor: this.inputController.getGameCursor(),
         chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
         uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
+        settingsVisible: this.inputController.isSettingsVisible(),
+        inputSettingsValues: this.inputSettingsValues,
+        openInputSettingsActionId: this.openInputSettingsActionId,
+        inputSettingsError: this.inputSettingsError,
+        inputSettingsSaving: this.inputSettingsSaving,
+        inputSettingsScroll,
+        inputSettingsDropdownScroll,
         uiKitDemoState: this.uiKitDemoState,
         uiControls: [],
         fps: this.game.loop.actualFps,
@@ -180,6 +219,13 @@ export class GameScene extends Phaser.Scene {
       gameCursor: this.inputController.getGameCursor(),
       chatScroll: this.inputController.getChatScrollState(),
       uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
+      settingsVisible: this.inputController.isSettingsVisible(),
+      inputSettingsValues: this.inputSettingsValues,
+      openInputSettingsActionId: this.openInputSettingsActionId,
+      inputSettingsError: this.inputSettingsError,
+      inputSettingsSaving: this.inputSettingsSaving,
+      inputSettingsScroll,
+      inputSettingsDropdownScroll,
       uiKitDemoState: this.uiKitDemoState,
       uiControls: [],
       fps: this.game.loop.actualFps,
@@ -381,6 +427,13 @@ export class GameScene extends Phaser.Scene {
         if (rect.width <= 0 || rect.height <= 0) {
           return null;
         }
+        const clippingViewport = element.closest(".ui-kit-dropdown__menu-viewport, .settings-input-table");
+        if (clippingViewport) {
+          const viewportRect = clippingViewport.getBoundingClientRect();
+          if (rect.bottom < viewportRect.top || rect.top > viewportRect.bottom || rect.right < viewportRect.left || rect.left > viewportRect.right) {
+            return null;
+          }
+        }
         return {
           id: element.id || `ui-kit-control-${index}`,
           kind: uiKind(element.dataset.uiKind),
@@ -399,9 +452,239 @@ export class GameScene extends Phaser.Scene {
   private consumeGameUiActions(): void {
     let action = this.inputController.consumeGameUiAction();
     while (action) {
+      if (this.inputController.isSettingsVisible() && this.consumeSettingsUiAction(action)) {
+        action = this.inputController.consumeGameUiAction();
+        continue;
+      }
       this.uiKitDemoState = applyUiKitDemoAction(this.uiKitDemoState, action);
       action = this.inputController.consumeGameUiAction();
     }
+  }
+
+  // Применяет действия модального окна настроек и не пропускает их в демонстрационную панель.
+  private consumeSettingsUiAction(action: GameUiAction): boolean {
+    if (action.type === "cancel") {
+      this.openInputSettingsActionId = null;
+      return true;
+    }
+    if (action.type !== "click") {
+      return this.consumeSettingsScrollbarAction(action);
+    }
+    if (action.controlId === "settings-save-button") {
+      this.inputSettingsSaving = true;
+      this.inputSettingsError = null;
+      this.gameClient?.saveInputSettings(toInputSettingsPayload(this.inputSettingsValues));
+      return true;
+    }
+    const inputSelectMatch = action.controlId.match(/^settings-input-select-(\d+)$/);
+    if (inputSelectMatch) {
+      const actionTypeID = Number(inputSelectMatch[1]);
+      this.openInputSettingsActionId = this.openInputSettingsActionId === actionTypeID ? null : actionTypeID;
+      this.settingsDropdownScrollOffsetPx = 0;
+      this.settingsDropdownScrollbarDrag = null;
+      return true;
+    }
+    if (action.controlId.startsWith("settings-input-select-") && typeof action.value === "string") {
+      const parts = action.controlId.split("-");
+      const actionTypeID = Number(parts[3]);
+      const inputEventTypeID = Number(action.value);
+      if (actionTypeID > 0 && inputEventTypeID > 0) {
+        this.inputSettingsValues = { ...this.inputSettingsValues, [actionTypeID]: inputEventTypeID };
+        this.openInputSettingsActionId = null;
+        this.settingsDropdownScrollOffsetPx = 0;
+        this.settingsDropdownScrollbarDrag = null;
+        this.inputController.updateInputBindings(getInputBindingMap(this.referenceData, this.inputSettingsValues));
+        return true;
+      }
+    }
+    if (action.controlId.startsWith("settings-tab-")) {
+      this.openInputSettingsActionId = null;
+      return true;
+    }
+    if (action.controlId === "settings-modal") {
+      return true;
+    }
+    this.openInputSettingsActionId = null;
+    return action.controlId.startsWith("settings-");
+  }
+
+  // Применяет колесо мыши к активной прокручиваемой области окна настроек.
+  private consumeSettingsWheel(): void {
+    const deltaY = this.inputController.consumeSettingsWheelDeltaY();
+    if (deltaY === 0 || !this.inputController.isSettingsVisible()) {
+      return;
+    }
+    if (this.openInputSettingsActionId !== null) {
+      this.settingsDropdownScrollOffsetPx = clamp(this.settingsDropdownScrollOffsetPx + deltaY, 0, this.settingsDropdownMaxScrollOffset());
+      return;
+    }
+    this.settingsInputScrollOffsetPx = clamp(this.settingsInputScrollOffsetPx + deltaY, 0, this.settingsInputMaxScrollOffset());
+  }
+
+  // Обрабатывает перетаскивание единых UI Kit полос прокрутки в окне настроек.
+  private consumeSettingsScrollbarAction(action: GameUiAction): boolean {
+    if (action.kind !== "scrollbar" || !action.controlRect) {
+      return false;
+    }
+    if (action.controlId === "settings-input-scrollbar") {
+      return this.consumeSettingsInputScrollbarAction(action);
+    }
+    if (action.controlId.startsWith("settings-input-select-") && action.controlId.endsWith("-scrollbar")) {
+      return this.consumeSettingsDropdownScrollbarAction(action);
+    }
+    return false;
+  }
+
+  // Пересчитывает сдвиг списка действий по положению его ползунка.
+  private consumeSettingsInputScrollbarAction(action: GameUiAction): boolean {
+    const scrollState = this.getSettingsInputScrollState();
+    if (action.type === "dragStart") {
+      this.settingsInputScrollbarDrag = startScrollbarDrag({
+        top: action.controlRect?.top ?? 0,
+        height: action.controlRect?.height ?? 1,
+        thumbTopPercent: scrollState.thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+      }, action.y);
+      return true;
+    }
+    if (action.type === "dragEnd") {
+      this.settingsInputScrollbarDrag = null;
+      return true;
+    }
+    if (action.type === "dragMove" && this.settingsInputScrollbarDrag) {
+      const thumbTopPercent = getScrollbarThumbTopPercentFromCursor({
+        top: action.controlRect?.top ?? 0,
+        height: action.controlRect?.height ?? 1,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        drag: this.settingsInputScrollbarDrag,
+      }, action.y);
+      this.settingsInputScrollOffsetPx = getScrollOffsetFromThumbTopPercent({
+        thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        maxOffsetPx: this.settingsInputMaxScrollOffset(),
+        reverse: false,
+      });
+      return true;
+    }
+    return true;
+  }
+
+  // Пересчитывает сдвиг раскрытого списка событий по положению его ползунка.
+  private consumeSettingsDropdownScrollbarAction(action: GameUiAction): boolean {
+    const scrollState = this.getSettingsDropdownScrollState();
+    if (action.type === "dragStart") {
+      this.settingsDropdownScrollbarDrag = startScrollbarDrag({
+        top: action.controlRect?.top ?? 0,
+        height: action.controlRect?.height ?? 1,
+        thumbTopPercent: scrollState.thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+      }, action.y);
+      return true;
+    }
+    if (action.type === "dragEnd") {
+      this.settingsDropdownScrollbarDrag = null;
+      return true;
+    }
+    if (action.type === "dragMove" && this.settingsDropdownScrollbarDrag) {
+      const thumbTopPercent = getScrollbarThumbTopPercentFromCursor({
+        top: action.controlRect?.top ?? 0,
+        height: action.controlRect?.height ?? 1,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        drag: this.settingsDropdownScrollbarDrag,
+      }, action.y);
+      this.settingsDropdownScrollOffsetPx = getScrollOffsetFromThumbTopPercent({
+        thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        maxOffsetPx: this.settingsDropdownMaxScrollOffset(),
+        reverse: false,
+      });
+      return true;
+    }
+    return true;
+  }
+
+  // Синхронизирует черновик и фактические привязки после серверного ответа.
+  private syncInputSettingsFromServer(): void {
+    const seq = this.gameClient?.getLatestInputSettingsSeq() ?? 0;
+    if (seq !== this.inputSettingsSeq) {
+      this.inputSettingsSeq = seq;
+      this.inputSettingsValues = getMergedInputSettingValues(this.referenceData, this.gameClient?.getLatestInputSettings() ?? []);
+      this.inputSettingsSaving = false;
+      this.inputSettingsError = null;
+      this.settingsInputScrollOffsetPx = clamp(this.settingsInputScrollOffsetPx, 0, this.settingsInputMaxScrollOffset());
+      this.settingsDropdownScrollOffsetPx = clamp(this.settingsDropdownScrollOffsetPx, 0, this.settingsDropdownMaxScrollOffset());
+      this.inputController.updateInputBindings(getInputBindingMap(this.referenceData, this.inputSettingsValues));
+    }
+    const errorSeq = this.gameClient?.getLatestInputSettingsErrorSeq() ?? 0;
+    if (errorSeq !== this.inputSettingsErrorSeq) {
+      this.inputSettingsErrorSeq = errorSeq;
+      this.inputSettingsError = this.gameClient?.getLatestInputSettingsError() ?? null;
+      this.inputSettingsSaving = false;
+    }
+  }
+
+  // Возвращает состояние полосы прокрутки списка действий.
+  private getSettingsInputScrollState(): ChatScrollState {
+    return this.getScrollState(
+      this.settingsInputScrollOffsetPx,
+      this.settingsInputViewportHeightPx(),
+      this.settingsInputContentHeightPx(),
+      this.settingsInputScrollbarDrag !== null,
+    );
+  }
+
+  // Возвращает состояние полосы прокрутки раскрытого списка событий.
+  private getSettingsDropdownScrollState(): ChatScrollState {
+    return this.getScrollState(
+      this.settingsDropdownScrollOffsetPx,
+      this.settingsDropdownViewportHeightPx(),
+      this.settingsDropdownContentHeightPx(),
+      this.settingsDropdownScrollbarDrag !== null,
+    );
+  }
+
+  // Формирует универсальное состояние скролла для UI Kit полосы.
+  private getScrollState(offsetPx: number, viewportHeightPx: number, contentHeightPx: number, dragging: boolean): ChatScrollState {
+    const maxOffsetPx = Math.max(0, contentHeightPx - viewportHeightPx);
+    if (viewportHeightPx <= 0 || contentHeightPx <= viewportHeightPx || maxOffsetPx <= 0) {
+      return { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging };
+    }
+    const contentOffsetPx = clamp(offsetPx, 0, maxOffsetPx);
+    const thumbHeightPercent = Math.max(14, (viewportHeightPx / contentHeightPx) * 100);
+    const thumbTopPercent = (100 - thumbHeightPercent) * contentOffsetPx / maxOffsetPx;
+    return { visible: true, thumbTopPercent, thumbHeightPercent, contentOffsetPx, dragging };
+  }
+
+  // Возвращает максимальный сдвиг списка действий.
+  private settingsInputMaxScrollOffset(): number {
+    return Math.max(0, this.settingsInputContentHeightPx() - this.settingsInputViewportHeightPx());
+  }
+
+  // Возвращает максимальный сдвиг раскрытого списка событий.
+  private settingsDropdownMaxScrollOffset(): number {
+    return Math.max(0, this.settingsDropdownContentHeightPx() - this.settingsDropdownViewportHeightPx());
+  }
+
+  // Измеряет видимую высоту списка действий.
+  private settingsInputViewportHeightPx(): number {
+    return document.querySelector<HTMLElement>(".settings-input-table")?.getBoundingClientRect().height ?? window.innerHeight * 0.31;
+  }
+
+  // Измеряет полную высоту списка действий.
+  private settingsInputContentHeightPx(): number {
+    const rowCount = Object.keys(this.referenceData?.ActionType.Items ?? {}).length;
+    return rowCount * SETTINGS_INPUT_ROW_HEIGHT_VH * window.innerHeight / 100;
+  }
+
+  // Измеряет видимую высоту раскрытого списка событий.
+  private settingsDropdownViewportHeightPx(): number {
+    return SETTINGS_DROPDOWN_VIEWPORT_HEIGHT_VH * window.innerHeight / 100;
+  }
+
+  // Измеряет полную высоту раскрытого списка событий.
+  private settingsDropdownContentHeightPx(): number {
+    const optionCount = Object.keys(this.referenceData?.InputEventType.Items ?? {}).length;
+    return optionCount * SETTINGS_DROPDOWN_ITEM_HEIGHT_VH * window.innerHeight / 100;
   }
 }
 
@@ -409,3 +692,5 @@ const uiKind = (value: string | undefined): GameUiControlKind => {
   const allowed = new Set<GameUiControlKind>(["edit", "button", "checkbox", "radio", "select", "list", "tree", "tabs", "menu", "modal", "tooltip", "scrollbar", "slider", "stepper", "hotkey", "splitter", "dragItem"]);
   return value && allowed.has(value as GameUiControlKind) ? value as GameUiControlKind : "button";
 };
+
+const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));

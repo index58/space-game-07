@@ -1,5 +1,5 @@
 {
-  "MaxID": 25,
+  "MaxID": 26,
   "Items": {
     "1": {
       "ID": 1,
@@ -175,6 +175,13 @@
       "TitleEn": "Chat context menu",
       "Acronym": "ChatContextMenu",
       "Description": "Открывает игровое контекстное меню вкладки чата."
+    },
+    "26": {
+      "ID": 26,
+      "TitleRu": "Переключение окна настроек",
+      "TitleEn": "Toggle settings window",
+      "Acronym": "ToggleSettingsWindow",
+      "Description": "Показывает или скрывает модальное окно настроек аккаунта."
     }
   }
 }
