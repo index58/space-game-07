@@ -71,6 +71,9 @@ describe("HUD styles", () => {
     const button = readCssBlock(".ui-kit-button");
     const selectedTab = readCssBlock(".ui-kit-tab.is-selected");
 
+    expect(button).toContain("width: max-content;");
+    expect(button).toContain("white-space: nowrap;");
+    expect(button).toContain("padding: 0 1.05vh;");
     expect(button).toContain("background: rgba(126, 212, 255, 0.16);");
     expect(button).toContain("border-color: rgba(238, 250, 255, 0.42);");
     expect(selectedTab).toContain("background: rgba(126, 212, 255, 0.16);");
@@ -162,15 +165,23 @@ describe("HUD styles", () => {
     expect(css).not.toContain(".chat-scrollbar__thumb");
     expect(message).toContain("font: 1.05vh/1.2 Consolas, monospace;");
     expect(tabs).toContain("margin-top: 0.8vh;");
-    expect(tab).toContain("flex: 0 0 14vh;");
+    expect(tab).toContain("flex: 0 0 auto;");
+    expect(tab).toContain("width: max-content;");
+    expect(tab).toContain("min-width: 0;");
+    expect(tab).not.toContain("14vh");
     expect(uiKitTabs).toContain("height: var(--hud-tab-height);");
     expect(uiKitTabs).toContain("overflow: visible;");
+    expect(uiKitTab).toContain("flex: 0 0 auto;");
+    expect(uiKitTab).toContain("width: max-content;");
+    expect(uiKitTab).toContain("min-width: 0;");
+    expect(uiKitTab).toContain("padding: 0 1.05vh;");
     expect(uiKitTab).toContain("height: var(--hud-tab-height);");
     expect(uiKitTab).toContain("max-height: var(--hud-tab-height);");
     expect(readCssBlock(".ui-kit-tab__marker")).toContain("max-height: 1.6vh;");
     expect(readCssBlock(".ui-kit-tab__label")).toContain("align-items: center;");
     expect(readCssBlock(".ui-kit-tab__label")).toContain("height: 100%;");
-    expect(uiKitBadge).toContain("top: 0.18vh;");
+    expect(uiKitBadge).toContain("position: static;");
+    expect(uiKitBadge).toContain("flex: 0 0 auto;");
     expect(css).not.toContain(".chat-tab__unread");
     expect(error).toContain("position: absolute;");
     expect(error).toContain("animation-duration: 4.8s;");

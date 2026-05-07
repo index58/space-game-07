@@ -181,9 +181,9 @@ body {
 }
 
 .chat-tab {
-  flex: 0 0 14vh;
-  width: 14vh;
-  min-width: 14vh;
+  flex: 0 0 auto;
+  width: max-content;
+  min-width: 0;
 }
 
 .chat-messages {
@@ -368,6 +368,9 @@ body {
 }
 
 .ui-kit-button {
+  width: max-content;
+  white-space: nowrap;
+  padding: 0 1.05vh;
   background: rgba(126, 212, 255, 0.16);
   border-color: rgba(238, 250, 255, 0.42);
 }
@@ -516,12 +519,14 @@ body {
 .ui-kit-tab {
   position: relative;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 0.45vh;
-  min-width: 8vh;
+  width: max-content;
+  min-width: 0;
   height: var(--hud-tab-height);
   max-height: var(--hud-tab-height);
-  padding: 0 0.75vh;
+  padding: 0 1.05vh;
   box-sizing: border-box;
   overflow: hidden;
   background: rgba(5, 18, 28, 0.88);
@@ -545,6 +550,7 @@ body {
 
 .ui-kit-tab__label {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   height: 100%;
   overflow: hidden;
@@ -553,10 +559,9 @@ body {
 }
 
 .ui-kit-tab__badge {
-  position: absolute;
-  right: 0.18vh;
-  top: 0.18vh;
+  position: static;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   min-width: 1.45vh;
