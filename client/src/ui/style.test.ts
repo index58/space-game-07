@@ -66,11 +66,25 @@ describe("HUD styles", () => {
     expect(label).toContain("color: rgba(216, 243, 255, 0.58);");
   });
 
+  // Проверяет, что обычные кнопки заметнее, а выбранная вкладка отличается только более ярким фоном.
+  it("makes buttons prominent and selected tabs visually distinct", () => {
+    const button = readCssBlock(".ui-kit-button");
+    const selectedTab = readCssBlock(".ui-kit-tab.is-selected");
+
+    expect(button).toContain("background: rgba(126, 212, 255, 0.16);");
+    expect(button).toContain("border-color: rgba(238, 250, 255, 0.42);");
+    expect(selectedTab).toContain("background: rgba(126, 212, 255, 0.16);");
+    expect(selectedTab).toContain("border-color: rgba(130, 210, 255, 0.24);");
+    expect(selectedTab).not.toContain("box-shadow");
+  });
+
   // Проверяет, что раскрытый список UI Kit рисуется поверх панели и не участвует в её раскладке.
   it("keeps ui kit dropdown menu out of panel flow", () => {
     const dropdown = readCssBlock(".ui-kit-dropdown");
     const dropdownMarker = readCssBlock(".ui-kit-dropdown::after");
     const menu = readCssBlock(".ui-kit-dropdown__menu");
+    const menuContent = readCssBlock(".ui-kit-dropdown__menu-content");
+    const dropdownItem = readCssBlock(".ui-kit-dropdown__item");
     const scrollbar = readCssBlock(".ui-kit-scrollbar");
 
     expect(dropdown).toContain("position: relative;");
@@ -82,9 +96,13 @@ describe("HUD styles", () => {
     expect(menu).toContain("position: fixed;");
     expect(menu).toContain("z-index: 19;");
     expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
-    expect(menu).toContain("background: rgb(18, 44, 60);");
+    expect(menu).toContain("background: rgb(5, 18, 28);");
     expect(menu).toContain("border: 0.18vh solid rgba(180, 232, 255, 0.72);");
     expect(menu).toContain("box-shadow: 0 0.5vh 1.4vh rgba(0, 4, 8, 0.72), inset 0 0 0 0.12vh rgba(238, 250, 255, 0.08);");
+    expect(menuContent).toContain("gap: 0;");
+    expect(dropdownItem).toContain("border: 0;");
+    expect(dropdownItem).toContain("background: transparent;");
+    expect(css).toContain(".ui-kit-list__item.is-selected,\n.ui-kit-tree__item.is-selected,\n.ui-kit-dropdown__item.is-selected");
     expect(scrollbar).toContain("z-index: 30;");
   });
 
