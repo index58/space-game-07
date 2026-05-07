@@ -75,6 +75,15 @@ type DropdownMenuPosition = {
   widthPx: number;
 };
 
+type DropdownMenuRects = {
+  // Границы исходного поля в пикселях окна.
+  rootRect: DOMRect;
+  // Границы вынесенного меню в пикселях окна.
+  menuRect: DOMRect | null;
+  // Высота браузерного окна в пикселях.
+  viewportHeightPx: number;
+};
+
 type ListBoxProps = {
   // Стабильный идентификатор списка.
   id: string;
@@ -219,6 +228,7 @@ export const RadioGroup = (props: RadioGroupProps) => (
 
 export const Dropdown = (props: DropdownProps) => {
   let rootElement: HTMLDivElement | undefined;
+  let menuElement: HTMLDivElement | undefined;
   const [menuPosition, setMenuPosition] = createSignal<DropdownMenuPosition>({ leftPx: 0, topPx: 0, widthPx: 0 });
 
   const updateMenuPosition = () => {
@@ -226,7 +236,11 @@ export const Dropdown = (props: DropdownProps) => {
     if (!rect) {
       return;
     }
-    setMenuPosition({ leftPx: rect.left, topPx: rect.bottom, widthPx: rect.width });
+    setMenuPosition(getDropdownMenuPosition({
+      rootRect: rect,
+      menuRect: menuElement?.getBoundingClientRect() ?? null,
+      viewportHeightPx: window.innerHeight,
+    }));
   };
 
   createEffect(() => {
@@ -256,7 +270,7 @@ export const Dropdown = (props: DropdownProps) => {
         <Portal>
           {/* Экранный слой забирает внешний клик у нижних контролов и оставляет активными пункты меню. */}
           <div id={`${props.id}-outside-blocker`} data-ui-kind="modal" data-ui-z-index="900" data-ui-focusable="false" class="ui-kit-control ui-kit-dropdown__outside-blocker" />
-          <div id={`${props.id}-menu`} class="ui-kit-dropdown__menu" style={dropdownMenuStyle(menuPosition())}>
+          <div ref={(element) => { menuElement = element; }} id={`${props.id}-menu`} class="ui-kit-dropdown__menu" style={dropdownMenuStyle(menuPosition())}>
             <div class="ui-kit-dropdown__menu-viewport">
               <div class="ui-kit-dropdown__menu-content" style={{ transform: `translateY(-${props.menuScroll?.contentOffsetPx ?? 0}px)` }}>
                 <For each={props.options}>
@@ -383,5 +397,20 @@ const dropdownMenuStyle = (position: DropdownMenuPosition): JSX.CSSProperties =>
   top: `${position.topPx}px`,
   width: `${position.widthPx}px`,
 });
+
+const getDropdownMenuPosition = (rects: DropdownMenuRects): DropdownMenuPosition => {
+  const menuHeightPx = rects.menuRect?.height ?? 0;
+  const belowTopPx = rects.rootRect.bottom;
+  const aboveTopPx = rects.rootRect.top - menuHeightPx;
+  const topPx = menuHeightPx > 0 && belowTopPx + menuHeightPx > rects.viewportHeightPx
+    ? Math.max(0, aboveTopPx)
+    : belowTopPx;
+
+  return {
+    leftPx: rects.rootRect.left,
+    topPx,
+    widthPx: rects.rootRect.width,
+  };
+};
 
 const flattenTree = (nodes: TreeNode[]): TreeNode[] => nodes.flatMap((node) => [node, ...flattenTree(node.children ?? [])]);

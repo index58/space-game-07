@@ -138,6 +138,37 @@ describe("ui-kit components", () => {
   });
 
   // Проверяет, что пустая подпись выпадающего списка не занимает отдельную строку.
+  // Проверяет, что меню у нижней границы экрана поднимается над полем и не уходит за экран.
+  it("keeps portaled dropdown menu inside bottom viewport edge", async () => {
+    const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+    const originalInnerHeight = window.innerHeight;
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 700 });
+    HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
+      if (this.id === "select") {
+        return { x: 120, y: 560, left: 120, top: 560, right: 360, bottom: 592, width: 240, height: 32, toJSON: () => ({}) } as DOMRect;
+      }
+      if (this.id === "select-menu") {
+        return { x: 120, y: 592, left: 120, top: 592, right: 360, bottom: 812, width: 240, height: 220, toJSON: () => ({}) } as DOMRect;
+      }
+      return originalGetBoundingClientRect.call(this);
+    };
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    try {
+      dispose = render(() => (
+        <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+      ), root);
+      await Promise.resolve();
+
+      const menu = document.body.querySelector<HTMLElement>("#select-menu");
+      expect(menu?.style.top).toBe("340px");
+    } finally {
+      HTMLElement.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+      Object.defineProperty(window, "innerHeight", { configurable: true, value: originalInnerHeight });
+    }
+  });
+
   it("omits dropdown label when it is empty", () => {
     const root = document.createElement("div");
     document.body.append(root);

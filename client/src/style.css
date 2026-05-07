@@ -648,7 +648,7 @@ body {
   left: 50%;
   top: 50%;
   width: min(118vh, calc(100vw - 4vh));
-  height: min(48vh, calc(100vh - 4vh));
+  height: min(62vh, calc(100vh - 4vh));
   transform: translate(-50%, -50%);
   z-index: 18;
   pointer-events: none;
