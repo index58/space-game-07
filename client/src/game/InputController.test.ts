@@ -243,6 +243,35 @@ describe("InputController", () => {
     expect(controller.getChatInputText()).toBe("");
   });
 
+  // Проверяет, что незавершенный ввод хранится отдельно для каждой вкладки чата.
+  it("keeps separate local input drafts for chat tabs", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    const chatTabs = [
+      { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: [] },
+      { chatId: 2, title: "Pilot2", communityTypeAcronym: "Duo", duoChatKey: "1:2", messages: [] },
+    ];
+    controller.getVisibleChatState({ type: "chatState", selectedChatId: 1, tabs: chatTabs });
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    for (const character of "alpha") {
+      pressKey(`Key${character.toUpperCase()}`, character);
+    }
+    controller.getVisibleChatState({ type: "chatState", selectedChatId: 2, tabs: chatTabs });
+    expect(controller.getChatInputText()).toBe("");
+
+    for (const character of "beta") {
+      pressKey(`Key${character.toUpperCase()}`, character);
+    }
+    controller.getVisibleChatState({ type: "chatState", selectedChatId: 1, tabs: chatTabs });
+    expect(controller.getChatInputText()).toBe("alpha");
+
+    controller.getVisibleChatState({ type: "chatState", selectedChatId: 2, tabs: chatTabs });
+    expect(controller.getChatInputText()).toBe("beta");
+  });
+
   it("closes empty chat input on Enter without sending message", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
@@ -378,8 +407,8 @@ describe("InputController", () => {
 
     pressKey("Enter", "Enter");
     releaseKey("Enter");
-    moveMouse(-315, 105);
-    window.dispatchEvent(new MouseEvent("contextmenu", { clientX: 185, clientY: 605, button: 2 }));
+    moveMouse(-315, 130);
+    window.dispatchEvent(new MouseEvent("contextmenu", { clientX: 185, clientY: 630, button: 2 }));
     expect(controller.getChatContextMenu()?.chatId).toBe(2);
     window.dispatchEvent(new MouseEvent("mousedown", { clientX: 186, clientY: 341, button: 0 }));
     const visibleState = controller.getVisibleChatState({
@@ -412,7 +441,7 @@ describe("InputController", () => {
 
     pressKey("Enter", "Enter");
     releaseKey("Enter");
-    moveMouse(-315, 105);
+    moveMouse(-315, 130);
     window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
     const visibleState = controller.getVisibleChatState({
       type: "chatState",
@@ -1015,7 +1044,7 @@ describe("InputController", () => {
 
     pressKey("Enter", "Enter");
     releaseKey("Enter");
-    moveMouse(-34, 0);
+    moveMouse(-32, 0);
     window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
     controller.getVisibleChatState({
       type: "chatState",

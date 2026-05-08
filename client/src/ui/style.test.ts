@@ -224,11 +224,14 @@ describe("HUD styles", () => {
   // Проверяет, что окна и панели получают более светлый общий фон, а чёрные поля ввода не меняются.
   it("uses lighter backgrounds for windows and panels while preserving black input controls", () => {
     const theme = readCssBlock(":root");
+    const chatPanel = readCssBlock(".chat-panel");
 
     expect(theme).toContain("--hud-surface-bg: rgba(18, 34, 46, 0.9);");
     expect(theme).toContain("--hud-surface-soft-bg: rgba(18, 34, 46, 0.78);");
     expect(theme).toContain("--hud-surface-solid-bg: rgb(18, 34, 46);");
     expect(readCssBlock(".hud-panel")).toContain("background: var(--hud-surface-soft-bg);");
+    expect(chatPanel).toContain("padding: 0.8vh;");
+    expect(chatPanel).toContain("background: var(--hud-surface-solid-bg);");
     expect(readCssBlock(".object-indicator__bar")).toContain("background: var(--hud-surface-bg);");
     expect(readCssBlock(".chat-messages")).toContain("background: var(--hud-surface-soft-bg);");
     expect(readCssBlock(".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-tree,\n.ui-kit-virtual-list,\n.ui-kit-edit,\n.ui-kit-stepper,\n.ui-kit-context-menu,\n.ui-kit-modal,\n.ui-kit-tooltip")).toContain("background: var(--hud-surface-bg);");
@@ -321,12 +324,15 @@ describe("HUD styles", () => {
   });
 
   it("uses smooth chat history movement and a dark solid game cursor", () => {
+    const chatPanel = readCssBlock(".chat-panel");
+    const messagesPanel = readCssBlock(".chat-messages");
     const messageContent = readCssBlock(".chat-messages__content");
     const scrollbar = readCssBlock(".chat-scrollbar");
     const chatScrollbarInstance = readCssBlock(".ui-kit-scrollbar.chat-scrollbar");
     const scrollbarThumb = readCssBlock(".ui-kit-scrollbar__thumb");
     const draggingScrollbarThumb = readCssBlock(".ui-kit-scrollbar.is-dragging .ui-kit-scrollbar__thumb");
     const message = readCssBlock(".chat-message");
+    const separator = readCssBlock(".chat-message__separator");
     const tabs = readCssBlock(".chat-tabs");
     const tab = readCssBlock(".chat-tab");
     const uiKitTabs = readCssBlock(".ui-kit-tabs");
@@ -340,6 +346,12 @@ describe("HUD styles", () => {
     const cursor = readCssBlock(".game-cursor");
     const cursorHighlight = readCssBlock(".game-cursor::after");
 
+    expect(chatPanel).toContain("display: grid;");
+    expect(chatPanel).toContain("grid-template-rows: 24vh auto auto;");
+    expect(chatPanel).toContain("gap: 0.7vh;");
+    expect(messagesPanel).toContain("padding: 0 1.6vh 0 0;");
+    expect(messageContent).toContain("left: 0;");
+    expect(messageContent).toContain("bottom: 0;");
     expect(messageContent).toContain("transition: transform 120ms ease-out;");
     expect(scrollbar).toContain("right: 0.25vh;");
     expect(scrollbar).toContain("width: 1.1vh;");
@@ -349,8 +361,11 @@ describe("HUD styles", () => {
     expect(scrollbarThumb).toContain("transition: top 120ms ease-out, height 120ms ease-out;");
     expect(draggingScrollbarThumb).toContain("transition: none;");
     expect(css).not.toContain(".chat-scrollbar__thumb");
+    expect(message).toContain("display: block;");
     expect(message).toContain("font: 1.05vh/1.2 Consolas, monospace;");
-    expect(tabs).toContain("margin-top: 0.8vh;");
+    expect(separator).toContain("color: rgba(238, 250, 255, 0.46);");
+    expect(separator).toContain("white-space: pre;");
+    expect(tabs).toContain("margin-top: 0;");
     expect(tab).toContain("flex: 0 0 auto;");
     expect(tab).toContain("width: max-content;");
     expect(tab).toContain("min-width: 0;");
@@ -381,6 +396,7 @@ describe("HUD styles", () => {
     expect(css).toContain("@keyframes chat-error-fade-odd");
     expect(css).toContain("@keyframes chat-error-fade-even");
     expect(input).toContain("position: relative;");
+    expect(input).toContain("margin-top: 0;");
     expect(inputText).not.toContain("display: flex;");
     expect(inputCaret).toContain("position: absolute;");
     expect(inputCaret).toContain("min-width: 2px;");

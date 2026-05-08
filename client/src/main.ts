@@ -1,13 +1,9 @@
 import * as Phaser from "phaser";
 import "./style.css";
 import { GameScene } from "./game/GameScene";
-import { installLocalVisualTestAccount } from "./network/localVisualTestAccount";
 import { mountGameUi } from "./ui/mountGameUi";
 
 const startGame = async (): Promise<void> => {
-  // Локальный визуальный аккаунт должен попасть в хранилище раньше сетевого клиента.
-  await installLocalVisualTestAccount();
-
   const uiRoot = document.getElementById("ui-root");
 
   if (!uiRoot) {

@@ -314,6 +314,7 @@ const ChatPanel = (props: ChatPanelProps) => {
                 {(message) => (
                   <div class="chat-message" style={{ color: `#${message.color || "d8f3ff"}` }}>
                     <span class="chat-message__sender">{message.senderNickname}</span>
+                    <span class="chat-message__separator">: </span>
                     <span class="chat-message__text">{message.text}</span>
                   </div>
                 )}
@@ -329,14 +330,6 @@ const ChatPanel = (props: ChatPanelProps) => {
               />
             </Show>
           </div>
-          <Tabs
-            id="chat-tabs"
-            itemIdPrefix="chat-tab"
-            className="chat-tabs"
-            itemClassName="chat-tab"
-            selectedValue={String(tab().chatId)}
-            tabs={chatTabs()}
-          />
           <Show when={props.state().chatError}>
             {(error) => <div class="chat-error" style={{ "animation-name": chatErrorAnimationName() }}>{error()}</div>}
           </Show>
@@ -359,6 +352,14 @@ const ChatPanel = (props: ChatPanelProps) => {
               </Show>
             </div>
           </div>
+          <Tabs
+            id="chat-tabs"
+            itemIdPrefix="chat-tab"
+            className="chat-tabs"
+            itemClassName="chat-tab"
+            selectedValue={String(tab().chatId)}
+            tabs={chatTabs()}
+          />
           <Show when={props.state().chatContextMenu}>
             {(menu) => (
               <div

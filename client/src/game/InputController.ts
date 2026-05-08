@@ -46,11 +46,23 @@ export type ChatScrollState = {
   dragging: boolean;
 };
 
+type ChatInputDraft = {
+  // Текст, набранный игроком в конкретной вкладке чата.
+  text: string;
+  // Позиция каретки в тексте этой вкладки.
+  cursorIndex: number;
+  // Начало выделенного диапазона в тексте этой вкладки.
+  selectionStart: number;
+  // Конец выделенного диапазона в тексте этой вкладки.
+  selectionEnd: number;
+};
+
 const hudEdgeVh = 1;
 const chatPanelWidthVh = 48;
 const chatPanelHalfHeightVh = 17;
-const chatPanelPaddingVh = 1;
-const chatTabsGapBottomVh = 0.8;
+const chatPanelPaddingVh = 0.8;
+const chatPanelGapVh = 0.7;
+const chatInputHeightVh = 3.1;
 const chatTabHeightVh = 2.45;
 const chatMessagesHeightVh = 24;
 const chatMessagesBorderVh = 0.14;
@@ -83,6 +95,8 @@ export class InputController {
   private chatInputText = "";
   // Позиция вставки внутри локальной строки.
   private chatCursorIndex = 0;
+  // Черновики ввода, сохраненные отдельно для каждой вкладки чата.
+  private readonly chatInputDrafts = new Map<number, ChatInputDraft>();
   // Последний выбранный сервером или локальным вводом чат.
   private selectedChatId = 0;
   // Показывает, что локальный выбор вкладки ждет подтверждения сервера.
@@ -323,7 +337,10 @@ export class InputController {
       .filter((tab) => tab.communityTypeAcronym === "Server" || !this.closedDuoChatIds.has(tab.chatId) || (tab.unreadCount ?? 0) > 0)
       .map((tab) => ({ ...tab, messages: [...tab.messages] }));
     if (tabs.length === 0) {
+      this.saveCurrentChatInputDraft();
       this.selectedChatId = 0;
+      this.chatInputText = "";
+      this.chatCursorIndex = 0;
       this.selectedChatMessageCount = 0;
       this.scrolledChatId = 0;
       this.selectedChatLastMessageId = 0;
@@ -336,10 +353,10 @@ export class InputController {
       this.chatSelectionPending = false;
     }
     if (!this.chatSelectionPending && chatState.selectedChatId && !this.closedDuoChatIds.has(chatState.selectedChatId)) {
-      this.selectedChatId = chatState.selectedChatId;
+      this.setSelectedChatId(chatState.selectedChatId);
     }
     if (!tabs.some((tab) => tab.chatId === this.selectedChatId)) {
-      this.selectedChatId = tabs[0].chatId;
+      this.setSelectedChatId(tabs[0].chatId);
     }
 
     this.applyChatScroll(tabs);
@@ -587,10 +604,7 @@ export class InputController {
   private queueChatAction(): void {
     const text = this.chatInputText.trim();
     if (text === "") {
-      this.chatInputText = "";
-      this.chatCursorIndex = 0;
-      this.chatInputFocused = false;
-      this.chatEdit.blur();
+      this.clearChatInput();
       return;
     }
 
@@ -607,10 +621,7 @@ export class InputController {
       });
     }
 
-    this.chatInputText = "";
-    this.chatCursorIndex = 0;
-    this.chatInputFocused = false;
-    this.chatEdit.blur();
+    this.clearChatInput();
   }
 
   // Проверяет, что системный указатель передан игровому canvas.
@@ -665,6 +676,9 @@ export class InputController {
   private clearChatInput(): void {
     this.chatInputText = "";
     this.chatCursorIndex = 0;
+    if (this.selectedChatId > 0) {
+      this.chatInputDrafts.delete(this.selectedChatId);
+    }
     this.chatInputFocused = false;
     this.chatEdit.blur();
   }
@@ -681,7 +695,7 @@ export class InputController {
       return false;
     }
 
-    this.selectedChatId = tab.chatId;
+    this.setSelectedChatId(tab.chatId);
     this.chatContextMenu = {
       chatId: tab.chatId,
       communityTypeAcronym: tab.communityTypeAcronym,
@@ -723,7 +737,7 @@ export class InputController {
       return false;
     }
 
-    this.selectedChatId = tab.chatId;
+    this.setSelectedChatId(tab.chatId);
     this.chatSelectionPending = true;
     this.chatContextMenu = null;
     this.chatSelectActions.push({ chatId: tab.chatId });
@@ -740,10 +754,8 @@ export class InputController {
     }
 
     this.chatInputFocused = false;
-    this.chatInputText = "";
-    this.chatCursorIndex = 0;
+    this.clearChatInput();
     this.chatContextMenu = null;
-    this.chatEdit.blur();
     this.uiKitShowcaseVisible = false;
     this.settingsVisible = false;
     return true;
@@ -809,6 +821,60 @@ export class InputController {
     const snapshot = this.chatEdit.snapshot();
     this.chatInputText = snapshot.text;
     this.chatCursorIndex = snapshot.selectionEnd;
+    this.saveCurrentChatInputDraft();
+  }
+
+  // Переключает активную вкладку чата вместе с ее локальным черновиком ввода.
+  private setSelectedChatId(chatId: number): void {
+    if (this.selectedChatId === chatId) {
+      return;
+    }
+
+    this.saveCurrentChatInputDraft();
+    this.selectedChatId = chatId;
+    this.loadSelectedChatInputDraft();
+  }
+
+  // Запоминает текущий текст, каретку и выделение для выбранной вкладки.
+  private saveCurrentChatInputDraft(): void {
+    if (this.selectedChatId <= 0) {
+      return;
+    }
+
+    const snapshot = this.chatEdit.snapshot();
+    const text = this.chatInputFocused ? snapshot.text : this.chatInputText;
+    const selectionStart = this.chatInputFocused ? snapshot.selectionStart : this.chatCursorIndex;
+    const selectionEnd = this.chatInputFocused ? snapshot.selectionEnd : this.chatCursorIndex;
+    if (text === "") {
+      this.chatInputDrafts.delete(this.selectedChatId);
+      return;
+    }
+
+    this.chatInputDrafts.set(this.selectedChatId, {
+      text,
+      cursorIndex: selectionEnd,
+      selectionStart,
+      selectionEnd,
+    });
+  }
+
+  // Возвращает строку ввода к черновику выбранной вкладки.
+  private loadSelectedChatInputDraft(): void {
+    const draft = this.chatInputDrafts.get(this.selectedChatId) ?? {
+      text: "",
+      cursorIndex: 0,
+      selectionStart: 0,
+      selectionEnd: 0,
+    };
+    this.chatInputText = draft.text;
+    this.chatCursorIndex = clamp(draft.cursorIndex, 0, draft.text.length);
+    if (this.chatInputFocused) {
+      this.chatEdit.focus(
+        draft.text,
+        clamp(draft.selectionStart, 0, draft.text.length),
+        clamp(draft.selectionEnd, 0, draft.text.length),
+      );
+    }
   }
 
   // Находит вкладку по координатам с теми же размерами, что использует HUD.
@@ -826,7 +892,7 @@ export class InputController {
     const panelLeft = hudEdgeVh * vh;
     const panelTop = window.innerHeight / 2 - chatPanelHalfHeightVh * vh;
     const tabLeft = panelLeft + chatPanelPaddingVh * vh;
-    const tabTop = panelTop + (chatPanelPaddingVh + chatMessagesHeightVh + chatTabsGapBottomVh) * vh;
+    const tabTop = panelTop + (chatPanelPaddingVh + chatMessagesHeightVh + chatPanelGapVh + chatInputHeightVh + chatPanelGapVh) * vh;
     const tabWidth = 14 * vh;
     const tabHeight = chatTabHeightVh * vh;
     const tabGap = 0.5 * vh;

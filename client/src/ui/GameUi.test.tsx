@@ -252,6 +252,15 @@ describe("GameUi", () => {
     expect(root.querySelector(".chat-tab.is-selected")?.textContent).toBe("Pilot2");
     expect(root.querySelector("#chat-tab-2 .ui-kit-tab__marker")).toBeNull();
     expect(root.querySelector(".chat-tab .ui-kit-tab__badge")?.textContent).toBe("3");
+    expect(Array.from(root.querySelector(".chat-panel")?.children ?? []).map((element) => element.className.replace(/\s+/g, " ").trim())).toEqual([
+      "chat-messages",
+      "chat-error",
+      "ui-kit-control ui-kit-edit chat-input is-focused",
+      "ui-kit-control ui-kit-tabs chat-tabs",
+      "ui-kit-control chat-context-menu",
+    ]);
+    expect(Array.from(root.querySelectorAll(".chat-message")).map((message) => message.textContent)).toEqual(["Pilot1: old", "Pilot2: new"]);
+    expect(Array.from(root.querySelectorAll(".chat-message__separator")).map((separator) => separator.textContent)).toEqual([": ", ": "]);
     expect(Array.from(root.querySelectorAll(".chat-message__text")).map((message) => message.textContent)).toEqual(["old", "new"]);
     expect(root.querySelector(".chat-input__text")?.textContent).toBe("draft");
     expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("0px");

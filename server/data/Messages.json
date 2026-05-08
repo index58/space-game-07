@@ -1,5 +1,5 @@
 {
-  "MaxID": 55,
+  "MaxID": 58,
   "Items": {
     "1": {
       "ID": 1,
@@ -495,6 +495,33 @@
       "Text": "шщ",
       "Color": "D8F3FF",
       "SentTime": "2026-05-09T00:42:32.7269701+03:00"
+    },
+    "56": {
+      "ID": 56,
+      "ChatID": 1,
+      "SenderCharacterID": 1,
+      "MessageTypeID": 1,
+      "Text": "вукпу",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-09T02:08:05.2546165+03:00"
+    },
+    "57": {
+      "ID": 57,
+      "ChatID": 2,
+      "SenderCharacterID": 3,
+      "MessageTypeID": 1,
+      "Text": "ftkkkkkkkkkkkkkkkkkkkkk",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-09T02:11:19.4288729+03:00"
+    },
+    "58": {
+      "ID": 58,
+      "ChatID": 1,
+      "SenderCharacterID": 3,
+      "MessageTypeID": 1,
+      "Text": "grdgdrg",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-09T02:11:23.263198+03:00"
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "MaxID": 7,
+  "MaxID": 8,
   "Items": {
     "1": {
       "ID": 1,
@@ -19,15 +19,15 @@
       "ID": 3,
       "CharacterID": 3,
       "ChatID": 1,
-      "LastReadMessageID": 49,
-      "ReadTime": "2026-05-06T05:29:11.4592484+03:00"
+      "LastReadMessageID": 58,
+      "ReadTime": "2026-05-09T02:11:23.2637417+03:00"
     },
     "4": {
       "ID": 4,
       "CharacterID": 3,
       "ChatID": 2,
-      "LastReadMessageID": 50,
-      "ReadTime": "2026-05-06T04:55:04.3539644+03:00"
+      "LastReadMessageID": 57,
+      "ReadTime": "2026-05-09T02:11:19.4288729+03:00"
     },
     "5": {
       "ID": 5,
@@ -48,7 +48,14 @@
       "CharacterID": 8,
       "ChatID": 1,
       "LastReadMessageID": 55,
-      "ReadTime": "2026-05-09T00:42:32.7269701+03:00"
+      "ReadTime": "2026-05-09T02:07:43.3413897+03:00"
+    },
+    "8": {
+      "ID": 8,
+      "CharacterID": 1,
+      "ChatID": 1,
+      "LastReadMessageID": 58,
+      "ReadTime": "2026-05-09T02:11:23.2637417+03:00"
     }
   }
 }

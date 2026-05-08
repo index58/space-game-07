@@ -1,28 +1,6 @@
 {
-  "MaxID": 902,
+  "MaxID": 1052,
   "Items": {
-    "1": {
-      "ID": 1,
-      "CosmicObjectID": 1,
-      "Title": "MagicThruster",
-      "EquipmentItemModelID": 1,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "2": {
-      "ID": 2,
-      "CosmicObjectID": 1,
-      "Title": "MagicTorquer",
-      "EquipmentItemModelID": 2,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
     "603": {
       "ID": 603,
       "CosmicObjectID": 6,
@@ -481,6 +459,72 @@
       "EquipmentItemModelID": 6,
       "Count": 2,
       "EnabledCount": 2,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1047": {
+      "ID": 1047,
+      "CosmicObjectID": 1,
+      "Title": "SimpleThruster",
+      "EquipmentItemModelID": 1,
+      "Count": 41,
+      "EnabledCount": 41,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1048": {
+      "ID": 1048,
+      "CosmicObjectID": 1,
+      "Title": "SimpleTorquer",
+      "EquipmentItemModelID": 2,
+      "Count": 24,
+      "EnabledCount": 24,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1049": {
+      "ID": 1049,
+      "CosmicObjectID": 1,
+      "Title": "LightCannon120mm",
+      "EquipmentItemModelID": 3,
+      "Count": 2,
+      "EnabledCount": 2,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1050": {
+      "ID": 1050,
+      "CosmicObjectID": 1,
+      "Title": "CompactGenerator",
+      "EquipmentItemModelID": 4,
+      "Count": 14,
+      "EnabledCount": 14,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1051": {
+      "ID": 1051,
+      "CosmicObjectID": 1,
+      "Title": "SmallMelitFuelTank",
+      "EquipmentItemModelID": 5,
+      "Count": 50,
+      "EnabledCount": 50,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1052": {
+      "ID": 1052,
+      "CosmicObjectID": 1,
+      "Title": "SmallCargoContainer",
+      "EquipmentItemModelID": 6,
+      "Count": 4,
+      "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0
