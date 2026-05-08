@@ -272,10 +272,12 @@ export const Dropdown = (props: DropdownProps) => {
           <div id={`${props.id}-outside-blocker`} data-ui-kind="modal" data-ui-z-index="900" data-ui-focusable="false" class="ui-kit-control ui-kit-dropdown__outside-blocker" />
           <div ref={(element) => { menuElement = element; }} id={`${props.id}-menu`} class="ui-kit-dropdown__menu" style={dropdownMenuStyle(menuPosition())}>
             <div class="ui-kit-dropdown__menu-viewport">
-              <div class="ui-kit-dropdown__menu-content" style={{ transform: `translateY(-${props.menuScroll?.contentOffsetPx ?? 0}px)` }}>
-                <For each={props.options}>
-                  {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} data-ui-z-index="1000" class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
-                </For>
+              <div class="ui-kit-dropdown__menu-clip">
+                <div class="ui-kit-dropdown__menu-content" style={{ transform: `translateY(-${props.menuScroll?.contentOffsetPx ?? 0}px)` }}>
+                  <For each={props.options}>
+                    {(option) => <div id={`${props.id}-${option.value}`} data-ui-kind="select" data-ui-value={option.value} data-ui-z-index="1000" class={`ui-kit-control ui-kit-dropdown__item ${option.value === props.selectedValue ? "is-selected" : ""}`}>{option.label}</div>}
+                  </For>
+                </div>
               </div>
             </div>
             <Show when={props.menuScroll?.visible}>
@@ -338,7 +340,7 @@ export const Tabs = (props: TabsProps) => (
   <div id={props.id} data-ui-kind="tabs" class={`ui-kit-control ui-kit-tabs ${props.className ?? ""}`}>
     <For each={props.tabs}>
       {(tab) => (
-        <div id={`${props.itemIdPrefix ?? props.id}-${tab.value}`} data-ui-kind="tabs" data-ui-value={tab.value} class={`ui-kit-control ui-kit-tab ${props.itemClassName ?? ""} ${tab.value === props.selectedValue ? "is-selected" : ""}`}>
+        <div id={`${props.itemIdPrefix ?? props.id}-${tab.value}`} data-ui-kind="tabs" data-ui-value={tab.value} class={`ui-kit-control ui-kit-tab ${markerClass(tab.marker)} ${props.itemClassName ?? ""} ${tab.value === props.selectedValue ? "is-selected" : ""}`}>
           <Show when={tab.marker}>{(marker) => <span class="ui-kit-tab__marker">{marker()}</span>}</Show>
           <span class="ui-kit-tab__label">{tab.label}</span>
           <Show when={tab.badge}>{(badge) => <span class="ui-kit-tab__badge">{badge()}</span>}</Show>
@@ -391,6 +393,9 @@ export const Tooltip = (props: TooltipProps) => (
 export const HotkeyCapture = EditControl;
 
 const stateClass = (state: ButtonProps["state"]): string => state && state !== "normal" ? `is-${state}` : "";
+
+// Дополнительный класс нужен только для вкладок, где левый край выравнивается по квадратному значку.
+const markerClass = (marker: JSX.Element | undefined): string => marker ? "ui-kit-tab--with-marker" : "";
 
 const dropdownMenuStyle = (position: DropdownMenuPosition): JSX.CSSProperties => ({
   left: `${position.leftPx}px`,

@@ -407,6 +407,24 @@ describe("GameClient", () => {
     client.destroy();
   });
 
+  // Проверяет, что клиент умеет явно запросить свежие настройки ввода при открытии окна.
+  it("requests latest input settings while connected", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    client.requestInputSettings();
+
+    expect(JSON.parse(socket.sent[0])).toEqual({ type: "inputSettingsRequest" });
+
+    client.destroy();
+  });
+
   it("stores latest input settings error from server refusal", () => {
     FakeWebSocket.instances = [];
     const client = new GameClient({

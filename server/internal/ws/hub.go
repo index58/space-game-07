@@ -121,6 +121,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeInputSettingsSaveMessage(payload); ok {
 				hub.handleInputSettingsSave(client, message)
 			}
+			if DecodeInputSettingsRequestMessage(payload) {
+				hub.handleInputSettingsRequest(client)
+			}
 			continue
 		}
 
@@ -128,7 +131,16 @@ func (hub *Hub) readLoop(client *Client) {
 	}
 }
 
-// Обрабатывает сохранение настроек ввода и возвращает актуальное состояние аккаунта.
+// handleInputSettingsRequest возвращает текущие сохраненные настройки аккаунта без изменения мира.
+func (hub *Hub) handleInputSettingsRequest(client *Client) {
+	payload, err := EncodeInputSettingsMessage(hub.world.AccountInputSettings(client.accountID))
+	if err != nil {
+		return
+	}
+	hub.sendToClient(client, payload)
+}
+
+// handleInputSettingsSave сохраняет новые привязки и возвращает актуальное состояние аккаунта.
 func (hub *Hub) handleInputSettingsSave(client *Client, message InputSettingsSaveMessage) {
 	settings := make([]data.AccountActionInputSetting, 0, len(message.Settings))
 	for _, item := range message.Settings {

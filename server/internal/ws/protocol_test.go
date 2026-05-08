@@ -60,6 +60,13 @@ func TestDecodeRandomShipMessageRejectsOtherTypes(t *testing.T) {
 	}
 }
 
+// Проверяет, что запрос свежих настроек ввода принимается по согласованному типу.
+func TestDecodeInputSettingsRequestMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeInputSettingsRequestMessage([]byte(`{"type":"inputSettingsRequest"}`)) {
+		t.Fatalf("input settings request was not accepted")
+	}
+}
+
 // Проверяет, что команда чата читает выбранную вкладку и адресный ник из JSON.
 func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeChatSendMessage([]byte(`{

@@ -110,6 +110,21 @@ describe("ui-kit components", () => {
     expect(menu ? document.body.contains(menu) : false).toBe(true);
   });
 
+  // Проверяет, что выпавший список живёт вне корня HUD и наследует общие стили только со страницы.
+  it("portals dropdown menu outside ui root", () => {
+    const root = document.createElement("div");
+    root.id = "ui-root";
+    document.body.append(root);
+
+    dispose = render(() => (
+      <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+    ), root);
+
+    const menu = document.body.querySelector<HTMLElement>("#select-menu");
+    expect(menu).not.toBeNull();
+    expect(menu?.closest("#ui-root")).toBeNull();
+  });
+
   // Проверяет, что вынесенное меню привязано к экранным границам исходного поля.
   it("positions portaled dropdown menu at trigger screen rect", async () => {
     const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;

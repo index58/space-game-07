@@ -71,6 +71,11 @@ export type InputSettingsSaveMessage = {
   settings: InputSettingPayload[];
 };
 
+export type InputSettingsRequestMessage = {
+  // Вид команды запроса актуальных настроек ввода.
+  type: "inputSettingsRequest";
+};
+
 export type InputSettingsErrorMessage = {
   // Вид сообщения с ошибкой сохранения настроек.
   type: "inputSettingsError";

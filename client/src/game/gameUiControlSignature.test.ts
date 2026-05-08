@@ -31,6 +31,7 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   chatScroll: scrollState,
   uiKitShowcaseVisible: false,
   settingsVisible: true,
+  selectedSettingsTab: "input",
   inputSettingsValues: { 1: 1 },
   openInputSettingsActionId: null,
   inputSettingsError: null,
@@ -91,6 +92,14 @@ describe("getGameUiControlLayoutSignature", () => {
       openInputSettingsActionId: 1,
       inputSettingsDropdownScroll: { ...scrollState, visible: true, contentOffsetPx: 32 },
     }), viewport);
+
+    expect(second).not.toBe(first);
+  });
+
+  // Проверяет, что смена страницы настроек пересобирает DOM-области интерактивных контролов.
+  it("changes when selected settings tab changes", () => {
+    const first = getGameUiControlLayoutSignature(state({ selectedSettingsTab: "input" }), viewport);
+    const second = getGameUiControlLayoutSignature(state({ selectedSettingsTab: "video" }), viewport);
 
     expect(second).not.toBe(first);
   });

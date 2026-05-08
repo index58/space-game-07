@@ -8,12 +8,23 @@ body {
   background: #000;
 }
 
-#ui-root {
-  /* Игровой DOM UI лежит поверх canvas, но мышь остаётся во владении игрового ввода. */
+:root {
   --hud-icon-muted: rgba(216, 243, 255, 0.64);
   --hud-icon-active: rgba(238, 250, 255, 0.95);
-  --hud-control-bg: rgba(5, 18, 28, 0.9);
+  --hud-surface-bg: rgba(18, 34, 46, 0.9);
+  --hud-surface-soft-bg: rgba(18, 34, 46, 0.78);
+  --hud-surface-solid-bg: rgb(18, 34, 46);
+  --hud-surface-border: rgba(238, 250, 255, 0.48);
+  --hud-control-bg: var(--hud-surface-bg);
+  --hud-dropdown-min-height: 2.35vh;
+  --hud-dropdown-padding-y: 0.35vh;
+  --hud-dropdown-font-size: 0.95vh;
+  --hud-list-padding: 0.35vh;
   --hud-tab-height: 2.45vh;
+}
+
+#ui-root {
+  /* Игровой DOM UI лежит поверх canvas, но мышь остаётся во владении игрового ввода. */
   position: fixed;
   inset: 0;
   z-index: 10;
@@ -25,8 +36,7 @@ body {
   position: fixed;
   box-sizing: border-box;
   color: #d8f3ff;
-  background: rgba(0, 10, 18, 0.82);
-  border: 0.14vh solid rgba(130, 210, 255, 0.38);
+  background: var(--hud-surface-soft-bg);
   pointer-events: none;
 }
 
@@ -116,8 +126,7 @@ body {
   position: relative;
   height: 3.4vh;
   overflow: hidden;
-  background: rgba(5, 18, 28, 0.95);
-  border: 0.14vh solid rgba(130, 210, 255, 0.34);
+  background: var(--hud-surface-bg);
 }
 
 .object-indicator__fill {
@@ -192,8 +201,7 @@ body {
   overflow: hidden;
   padding: 0.8vh 1.6vh 0.8vh 0.8vh;
   box-sizing: border-box;
-  background: rgba(5, 18, 28, 0.72);
-  border: 0.14vh solid rgba(130, 210, 255, 0.22);
+  background: var(--hud-surface-soft-bg);
 }
 
 .chat-messages__content {
@@ -247,7 +255,6 @@ body {
   box-sizing: border-box;
   color: #ffd4d4;
   background: rgba(24, 5, 9, 0.88);
-  border: 0.14vh solid rgba(255, 120, 120, 0.38);
   font: 1.15vh/1.25 Consolas, monospace;
   pointer-events: none;
   animation-duration: 4.8s;
@@ -264,14 +271,12 @@ body {
   padding: 0 0.8vh;
   box-sizing: border-box;
   color: rgba(216, 243, 255, 0.72);
-  background: rgba(5, 18, 28, 0.92);
-  border: 0.14vh solid rgba(130, 210, 255, 0.28);
+  background: rgb(0, 0, 0);
   font: 1.25vh/1 Consolas, monospace;
 }
 
 .chat-input.is-focused {
   color: #eefaff;
-  border-color: rgba(238, 250, 255, 0.54);
 }
 
 .chat-input__text {
@@ -350,8 +355,7 @@ body {
 .ui-kit-context-menu,
 .ui-kit-modal,
 .ui-kit-tooltip {
-  background: rgba(5, 18, 28, 0.92);
-  border: 0.14vh solid rgba(130, 210, 255, 0.28);
+  background: var(--hud-surface-bg);
 }
 
 .ui-kit-button,
@@ -372,7 +376,6 @@ body {
   white-space: nowrap;
   padding: 0 1.05vh;
   background: rgba(126, 212, 255, 0.16);
-  border-color: rgba(238, 250, 255, 0.42);
 }
 
 .ui-kit-button.is-hovered,
@@ -381,13 +384,11 @@ body {
 .ui-kit-tree__item.is-selected,
 .ui-kit-dropdown__item.is-selected {
   color: #eefaff;
-  border-color: rgba(238, 250, 255, 0.58);
   background: rgba(126, 212, 255, 0.16);
 }
 
 .ui-kit-tab.is-selected {
   color: #eefaff;
-  border-color: rgba(130, 210, 255, 0.24);
   background: rgba(126, 212, 255, 0.16);
 }
 
@@ -397,7 +398,7 @@ body {
   justify-content: center;
   width: 1.5vh;
   height: 1.5vh;
-  border: 0.12vh solid rgba(130, 210, 255, 0.42);
+  background: rgb(0, 0, 0);
 }
 
 .ui-kit-radio {
@@ -408,9 +409,25 @@ body {
 .ui-kit-dropdown {
   position: relative;
   min-width: 12vh;
-  padding: 0.55vh 0.7vh;
+  min-height: var(--hud-dropdown-min-height);
+  padding: 0 0.7vh;
+  padding-top: var(--hud-dropdown-padding-y);
+  padding-bottom: var(--hud-dropdown-padding-y);
   padding-right: 2.1vh;
-  font-size: 1.1vh;
+  background: rgb(0, 0, 0);
+  border: 0.14vh solid var(--hud-surface-border);
+  font-size: var(--hud-dropdown-font-size);
+}
+
+.ui-kit-radio__option {
+  background: rgb(0, 0, 0);
+}
+
+.ui-kit-list {
+  display: grid;
+  gap: 0;
+  padding: var(--hud-list-padding);
+  background: rgb(0, 0, 0);
 }
 
 .ui-kit-dropdown::after {
@@ -432,6 +449,15 @@ body {
   margin-bottom: 0.35vh;
 }
 
+.ui-kit-dropdown__value {
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--hud-dropdown-min-height) - (var(--hud-dropdown-padding-y) * 2));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ui-kit-dropdown__menu,
 .ui-kit-context-menu {
   display: grid;
@@ -446,9 +472,10 @@ body {
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  background: rgb(5, 18, 28);
-  border: 0.18vh solid rgba(180, 232, 255, 0.72);
-  box-shadow: 0 0.5vh 1.4vh rgba(0, 4, 8, 0.72), inset 0 0 0 0.12vh rgba(238, 250, 255, 0.08);
+  padding: 0;
+  background: rgb(0, 0, 0);
+  border: 0.14vh solid var(--hud-surface-border);
+  box-shadow: 0 0.5vh 1.4vh rgba(0, 4, 8, 0.72);
 }
 
 .ui-kit-dropdown__outside-blocker {
@@ -461,13 +488,22 @@ body {
 }
 
 .ui-kit-dropdown__menu-viewport {
+  display: grid;
   position: relative;
+  box-sizing: border-box;
+  background: rgb(0, 0, 0);
+}
+
+.ui-kit-dropdown__menu-clip {
+  min-height: 0;
   overflow: hidden;
 }
 
 .ui-kit-dropdown__menu-content {
   display: grid;
   gap: 0;
+  padding: var(--hud-list-padding);
+  box-sizing: border-box;
 }
 
 .ui-kit-dropdown__item {
@@ -489,6 +525,7 @@ body {
 .ui-kit-edit {
   min-height: 2.8vh;
   padding: 0.55vh 0.7vh;
+  background: rgb(0, 0, 0);
   white-space: pre;
   overflow: hidden;
 }
@@ -528,20 +565,24 @@ body {
   max-height: var(--hud-tab-height);
   padding: 0 1.05vh;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
   background: rgba(5, 18, 28, 0.88);
-  border: 0.14vh solid rgba(130, 210, 255, 0.24);
   font: 1.05vh/1 Consolas, monospace;
+}
+
+.ui-kit-tab--with-marker {
+  /* Левый край совпадает с вертикальным просветом вокруг квадратного значка. */
+  padding-left: calc((var(--hud-tab-height) - 1.6vh) / 2);
 }
 
 .ui-kit-tab__marker {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 2vh;
-  width: 2vh;
+  flex: 0 0 1.6vh;
+  width: 1.6vh;
   height: 1.6vh;
-  max-width: 2vh;
+  max-width: 1.6vh;
   max-height: 1.6vh;
   overflow: hidden;
   background: rgba(126, 212, 255, 0.16);
@@ -559,9 +600,10 @@ body {
 }
 
 .ui-kit-tab__badge {
-  position: static;
+  position: absolute;
+  top: -0.35vh;
+  right: -0.35vh;
   display: inline-flex;
-  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   min-width: 1.45vh;
@@ -570,7 +612,7 @@ body {
   box-sizing: border-box;
   color: #fff4f4;
   background: #b7192f;
-  border: 0.12vh solid rgba(255, 230, 230, 0.86);
+  border: 0;
   border-radius: 50%;
   font: 0.85vh/1 Consolas, monospace;
 }
@@ -621,7 +663,6 @@ body {
   position: relative;
   height: 2.3vh;
   background: rgba(5, 18, 28, 0.92);
-  border: 0.14vh solid rgba(130, 210, 255, 0.28);
 }
 
 .ui-kit-slider__fill {
@@ -641,6 +682,7 @@ body {
 .ui-kit-modal {
   padding: 0.8vh;
   min-width: 36vh;
+  border: 0.14vh solid var(--hud-surface-border);
 }
 
 .ui-kit-modal__title {
@@ -681,7 +723,7 @@ body {
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  background: rgb(5, 18, 28);
+  background: var(--hud-surface-solid-bg);
 }
 
 .settings-modal-layer .ui-kit-modal__body {
@@ -709,6 +751,10 @@ body {
   padding-right: 1.65vh;
 }
 
+.settings-empty-page {
+  min-height: 0;
+}
+
 .settings-input-table__content {
   display: grid;
   grid-auto-rows: minmax(2.45vh, auto);
@@ -729,27 +775,14 @@ body {
   box-sizing: border-box;
   overflow: hidden;
   color: #d8f3ff;
-  background: rgba(216, 243, 255, 0.06);
-  border: 0.14vh solid rgba(130, 210, 255, 0.18);
+  background: rgba(0, 8, 14, 0.72);
+  border: 0;
   font: 0.95vh/1.25 Consolas, monospace;
-}
-
-.settings-input-row .ui-kit-dropdown {
-  min-height: 2.35vh;
-  padding-top: 0.35vh;
-  padding-bottom: 0.35vh;
-  font-size: 0.95vh;
 }
 
 .settings-input-row .ui-kit-dropdown {
   width: 100%;
   min-width: 0;
-}
-
-.settings-input-row .ui-kit-dropdown__value {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .ui-kit-dropdown__menu[id^="settings-input-select-"] .ui-kit-dropdown__menu-viewport {
@@ -810,8 +843,7 @@ body {
   width: 16vh;
   padding: 0.35vh;
   box-sizing: border-box;
-  background: rgba(0, 10, 18, 0.96);
-  border: 0.14vh solid rgba(130, 210, 255, 0.42);
+  background: var(--hud-surface-solid-bg);
 }
 
 .chat-context-menu__item {
@@ -841,8 +873,7 @@ body {
   height: 1.7vh;
   margin-bottom: 0.7vh;
   overflow: hidden;
-  background: rgba(5, 18, 28, 0.95);
-  border: 0.14vh solid rgba(130, 210, 255, 0.34);
+  background: var(--hud-surface-bg);
 }
 
 .pilot-toolbar__magazine-fill {
@@ -876,13 +907,11 @@ body {
   aspect-ratio: 1;
   box-sizing: border-box;
   overflow: hidden;
-  background: rgba(0, 10, 18, 0.82);
-  border: 0.14vh solid rgba(130, 210, 255, 0.34);
+  background: var(--hud-surface-soft-bg);
 }
 
 .pilot-tool-slot.is-selected {
-  border-color: var(--hud-icon-active);
-  box-shadow: inset 0 0 0 0.14vh rgba(238, 250, 255, 0.36);
+  background: rgba(126, 212, 255, 0.16);
 }
 
 .pilot-tool-slot__key {
@@ -937,8 +966,7 @@ body {
   color: rgba(216, 243, 255, 0.88);
   font: 1.35vh/1 Consolas, monospace;
   text-align: center;
-  background: rgba(5, 18, 28, 0.88);
-  border: 0.14vh solid rgba(130, 210, 255, 0.28);
+  background: var(--hud-surface-bg);
 }
 
 .minimap-compass__mark {
@@ -991,7 +1019,6 @@ body {
   box-sizing: border-box;
   color: var(--hud-icon-muted);
   background: var(--hud-control-bg);
-  border: 0.14vh solid rgba(130, 210, 255, 0.28);
 }
 
 .minimap-status__zone {
@@ -1019,9 +1046,8 @@ body {
   background:
     linear-gradient(rgba(130, 210, 255, 0.1) 0.14vh, transparent 0.14vh),
     linear-gradient(90deg, rgba(130, 210, 255, 0.1) 0.14vh, transparent 0.14vh),
-    rgba(5, 18, 28, 0.92);
+    var(--hud-surface-bg);
   background-size: 4vh 4vh;
-  border: 0.14vh solid rgba(130, 210, 255, 0.32);
 }
 
 .minimap-map__crosshair {
@@ -1031,7 +1057,7 @@ body {
   width: 1.5vh;
   height: 1.5vh;
   transform: translate(-50%, -50%);
-  border: 0.14vh solid rgba(238, 250, 255, 0.45);
+  background: rgba(238, 250, 255, 0.45);
 }
 
 .minimap-point {

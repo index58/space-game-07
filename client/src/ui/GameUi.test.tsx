@@ -128,6 +128,7 @@ const state = (): GameUiState => ({
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
   settingsVisible: false,
+  selectedSettingsTab: "input",
   inputSettingsValues: { 1: 1 },
   openInputSettingsActionId: null,
   inputSettingsError: null,
@@ -247,8 +248,9 @@ describe("GameUi", () => {
     dispose = render(() => <GameUi state={chatState} />, root);
 
     expect(root.querySelector(".chat-panel")).not.toBeNull();
-    expect(Array.from(root.querySelectorAll(".chat-tab")).map((tab) => tab.textContent)).toEqual(["SServer3", "DPilot2"]);
-    expect(root.querySelector(".chat-tab.is-selected")?.textContent).toBe("DPilot2");
+    expect(Array.from(root.querySelectorAll(".chat-tab")).map((tab) => tab.textContent)).toEqual(["SServer3", "Pilot2"]);
+    expect(root.querySelector(".chat-tab.is-selected")?.textContent).toBe("Pilot2");
+    expect(root.querySelector("#chat-tab-2 .ui-kit-tab__marker")).toBeNull();
     expect(root.querySelector(".chat-tab .ui-kit-tab__badge")?.textContent).toBe("3");
     expect(Array.from(root.querySelectorAll(".chat-message__text")).map((message) => message.textContent)).toEqual(["old", "new"]);
     expect(root.querySelector(".chat-input__text")?.textContent).toBe("draft");
@@ -259,6 +261,33 @@ describe("GameUi", () => {
     expect(Array.from(root.querySelector(".chat-scrollbar")?.classList ?? [])).toContain("is-dragging");
     expect(root.querySelector<HTMLElement>(".chat-messages__content")?.style.transform).toBe("translateY(42px)");
     expect(document.body.querySelector(".game-cursor")).not.toBeNull();
+  });
+
+  // Проверяет, что значок чата рисуется только для общих каналов и одиночной вкладки, но не для прямого диалога.
+  it("renders chat tab markers only for non-duo community types", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const chatState = (): GameUiState => ({
+      ...state(),
+      chatState: {
+        type: "chatState",
+        selectedChatId: 1,
+        tabs: [
+          { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", unreadCount: 0, messages: [] },
+          { chatId: 2, title: "Clan", communityTypeAcronym: "Clan", duoChatKey: "", unreadCount: 0, messages: [] },
+          { chatId: 3, title: "Alliance", communityTypeAcronym: "Alliance", duoChatKey: "", unreadCount: 0, messages: [] },
+          { chatId: 4, title: "Solo", communityTypeAcronym: "Solo", duoChatKey: "", unreadCount: 0, messages: [] },
+          { chatId: 5, title: "Pilot2", communityTypeAcronym: "Duo", duoChatKey: "1:2", unreadCount: 0, messages: [] },
+        ],
+      },
+    });
+
+    dispose = render(() => <GameUi state={chatState} />, root);
+
+    expect(Array.from(root.querySelectorAll(".ui-kit-tab__marker")).map((marker) => marker.textContent)).toEqual(["S", "C", "A", "S"]);
+    expect(root.querySelector("#chat-tab-5 .ui-kit-tab__marker")).toBeNull();
+    expect(Array.from(root.querySelector("#chat-tab-1")?.classList ?? [])).toContain("ui-kit-tab--with-marker");
+    expect(Array.from(root.querySelector("#chat-tab-5")?.classList ?? [])).not.toContain("ui-kit-tab--with-marker");
   });
 
   // Проверяет, что игровой указатель не попадает в слой HUD, который ниже портальных меню.
@@ -315,6 +344,37 @@ describe("GameUi", () => {
 
     expect(root.querySelector(".settings-input-row")).toBe(row);
     expect(root.querySelector(".settings-input-row .ui-kit-dropdown")).toBe(dropdown);
+  });
+
+  // Проверяет, что окно настроек показывает будущие разделы перед вкладкой ввода.
+  it("renders video and audio tabs before input settings tab", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({ ...state(), settingsVisible: true })} />, root);
+
+    expect(Array.from(root.querySelectorAll(".settings-tabs .ui-kit-tab")).map((tab) => tab.textContent)).toEqual(["Видео", "Аудио", "Ввод"]);
+    expect(root.querySelector(".settings-tabs .ui-kit-tab.is-selected")?.textContent).toBe("Ввод");
+    expect(root.querySelector("#settings-cancel-button")?.textContent).toBe("Отмена");
+  });
+
+  // Проверяет, что каждая вкладка настроек управляет собственной страницей.
+  it("renders selected settings tab page", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const [settingsState, setSettingsState] = createSignal<GameUiState>({ ...state(), settingsVisible: true, selectedSettingsTab: "video" });
+
+    dispose = render(() => <GameUi state={settingsState} />, root);
+
+    expect(root.querySelector(".settings-empty-page")?.textContent).toBe("");
+    expect(root.querySelector(".settings-input-table")).toBeNull();
+
+    setSettingsState({ ...settingsState(), selectedSettingsTab: "audio" });
+    expect(root.querySelector(".settings-empty-page")?.textContent).toBe("");
+    expect(root.querySelector(".settings-input-table")).toBeNull();
+
+    setSettingsState({ ...settingsState(), selectedSettingsTab: "input" });
+    expect(root.querySelector(".settings-input-table")).not.toBeNull();
   });
 
   // Проверяет, что длинная строка сдвигается влево и оставляет каретку внутри поля ввода.

@@ -26,14 +26,14 @@ describe("HUD styles", () => {
   });
 
   it("uses one muted icon style for object indicators and status icons", () => {
-    const root = readCssBlock("#ui-root");
+    const theme = readCssBlock(":root");
     const indicatorIcon = readCssBlock(".object-indicator__icon");
     const indicatorSvg = readCssBlock(".object-indicator__icon svg");
     const statusItem = readCssBlock(".minimap-status__item");
     const anchorIcon = readCssBlock(".minimap-status__anchor-icon");
 
-    expect(root).toContain("--hud-icon-muted: rgba(216, 243, 255, 0.64);");
-    expect(root).toContain("--hud-tab-height: 2.45vh;");
+    expect(theme).toContain("--hud-icon-muted: rgba(216, 243, 255, 0.64);");
+    expect(theme).toContain("--hud-tab-height: 2.45vh;");
     expect(indicatorIcon).toContain("color: var(--hud-icon-muted);");
     expect(statusItem).toContain("color: var(--hud-icon-muted);");
     expect(indicatorSvg).toContain("width: 2.35vh;");
@@ -75,10 +75,129 @@ describe("HUD styles", () => {
     expect(button).toContain("white-space: nowrap;");
     expect(button).toContain("padding: 0 1.05vh;");
     expect(button).toContain("background: rgba(126, 212, 255, 0.16);");
-    expect(button).toContain("border-color: rgba(238, 250, 255, 0.42);");
+    expect(button).not.toMatch(/\bborder(?:-color)?\s*:/);
     expect(selectedTab).toContain("background: rgba(126, 212, 255, 0.16);");
-    expect(selectedTab).toContain("border-color: rgba(130, 210, 255, 0.24);");
+    expect(selectedTab).not.toMatch(/\bborder(?:-color)?\s*:/);
     expect(selectedTab).not.toContain("box-shadow");
+  });
+
+  // Проверяет, что новый общий стиль убирает декоративные рамки и оставляет чёрный фон у полей и списков.
+  it("removes borders from hud surfaces and uses black backgrounds for input controls", () => {
+    const borderlessBlocks = [
+      ".hud-panel",
+      ".object-indicator__bar",
+      ".chat-messages",
+      ".chat-error",
+      ".chat-input",
+      ".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-tree,\n.ui-kit-virtual-list,\n.ui-kit-edit,\n.ui-kit-stepper,\n.ui-kit-context-menu,\n.ui-kit-modal,\n.ui-kit-tooltip",
+      ".ui-kit-button",
+      ".ui-kit-button.is-hovered,\n.ui-kit-button.is-focused,\n.ui-kit-list__item.is-selected,\n.ui-kit-tree__item.is-selected,\n.ui-kit-dropdown__item.is-selected",
+      ".ui-kit-tab.is-selected",
+      ".ui-kit-checkbox__mark",
+      ".ui-kit-tab",
+      ".ui-kit-slider",
+      ".chat-context-menu",
+      ".pilot-toolbar__magazine",
+      ".pilot-tool-slot",
+      ".pilot-tool-slot.is-selected",
+      ".minimap-compass",
+      ".minimap-status__item",
+      ".minimap-map",
+      ".minimap-map__crosshair",
+    ];
+
+    for (const selector of borderlessBlocks) {
+      expect(readCssBlock(selector)).not.toMatch(/\bborder(?:-color)?\s*:/);
+    }
+
+    expect(readCssBlock(".chat-input")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-edit")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-dropdown")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-dropdown__menu")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-list")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-checkbox__mark")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-radio__option")).toContain("background: rgb(0, 0, 0);");
+  });
+
+  // Проверяет, что окна и выпадающие списки имеют светлую обводку как явное исключение из общего правила.
+  it("uses light borders for windows and dropdowns", () => {
+    const theme = readCssBlock(":root");
+
+    expect(theme).toContain("--hud-surface-border: rgba(238, 250, 255, 0.48);");
+    expect(readCssBlock(".ui-kit-modal")).toContain("border: 0.14vh solid var(--hud-surface-border);");
+    expect(readCssBlock(".ui-kit-dropdown")).toContain("border: 0.14vh solid var(--hud-surface-border);");
+    expect(readCssBlock(".ui-kit-dropdown__menu")).toContain("border: 0.14vh solid var(--hud-surface-border);");
+  });
+
+  // Проверяет, что размеры выпадающего списка берутся из одного места, а не переопределяются отдельно в настройках.
+  it("shares compact dropdown sizing between ui kit showcase and settings", () => {
+    const theme = readCssBlock(":root");
+    const dropdown = readCssBlock(".ui-kit-dropdown");
+    const dropdownValue = readCssBlock(".ui-kit-dropdown__value");
+    const settingsDropdown = readCssBlock(".settings-input-row .ui-kit-dropdown");
+
+    expect(theme).toContain("--hud-dropdown-min-height: 2.35vh;");
+    expect(theme).toContain("--hud-dropdown-padding-y: 0.35vh;");
+    expect(theme).toContain("--hud-dropdown-font-size: 0.95vh;");
+    expect(dropdown).toContain("min-height: var(--hud-dropdown-min-height);");
+    expect(dropdown).toContain("padding-top: var(--hud-dropdown-padding-y);");
+    expect(dropdown).toContain("padding-bottom: var(--hud-dropdown-padding-y);");
+    expect(dropdown).toContain("font-size: var(--hud-dropdown-font-size);");
+    expect(dropdownValue).toContain("display: flex;");
+    expect(dropdownValue).toContain("align-items: center;");
+    expect(dropdownValue).toContain("min-height: calc(var(--hud-dropdown-min-height) - (var(--hud-dropdown-padding-y) * 2));");
+    expect(settingsDropdown).toContain("width: 100%;");
+    expect(settingsDropdown).toContain("min-width: 0;");
+    expect(settingsDropdown).not.toContain("min-height:");
+    expect(settingsDropdown).not.toContain("padding-top:");
+    expect(settingsDropdown).not.toContain("padding-bottom:");
+    expect(settingsDropdown).not.toContain("font-size:");
+  });
+
+  // Проверяет, что обычный список получает такой же чёрный внутренний отступ по краю, как выпавший список.
+  it("uses the same black perimeter padding for list and dropdown menu", () => {
+    const theme = readCssBlock(":root");
+    const menu = readCssBlock(".ui-kit-dropdown__menu");
+    const menuViewport = readCssBlock(".ui-kit-dropdown__menu-viewport");
+    const menuClip = readCssBlock(".ui-kit-dropdown__menu-clip");
+    const menuContent = readCssBlock(".ui-kit-dropdown__menu-content");
+    const list = readCssBlock(".ui-kit-list");
+
+    expect(theme).toContain("--hud-list-padding: 0.35vh;");
+    expect(menu).toContain("padding: 0;");
+    expect(menu).toContain("background: rgb(0, 0, 0);");
+    expect(menuViewport).toContain("box-sizing: border-box;");
+    expect(menuViewport).toContain("display: grid;");
+    expect(menuViewport).toContain("background: rgb(0, 0, 0);");
+    expect(menuClip).toContain("overflow: hidden;");
+    expect(menuClip).toContain("min-height: 0;");
+    expect(menuContent).toContain("padding: var(--hud-list-padding);");
+    expect(menuContent).toContain("box-sizing: border-box;");
+    expect(list).toContain("display: grid;");
+    expect(list).toContain("gap: 0;");
+    expect(list).toContain("padding: var(--hud-list-padding);");
+    expect(list).toContain("background: rgb(0, 0, 0);");
+  });
+
+  // Проверяет, что окна и панели получают более светлый общий фон, а чёрные поля ввода не меняются.
+  it("uses lighter backgrounds for windows and panels while preserving black input controls", () => {
+    const theme = readCssBlock(":root");
+
+    expect(theme).toContain("--hud-surface-bg: rgba(18, 34, 46, 0.9);");
+    expect(theme).toContain("--hud-surface-soft-bg: rgba(18, 34, 46, 0.78);");
+    expect(theme).toContain("--hud-surface-solid-bg: rgb(18, 34, 46);");
+    expect(readCssBlock(".hud-panel")).toContain("background: var(--hud-surface-soft-bg);");
+    expect(readCssBlock(".object-indicator__bar")).toContain("background: var(--hud-surface-bg);");
+    expect(readCssBlock(".chat-messages")).toContain("background: var(--hud-surface-soft-bg);");
+    expect(readCssBlock(".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-tree,\n.ui-kit-virtual-list,\n.ui-kit-edit,\n.ui-kit-stepper,\n.ui-kit-context-menu,\n.ui-kit-modal,\n.ui-kit-tooltip")).toContain("background: var(--hud-surface-bg);");
+    expect(readCssBlock(".settings-modal-layer .ui-kit-modal")).toContain("background: var(--hud-surface-solid-bg);");
+    expect(readCssBlock(".chat-context-menu")).toContain("background: var(--hud-surface-solid-bg);");
+    expect(readCssBlock(".pilot-toolbar__magazine")).toContain("background: var(--hud-surface-bg);");
+    expect(readCssBlock(".pilot-tool-slot")).toContain("background: var(--hud-surface-soft-bg);");
+    expect(readCssBlock(".minimap-compass")).toContain("background: var(--hud-surface-bg);");
+    expect(readCssBlock(".minimap-map")).toContain("var(--hud-surface-bg)");
+    expect(readCssBlock(".chat-input")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-dropdown")).toContain("background: rgb(0, 0, 0);");
   });
 
   // Проверяет, что раскрытый список UI Kit рисуется поверх панели и не участвует в её раскладке.
@@ -99,9 +218,8 @@ describe("HUD styles", () => {
     expect(menu).toContain("position: fixed;");
     expect(menu).toContain("z-index: 19;");
     expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
-    expect(menu).toContain("background: rgb(5, 18, 28);");
-    expect(menu).toContain("border: 0.18vh solid rgba(180, 232, 255, 0.72);");
-    expect(menu).toContain("box-shadow: 0 0.5vh 1.4vh rgba(0, 4, 8, 0.72), inset 0 0 0 0.12vh rgba(238, 250, 255, 0.08);");
+    expect(menu).toContain("background: rgb(0, 0, 0);");
+    expect(menu).toContain("box-shadow: 0 0.5vh 1.4vh rgba(0, 4, 8, 0.72);");
     expect(menuContent).toContain("gap: 0;");
     expect(dropdownItem).toContain("border: 0;");
     expect(dropdownItem).toContain("background: transparent;");
@@ -117,6 +235,7 @@ describe("HUD styles", () => {
     const table = readCssBlock(".settings-input-table");
     const menu = readCssBlock(".ui-kit-dropdown__menu");
     const viewport = readCssBlock(".ui-kit-dropdown__menu[id^=\"settings-input-select-\"] .ui-kit-dropdown__menu-viewport");
+    const action = readCssBlock(".settings-input-row__action");
     const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar");
 
     expect(modal).toContain("grid-template-rows: auto minmax(0, 1fr);");
@@ -131,6 +250,9 @@ describe("HUD styles", () => {
     expect(menu).not.toContain("max-height: 22vh;");
     expect(viewport).toContain("height: 22vh;");
     expect(viewport).toContain("max-height: 22vh;");
+    expect(action).toContain("background: rgba(0, 8, 14, 0.72);");
+    expect(action).toContain("border: 0;");
+    expect(action).not.toContain("text-shadow");
     expect(sharedScrollbars).toContain("position: absolute;");
     expect(sharedScrollbars).toContain("min-height: 0;");
   });
@@ -146,6 +268,7 @@ describe("HUD styles", () => {
     const tab = readCssBlock(".chat-tab");
     const uiKitTabs = readCssBlock(".ui-kit-tabs");
     const uiKitTab = readCssBlock(".ui-kit-tab");
+    const tabWithMarker = readCssBlock(".ui-kit-tab--with-marker");
     const uiKitBadge = readCssBlock(".ui-kit-tab__badge");
     const error = readCssBlock(".chat-error");
     const input = readCssBlock(".chat-input");
@@ -175,13 +298,19 @@ describe("HUD styles", () => {
     expect(uiKitTab).toContain("width: max-content;");
     expect(uiKitTab).toContain("min-width: 0;");
     expect(uiKitTab).toContain("padding: 0 1.05vh;");
+    expect(uiKitTab).toContain("overflow: visible;");
+    expect(tabWithMarker).toContain("padding-left: calc((var(--hud-tab-height) - 1.6vh) / 2);");
     expect(uiKitTab).toContain("height: var(--hud-tab-height);");
     expect(uiKitTab).toContain("max-height: var(--hud-tab-height);");
-    expect(readCssBlock(".ui-kit-tab__marker")).toContain("max-height: 1.6vh;");
+    expect(readCssBlock(".ui-kit-tab__marker")).toContain("flex: 0 0 1.6vh;");
+    expect(readCssBlock(".ui-kit-tab__marker")).toContain("width: 1.6vh;");
+    expect(readCssBlock(".ui-kit-tab__marker")).toContain("height: 1.6vh;");
     expect(readCssBlock(".ui-kit-tab__label")).toContain("align-items: center;");
     expect(readCssBlock(".ui-kit-tab__label")).toContain("height: 100%;");
-    expect(uiKitBadge).toContain("position: static;");
-    expect(uiKitBadge).toContain("flex: 0 0 auto;");
+    expect(uiKitBadge).toContain("position: absolute;");
+    expect(uiKitBadge).toContain("right: -0.35vh;");
+    expect(uiKitBadge).toContain("top: -0.35vh;");
+    expect(uiKitBadge).toContain("border: 0;");
     expect(css).not.toContain(".chat-tab__unread");
     expect(error).toContain("position: absolute;");
     expect(error).toContain("animation-duration: 4.8s;");

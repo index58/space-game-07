@@ -15,7 +15,7 @@ import type {
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
-import type { GameUiController, GameUiState } from "../ui/gameUiState";
+import type { GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
 import { getInputBindingMap, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
@@ -78,6 +78,10 @@ export class GameScene extends Phaser.Scene {
   private inputSettingsError: string | null = null;
   // Показывает ожидание ответа сервера после нажатия кнопки сохранения.
   private inputSettingsSaving = false;
+  // Активная страница окна настроек.
+  private selectedSettingsTab: SettingsTabValue = "input";
+  // Предыдущее состояние видимости окна настроек для запроса свежих данных при открытии.
+  private previousSettingsVisible = false;
   // Вертикальный сдвиг списка действий в окне настроек.
   private settingsInputScrollOffsetPx = 0;
   // Захват ползунка списка действий.
@@ -144,6 +148,8 @@ export class GameScene extends Phaser.Scene {
     const pilotToolSelectionDelta = this.inputController.consumePilotToolSelectionDelta();
 
     const status = this.gameClient?.getStatus() ?? "connecting";
+    const settingsVisible = this.inputController.isSettingsVisible();
+    this.requestInputSettingsOnOpen(settingsVisible);
     this.syncInputSettingsFromServer();
     const snapshot = this.gameClient?.getLatestSnapshot() ?? null;
     const isWorldReady = status === "connected" && Boolean(snapshot);
@@ -186,7 +192,8 @@ export class GameScene extends Phaser.Scene {
         gameCursor: this.inputController.getGameCursor(),
         chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
         uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
-        settingsVisible: this.inputController.isSettingsVisible(),
+        settingsVisible,
+        selectedSettingsTab: this.selectedSettingsTab,
         inputSettingsValues: this.inputSettingsValues,
         openInputSettingsActionId: this.openInputSettingsActionId,
         inputSettingsError: this.inputSettingsError,
@@ -228,7 +235,8 @@ export class GameScene extends Phaser.Scene {
       gameCursor: this.inputController.getGameCursor(),
       chatScroll: this.inputController.getChatScrollState(),
       uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
-      settingsVisible: this.inputController.isSettingsVisible(),
+      settingsVisible,
+      selectedSettingsTab: this.selectedSettingsTab,
       inputSettingsValues: this.inputSettingsValues,
       openInputSettingsActionId: this.openInputSettingsActionId,
       inputSettingsError: this.inputSettingsError,
@@ -499,6 +507,14 @@ export class GameScene extends Phaser.Scene {
     if (action.type !== "click") {
       return this.consumeSettingsScrollbarAction(action);
     }
+    if (action.controlId === "settings-cancel-button") {
+      this.resetInputSettingsDraftFromServer();
+      this.openInputSettingsActionId = null;
+      this.inputSettingsSaving = false;
+      this.inputSettingsError = null;
+      this.inputController.closeSettings();
+      return true;
+    }
     if (action.controlId === "settings-save-button") {
       this.inputSettingsSaving = true;
       this.inputSettingsError = null;
@@ -527,6 +543,9 @@ export class GameScene extends Phaser.Scene {
       }
     }
     if (action.controlId.startsWith("settings-tab-")) {
+      if (action.value === "video" || action.value === "audio" || action.value === "input") {
+        this.selectedSettingsTab = action.value;
+      }
       this.openInputSettingsActionId = null;
       return true;
     }
@@ -632,17 +651,34 @@ export class GameScene extends Phaser.Scene {
     return true;
   }
 
+  // Запрашивает актуальные серверные значения один раз при открытии окна настроек.
+  private requestInputSettingsOnOpen(settingsVisible: boolean): void {
+    if (settingsVisible && !this.previousSettingsVisible) {
+      this.gameClient?.requestInputSettings();
+      this.resetInputSettingsDraftFromServer();
+      this.openInputSettingsActionId = null;
+      this.inputSettingsSaving = false;
+      this.inputSettingsError = null;
+    }
+    this.previousSettingsVisible = settingsVisible;
+  }
+
+  // Возвращает черновик окна к последним значениям, которые уже подтвердил сервер.
+  private resetInputSettingsDraftFromServer(): void {
+    this.inputSettingsValues = getMergedInputSettingValues(this.referenceData, this.gameClient?.getLatestInputSettings() ?? []);
+    this.settingsInputScrollOffsetPx = clamp(this.settingsInputScrollOffsetPx, 0, this.settingsInputMaxScrollOffset());
+    this.settingsDropdownScrollOffsetPx = clamp(this.settingsDropdownScrollOffsetPx, 0, this.settingsDropdownMaxScrollOffset());
+    this.inputController.updateInputBindings(getInputBindingMap(this.referenceData, this.inputSettingsValues));
+  }
+
   // Синхронизирует черновик и фактические привязки после серверного ответа.
   private syncInputSettingsFromServer(): void {
     const seq = this.gameClient?.getLatestInputSettingsSeq() ?? 0;
     if (seq !== this.inputSettingsSeq) {
       this.inputSettingsSeq = seq;
-      this.inputSettingsValues = getMergedInputSettingValues(this.referenceData, this.gameClient?.getLatestInputSettings() ?? []);
+      this.resetInputSettingsDraftFromServer();
       this.inputSettingsSaving = false;
       this.inputSettingsError = null;
-      this.settingsInputScrollOffsetPx = clamp(this.settingsInputScrollOffsetPx, 0, this.settingsInputMaxScrollOffset());
-      this.settingsDropdownScrollOffsetPx = clamp(this.settingsDropdownScrollOffsetPx, 0, this.settingsDropdownMaxScrollOffset());
-      this.inputController.updateInputBindings(getInputBindingMap(this.referenceData, this.inputSettingsValues));
     }
     const errorSeq = this.gameClient?.getLatestInputSettingsErrorSeq() ?? 0;
     if (errorSeq !== this.inputSettingsErrorSeq) {

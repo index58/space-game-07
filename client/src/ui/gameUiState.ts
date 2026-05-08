@@ -5,6 +5,8 @@ import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, 
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiControlState } from "../ui-kit/types";
 
+export type SettingsTabValue = "video" | "audio" | "input";
+
 export type GameUiState = {
   // Состояние сетевого подключения.
   status: ConnectionStatus;
@@ -46,6 +48,8 @@ export type GameUiState = {
   uiKitShowcaseVisible: boolean;
   // Показывает модальное окно настроек игрока.
   settingsVisible: boolean;
+  // Текущая страница модального окна настроек.
+  selectedSettingsTab: SettingsTabValue;
   // Черновик выбранных привязок ввода по ID действия.
   inputSettingsValues: Record<number, number>;
   // ID действия с раскрытым списком событий ввода.
@@ -96,6 +100,7 @@ const initialGameUiState: GameUiState = {
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
   settingsVisible: false,
+  selectedSettingsTab: "input",
   inputSettingsValues: {},
   openInputSettingsActionId: null,
   inputSettingsError: null,

@@ -133,6 +133,25 @@ const addChatMessagesDom = (contentHeight: number) => {
   document.body.append(messagesPanel);
 };
 
+const addChatTabDom = (id: number, rect: Partial<DOMRect>) => {
+  const tab = document.createElement("div");
+  tab.id = `chat-tab-${id}`;
+  tab.className = "chat-tab";
+  tab.getBoundingClientRect = () => ({
+    x: rect.x ?? rect.left ?? 0,
+    y: rect.y ?? rect.top ?? 0,
+    left: rect.left ?? rect.x ?? 0,
+    top: rect.top ?? rect.y ?? 0,
+    right: rect.right ?? (rect.left ?? rect.x ?? 0) + (rect.width ?? 1),
+    bottom: rect.bottom ?? (rect.top ?? rect.y ?? 0) + (rect.height ?? 1),
+    width: rect.width ?? 1,
+    height: rect.height ?? 1,
+    toJSON: () => ({}),
+  } as DOMRect);
+  document.body.append(tab);
+  return tab;
+};
+
 const setViewportHeight = (height: number) => {
   Object.defineProperty(window, "innerHeight", {
     configurable: true,
@@ -405,6 +424,32 @@ describe("InputController", () => {
     });
 
     expect(visibleState?.selectedChatId).toBe(2);
+    expect(controller.consumeChatSelectAction()).toEqual({ chatId: 2 });
+  });
+
+  // Проверяет, что выбор вкладки чата использует фактическую DOM-ширину, а не старую фиксированную сетку.
+  it("selects chat tab by rendered bounds", () => {
+    setViewportWidth(1000);
+    setViewportHeight(1000);
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.getVisibleChatState({
+      type: "chatState",
+      selectedChatId: 1,
+      tabs: [
+        { chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", messages: [] },
+        { chatId: 2, title: "Pilot2", communityTypeAcronym: "Duo", duoChatKey: "1:2", messages: [] },
+      ],
+    });
+    addChatTabDom(1, { left: 20, top: 590, width: 76, height: 25 });
+    addChatTabDom(2, { left: 100, top: 590, width: 64, height: 25 });
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    moveMouse(-370, 100);
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+
     expect(controller.consumeChatSelectAction()).toEqual({ chatId: 2 });
   });
 

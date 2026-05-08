@@ -36,6 +36,7 @@ export const getGameUiControlLayoutSignature = (
   },
   settings: {
     visible: state.settingsVisible,
+    selectedTab: state.selectedSettingsTab,
     actionCount: state.referenceData?.ActionType.MaxID ?? 0,
     inputEventCount: state.referenceData?.InputEventType.MaxID ?? 0,
     openActionId: state.openInputSettingsActionId,

@@ -1,5 +1,5 @@
 {
-  "MaxID": 5,
+  "MaxID": 8,
   "Items": {
     "1": {
       "ID": 1,
@@ -45,6 +45,33 @@
       "Token": "57cadf894a6d9e566fa5c288f5438a5256c7819d0acda46da56ddb5c84796bf0",
       "RegistrationTime": "2026-05-04T01:15:18.3139776+03:00",
       "CurrentCharacterID": 5
+    },
+    "6": {
+      "ID": 6,
+      "Email": "auto6@auto.local",
+      "Nickname": "Pilot6",
+      "PasswordHash": "auto",
+      "Token": "508b944bb5e5700db53954287ffc0d5702a68f27969fdf9c7c62e292b351a7f2",
+      "RegistrationTime": "2026-05-07T23:32:41.7253767+03:00",
+      "CurrentCharacterID": 6
+    },
+    "7": {
+      "ID": 7,
+      "Email": "auto7@auto.local",
+      "Nickname": "Pilot7",
+      "PasswordHash": "auto",
+      "Token": "c73dc5bc46c1c10af3ce16794f58a062789e07e0c67fbd6cef2a1cf62aeb9804",
+      "RegistrationTime": "2026-05-07T23:33:03.5973499+03:00",
+      "CurrentCharacterID": 7
+    },
+    "8": {
+      "ID": 8,
+      "Email": "auto8@auto.local",
+      "Nickname": "Pilot8",
+      "PasswordHash": "auto",
+      "Token": "f17dd5569343eb59654629c9a6607a41daa2d09ce989f944a9cac85158232122",
+      "RegistrationTime": "2026-05-07T23:33:27.9254391+03:00",
+      "CurrentCharacterID": 8
     }
   }
 }

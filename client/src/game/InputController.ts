@@ -787,6 +787,11 @@ export class InputController {
       return null;
     }
 
+    const renderedTab = this.renderedChatTabAtPoint(x, y);
+    if (renderedTab !== undefined) {
+      return renderedTab;
+    }
+
     const vh = window.innerHeight / 100;
     const panelLeft = hudEdgeVh * vh;
     const panelTop = window.innerHeight / 2 - chatPanelHalfHeightVh * vh;
@@ -807,6 +812,28 @@ export class InputController {
     }
 
     return this.visibleChatState.tabs[index] ?? null;
+  }
+
+  // Использует фактические DOM-границы, потому что вкладки чата имеют ширину по содержимому.
+  private renderedChatTabAtPoint(x: number, y: number): ChatStateMessage["tabs"][number] | null | undefined {
+    if (!this.visibleChatState) {
+      return undefined;
+    }
+
+    let hasRenderedTabs = false;
+    for (const tab of this.visibleChatState.tabs) {
+      const element = document.getElementById(`chat-tab-${tab.chatId}`);
+      const rect = element?.getBoundingClientRect();
+      if (!rect || rect.width <= 0 || rect.height <= 0) {
+        continue;
+      }
+      hasRenderedTabs = true;
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        return tab;
+      }
+    }
+
+    return hasRenderedTabs ? null : undefined;
   }
 
   // Применяет локальный сдвиг истории к выбранной вкладке.

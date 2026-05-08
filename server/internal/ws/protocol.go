@@ -85,6 +85,16 @@ func DecodeRandomShipMessage(payload []byte) bool {
 	return message.Type == "randomShip"
 }
 
+// DecodeInputSettingsRequestMessage проверяет, что клиент запросил свежие настройки ввода.
+func DecodeInputSettingsRequestMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+
+	return message.Type == "inputSettingsRequest"
+}
+
 // Разбирает клиентский JSON и пропускает только команды чата.
 func DecodeChatSendMessage(payload []byte) (ChatSendMessage, bool) {
 	var message ChatSendMessage

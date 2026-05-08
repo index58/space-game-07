@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, For, Match, onCleanup, onMount, Show, Switch, type Accessor, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
-import type { GameUiState } from "./gameUiState";
+import type { GameUiState, SettingsTabValue } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
 import { getMinimapView, type MinimapPointView } from "./minimap";
@@ -142,6 +142,13 @@ type ChatPanelProps = {
   state: Accessor<GameUiState>;
 };
 
+// Значок нужен только каналам, где короткий тип помогает отличить общий чат от личного диалога.
+const chatTabMarkerAcronyms = new Set(["Server", "Clan", "Alliance", "Solo"]);
+
+// Возвращает короткую подпись значка только для типов чата, у которых он должен быть видимым.
+const getChatTabMarker = (communityTypeAcronym: string): string | undefined =>
+  chatTabMarkerAcronyms.has(communityTypeAcronym) ? communityTypeAcronym.slice(0, 1) : undefined;
+
 type GameCursorProps = {
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
@@ -156,6 +163,12 @@ type SettingsModalProps = {
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
 };
+
+const settingsTabs: Array<{ value: SettingsTabValue; label: string }> = [
+  { value: "video", label: "Видео" },
+  { value: "audio", label: "Аудио" },
+  { value: "input", label: "Ввод" },
+];
 
 type PilotToolSlotProps = {
   // Данные одной ячейки панели инструментов пилота.
@@ -224,7 +237,7 @@ const ChatPanel = (props: ChatPanelProps) => {
   const chatTabs = () => (props.state().chatState?.tabs ?? []).map((chatTab) => ({
     value: String(chatTab.chatId),
     label: chatTab.title,
-    marker: chatTab.communityTypeAcronym === "Server" ? "S" : "D",
+    marker: getChatTabMarker(chatTab.communityTypeAcronym),
     badge: (chatTab.unreadCount ?? 0) > 0 ? chatTab.unreadCount : undefined,
   }));
   let chatInputViewport: HTMLDivElement | undefined;
@@ -400,38 +413,49 @@ const SettingsModal = (props: SettingsModalProps) => {
       <div class="settings-modal-layer">
         <Modal id="settings-modal" title="Настройки">
           <div class="settings-modal">
-            <Tabs id="settings-tabs" itemIdPrefix="settings-tab" className="settings-tabs" selectedValue="input" tabs={[{ value: "input", label: "Ввод" }]} />
-            <div class="settings-input-table">
-              <div class="settings-input-table__content" style={{ transform: `translateY(-${props.state().inputSettingsScroll.contentOffsetPx}px)` }}>
-                <For each={rows()}>
-                  {(row) => (
-                    <div class="settings-input-row">
-                      <div class="settings-input-row__action">{row.actionTitle}</div>
-                      <Dropdown
-                        id={`settings-input-select-${row.actionTypeId}`}
-                        selectedValue={String(row.inputEventTypeId)}
-                        open={props.state().openInputSettingsActionId === row.actionTypeId}
-                        options={options()}
-                        menuScroll={props.state().inputSettingsDropdownScroll}
-                      />
-                    </div>
-                  )}
-                </For>
-              </div>
-              <Show when={props.state().inputSettingsScroll.visible}>
-                <Scrollbar
-                  id="settings-input-scrollbar"
-                  className="settings-input-scrollbar"
-                  thumbTopPercent={props.state().inputSettingsScroll.thumbTopPercent}
-                  thumbHeightPercent={props.state().inputSettingsScroll.thumbHeightPercent}
-                  dragging={props.state().inputSettingsScroll.dragging}
-                />
-              </Show>
-            </div>
+            <Tabs id="settings-tabs" itemIdPrefix="settings-tab" className="settings-tabs" selectedValue={props.state().selectedSettingsTab} tabs={settingsTabs} />
+            <Switch>
+              <Match when={props.state().selectedSettingsTab === "video"}>
+                <div class="settings-empty-page" />
+              </Match>
+              <Match when={props.state().selectedSettingsTab === "audio"}>
+                <div class="settings-empty-page" />
+              </Match>
+              <Match when={props.state().selectedSettingsTab === "input"}>
+                <div class="settings-input-table">
+                  <div class="settings-input-table__content" style={{ transform: `translateY(-${props.state().inputSettingsScroll.contentOffsetPx}px)` }}>
+                    <For each={rows()}>
+                      {(row) => (
+                        <div class="settings-input-row">
+                          <div class="settings-input-row__action">{row.actionTitle}</div>
+                          <Dropdown
+                            id={`settings-input-select-${row.actionTypeId}`}
+                            selectedValue={String(row.inputEventTypeId)}
+                            open={props.state().openInputSettingsActionId === row.actionTypeId}
+                            options={options()}
+                            menuScroll={props.state().inputSettingsDropdownScroll}
+                          />
+                        </div>
+                      )}
+                    </For>
+                  </div>
+                  <Show when={props.state().inputSettingsScroll.visible}>
+                    <Scrollbar
+                      id="settings-input-scrollbar"
+                      className="settings-input-scrollbar"
+                      thumbTopPercent={props.state().inputSettingsScroll.thumbTopPercent}
+                      thumbHeightPercent={props.state().inputSettingsScroll.thumbHeightPercent}
+                      dragging={props.state().inputSettingsScroll.dragging}
+                    />
+                  </Show>
+                </div>
+              </Match>
+            </Switch>
             <div class="settings-modal__footer">
               <Show when={props.state().inputSettingsError}>
                 {(error) => <div class="settings-modal__error">{error()}</div>}
               </Show>
+              <Button id="settings-cancel-button" label="Отмена" />
               <Button id="settings-save-button" label={props.state().inputSettingsSaving ? "Сохранение" : "Сохранить"} />
             </div>
           </div>

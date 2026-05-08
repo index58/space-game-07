@@ -1,5 +1,5 @@
 {
-  "MaxID": 69,
+  "MaxID": 72,
   "Items": {
     "39": {
       "ID": 39,
@@ -22,6 +22,24 @@
     "69": {
       "ID": 69,
       "ContainerEquipmentGroupID": 788,
+      "ContentItemModelID": 7,
+      "Count": 450
+    },
+    "70": {
+      "ID": 70,
+      "ContainerEquipmentGroupID": 794,
+      "ContentItemModelID": 7,
+      "Count": 450
+    },
+    "71": {
+      "ID": 71,
+      "ContainerEquipmentGroupID": 800,
+      "ContentItemModelID": 7,
+      "Count": 450
+    },
+    "72": {
+      "ID": 72,
+      "ContainerEquipmentGroupID": 806,
       "ContentItemModelID": 7,
       "Count": 450
     }

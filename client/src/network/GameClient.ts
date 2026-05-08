@@ -9,6 +9,7 @@
   ConnectionStatus,
   InputSettingsErrorMessage,
   InputSettingsMessage,
+  InputSettingsRequestMessage,
   InputSettingsSaveMessage,
   InputSettingPayload,
   RandomShipMessage,
@@ -343,6 +344,19 @@ export class GameClient {
     const payload: InputSettingsSaveMessage = {
       type: "inputSettingsSave",
       settings,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+  }
+
+  // Запрашивает у сервера последние сохраненные привязки ввода текущего аккаунта.
+  requestInputSettings(): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
+    const payload: InputSettingsRequestMessage = {
+      type: "inputSettingsRequest",
     };
 
     this.socket.send(JSON.stringify(payload));
