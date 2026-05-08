@@ -28,4 +28,4 @@
 # Визуальные браузерные проверки
 
 Для локальных визуальных проверок игры не очищай `localStorage.accountToken`.
-Локальный тестовый аккаунт загружается клиентом из `client/.visual-test-account.local.json`.
+Локальный тестовый аккаунт загружается клиентом из `client/public/local/visual-test-account.local.json`.

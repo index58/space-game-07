@@ -1,7 +1,7 @@
 # Сгенерированные файлы локального клиента.
 client/node_modules/
 client/dist/
-client/.visual-test-account.local.json
+client/public/local/visual-test-account.local.json
 
 # Артефакты сборки Go-сервера.
 server/space-game-server
