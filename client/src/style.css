@@ -18,9 +18,11 @@ body {
   --hud-control-bg: var(--hud-surface-bg);
   --hud-control-font-family: Consolas, monospace;
   --hud-control-font-size: 1.05vh;
+  --hud-control-padding-x: 0.9vh;
   --hud-dropdown-min-height: 2.35vh;
   --hud-dropdown-padding-y: 0.35vh;
   --hud-list-padding: 0.35vh;
+  --hud-settings-action-bg: rgb(14, 28, 39);
   --hud-tab-height: 2.45vh;
   --hud-tab-inactive-text: rgba(168, 174, 178, 0.86);
   --hud-tab-panel-bg: rgb(9, 20, 29);
@@ -413,10 +415,10 @@ body {
   position: relative;
   min-width: 12vh;
   min-height: var(--hud-dropdown-min-height);
-  padding: 0 0.7vh;
+  padding: 0 var(--hud-control-padding-x);
   padding-top: var(--hud-dropdown-padding-y);
   padding-bottom: var(--hud-dropdown-padding-y);
-  padding-right: 2.1vh;
+  padding-right: calc(var(--hud-control-padding-x) + 1.45vh);
   background: rgb(0, 0, 0);
 }
 
@@ -435,7 +437,7 @@ body {
   /* Треугольник отличает выпадающий список от обычного поля ввода. */
   content: "";
   position: absolute;
-  right: 0.75vh;
+  right: var(--hud-control-padding-x);
   top: 50%;
   width: 0;
   height: 0;
@@ -510,6 +512,8 @@ body {
 .ui-kit-dropdown__item {
   border: 0;
   background: transparent;
+  padding-left: var(--hud-control-padding-x);
+  padding-right: var(--hud-control-padding-x);
 }
 
 .ui-kit-dropdown__item,
@@ -518,7 +522,7 @@ body {
 .ui-kit-tree__item,
 .ui-kit-virtual-list__item {
   min-height: 2.3vh;
-  padding: 0.45vh 0.65vh;
+  padding: 0.45vh var(--hud-control-padding-x);
   box-sizing: border-box;
 }
 
@@ -554,6 +558,10 @@ body {
   box-sizing: border-box;
   overflow: visible;
   background: var(--hud-tab-panel-bg);
+}
+
+.ui-kit-tabs--center {
+  justify-content: center;
 }
 
 .ui-kit-tab {
@@ -801,20 +809,24 @@ body {
 
 .settings-input-row {
   display: grid;
-  grid-template-columns: minmax(22vh, 0.48fr) minmax(36vh, 0.52fr);
+  grid-template-columns: minmax(22vh, 1fr) minmax(36vh, 1fr);
   gap: 0.8vh;
   align-items: start;
 }
 
 .settings-input-row__action {
-  min-height: 2.35vh;
-  padding: 0.35vh 0.6vh;
+  display: flex;
+  align-items: center;
+  min-height: var(--hud-dropdown-min-height);
+  padding: var(--hud-dropdown-padding-y) var(--hud-control-padding-x);
   box-sizing: border-box;
   overflow: hidden;
   color: #d8f3ff;
-  background: rgba(0, 8, 14, 0.72);
+  background: var(--hud-settings-action-bg);
   border: 0;
-  font: 0.95vh/1.25 Consolas, monospace;
+  font-family: var(--hud-control-font-family);
+  font-size: var(--hud-control-font-size);
+  line-height: 1.25;
 }
 
 .settings-input-row .ui-kit-dropdown {
@@ -835,13 +847,21 @@ body {
 }
 
 .settings-modal__footer {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: flex-end;
+  gap: 1vh;
+}
+
+.settings-modal__actions {
+  grid-column: 2;
+  display: flex;
+  justify-content: center;
   gap: 1vh;
 }
 
 .settings-modal__error {
+  grid-column: 1;
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;

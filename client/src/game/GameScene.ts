@@ -30,7 +30,9 @@ const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
 // Базовая высота строки настроек ввода в единицах высоты экрана.
 const SETTINGS_INPUT_ROW_HEIGHT_VH = 2.7;
 // Базовая высота пункта раскрытого списка в единицах высоты экрана.
-const SETTINGS_DROPDOWN_ITEM_HEIGHT_VH = 2.55;
+const SETTINGS_DROPDOWN_ITEM_HEIGHT_VH = 2.3;
+// Суммарный вертикальный отступ содержимого раскрытого списка в единицах высоты экрана.
+const SETTINGS_DROPDOWN_CONTENT_PADDING_VH = 0.7;
 // Видимая высота раскрытого списка в единицах высоты экрана.
 const SETTINGS_DROPDOWN_VIEWPORT_HEIGHT_VH = 22;
 
@@ -749,7 +751,7 @@ export class GameScene extends Phaser.Scene {
   // Измеряет полную высоту раскрытого списка событий.
   private settingsDropdownContentHeightPx(): number {
     const optionCount = Object.keys(this.referenceData?.InputEventType.Items ?? {}).length;
-    return optionCount * SETTINGS_DROPDOWN_ITEM_HEIGHT_VH * window.innerHeight / 100;
+    return (optionCount * SETTINGS_DROPDOWN_ITEM_HEIGHT_VH + SETTINGS_DROPDOWN_CONTENT_PADDING_VH) * window.innerHeight / 100;
   }
 }
 

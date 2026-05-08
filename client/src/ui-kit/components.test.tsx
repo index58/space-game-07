@@ -212,7 +212,7 @@ describe("ui-kit components", () => {
     dispose = render(() => (
       <>
         <EditControl id="edit" text="abcdef" selectionStart={1} selectionEnd={4} focused={true} />
-        <Tabs id="tabs" selectedValue="chat" tabs={[{ value: "map", label: "Map" }, { value: "chat", label: "Chat", badge: 2 }]} />
+        <Tabs id="tabs" align="center" selectedValue="chat" tabs={[{ value: "map", label: "Map" }, { value: "chat", label: "Chat", badge: 2 }]} />
         <Scrollbar id="scroll" thumbTopPercent={25} thumbHeightPercent={40} dragging={true} />
         <Slider id="slider" value={40} min={0} max={100} />
         <NumericStepper id="stepper" value={7} />
@@ -224,6 +224,7 @@ describe("ui-kit components", () => {
     ), root);
 
     expect(root.querySelector(".ui-kit-edit__selection")?.textContent).toBe("bcd");
+    expect(root.querySelector("#tabs")?.classList.contains("ui-kit-tabs--center")).toBe(true);
     expect(root.querySelector(".ui-kit-tab.is-selected")?.textContent).toContain("Chat");
     expect(root.querySelector(".ui-kit-scrollbar.is-dragging")).not.toBeNull();
     expect(root.querySelector<HTMLElement>(".ui-kit-slider__fill")?.style.width).toBe("40%");

@@ -70,6 +70,7 @@ describe("HUD styles", () => {
   it("makes buttons prominent and selected tabs visually distinct", () => {
     const button = readCssBlock(".ui-kit-button");
     const tabs = readCssBlock(".ui-kit-tabs");
+    const centeredTabs = readCssBlock(".ui-kit-tabs--center");
     const tab = readCssBlock(".ui-kit-tab");
     const selectedTab = readCssBlock(".ui-kit-tab.is-selected");
 
@@ -80,6 +81,7 @@ describe("HUD styles", () => {
     expect(button).not.toMatch(/\bborder(?:-color)?\s*:/);
     expect(tabs).toContain("background: var(--hud-tab-panel-bg);");
     expect(tabs).toContain("padding: var(--hud-tab-panel-padding);");
+    expect(centeredTabs).toContain("justify-content: center;");
     expect(tab).toContain("color: var(--hud-tab-inactive-text);");
     expect(tab).toContain("background: var(--hud-tab-panel-bg);");
     expect(selectedTab).toContain("color: #eefaff;");
@@ -175,9 +177,13 @@ describe("HUD styles", () => {
     expect(theme).toContain("--hud-dropdown-min-height: 2.35vh;");
     expect(theme).toContain("--hud-dropdown-padding-y: 0.35vh;");
     expect(theme).toContain("--hud-control-font-size: 1.05vh;");
+    expect(theme).toContain("--hud-control-padding-x: 0.9vh;");
+    expect(theme).toContain("--hud-settings-action-bg: rgb(14, 28, 39);");
     expect(dropdown).toContain("min-height: var(--hud-dropdown-min-height);");
+    expect(dropdown).toContain("padding: 0 var(--hud-control-padding-x);");
     expect(dropdown).toContain("padding-top: var(--hud-dropdown-padding-y);");
     expect(dropdown).toContain("padding-bottom: var(--hud-dropdown-padding-y);");
+    expect(dropdown).toContain("padding-right: calc(var(--hud-control-padding-x) + 1.45vh);");
     expect(dropdown).not.toMatch(/\bfont(?:-size|-family)?\s*:/);
     expect(dropdownValue).toContain("display: flex;");
     expect(dropdownValue).toContain("align-items: center;");
@@ -246,11 +252,11 @@ describe("HUD styles", () => {
     const scrollbar = readCssBlock(".ui-kit-scrollbar");
 
     expect(dropdown).toContain("position: relative;");
-    expect(dropdown).toContain("padding-right: 2.1vh;");
+    expect(dropdown).toContain("padding-right: calc(var(--hud-control-padding-x) + 1.45vh);");
     expect(dropdownMarker).toContain("border-left: 0.35vh solid transparent;");
     expect(dropdownMarker).toContain("border-right: 0.35vh solid transparent;");
     expect(dropdownMarker).toContain("border-top: 0.45vh solid rgba(216, 243, 255, 0.82);");
-    expect(dropdownMarker).toContain("right: 0.75vh;");
+    expect(dropdownMarker).toContain("right: var(--hud-control-padding-x);");
     expect(menu).toContain("position: fixed;");
     expect(menu).toContain("z-index: 19;");
     expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
@@ -259,6 +265,8 @@ describe("HUD styles", () => {
     expect(menuContent).toContain("gap: 0;");
     expect(dropdownItem).toContain("border: 0;");
     expect(dropdownItem).toContain("background: transparent;");
+    expect(dropdownItem).toContain("padding-left: var(--hud-control-padding-x);");
+    expect(dropdownItem).toContain("padding-right: var(--hud-control-padding-x);");
     expect(css).toContain(".ui-kit-list__item.is-selected,\n.ui-kit-tree__item.is-selected,\n.ui-kit-dropdown__item.is-selected");
     expect(scrollbar).toContain("z-index: 30;");
   });
@@ -272,6 +280,9 @@ describe("HUD styles", () => {
     const body = readCssBlock(".game-window-layer .ui-kit-modal__body");
     const settings = readCssBlock(".settings-modal");
     const table = readCssBlock(".settings-input-table");
+    const footer = readCssBlock(".settings-modal__footer");
+    const actions = readCssBlock(".settings-modal__actions");
+    const row = readCssBlock(".settings-input-row");
     const menu = readCssBlock(".ui-kit-dropdown__menu");
     const viewport = readCssBlock(".ui-kit-dropdown__menu[id^=\"settings-input-select-\"] .ui-kit-dropdown__menu-viewport");
     const action = readCssBlock(".settings-input-row__action");
@@ -290,13 +301,20 @@ describe("HUD styles", () => {
     expect(settings).toContain("height: 100%;");
     expect(settings).toContain("min-height: 0;");
     expect(table).toContain("overflow: hidden;");
+    expect(footer).toContain("grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);");
+    expect(actions).toContain("grid-column: 2;");
+    expect(actions).toContain("justify-content: center;");
+    expect(row).toContain("grid-template-columns: minmax(22vh, 1fr) minmax(36vh, 1fr);");
     expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
     expect(menu).toContain("position: fixed;");
     expect(menu).not.toContain("max-height: 22vh;");
     expect(viewport).toContain("height: 22vh;");
     expect(viewport).toContain("max-height: 22vh;");
-    expect(action).toContain("background: rgba(0, 8, 14, 0.72);");
+    expect(action).toContain("padding: var(--hud-dropdown-padding-y) var(--hud-control-padding-x);");
+    expect(action).toContain("background: var(--hud-settings-action-bg);");
     expect(action).toContain("border: 0;");
+    expect(action).toContain("font-family: var(--hud-control-font-family);");
+    expect(action).toContain("font-size: var(--hud-control-font-size);");
     expect(action).not.toContain("text-shadow");
     expect(sharedScrollbars).toContain("position: absolute;");
     expect(sharedScrollbars).toContain("min-height: 0;");

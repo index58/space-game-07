@@ -429,7 +429,7 @@ const SettingsModal = (props: SettingsModalProps) => {
       <GameWindowLayer variant="settings">
         <Modal id="settings-modal" title="Настройки">
           <div class="settings-modal">
-            <Tabs id="settings-tabs" itemIdPrefix="settings-tab" className="settings-tabs" selectedValue={props.state().selectedSettingsTab} tabs={settingsTabs} />
+            <Tabs id="settings-tabs" itemIdPrefix="settings-tab" align="center" className="settings-tabs" selectedValue={props.state().selectedSettingsTab} tabs={settingsTabs} />
             <Switch>
               <Match when={props.state().selectedSettingsTab === "video"}>
                 <div class="settings-empty-page" />
@@ -468,11 +468,13 @@ const SettingsModal = (props: SettingsModalProps) => {
               </Match>
             </Switch>
             <div class="settings-modal__footer">
+              <div class="settings-modal__actions">
+                <Button id="settings-save-button" label={props.state().inputSettingsSaving ? "Сохранение" : "Сохранить"} />
+                <Button id="settings-cancel-button" label="Отмена" />
+              </div>
               <Show when={props.state().inputSettingsError}>
                 {(error) => <div class="settings-modal__error">{error()}</div>}
               </Show>
-              <Button id="settings-cancel-button" label="Отмена" />
-              <Button id="settings-save-button" label={props.state().inputSettingsSaving ? "Сохранение" : "Сохранить"} />
             </div>
           </div>
         </Modal>

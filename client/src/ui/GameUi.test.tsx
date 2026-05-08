@@ -365,8 +365,10 @@ describe("GameUi", () => {
     dispose = render(() => <GameUi state={() => ({ ...state(), settingsVisible: true })} />, root);
 
     expect(Array.from(root.querySelectorAll(".settings-tabs .ui-kit-tab")).map((tab) => tab.textContent)).toEqual(["Видео", "Аудио", "Ввод"]);
+    expect(root.querySelector("#settings-tabs")?.classList.contains("ui-kit-tabs--center")).toBe(true);
     expect(root.querySelector(".settings-tabs .ui-kit-tab.is-selected")?.textContent).toBe("Ввод");
-    expect(root.querySelector("#settings-cancel-button")?.textContent).toBe("Отмена");
+    expect(root.querySelector(".settings-modal__actions")).not.toBeNull();
+    expect(Array.from(root.querySelectorAll(".settings-modal__footer .ui-kit-button")).map((button) => button.id)).toEqual(["settings-save-button", "settings-cancel-button"]);
   });
 
   // Проверяет, что каждая вкладка настроек управляет собственной страницей.

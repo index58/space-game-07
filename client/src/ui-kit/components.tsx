@@ -127,6 +127,8 @@ type EditControlProps = {
 type TabsProps = {
   // Стабильный идентификатор набора вкладок.
   id: string;
+  // Горизонтальное выравнивание вкладок внутри общей панели.
+  align?: "start" | "center";
   // Дополнительный CSS-класс корня для конкретной панели.
   className?: string;
   // Префикс DOM-идентификатора отдельной вкладки.
@@ -337,7 +339,7 @@ export const EditControl = (props: EditControlProps) => (
 );
 
 export const Tabs = (props: TabsProps) => (
-  <div id={props.id} data-ui-kind="tabs" class={`ui-kit-control ui-kit-tabs ${props.className ?? ""}`}>
+  <div id={props.id} data-ui-kind="tabs" class={`ui-kit-control ui-kit-tabs ${tabsAlignmentClass(props.align)} ${props.className ?? ""}`}>
     <For each={props.tabs}>
       {(tab) => (
         <div id={`${props.itemIdPrefix ?? props.id}-${tab.value}`} data-ui-kind="tabs" data-ui-value={tab.value} class={`ui-kit-control ui-kit-tab ${markerClass(tab.marker)} ${props.itemClassName ?? ""} ${tab.value === props.selectedValue ? "is-selected" : ""}`}>
@@ -396,6 +398,8 @@ const stateClass = (state: ButtonProps["state"]): string => state && state !== "
 
 // Дополнительный класс нужен только для вкладок, где левый край выравнивается по квадратному значку.
 const markerClass = (marker: JSX.Element | undefined): string => marker ? "ui-kit-tab--with-marker" : "";
+
+const tabsAlignmentClass = (align: TabsProps["align"]): string => align === "center" ? "ui-kit-tabs--center" : "";
 
 const dropdownMenuStyle = (position: DropdownMenuPosition): JSX.CSSProperties => ({
   left: `${position.leftPx}px`,
