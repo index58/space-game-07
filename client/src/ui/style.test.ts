@@ -129,6 +129,13 @@ describe("HUD styles", () => {
     expect(readCssBlock(".ui-kit-dropdown__menu")).toContain("border: 0.14vh solid var(--hud-surface-border);");
   });
 
+  // Проверяет, что заголовки всех модальных окон выравниваются по центру общим стилем.
+  it("centers modal titles from the shared source", () => {
+    const title = readCssBlock(".ui-kit-modal__title");
+
+    expect(title).toContain("text-align: center;");
+  });
+
   // Проверяет, что размеры выпадающего списка берутся из одного места, а не переопределяются отдельно в настройках.
   it("shares compact dropdown sizing between ui kit showcase and settings", () => {
     const theme = readCssBlock(":root");
@@ -190,7 +197,7 @@ describe("HUD styles", () => {
     expect(readCssBlock(".object-indicator__bar")).toContain("background: var(--hud-surface-bg);");
     expect(readCssBlock(".chat-messages")).toContain("background: var(--hud-surface-soft-bg);");
     expect(readCssBlock(".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-tree,\n.ui-kit-virtual-list,\n.ui-kit-edit,\n.ui-kit-stepper,\n.ui-kit-context-menu,\n.ui-kit-modal,\n.ui-kit-tooltip")).toContain("background: var(--hud-surface-bg);");
-    expect(readCssBlock(".settings-modal-layer .ui-kit-modal")).toContain("background: var(--hud-surface-solid-bg);");
+    expect(readCssBlock(".game-window-layer .ui-kit-modal")).toContain("background: var(--hud-surface-solid-bg);");
     expect(readCssBlock(".chat-context-menu")).toContain("background: var(--hud-surface-solid-bg);");
     expect(readCssBlock(".pilot-toolbar__magazine")).toContain("background: var(--hud-surface-bg);");
     expect(readCssBlock(".pilot-tool-slot")).toContain("background: var(--hud-surface-soft-bg);");
@@ -229,8 +236,11 @@ describe("HUD styles", () => {
 
   // Проверяет, что раскрытый список настроек имеет фиксированное окно и использует единую полосу прокрутки.
   it("keeps settings dropdown as a single scrollable column", () => {
-    const modal = readCssBlock(".settings-modal-layer .ui-kit-modal");
-    const body = readCssBlock(".settings-modal-layer .ui-kit-modal__body");
+    const layer = readCssBlock(".game-window-layer");
+    const sharedLayerSize = readCssBlock(".game-window-layer--settings,\n.game-window-layer--showcase");
+    const settingsLayer = readCssBlock(".game-window-layer--settings");
+    const modal = readCssBlock(".game-window-layer .ui-kit-modal");
+    const body = readCssBlock(".game-window-layer .ui-kit-modal__body");
     const settings = readCssBlock(".settings-modal");
     const table = readCssBlock(".settings-input-table");
     const menu = readCssBlock(".ui-kit-dropdown__menu");
@@ -238,6 +248,12 @@ describe("HUD styles", () => {
     const action = readCssBlock(".settings-input-row__action");
     const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar");
 
+    expect(layer).toContain("position: fixed;");
+    expect(layer).toContain("transform: translate(-50%, -50%);");
+    expect(sharedLayerSize).toContain("width: min(118vh, calc(100vw - 4vh));");
+    expect(sharedLayerSize).toContain("height: min(62vh, calc(100vh - 4vh));");
+    expect(settingsLayer).toContain("z-index: 18;");
+    expect(css).toContain(".game-window-layer--showcase {\n  z-index: 17;\n}");
     expect(modal).toContain("grid-template-rows: auto minmax(0, 1fr);");
     expect(modal).toContain("overflow: hidden;");
     expect(body).toContain("min-height: 0;");

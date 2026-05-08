@@ -689,13 +689,12 @@ body {
   margin-bottom: 0.7vh;
   color: #eefaff;
   font: 1.25vh/1 Consolas, monospace;
+  text-align: center;
 }
 
 .ui-kit-showcase {
-  left: 37vh;
-  top: 1vh;
-  width: 58vh;
-  padding: 1vh;
+  display: grid;
+  min-height: 0;
 }
 
 .ui-kit-showcase__grid {
@@ -705,18 +704,29 @@ body {
   align-items: start;
 }
 
-.settings-modal-layer {
+.game-window-layer {
   position: fixed;
   left: 50%;
   top: 50%;
-  width: min(118vh, calc(100vw - 4vh));
-  height: min(62vh, calc(100vh - 4vh));
   transform: translate(-50%, -50%);
-  z-index: 18;
   pointer-events: none;
 }
 
-.settings-modal-layer .ui-kit-modal {
+.game-window-layer--settings,
+.game-window-layer--showcase {
+  width: min(118vh, calc(100vw - 4vh));
+  height: min(62vh, calc(100vh - 4vh));
+}
+
+.game-window-layer--settings {
+  z-index: 18;
+}
+
+.game-window-layer--showcase {
+  z-index: 17;
+}
+
+.game-window-layer .ui-kit-modal {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   width: 100%;
@@ -726,7 +736,7 @@ body {
   background: var(--hud-surface-solid-bg);
 }
 
-.settings-modal-layer .ui-kit-modal__body {
+.game-window-layer .ui-kit-modal__body {
   min-height: 0;
   overflow: hidden;
 }

@@ -150,13 +150,13 @@ export class InputController {
         return;
       }
       if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "F10") || isFreshKeyboardBinding(event.code, Boolean(this.keys[event.code]), this.inputBindings.ToggleSettingsWindow)) {
-        this.settingsVisible = !this.settingsVisible;
+        this.toggleSettingsModal();
         this.keys[event.code] = true;
         event.preventDefault();
         return;
       }
       if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "F9") || isFreshKeyboardBinding(event.code, Boolean(this.keys[event.code]), this.inputBindings.ToggleUiKitShowcase)) {
-        this.uiKitShowcaseVisible = !this.uiKitShowcaseVisible;
+        this.toggleUiKitShowcaseModal();
         this.keys[event.code] = true;
         event.preventDefault();
         return;
@@ -291,11 +291,15 @@ export class InputController {
     });
 
     // Захват мыши включается только по клику и только когда клиент уже готов принимать управление.
-    this.canvas.addEventListener("click", () => {
+    this.canvas.addEventListener("click", (event) => {
+      if (this.isPointerLocked()) {
+        return;
+      }
       if (!this.canRequestPointerLock()) {
         return;
       }
 
+      this.placeCursorAtSystemPointer(event.clientX, event.clientY);
       void this.canvas.requestPointerLock();
     });
 
@@ -614,9 +618,35 @@ export class InputController {
     return document.pointerLockElement === this.canvas;
   }
 
+  // Ставит игровой указатель туда, где браузерный указатель был перед захватом.
+  private placeCursorAtSystemPointer(x: number, y: number): void {
+    this.cursorX = clamp(x, 0, Math.max(0, window.innerWidth - 1));
+    this.cursorY = clamp(y, 0, Math.max(0, window.innerHeight - 1));
+  }
+
   // Показывает, что игровой указатель нужен для текущего UI-взаимодействия.
   private isGameCursorVisible(): boolean {
     return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible || this.settingsVisible);
+  }
+
+  // Переключает окно настроек так, чтобы остальные модальные окна были закрыты.
+  private toggleSettingsModal(): void {
+    const nextVisible = !this.settingsVisible;
+    this.closeModalWindows();
+    this.settingsVisible = nextVisible;
+  }
+
+  // Переключает витрину UI Kit так, чтобы остальные модальные окна были закрыты.
+  private toggleUiKitShowcaseModal(): void {
+    const nextVisible = !this.uiKitShowcaseVisible;
+    this.closeModalWindows();
+    this.uiKitShowcaseVisible = nextVisible;
+  }
+
+  // Закрывает все модальные окна, которыми управляет игровой ввод.
+  private closeModalWindows(): void {
+    this.settingsVisible = false;
+    this.uiKitShowcaseVisible = false;
   }
 
   // Сохраняет действие общего runtime до обработки сценой.

@@ -164,11 +164,25 @@ type SettingsModalProps = {
   state: Accessor<GameUiState>;
 };
 
+type GameWindowLayerProps = {
+  // Вид окна, который задаёт необходимые отличия поверх общего каркаса.
+  variant: "settings" | "showcase";
+  // Содержимое окна в общем экранном слое.
+  children: JSX.Element;
+};
+
 const settingsTabs: Array<{ value: SettingsTabValue; label: string }> = [
   { value: "video", label: "Видео" },
   { value: "audio", label: "Аудио" },
   { value: "input", label: "Ввод" },
 ];
+
+// Задаёт общий экранный шаблон для всех игровых модальных окон.
+const GameWindowLayer = (props: GameWindowLayerProps) => (
+  <div class={`game-window-layer game-window-layer--${props.variant}`}>
+    {props.children}
+  </div>
+);
 
 type PilotToolSlotProps = {
   // Данные одной ячейки панели инструментов пилота.
@@ -375,32 +389,34 @@ const GameCursor = (props: GameCursorProps) => (
 // Показывает отладочную витрину всех базовых контролов UI Kit.
 const UiKitShowcase = (props: UiKitShowcaseProps) => (
   <Show when={props.state().uiKitShowcaseVisible}>
-    <HudPanel position="left-top" className="ui-kit-showcase" ariaLabel="UI Kit">
+    <GameWindowLayer variant="showcase">
       <Modal id="ui-kit-showcase-modal" title="UI Kit">
-        <div class="ui-kit-showcase__grid">
-          <Button id="ui-kit-demo-button" label={`Button ${props.state().uiKitDemoState.buttonClicks}`} state="hovered" />
-          <Button id="ui-kit-demo-icon-button" label="*" state="focused" />
-          <Checkbox id="ui-kit-demo-checkbox" label="Checkbox" checked={props.state().uiKitDemoState.checkboxChecked} />
-          <RadioGroup id="ui-kit-demo-radio" value={props.state().uiKitDemoState.radioValue} options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
-          <Dropdown id="ui-kit-demo-select" label="" selectedValue={props.state().uiKitDemoState.dropdownValue} open={props.state().uiKitDemoState.dropdownOpen} options={[{ value: "one", label: "One" }, { value: "two", label: "Two" }]} />
-          <ListBox id="ui-kit-demo-list" selectedValue={props.state().uiKitDemoState.listValue} items={[{ value: "1", label: "One" }, { value: "2", label: "Two" }]} />
-          <TreeView id="ui-kit-demo-tree" selectedValue={props.state().uiKitDemoState.treeValue} nodes={[{ value: "root", label: "Root", children: [{ value: "child", label: "Child" }] }]} />
-          <VirtualList id="ui-kit-demo-virtual-list" startIndex={props.state().uiKitDemoState.virtualStartIndex} items={[{ value: "20", label: "Item 20" }, { value: "21", label: "Item 21" }]} />
-          <Tabs id="ui-kit-demo-tabs" selectedValue={props.state().uiKitDemoState.tabValue} tabs={[{ value: "one", label: "One" }, { value: "two", label: "Two", badge: 3 }]} />
-          <EditControl id="ui-kit-demo-edit" text={props.state().uiKitDemoState.editText} selectionStart={props.state().uiKitDemoState.editSelectionStart} selectionEnd={props.state().uiKitDemoState.editSelectionEnd} focused={true} />
-          <Scrollbar id="ui-kit-demo-scrollbar" thumbTopPercent={props.state().uiKitDemoState.scrollbarTopPercent} thumbHeightPercent={45} dragging={props.state().uiKitDemoState.scrollbarDrag !== null} />
-          <Slider id="ui-kit-demo-slider" value={props.state().uiKitDemoState.sliderValue} min={0} max={100} />
-          <NumericStepper id="ui-kit-demo-stepper" value={props.state().uiKitDemoState.stepperValue} />
-          <Splitter id="ui-kit-demo-splitter" vertical={props.state().uiKitDemoState.splitterVertical} />
-          <Show when={props.state().uiKitDemoState.menuOpen}>
-            <ContextMenu id="ui-kit-demo-menu" items={[{ value: "close", label: "Close" }]} />
-          </Show>
-          <Show when={props.state().uiKitDemoState.tooltipVisible}>
-            <Tooltip id="ui-kit-demo-tooltip" text="Tooltip" />
-          </Show>
+        <div class="ui-kit-showcase">
+          <div class="ui-kit-showcase__grid">
+            <Button id="ui-kit-demo-button" label={`Button ${props.state().uiKitDemoState.buttonClicks}`} state="hovered" />
+            <Button id="ui-kit-demo-icon-button" label="*" state="focused" />
+            <Checkbox id="ui-kit-demo-checkbox" label="Checkbox" checked={props.state().uiKitDemoState.checkboxChecked} />
+            <RadioGroup id="ui-kit-demo-radio" value={props.state().uiKitDemoState.radioValue} options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
+            <Dropdown id="ui-kit-demo-select" label="" selectedValue={props.state().uiKitDemoState.dropdownValue} open={props.state().uiKitDemoState.dropdownOpen} options={[{ value: "one", label: "One" }, { value: "two", label: "Two" }]} />
+            <ListBox id="ui-kit-demo-list" selectedValue={props.state().uiKitDemoState.listValue} items={[{ value: "1", label: "One" }, { value: "2", label: "Two" }]} />
+            <TreeView id="ui-kit-demo-tree" selectedValue={props.state().uiKitDemoState.treeValue} nodes={[{ value: "root", label: "Root", children: [{ value: "child", label: "Child" }] }]} />
+            <VirtualList id="ui-kit-demo-virtual-list" startIndex={props.state().uiKitDemoState.virtualStartIndex} items={[{ value: "20", label: "Item 20" }, { value: "21", label: "Item 21" }]} />
+            <Tabs id="ui-kit-demo-tabs" selectedValue={props.state().uiKitDemoState.tabValue} tabs={[{ value: "one", label: "One" }, { value: "two", label: "Two", badge: 3 }]} />
+            <EditControl id="ui-kit-demo-edit" text={props.state().uiKitDemoState.editText} selectionStart={props.state().uiKitDemoState.editSelectionStart} selectionEnd={props.state().uiKitDemoState.editSelectionEnd} focused={true} />
+            <Scrollbar id="ui-kit-demo-scrollbar" thumbTopPercent={props.state().uiKitDemoState.scrollbarTopPercent} thumbHeightPercent={45} dragging={props.state().uiKitDemoState.scrollbarDrag !== null} />
+            <Slider id="ui-kit-demo-slider" value={props.state().uiKitDemoState.sliderValue} min={0} max={100} />
+            <NumericStepper id="ui-kit-demo-stepper" value={props.state().uiKitDemoState.stepperValue} />
+            <Splitter id="ui-kit-demo-splitter" vertical={props.state().uiKitDemoState.splitterVertical} />
+            <Show when={props.state().uiKitDemoState.menuOpen}>
+              <ContextMenu id="ui-kit-demo-menu" items={[{ value: "close", label: "Close" }]} />
+            </Show>
+            <Show when={props.state().uiKitDemoState.tooltipVisible}>
+              <Tooltip id="ui-kit-demo-tooltip" text="Tooltip" />
+            </Show>
+          </div>
         </div>
       </Modal>
-    </HudPanel>
+    </GameWindowLayer>
   </Show>
 );
 
@@ -410,7 +426,7 @@ const SettingsModal = (props: SettingsModalProps) => {
   const options = createMemo(() => getInputEventOptions(props.state().referenceData));
   return (
     <Show when={props.state().settingsVisible}>
-      <div class="settings-modal-layer">
+      <GameWindowLayer variant="settings">
         <Modal id="settings-modal" title="Настройки">
           <div class="settings-modal">
             <Tabs id="settings-tabs" itemIdPrefix="settings-tab" className="settings-tabs" selectedValue={props.state().selectedSettingsTab} tabs={settingsTabs} />
@@ -460,7 +476,7 @@ const SettingsModal = (props: SettingsModalProps) => {
             </div>
           </div>
         </Modal>
-      </div>
+      </GameWindowLayer>
     </Show>
   );
 };

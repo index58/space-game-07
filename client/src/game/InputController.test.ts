@@ -533,6 +533,37 @@ describe("InputController", () => {
     expect(controller.getGameCursor()).toEqual({ visible: true, x: 515, y: 480 });
   });
 
+  // Проверяет, что игровой указатель появляется в точке последнего клика перед захватом мыши.
+  it("places game cursor at the system pointer lock click point", () => {
+    setViewportWidth(1000);
+    setViewportHeight(1000);
+    const canvas = document.createElement("canvas");
+    canvas.requestPointerLock = () => Promise.resolve();
+    const controller = new InputController(canvas);
+
+    canvas.dispatchEvent(new MouseEvent("click", { clientX: 240, clientY: 360 }));
+    setPointerLockElement(canvas);
+    pressKey("Enter", "Enter");
+
+    expect(controller.getGameCursor()).toEqual({ visible: true, x: 240, y: 360 });
+  });
+
+  // Проверяет, что клики после захвата мыши не переносят игровой указатель как системные.
+  it("ignores canvas click coordinates while pointer is already locked", () => {
+    setViewportWidth(1000);
+    setViewportHeight(1000);
+    const canvas = document.createElement("canvas");
+    canvas.requestPointerLock = () => Promise.resolve();
+    const controller = new InputController(canvas);
+
+    canvas.dispatchEvent(new MouseEvent("click", { clientX: 240, clientY: 360 }));
+    setPointerLockElement(canvas);
+    canvas.dispatchEvent(new MouseEvent("click", { clientX: 900, clientY: 920 }));
+    pressKey("Enter", "Enter");
+
+    expect(controller.getGameCursor()).toEqual({ visible: true, x: 240, y: 360 });
+  });
+
   it("suppresses ship controls while game cursor is visible", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
@@ -581,6 +612,48 @@ describe("InputController", () => {
     pressKey("F9", "F9");
 
     expect(controller.isUiKitShowcaseVisible()).toBe(true);
+  });
+
+  // Проверяет, что открытие витрины UI Kit закрывает другое модальное окно.
+  it("closes settings when opening UI kit showcase", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("F10", "F10");
+    releaseKey("F10");
+    pressKey("F9", "F9");
+
+    expect(controller.isSettingsVisible()).toBe(false);
+    expect(controller.isUiKitShowcaseVisible()).toBe(true);
+  });
+
+  // Проверяет, что открытие настроек закрывает другое модальное окно.
+  it("closes UI kit showcase when opening settings", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("F9", "F9");
+    releaseKey("F9");
+    pressKey("F10", "F10");
+
+    expect(controller.isUiKitShowcaseVisible()).toBe(false);
+    expect(controller.isSettingsVisible()).toBe(true);
+  });
+
+  // Проверяет, что повторная команда текущего модального окна закрывает его без открытия другого.
+  it("closes current modal window when toggling the same modal again", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("F10", "F10");
+    releaseKey("F10");
+    pressKey("F10", "F10");
+
+    expect(controller.isSettingsVisible()).toBe(false);
+    expect(controller.isUiKitShowcaseVisible()).toBe(false);
   });
 
   // Проверяет, что общий runtime отдаёт действие по зарегистрированному HUD-контролу.

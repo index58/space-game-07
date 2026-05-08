@@ -320,6 +320,17 @@ describe("GameUi", () => {
     expect(root.querySelector(".ui-kit-tooltip")).not.toBeNull();
   });
 
+  // Проверяет, что витрина UI Kit и настройки используют один каркас игрового окна.
+  it("renders settings and UI kit showcase through the same game window shell", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({ ...state(), uiKitShowcaseVisible: true, settingsVisible: true })} />, root);
+
+    expect(root.querySelector("#ui-kit-showcase-modal")?.parentElement?.className).toBe("game-window-layer game-window-layer--showcase");
+    expect(root.querySelector("#settings-modal")?.parentElement?.className).toBe("game-window-layer game-window-layer--settings");
+  });
+
   // Проверяет, что частые счетчики кадра не пересоздают строки окна настроек.
   it("keeps settings rows mounted when only frame counters change", () => {
     const root = document.createElement("div");
