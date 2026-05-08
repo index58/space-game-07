@@ -69,6 +69,8 @@ describe("HUD styles", () => {
   // Проверяет, что обычные кнопки заметнее, а выбранная вкладка отличается только более ярким фоном.
   it("makes buttons prominent and selected tabs visually distinct", () => {
     const button = readCssBlock(".ui-kit-button");
+    const tabs = readCssBlock(".ui-kit-tabs");
+    const tab = readCssBlock(".ui-kit-tab");
     const selectedTab = readCssBlock(".ui-kit-tab.is-selected");
 
     expect(button).toContain("width: max-content;");
@@ -76,7 +78,12 @@ describe("HUD styles", () => {
     expect(button).toContain("padding: 0 1.05vh;");
     expect(button).toContain("background: rgba(126, 212, 255, 0.16);");
     expect(button).not.toMatch(/\bborder(?:-color)?\s*:/);
-    expect(selectedTab).toContain("background: rgba(126, 212, 255, 0.16);");
+    expect(tabs).toContain("background: var(--hud-tab-panel-bg);");
+    expect(tabs).toContain("padding: var(--hud-tab-panel-padding);");
+    expect(tab).toContain("color: var(--hud-tab-inactive-text);");
+    expect(tab).toContain("background: var(--hud-tab-panel-bg);");
+    expect(selectedTab).toContain("color: #eefaff;");
+    expect(selectedTab).toContain("background: var(--hud-surface-solid-bg);");
     expect(selectedTab).not.toMatch(/\bborder(?:-color)?\s*:/);
     expect(selectedTab).not.toContain("box-shadow");
   });
@@ -330,7 +337,8 @@ describe("HUD styles", () => {
     expect(tab).toContain("width: max-content;");
     expect(tab).toContain("min-width: 0;");
     expect(tab).not.toContain("14vh");
-    expect(uiKitTabs).toContain("height: var(--hud-tab-height);");
+    expect(uiKitTabs).toContain("height: calc(var(--hud-tab-height) + var(--hud-tab-panel-padding) * 2);");
+    expect(uiKitTabs).toContain("box-sizing: border-box;");
     expect(uiKitTabs).toContain("overflow: visible;");
     expect(uiKitTab).toContain("flex: 0 0 auto;");
     expect(uiKitTab).toContain("width: max-content;");
