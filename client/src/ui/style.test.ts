@@ -82,6 +82,27 @@ describe("HUD styles", () => {
   });
 
   // Проверяет, что новый общий стиль убирает декоративные рамки и оставляет чёрный фон у полей и списков.
+  // Проверяет, что основные интерактивные контролы получают один тип и размер шрифта из общего правила.
+  it("uses one shared font for core ui kit controls", () => {
+    const theme = readCssBlock(":root");
+    const controlFont = readCssBlock(
+      ".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-list__item,\n.ui-kit-tree,\n.ui-kit-tree__item,\n.ui-kit-virtual-list,\n.ui-kit-virtual-list__item,\n.ui-kit-edit,\n.ui-kit-tabs,\n.ui-kit-tab,\n.ui-kit-stepper,\n.ui-kit-stepper .ui-kit-control,\n.ui-kit-context-menu,\n.ui-kit-context-menu__item,\n.ui-kit-tooltip",
+    );
+    const dropdown = readCssBlock(".ui-kit-dropdown");
+    const listItems = readCssBlock(".ui-kit-dropdown__item,\n.ui-kit-context-menu__item,\n.ui-kit-list__item,\n.ui-kit-tree__item,\n.ui-kit-virtual-list__item");
+    const tab = readCssBlock(".ui-kit-tab");
+    const buttonGroup = readCssBlock(".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio__option,\n.ui-kit-stepper");
+
+    expect(theme).toContain("--hud-control-font-family: Consolas, monospace;");
+    expect(theme).toContain("--hud-control-font-size: 1.05vh;");
+    expect(controlFont).toContain("font-family: var(--hud-control-font-family);");
+    expect(controlFont).toContain("font-size: var(--hud-control-font-size);");
+    expect(dropdown).not.toMatch(/\bfont(?:-size|-family)?\s*:/);
+    expect(listItems).not.toMatch(/\bfont(?:-size|-family)?\s*:/);
+    expect(tab).not.toMatch(/\bfont(?:-size|-family)?\s*:/);
+    expect(buttonGroup).not.toMatch(/\bfont(?:-size|-family)?\s*:/);
+  });
+
   it("removes borders from hud surfaces and uses black backgrounds for input controls", () => {
     const borderlessBlocks = [
       ".hud-panel",
@@ -120,12 +141,13 @@ describe("HUD styles", () => {
   });
 
   // Проверяет, что окна и выпадающие списки имеют светлую обводку как явное исключение из общего правила.
-  it("uses light borders for windows and dropdowns", () => {
+  it("uses light borders only for windows and opened dropdown menus", () => {
     const theme = readCssBlock(":root");
+    const dropdown = readCssBlock(".ui-kit-dropdown");
 
     expect(theme).toContain("--hud-surface-border: rgba(238, 250, 255, 0.48);");
     expect(readCssBlock(".ui-kit-modal")).toContain("border: 0.14vh solid var(--hud-surface-border);");
-    expect(readCssBlock(".ui-kit-dropdown")).toContain("border: 0.14vh solid var(--hud-surface-border);");
+    expect(dropdown).not.toMatch(/\bborder(?:-color)?\s*:/);
     expect(readCssBlock(".ui-kit-dropdown__menu")).toContain("border: 0.14vh solid var(--hud-surface-border);");
   });
 
@@ -145,11 +167,11 @@ describe("HUD styles", () => {
 
     expect(theme).toContain("--hud-dropdown-min-height: 2.35vh;");
     expect(theme).toContain("--hud-dropdown-padding-y: 0.35vh;");
-    expect(theme).toContain("--hud-dropdown-font-size: 0.95vh;");
+    expect(theme).toContain("--hud-control-font-size: 1.05vh;");
     expect(dropdown).toContain("min-height: var(--hud-dropdown-min-height);");
     expect(dropdown).toContain("padding-top: var(--hud-dropdown-padding-y);");
     expect(dropdown).toContain("padding-bottom: var(--hud-dropdown-padding-y);");
-    expect(dropdown).toContain("font-size: var(--hud-dropdown-font-size);");
+    expect(dropdown).not.toMatch(/\bfont(?:-size|-family)?\s*:/);
     expect(dropdownValue).toContain("display: flex;");
     expect(dropdownValue).toContain("align-items: center;");
     expect(dropdownValue).toContain("min-height: calc(var(--hud-dropdown-min-height) - (var(--hud-dropdown-padding-y) * 2));");

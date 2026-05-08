@@ -16,9 +16,10 @@ body {
   --hud-surface-solid-bg: rgb(18, 34, 46);
   --hud-surface-border: rgba(238, 250, 255, 0.48);
   --hud-control-bg: var(--hud-surface-bg);
+  --hud-control-font-family: Consolas, monospace;
+  --hud-control-font-size: 1.05vh;
   --hud-dropdown-min-height: 2.35vh;
   --hud-dropdown-padding-y: 0.35vh;
-  --hud-dropdown-font-size: 0.95vh;
   --hud-list-padding: 0.35vh;
   --hud-tab-height: 2.45vh;
 }
@@ -368,7 +369,6 @@ body {
   min-height: 2.8vh;
   padding: 0 0.8vh;
   gap: 0.55vh;
-  font-size: 1.15vh;
 }
 
 .ui-kit-button {
@@ -415,8 +415,6 @@ body {
   padding-bottom: var(--hud-dropdown-padding-y);
   padding-right: 2.1vh;
   background: rgb(0, 0, 0);
-  border: 0.14vh solid var(--hud-surface-border);
-  font-size: var(--hud-dropdown-font-size);
 }
 
 .ui-kit-radio__option {
@@ -519,7 +517,6 @@ body {
   min-height: 2.3vh;
   padding: 0.45vh 0.65vh;
   box-sizing: border-box;
-  font-size: 1.05vh;
 }
 
 .ui-kit-edit {
@@ -567,7 +564,30 @@ body {
   box-sizing: border-box;
   overflow: visible;
   background: rgba(5, 18, 28, 0.88);
-  font: 1.05vh/1 Consolas, monospace;
+}
+
+.ui-kit-button,
+.ui-kit-checkbox,
+.ui-kit-radio,
+.ui-kit-radio__option,
+.ui-kit-dropdown,
+.ui-kit-dropdown__item,
+.ui-kit-list,
+.ui-kit-list__item,
+.ui-kit-tree,
+.ui-kit-tree__item,
+.ui-kit-virtual-list,
+.ui-kit-virtual-list__item,
+.ui-kit-edit,
+.ui-kit-tabs,
+.ui-kit-tab,
+.ui-kit-stepper,
+.ui-kit-stepper .ui-kit-control,
+.ui-kit-context-menu,
+.ui-kit-context-menu__item,
+.ui-kit-tooltip {
+  font-family: var(--hud-control-font-family);
+  font-size: var(--hud-control-font-size);
 }
 
 .ui-kit-tab--with-marker {

@@ -1,5 +1,5 @@
 {
-  "MaxID": 72,
+  "MaxID": 88,
   "Items": {
     "39": {
       "ID": 39,
@@ -37,9 +37,9 @@
       "ContentItemModelID": 7,
       "Count": 450
     },
-    "72": {
-      "ID": 72,
-      "ContainerEquipmentGroupID": 806,
+    "88": {
+      "ID": 88,
+      "ContainerEquipmentGroupID": 902,
       "ContentItemModelID": 7,
       "Count": 450
     }
