@@ -61,6 +61,37 @@ type InputSettingsErrorMessage struct {
 	Message string `json:"message"` // Текст ошибки для окна настроек.
 }
 
+// ControlPanelMutationMessage хранит общие поля команды изменения мира из панели.
+type ControlPanelMutationMessage struct {
+	ClientSessionID string `json:"clientSessionId"` // Сессия браузерного клиента, отправившая команду.
+	MutationSeq     int64  `json:"mutationSeq"`     // Порядковый номер команды внутри клиентской сессии.
+}
+
+// ControlPanelObjectUpdateMessage передает частичное изменение управляемого объекта.
+type ControlPanelObjectUpdateMessage struct {
+	Type string `json:"type"` // Вид команды для маршрутизации изменения объекта.
+	ControlPanelMutationMessage
+	Enabled *bool   `json:"enabled,omitempty"` // Новое состояние включения объекта, если оно меняется.
+	Title   *string `json:"title,omitempty"`   // Новое пользовательское название объекта, если оно меняется.
+}
+
+// ControlPanelEquipmentUpdateMessage передает частичное изменение группы оборудования.
+type ControlPanelEquipmentUpdateMessage struct {
+	Type string `json:"type"` // Вид команды для маршрутизации изменения оборудования.
+	ControlPanelMutationMessage
+	EquipmentGroupID int64  `json:"equipmentGroupId"`       // Группа оборудования, которую нужно изменить.
+	Enabled          *bool  `json:"enabled,omitempty"`      // Новое состояние включения группы, если оно меняется.
+	EnabledCount     *int64 `json:"enabledCount,omitempty"` // Новое количество включенных единиц, если оно меняется.
+}
+
+// ControlPanelErrorMessage передает отказ команды панели управления.
+type ControlPanelErrorMessage struct {
+	Type            string `json:"type"`            // Вид пакета для клиентского маршрутизатора.
+	ClientSessionID string `json:"clientSessionId"` // Сессия, команда которой была отклонена.
+	MutationSeq     int64  `json:"mutationSeq"`     // Номер отклоненной команды.
+	Message         string `json:"message"`         // Текст ошибки для диагностики клиента.
+}
+
 // Разбирает клиентский JSON и пропускает только сообщения управления кораблем.
 func DecodeInputMessage(payload []byte) (game.ShipInput, bool) {
 	var input game.ShipInput
@@ -137,6 +168,34 @@ func DecodeInputSettingsSaveMessage(payload []byte) (InputSettingsSaveMessage, b
 	return message, true
 }
 
+// Разбирает клиентский JSON и пропускает только команды изменения объекта панели управления.
+func DecodeControlPanelObjectUpdateMessage(payload []byte) (ControlPanelObjectUpdateMessage, bool) {
+	var message ControlPanelObjectUpdateMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelObjectUpdateMessage{}, false
+	}
+
+	if message.Type != "controlPanelObjectUpdate" || !validControlPanelMutation(message.ControlPanelMutationMessage) || (message.Enabled == nil && message.Title == nil) {
+		return ControlPanelObjectUpdateMessage{}, false
+	}
+
+	return message, true
+}
+
+// Разбирает клиентский JSON и пропускает только команды изменения оборудования панели управления.
+func DecodeControlPanelEquipmentUpdateMessage(payload []byte) (ControlPanelEquipmentUpdateMessage, bool) {
+	var message ControlPanelEquipmentUpdateMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelEquipmentUpdateMessage{}, false
+	}
+
+	if message.Type != "controlPanelEquipmentUpdate" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.EquipmentGroupID <= 0 || (message.Enabled == nil && message.EnabledCount == nil) {
+		return ControlPanelEquipmentUpdateMessage{}, false
+	}
+
+	return message, true
+}
+
 // Сериализует снимок мира в формат WebSocket-сообщения.
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
@@ -178,10 +237,25 @@ func EncodeInputSettingsErrorMessage(message string) ([]byte, error) {
 	})
 }
 
+// Сериализует отказ команды панели управления с номером мутации.
+func EncodeControlPanelErrorMessage(sessionID string, mutationSeq int64, message string) ([]byte, error) {
+	return json.Marshal(ControlPanelErrorMessage{
+		Type:            "controlPanelError",
+		ClientSessionID: sessionID,
+		MutationSeq:     mutationSeq,
+		Message:         message,
+	})
+}
+
 // Сериализует результат автоматической авторизации.
 func EncodeAuthMessage(token string) ([]byte, error) {
 	return json.Marshal(AuthMessage{
 		Type:  "auth",
 		Token: token,
 	})
+}
+
+// Проверяет общие поля команды панели управления.
+func validControlPanelMutation(message ControlPanelMutationMessage) bool {
+	return message.ClientSessionID != "" && message.MutationSeq > 0
 }

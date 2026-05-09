@@ -7,6 +7,7 @@ import type { GameUiControlState } from "../ui-kit/types";
 
 export type SettingsTabValue = "video" | "audio" | "input";
 export type ControlPanelTabValue = "object" | "equipment" | "pilotTools" | "schemas" | "blueprints" | "map";
+export type ControlPanelEquipmentSubTabValue = "setup" | "usage";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
@@ -55,6 +56,16 @@ export type GameUiState = {
   selectedSettingsTab: SettingsTabValue;
   // Текущая страница модального окна панели управления.
   selectedControlPanelTab: ControlPanelTabValue;
+  // Текущая подстраница оборудования в панели управления.
+  selectedControlPanelEquipmentTab: ControlPanelEquipmentSubTabValue;
+  // ID выбранной группы оборудования в панели управления.
+  selectedControlPanelEquipmentGroupId: number | null;
+  // Черновики признака включения групп оборудования по ID группы.
+  controlPanelEquipmentEnabledDrafts: Record<number, boolean>;
+  // Черновики количества включенных единиц оборудования по ID группы.
+  controlPanelEquipmentEnabledCountDrafts: Record<number, number>;
+  // Состояние прокрутки списка групп оборудования.
+  controlPanelEquipmentListScroll: ChatScrollState;
   // Черновик признака включения объекта для интерактивного переключателя панели управления.
   controlPanelObjectEnabled: boolean;
   // Черновик пользовательского названия объекта для интерактивного поля панели управления.
@@ -118,6 +129,11 @@ const initialGameUiState: GameUiState = {
   controlPanelVisible: false,
   selectedSettingsTab: "input",
   selectedControlPanelTab: "object",
+  selectedControlPanelEquipmentTab: "setup",
+  selectedControlPanelEquipmentGroupId: null,
+  controlPanelEquipmentEnabledDrafts: {},
+  controlPanelEquipmentEnabledCountDrafts: {},
+  controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   controlPanelObjectEnabled: false,
   controlPanelObjectTitleText: "",
   controlPanelObjectTitleSelectionStart: 0,

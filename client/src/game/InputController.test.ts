@@ -863,8 +863,8 @@ describe("InputController", () => {
     expect(controller.consumeGameUiAction()).toBeNull();
   });
 
-  // Проверяет, что чекбокс панели управления меняет локальный черновик, а не уходит в демо-контролы.
-  it("toggles control panel enabled draft from checkbox", () => {
+  // Проверяет, что чекбокс панели управления передается сцене для серверной мутации.
+  it("queues control panel enabled checkbox action for server mutation", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
     setPointerLockElement(canvas);
@@ -884,8 +884,8 @@ describe("InputController", () => {
     window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
     window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
 
-    expect(controller.getControlPanelObjectEnabled(true)).toBe(false);
-    expect(controller.consumeGameUiAction()).toBeNull();
+    expect(controller.getControlPanelObjectEnabled(true)).toBe(true);
+    expect(controller.consumeGameUiAction()?.controlId).toBe("control-panel-object-enabled");
   });
 
   // Проверяет, что поле названия объекта получает native-фокус и сохраняет введенный текст в черновик.
@@ -921,6 +921,40 @@ describe("InputController", () => {
     expect(controller.getControlPanelObjectTitle("Ship")).toBe("Renamed");
     expect(controller.getControlPanelObjectTitleEditState().focused).toBe(true);
     expect(controller.getControlPanelObjectTitleEditState().selectionStart).toBe(7);
+  });
+
+  // Проверяет, что завершение редактирования названия отдает сцене текст для серверной мутации.
+  it("commits control panel object title after edit completion", async () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelObject(controlPanelObject({ Title: "Ship" }));
+    controller.updateGameUiControls([{
+      id: "control-panel-object-title-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+    const textarea = document.querySelector<HTMLTextAreaElement>("[data-ui-kit-edit-id='control-panel-object-title-input']");
+    if (!textarea) {
+      throw new Error("Нативное поле названия объекта не создано.");
+    }
+
+    textarea.value = "Renamed";
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    await waitForNativeEditSync();
+    pressInputKey(textarea, "Enter", "Enter");
+
+    expect(controller.consumeControlPanelObjectTitleCommit()).toBe("Renamed");
+    expect(controller.consumeControlPanelObjectTitleCommit()).toBeNull();
   });
 
   // Проверяет, что клик по полю названия объекта ставит каретку в позицию под игровым курсором.

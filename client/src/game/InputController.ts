@@ -153,6 +153,8 @@ export class InputController {
   private controlPanelObjectEnabledDraft: boolean | null = null;
   // Черновик пользовательского названия объекта в панели управления.
   private controlPanelObjectTitleDraft: string | null = null;
+  // Текст, который нужно отправить на сервер после завершения редактирования названия.
+  private controlPanelObjectTitleCommit: string | null = null;
   // Показывает, что игровой курсор сейчас выделяет текст чата мышью.
   private chatEditDragActive = false;
   // Позиция начала выделения текстового поля игровым курсором.
@@ -358,6 +360,7 @@ export class InputController {
     this.controlPanelObjectTitleEdit.element().addEventListener("input", () => this.syncControlPanelObjectTitleFromNativeEdit());
     this.controlPanelObjectTitleEdit.element().addEventListener("select", () => this.syncControlPanelObjectTitleFromNativeEdit());
     this.controlPanelObjectTitleEdit.element().addEventListener("keyup", () => this.syncControlPanelObjectTitleFromNativeEdit());
+    this.controlPanelObjectTitleEdit.element().addEventListener("keydown", (event) => this.handleControlPanelObjectTitleKeyDown(event));
   }
 
   // Возвращает пользовательский уровень зума без пересчета в пиксели.
@@ -472,8 +475,10 @@ export class InputController {
       this.controlPanelObjectTitleEdit.blur();
       return;
     }
-    this.controlPanelObjectEnabledDraft ??= object.Enabled;
-    this.controlPanelObjectTitleDraft ??= object.Title;
+    this.controlPanelObjectEnabledDraft = object.Enabled;
+    if (!this.controlPanelObjectTitleEdit.snapshot().focused) {
+      this.controlPanelObjectTitleDraft = object.Title;
+    }
   }
 
   // Возвращает черновик переключателя панели управления или серверное значение до синхронизации.
@@ -578,6 +583,13 @@ export class InputController {
     const delta = this.pilotToolSelectionDelta;
     this.pilotToolSelectionDelta = 0;
     return delta;
+  }
+
+  // Возвращает завершенное редактирование названия объекта и сразу очищает событие.
+  consumeControlPanelObjectTitleCommit(): string | null {
+    const title = this.controlPanelObjectTitleCommit;
+    this.controlPanelObjectTitleCommit = null;
+    return title;
   }
 
   // Отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.
@@ -701,8 +713,8 @@ export class InputController {
       return false;
     }
     if (event.code === "Escape" || event.code === "Enter") {
-      this.controlPanelObjectTitleEdit.blur();
       this.syncControlPanelObjectTitleFromNativeEdit();
+      this.commitAndBlurControlPanelObjectTitle();
       event.preventDefault();
       return true;
     }
@@ -797,9 +809,8 @@ export class InputController {
       return true;
     }
     if (action.type === "click" && action.controlId === "control-panel-object-enabled") {
-      this.controlPanelObjectTitleEdit.blur();
-      this.controlPanelObjectEnabledDraft = !this.getControlPanelObjectEnabled(false);
-      return true;
+      this.commitAndBlurControlPanelObjectTitle();
+      return false;
     }
     if (action.type === "click" && action.controlId === "control-panel-object-title-input") {
       if (this.controlPanelObjectTitleSuppressClick) {
@@ -812,7 +823,7 @@ export class InputController {
       return true;
     }
     if (action.type === "click" && action.controlId.startsWith("control-panel-")) {
-      this.controlPanelObjectTitleEdit.blur();
+      this.commitAndBlurControlPanelObjectTitle();
     }
     return false;
   }
@@ -820,6 +831,16 @@ export class InputController {
   // Переносит данные native-поля в черновик панели управления.
   private syncControlPanelObjectTitleFromNativeEdit(): void {
     this.controlPanelObjectTitleDraft = this.controlPanelObjectTitleEdit.snapshot().text;
+  }
+
+  // Завершает native-редактирование названия и запоминает изменение для сцены.
+  private commitAndBlurControlPanelObjectTitle(): void {
+    const snapshot = this.controlPanelObjectTitleEdit.snapshot();
+    if (snapshot.focused) {
+      this.controlPanelObjectTitleDraft = snapshot.text;
+      this.controlPanelObjectTitleCommit = snapshot.text;
+    }
+    this.controlPanelObjectTitleEdit.blur();
   }
 
   // Узнает слой, который должен только закрыть раскрытый список и не запускать нижний UI.

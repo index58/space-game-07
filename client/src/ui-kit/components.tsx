@@ -97,6 +97,8 @@ type ListBoxProps = {
   selectedValue: string;
   // Пункты списка.
   items: UiKitOption[];
+  // Вертикальный сдвиг содержимого для списков с внешней полосой прокрутки.
+  scrollOffsetPx?: number;
 };
 
 type TreeViewProps = {
@@ -191,6 +193,8 @@ type SliderProps = {
   min: number;
   // Максимальное значение.
   max: number;
+  // Видимый текст поверх шкалы, если его нужно показать.
+  label?: string;
 };
 
 type NumericStepperProps = {
@@ -326,9 +330,11 @@ export const Dropdown = (props: DropdownProps) => {
 
 export const ListBox = (props: ListBoxProps) => (
   <div id={props.id} data-ui-kind="list" class="ui-kit-control ui-kit-list">
-    <For each={props.items}>
-      {(item) => <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} class={`ui-kit-control ui-kit-list__item ${item.value === props.selectedValue ? "is-selected" : ""}`}>{item.label}</div>}
-    </For>
+    <div class="ui-kit-list__content" style={{ transform: `translateY(-${props.scrollOffsetPx ?? 0}px)` }}>
+      <For each={props.items}>
+        {(item) => <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} class={`ui-kit-control ui-kit-list__item ${item.value === props.selectedValue ? "is-selected" : ""}`}>{item.label}</div>}
+      </For>
+    </div>
   </div>
 );
 
@@ -461,6 +467,9 @@ export const Slider = (props: SliderProps) => {
   return (
     <div id={props.id} data-ui-kind="slider" class="ui-kit-control ui-kit-slider">
       <div class="ui-kit-slider__fill" style={{ width: percent() }} />
+      <Show when={(props.label ?? "").trim() !== ""}>
+        <div class="ui-kit-slider__label">{props.label}</div>
+      </Show>
     </div>
   );
 };

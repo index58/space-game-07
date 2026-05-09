@@ -11,13 +11,14 @@ import (
 
 // Хранит одно WebSocket-подключение и служебные каналы записи.
 type Client struct {
-	connection     *websocket.Conn // Активное сетевое соединение с браузером.
-	accountID      int64           // Подключенный аккаунт, которому принадлежит соединение.
-	objectID       int64           // Объект мира, которым управляет подключенный аккаунт.
-	selectedChatID int64           // Последняя выбранная вкладка чата в этом браузере.
-	send           chan []byte     // Очередь исходящих сообщений для отдельной горутины записи.
-	done           chan struct{}   // Сигнал завершения чтения, записи и очистки соединения.
-	closeOnce      sync.Once       // Защита от повторного закрытия служебного канала.
+	connection        *websocket.Conn // Активное сетевое соединение с браузером.
+	accountID         int64           // Подключенный аккаунт, которому принадлежит соединение.
+	objectID          int64           // Объект мира, которым управляет подключенный аккаунт.
+	selectedChatID    int64           // Последняя выбранная вкладка чата в этом браузере.
+	mutationSessionID string          // Последняя сессия клиента, отправлявшая команды панели.
+	send              chan []byte     // Очередь исходящих сообщений для отдельной горутины записи.
+	done              chan struct{}   // Сигнал завершения чтения, записи и очистки соединения.
+	closeOnce         sync.Once       // Защита от повторного закрытия служебного канала.
 }
 
 // Координирует все активные WebSocket-клиенты вокруг одного игрового мира.
@@ -74,15 +75,26 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initi
 // Отправляет снимок всем клиентам, подставляя каждому его собственный объект.
 func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 	hub.mu.Lock()
-	clients := make([]*Client, 0, len(hub.clients))
+	clients := make([]struct {
+		client            *Client
+		mutationSessionID string
+	}, 0, len(hub.clients))
 	for client := range hub.clients {
-		clients = append(clients, client)
+		clients = append(clients, struct {
+			client            *Client
+			mutationSessionID string
+		}{client: client, mutationSessionID: client.mutationSessionID})
 	}
 	hub.mu.Unlock()
 
-	for _, client := range clients {
+	for _, item := range clients {
+		client := item.client
 		clientSnapshot := snapshot
 		clientSnapshot.SelfObjectID = client.objectID
+		if item.mutationSessionID != "" {
+			ack := hub.world.ClientMutationAck(client.accountID, item.mutationSessionID)
+			clientSnapshot.ClientMutationAck = &ack
+		}
 		payload, err := EncodeSnapshotMessage(clientSnapshot)
 		if err != nil {
 			continue
@@ -124,11 +136,59 @@ func (hub *Hub) readLoop(client *Client) {
 			if DecodeInputSettingsRequestMessage(payload) {
 				hub.handleInputSettingsRequest(client)
 			}
+			if message, ok := DecodeControlPanelObjectUpdateMessage(payload); ok {
+				hub.handleControlPanelObjectUpdate(client, message)
+			}
+			if message, ok := DecodeControlPanelEquipmentUpdateMessage(payload); ok {
+				hub.handleControlPanelEquipmentUpdate(client, message)
+			}
 			continue
 		}
 
 		hub.world.SetInput(client.accountID, input)
 	}
+}
+
+// handleControlPanelObjectUpdate применяет изменение объекта или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelObjectUpdate(client *Client, message ControlPanelObjectUpdateMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelObjectUpdate(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelObjectUpdate{
+		Enabled: message.Enabled,
+		Title:   message.Title,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
+// handleControlPanelEquipmentUpdate применяет изменение оборудования или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelEquipmentUpdate(client *Client, message ControlPanelEquipmentUpdateMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelEquipmentUpdate(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelEquipmentUpdate{
+		EquipmentGroupID: message.EquipmentGroupID,
+		Enabled:          message.Enabled,
+		EnabledCount:     message.EnabledCount,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
+// setClientMutationSession запоминает сессию команд панели под mutex диспетчера.
+func (hub *Hub) setClientMutationSession(client *Client, sessionID string) {
+	hub.mu.Lock()
+	defer hub.mu.Unlock()
+
+	client.mutationSessionID = sessionID
+}
+
+// sendControlPanelError отправляет отказ команды панели управления текущему подключению.
+func (hub *Hub) sendControlPanelError(client *Client, sessionID string, mutationSeq int64, message string) {
+	payload, err := EncodeControlPanelErrorMessage(sessionID, mutationSeq, message)
+	if err != nil {
+		return
+	}
+	hub.sendToClient(client, payload)
 }
 
 // handleInputSettingsRequest возвращает текущие сохраненные настройки аккаунта без изменения мира.

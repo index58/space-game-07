@@ -304,7 +304,9 @@ describe("HUD styles", () => {
     expect(list).toContain("display: grid;");
     expect(list).toContain("gap: 0;");
     expect(list).toContain("padding: var(--hud-list-padding);");
+    expect(list).toContain("overflow: hidden;");
     expect(list).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-list__content")).toContain("grid-auto-rows: var(--hud-dropdown-min-height);");
   });
 
   // Проверяет, что окна и панели получают более светлый общий фон, а чёрные поля ввода не меняются.
@@ -379,7 +381,7 @@ describe("HUD styles", () => {
     const viewport = readCssBlock(".ui-kit-dropdown__menu[id^=\"settings-input-select-\"] .ui-kit-dropdown__menu-viewport");
     const label = readCssBlock(".game-form-row-label");
     const action = readCssBlock(".settings-input-row__action");
-    const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar");
+    const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar,\n.ui-kit-scrollbar.control-panel-equipment-list-scrollbar");
 
     expect(layer).toContain("position: absolute;");
     expect(layer).toContain("transform: translate(-50%, -50%);");
@@ -434,6 +436,12 @@ describe("HUD styles", () => {
     const modal = readCssBlock(".game-window-layer .ui-kit-modal");
     const panel = readCssBlock(".control-panel");
     const objectPage = readCssBlock(".control-panel-object-page");
+    const equipmentPage = readCssBlock(".control-panel-equipment-page");
+    const equipmentLayout = readCssBlock(".control-panel-equipment-layout");
+    const equipmentList = readCssBlock(".control-panel-equipment-list");
+    const equipmentInfo = readCssBlock(".control-panel-equipment-info");
+    const equipmentAction = readCssBlock(".control-panel-equipment-action");
+    const equipmentListBox = readCssBlock(".control-panel-equipment-list .ui-kit-list");
     const row = readCssBlock(".control-panel-object-row");
     const value = readCssBlock(".control-panel-object-row__value");
     const readonlyValue = readCssBlock(".control-panel-object-row__value--readonly");
@@ -458,6 +466,27 @@ describe("HUD styles", () => {
     expect(objectPage).toContain("grid-auto-flow: column;");
     expect(objectPage).toContain("gap: var(--control-panel-object-row-gap) 1.4vh;");
     expect(objectPage).toContain("overflow: hidden;");
+    expect(equipmentPage).toContain("display: grid;");
+    expect(equipmentPage).toContain("grid-template-rows: calc(var(--hud-tab-height) + var(--hud-tab-panel-padding) * 2) minmax(0, 1fr);");
+    expect(equipmentPage).toContain("gap: 0.9vh;");
+    expect(equipmentLayout).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
+    expect(equipmentLayout).toContain("column-gap: 1.4vh;");
+    expect(equipmentLayout).toContain("overflow: hidden;");
+    expect(equipmentList).toContain("position: relative;");
+    expect(equipmentList).toContain("padding-right: 1.65vh;");
+    expect(equipmentList).toContain("overflow: hidden;");
+    expect(equipmentInfo).toContain("grid-auto-rows: var(--control-panel-object-row-height);");
+    expect(equipmentInfo).toContain("gap: var(--control-panel-object-row-gap);");
+    expect(equipmentAction).toContain("grid-row: span 2;");
+    expect(equipmentAction).toContain("display: flex;");
+    expect(equipmentAction).toContain("align-items: center;");
+    expect(equipmentAction).toContain("justify-content: center;");
+    expect(equipmentAction).toContain("min-height: var(--hud-dropdown-min-height);");
+    expect(equipmentAction).toContain("padding: 0;");
+    expect(equipmentAction).toContain("box-sizing: border-box;");
+    expect(equipmentAction).toContain("line-height: normal;");
+    expect(equipmentListBox).toContain("height: 100%;");
+    expect(equipmentListBox).toContain("min-height: 0;");
     expect(row).toContain("grid-template-columns: minmax(18vh, 0.92fr) minmax(0, 1fr);");
     expect(row).toContain("column-gap: 0.8vh;");
     expect(row).toContain("height: var(--control-panel-object-row-height);");
@@ -580,5 +609,25 @@ describe("HUD styles", () => {
     expect(cursor).toContain("#252c32");
     expect(cursor).toContain("clip-path: polygon(0 0, 0 82%, 31% 58%, 50% 100%, 64% 94%, 45% 54%, 76% 54%);");
     expect(cursorHighlight).not.toContain("border-left");
+  });
+
+  // Проверяет, что общий слайдер выглядит как заполняемый прямоугольный индикатор.
+  it("styles shared slider as a fillable rectangular bar", () => {
+    const slider = readCssBlock(".ui-kit-slider");
+    const fill = readCssBlock(".ui-kit-slider__fill");
+    const label = readCssBlock(".ui-kit-slider__label");
+
+    expect(slider).toContain("width: 100%;");
+    expect(slider).toContain("box-sizing: border-box;");
+    expect(slider).toContain("min-height: var(--hud-dropdown-min-height);");
+    expect(slider).toContain("padding: 0.28vh;");
+    expect(slider).toContain("border-radius: 0;");
+    expect(slider).toContain("overflow: hidden;");
+    expect(slider).toContain("box-shadow: inset 0 0 0.45vh rgba(216, 243, 255, 0.18);");
+    expect(fill).toContain("border-radius: 0;");
+    expect(fill).toContain("box-shadow: inset -0.35vh 0 0.45vh rgba(238, 250, 255, 0.22);");
+    expect(label).toContain("position: absolute;");
+    expect(label).toContain("inset: 0;");
+    expect(label).toContain("justify-content: center;");
   });
 });

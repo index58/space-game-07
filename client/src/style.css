@@ -463,7 +463,16 @@ body {
   display: grid;
   gap: 0;
   padding: var(--hud-list-padding);
+  overflow: hidden;
   background: rgb(0, 0, 0);
+}
+
+.ui-kit-list__content {
+  display: grid;
+  grid-auto-rows: var(--hud-dropdown-min-height);
+  gap: 0;
+  align-content: start;
+  min-height: 0;
 }
 
 .ui-kit-dropdown::after {
@@ -554,9 +563,14 @@ body {
 .ui-kit-list__item,
 .ui-kit-tree__item,
 .ui-kit-virtual-list__item {
-  min-height: 2.3vh;
+  display: flex;
+  align-items: center;
+  min-height: var(--hud-dropdown-min-height);
   padding: 0.45vh var(--hud-control-padding-x);
   box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ui-kit-edit {
@@ -704,7 +718,8 @@ body {
 }
 
 .ui-kit-scrollbar.ui-kit-dropdown-scrollbar,
-.ui-kit-scrollbar.settings-input-scrollbar {
+.ui-kit-scrollbar.settings-input-scrollbar,
+.ui-kit-scrollbar.control-panel-equipment-list-scrollbar {
   position: absolute;
   right: 0.25vh;
   top: 0.35vh;
@@ -730,13 +745,32 @@ body {
 
 .ui-kit-slider {
   position: relative;
-  height: 2.3vh;
-  background: rgba(5, 18, 28, 0.92);
+  width: 100%;
+  height: var(--hud-dropdown-min-height);
+  min-height: var(--hud-dropdown-min-height);
+  padding: 0.28vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgb(0, 0, 0);
+  border-radius: 0;
+  box-shadow: inset 0 0 0.45vh rgba(216, 243, 255, 0.18);
 }
 
 .ui-kit-slider__fill {
   height: 100%;
+  border-radius: 0;
   background: rgba(126, 212, 255, 0.42);
+  box-shadow: inset -0.35vh 0 0.45vh rgba(238, 250, 255, 0.22);
+}
+
+.ui-kit-slider__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eefaff;
+  text-shadow: 0 0.16vh 0.25vh rgba(0, 0, 0, 0.82);
 }
 
 .ui-kit-splitter {
@@ -970,6 +1004,8 @@ body {
 }
 
 .control-panel {
+  --control-panel-object-row-height: 2.45vh;
+  --control-panel-object-row-gap: 0.25vh;
   display: grid;
   grid-template-rows: calc(var(--hud-tab-height) + var(--hud-tab-panel-padding) * 2) minmax(0, 1fr);
   gap: 0.9vh;
@@ -994,6 +1030,54 @@ body {
   height: 24.05vh;
   min-height: 0;
   overflow: hidden;
+}
+
+.control-panel-equipment-page {
+  display: grid;
+  grid-template-rows: calc(var(--hud-tab-height) + var(--hud-tab-panel-padding) * 2) minmax(0, 1fr);
+  gap: 0.9vh;
+  min-height: 0;
+}
+
+.control-panel-equipment-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.4vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.control-panel-equipment-list {
+  position: relative;
+  min-height: 0;
+  padding-right: 1.65vh;
+  overflow: hidden;
+}
+
+.control-panel-equipment-info {
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-auto-rows: var(--control-panel-object-row-height);
+  gap: var(--control-panel-object-row-gap);
+  align-content: start;
+}
+
+.control-panel-equipment-action {
+  grid-row: span 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--hud-dropdown-min-height);
+  padding: 0;
+  box-sizing: border-box;
+  line-height: normal;
+}
+
+.control-panel-equipment-list .ui-kit-list {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
 
 .control-panel-object-row {

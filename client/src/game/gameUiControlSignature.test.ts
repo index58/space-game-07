@@ -34,6 +34,11 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   controlPanelVisible: false,
   selectedSettingsTab: "input",
   selectedControlPanelTab: "object",
+  selectedControlPanelEquipmentTab: "setup",
+  selectedControlPanelEquipmentGroupId: null,
+  controlPanelEquipmentEnabledDrafts: {},
+  controlPanelEquipmentEnabledCountDrafts: {},
+  controlPanelEquipmentListScroll: scrollState,
   controlPanelObjectEnabled: true,
   controlPanelObjectTitleText: "Ship",
   controlPanelObjectTitleSelectionStart: 4,
@@ -115,6 +120,18 @@ describe("getGameUiControlLayoutSignature", () => {
   it("changes when selected control panel tab changes", () => {
     const first = getGameUiControlLayoutSignature(state({ controlPanelVisible: true, selectedControlPanelTab: "object" }), viewport);
     const second = getGameUiControlLayoutSignature(state({ controlPanelVisible: true, selectedControlPanelTab: "equipment" }), viewport);
+
+    expect(second).not.toBe(first);
+  });
+
+  // Проверяет, что прокрутка списка оборудования пересобирает hit-test области пунктов.
+  it("changes when equipment list scroll changes", () => {
+    const first = getGameUiControlLayoutSignature(state({ controlPanelVisible: true, selectedControlPanelTab: "equipment" }), viewport);
+    const second = getGameUiControlLayoutSignature(state({
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      controlPanelEquipmentListScroll: { ...scrollState, visible: true, contentOffsetPx: 32 },
+    }), viewport);
 
     expect(second).not.toBe(first);
   });

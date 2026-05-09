@@ -67,6 +67,43 @@ func TestDecodeInputSettingsRequestMessageAcceptsAgreedType(t *testing.T) {
 	}
 }
 
+// Проверяет, что команда панели управления объектом читает идентификатор мутации и изменяемые поля.
+func TestDecodeControlPanelObjectUpdateMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeControlPanelObjectUpdateMessage([]byte(`{
+		"type": "controlPanelObjectUpdate",
+		"clientSessionId": "session-1",
+		"mutationSeq": 7,
+		"enabled": false,
+		"title": "Новый корабль"
+	}`))
+
+	if !ok {
+		t.Fatalf("control panel object update was not accepted")
+	}
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 7 || message.Enabled == nil || *message.Enabled || message.Title == nil || *message.Title != "Новый корабль" {
+		t.Fatalf("decoded object update mismatch: %+v", message)
+	}
+}
+
+// Проверяет, что команда панели управления оборудованием читает идентификатор группы и значения.
+func TestDecodeControlPanelEquipmentUpdateMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeControlPanelEquipmentUpdateMessage([]byte(`{
+		"type": "controlPanelEquipmentUpdate",
+		"clientSessionId": "session-1",
+		"mutationSeq": 8,
+		"equipmentGroupId": 12,
+		"enabled": true,
+		"enabledCount": 3
+	}`))
+
+	if !ok {
+		t.Fatalf("control panel equipment update was not accepted")
+	}
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 8 || message.EquipmentGroupID != 12 || message.Enabled == nil || !*message.Enabled || message.EnabledCount == nil || *message.EnabledCount != 3 {
+		t.Fatalf("decoded equipment update mismatch: %+v", message)
+	}
+}
+
 // Проверяет, что команда чата читает выбранную вкладку и адресный ник из JSON.
 func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeChatSendMessage([]byte(`{
@@ -184,6 +221,10 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				EnabledCount:         2,
 			},
 		},
+		ClientMutationAck: &game.ClientMutationAck{
+			SessionID:      "session-1",
+			LastAppliedSeq: 8,
+		},
 	}
 
 	payload, err := transport.EncodeSnapshotMessage(snapshot)
@@ -201,6 +242,7 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		`"equipmentGroups":[`,
 		`"EquipmentItemModelID":101`,
 		`"EnabledCount":2`,
+		`"clientMutationAck":{"sessionId":"session-1","lastAppliedSeq":8}`,
 	} {
 		if !strings.Contains(jsonText, field) {
 			t.Fatalf("encoded snapshot %s does not contain %s", jsonText, field)

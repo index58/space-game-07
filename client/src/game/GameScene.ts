@@ -12,16 +12,20 @@ import type {
   ConnectionStatus,
   CosmicObject,
   CosmicObjectModelReference,
+  EquipmentGroup,
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
-import type { ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
+import type { ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
 import { getInputBindingMap, getInputSettingsLeftColumnRowCount, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
+import { getUiKitControlHitRect } from "../ui-kit/hitRect";
+import { getCountSliderValue } from "../ui-kit/slider";
 import { applyUiKitDemoAction, createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiAction, GameUiControlKind, GameUiControlState } from "../ui-kit/types";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
+import { applyControlPanelPendingToEquipmentGroups, applyControlPanelPendingToObject, emptyControlPanelPendingState, pruneControlPanelPending, rejectControlPanelPending, type ControlPanelPendingState } from "./controlPanelMutations";
 import { FrameRateMeter } from "./frameRateMeter";
 import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
 import { InputController, type ChatScrollState } from "./InputController";
@@ -35,6 +39,8 @@ const SETTINGS_DROPDOWN_ITEM_HEIGHT_VH = 2.3;
 const SETTINGS_DROPDOWN_CONTENT_PADDING_VH = 0.7;
 // Видимая высота раскрытого списка в единицах высоты экрана.
 const SETTINGS_DROPDOWN_VIEWPORT_HEIGHT_VH = 22;
+// Базовая высота пункта списка оборудования в единицах высоты экрана.
+const CONTROL_PANEL_EQUIPMENT_LIST_ITEM_HEIGHT_VH = 2.35;
 
 // Связывает Phaser-отрисовку, сетевой клиент, ввод и SolidJS UI-слой.
 export class GameScene extends Phaser.Scene {
@@ -84,6 +90,18 @@ export class GameScene extends Phaser.Scene {
   private selectedSettingsTab: SettingsTabValue = "input";
   // Активная страница панели управления.
   private selectedControlPanelTab: ControlPanelTabValue = "object";
+  // Активная подстраница оборудования в панели управления.
+  private selectedControlPanelEquipmentTab: ControlPanelEquipmentSubTabValue = "setup";
+  // ID выбранной группы оборудования в панели управления.
+  private selectedControlPanelEquipmentGroupId: number | null = null;
+  // Ожидающие подтверждения сервером изменения панели управления.
+  private controlPanelPending: ControlPanelPendingState = emptyControlPanelPendingState();
+  // Последний обработанный номер ошибки панели управления.
+  private controlPanelErrorSeq = -1;
+  // Вертикальный сдвиг списка групп оборудования.
+  private controlPanelEquipmentListScrollOffsetPx = 0;
+  // Захват ползунка списка групп оборудования.
+  private controlPanelEquipmentListScrollbarDrag: ScrollbarDragState | null = null;
   // Предыдущее состояние видимости окна настроек для запроса свежих данных при открытии.
   private previousSettingsVisible = false;
   // Вертикальный сдвиг списка действий в окне настроек.
@@ -157,6 +175,7 @@ export class GameScene extends Phaser.Scene {
     this.requestInputSettingsOnOpen(settingsVisible);
     this.syncInputSettingsFromServer();
     const snapshot = this.gameClient?.getLatestSnapshot() ?? null;
+    this.syncControlPanelPendingFromServer(snapshot);
     const isWorldReady = status === "connected" && Boolean(snapshot);
     const chatState = isWorldReady ? this.inputController.getVisibleChatState(this.gameClient?.getLatestChatState() ?? null) : null;
     const chatAction = this.inputController.consumeChatAction();
@@ -171,9 +190,12 @@ export class GameScene extends Phaser.Scene {
     this.consumeSettingsWheel();
     const inputSettingsScroll = this.getSettingsInputScrollState();
     const inputSettingsDropdownScroll = this.getSettingsDropdownScrollState();
-    const selfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
+    const serverSelfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
+    const effectiveEquipmentGroups = snapshot ? applyControlPanelPendingToEquipmentGroups(snapshot.equipmentGroups ?? [], this.controlPanelPending) : [];
+    const selfObject = applyControlPanelPendingToObject(serverSelfObject, this.controlPanelPending);
     this.inputController.syncControlPanelObject(selfObject);
     const controlPanelObjectTitleEditState = this.inputController.getControlPanelObjectTitleEditState(selfObject?.Title ?? "");
+    this.commitControlPanelObjectTitleIfNeeded(serverSelfObject);
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
 
@@ -183,7 +205,7 @@ export class GameScene extends Phaser.Scene {
         status,
         selfObject: null,
         objects: snapshot?.objects ?? [],
-        equipmentGroups: snapshot?.equipmentGroups ?? [],
+        equipmentGroups: effectiveEquipmentGroups,
         selectedPilotToolIndex: this.selectedPilotToolIndex,
         referenceData: this.referenceData,
         textureFilePath: null,
@@ -203,6 +225,11 @@ export class GameScene extends Phaser.Scene {
         controlPanelVisible,
         selectedSettingsTab: this.selectedSettingsTab,
         selectedControlPanelTab: this.selectedControlPanelTab,
+        selectedControlPanelEquipmentTab: this.selectedControlPanelEquipmentTab,
+        selectedControlPanelEquipmentGroupId: this.selectedControlPanelEquipmentGroupId,
+        controlPanelEquipmentEnabledDrafts: {},
+        controlPanelEquipmentEnabledCountDrafts: {},
+        controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
         controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(false),
         controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
         controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
@@ -233,7 +260,7 @@ export class GameScene extends Phaser.Scene {
       status,
       selfObject,
       objects: snapshot.objects,
-      equipmentGroups: snapshot.equipmentGroups ?? [],
+      equipmentGroups: effectiveEquipmentGroups,
       selectedPilotToolIndex: this.selectedPilotToolIndex,
       referenceData: this.referenceData,
       textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
@@ -253,6 +280,11 @@ export class GameScene extends Phaser.Scene {
       controlPanelVisible,
       selectedSettingsTab: this.selectedSettingsTab,
       selectedControlPanelTab: this.selectedControlPanelTab,
+      selectedControlPanelEquipmentTab: this.selectedControlPanelEquipmentTab,
+      selectedControlPanelEquipmentGroupId: this.selectedControlPanelEquipmentGroupId,
+      controlPanelEquipmentEnabledDrafts: {},
+      controlPanelEquipmentEnabledCountDrafts: {},
+      controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
       controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(selfObject.Enabled),
       controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
       controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
@@ -461,11 +493,11 @@ export class GameScene extends Phaser.Scene {
   private collectGameUiControls(): GameUiControlState[] {
     return Array.from(document.querySelectorAll<HTMLElement>(".ui-kit-control"))
       .map((element, index): GameUiControlState | null => {
-        const rect = element.getBoundingClientRect();
+        const rect = getUiKitControlHitRect(element);
         if (rect.width <= 0 || rect.height <= 0) {
           return null;
         }
-        const clippingViewport = element.closest(".ui-kit-dropdown__menu-viewport, .settings-input-table");
+        const clippingViewport = element.closest(".ui-kit-dropdown__menu-viewport, .settings-input-table, .control-panel-equipment-list .ui-kit-list");
         if (clippingViewport) {
           const viewportRect = clippingViewport.getBoundingClientRect();
           if (rect.bottom < viewportRect.top || rect.top > viewportRect.bottom || rect.right < viewportRect.left || rect.left > viewportRect.right) {
@@ -506,6 +538,43 @@ export class GameScene extends Phaser.Scene {
     this.inputController.updateGameUiControls(this.collectGameUiControls());
   }
 
+  // Снимает подтвержденные или отклоненные сервером pending-изменения панели управления.
+  private syncControlPanelPendingFromServer(snapshot: { clientMutationAck?: { sessionId: string; lastAppliedSeq: number } } | null): void {
+    this.controlPanelPending = pruneControlPanelPending(this.controlPanelPending, snapshot?.clientMutationAck);
+    const errorSeq = this.gameClient?.getLatestControlPanelErrorSeq() ?? 0;
+    if (errorSeq === this.controlPanelErrorSeq) {
+      return;
+    }
+    this.controlPanelErrorSeq = errorSeq;
+    const error = this.gameClient?.getLatestControlPanelError();
+    if (!error) {
+      return;
+    }
+    this.controlPanelPending = rejectControlPanelPending(this.controlPanelPending, {
+      clientSessionId: error.clientSessionId,
+      mutationSeq: error.mutationSeq,
+    });
+  }
+
+  // Отправляет завершенное редактирование названия объекта, если текст отличается от серверного снимка.
+  private commitControlPanelObjectTitleIfNeeded(serverSelfObject: CosmicObject | null): void {
+    const title = this.inputController.consumeControlPanelObjectTitleCommit();
+    if (title === null || !serverSelfObject || title === serverSelfObject.Title) {
+      return;
+    }
+    const mutation = this.gameClient?.sendControlPanelObjectUpdate({ title });
+    if (!mutation) {
+      return;
+    }
+    this.controlPanelPending = {
+      ...this.controlPanelPending,
+      object: {
+        ...this.controlPanelPending.object,
+        title: { ...mutation, value: title },
+      },
+    };
+  }
+
   // Применяет накопленные действия общего UI к локальной витрине контролов.
   private consumeGameUiActions(): void {
     let action = this.inputController.consumeGameUiAction();
@@ -525,16 +594,191 @@ export class GameScene extends Phaser.Scene {
 
   // Применяет действия панели управления и не пропускает их в отладочную витрину.
   private consumeControlPanelUiAction(action: GameUiAction): boolean {
+    if (action.kind === "scrollbar" && action.controlId === "control-panel-equipment-list-scrollbar") {
+      return this.consumeControlPanelEquipmentListScrollbarAction(action);
+    }
+    if (action.kind === "slider" && action.controlId === "control-panel-equipment-enabled-slider") {
+      return this.consumeControlPanelEquipmentSliderAction(action);
+    }
+    if (action.type !== "click") {
+      return action.controlId.startsWith("control-panel-");
+    }
     if (action.type === "click" && action.controlId.startsWith("control-panel-tab-")) {
       if (isControlPanelTabValue(action.value)) {
         this.selectedControlPanelTab = action.value;
       }
       return true;
     }
+    if (action.type === "click" && action.controlId.startsWith("control-panel-equipment-tab-")) {
+      if (isControlPanelEquipmentSubTabValue(action.value)) {
+        this.selectedControlPanelEquipmentTab = action.value;
+      }
+      return true;
+    }
+    if (action.type === "click" && action.controlId === "control-panel-equipment-usage-button") {
+      this.selectedControlPanelEquipmentTab = "usage";
+      return true;
+    }
+    if (action.controlId === "control-panel-object-enabled") {
+      const enabled = !this.gameUi.state().controlPanelObjectEnabled;
+      const mutation = this.gameClient?.sendControlPanelObjectUpdate({ enabled });
+      if (mutation) {
+        this.controlPanelPending = {
+          ...this.controlPanelPending,
+          object: {
+            ...this.controlPanelPending.object,
+            enabled: { ...mutation, value: enabled },
+          },
+        };
+      }
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-equipment-list-") && typeof action.value === "string") {
+      const groupId = Number(action.value);
+      if (this.getControlPanelEquipmentGroup(groupId)) {
+        this.selectedControlPanelEquipmentGroupId = groupId;
+        this.controlPanelEquipmentListScrollOffsetPx = clamp(this.controlPanelEquipmentListScrollOffsetPx, 0, this.controlPanelEquipmentListMaxScrollOffset());
+      }
+      return true;
+    }
+    if (action.controlId === "control-panel-equipment-enabled") {
+      const group = this.getSelectedControlPanelEquipmentGroup();
+      if (group) {
+        const enabled = !this.getControlPanelEquipmentEnabled(group);
+        this.sendControlPanelEquipmentMutation(group.ID, { enabled });
+      }
+      return true;
+    }
+    if (action.controlId === "control-panel-equipment-enabled-count-decrement") {
+      this.changeControlPanelEquipmentEnabledCount(-1);
+      return true;
+    }
+    if (action.controlId === "control-panel-equipment-enabled-count" || action.controlId === "control-panel-equipment-enabled-count-increment") {
+      this.changeControlPanelEquipmentEnabledCount(1);
+      return true;
+    }
     if (action.controlId === "control-panel-modal") {
       return true;
     }
     return action.controlId.startsWith("control-panel-");
+  }
+
+  // Обрабатывает полосу прокрутки списка оборудования через общий механизм UI Kit.
+  private consumeControlPanelEquipmentListScrollbarAction(action: GameUiAction): boolean {
+    if (!action.controlRect) {
+      return true;
+    }
+    const scrollState = this.getControlPanelEquipmentListScrollState();
+    if (action.type === "dragStart") {
+      this.controlPanelEquipmentListScrollbarDrag = startScrollbarDrag({
+        top: action.controlRect.top,
+        height: action.controlRect.height,
+        thumbTopPercent: scrollState.thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+      }, action.y);
+      return true;
+    }
+    if (action.type === "dragEnd") {
+      this.controlPanelEquipmentListScrollbarDrag = null;
+      return true;
+    }
+    if (action.type === "dragMove" && this.controlPanelEquipmentListScrollbarDrag) {
+      const thumbTopPercent = getScrollbarThumbTopPercentFromCursor({
+        top: action.controlRect.top,
+        height: action.controlRect.height,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        drag: this.controlPanelEquipmentListScrollbarDrag,
+      }, action.y);
+      this.controlPanelEquipmentListScrollOffsetPx = getScrollOffsetFromThumbTopPercent({
+        thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        maxOffsetPx: this.controlPanelEquipmentListMaxScrollOffset(),
+        reverse: false,
+      });
+      return true;
+    }
+    return true;
+  }
+
+  // Пересчитывает черновое количество оборудования по позиции курсора на общем слайдере.
+  private consumeControlPanelEquipmentSliderAction(action: GameUiAction): boolean {
+    const group = this.getSelectedControlPanelEquipmentGroup();
+    if (!group || !action.controlRect) {
+      return true;
+    }
+    if (action.type === "dragStart" || action.type === "dragMove") {
+      const position = clamp((action.x - action.controlRect.left) / Math.max(1, action.controlRect.width), 0, 1);
+      const maxCount = Math.max(1, group.Count);
+      this.setControlPanelEquipmentEnabledCount(group, getCountSliderValue(position, maxCount));
+    }
+    return true;
+  }
+
+  // Меняет черновое количество выбранной группы оборудования дискретным шагом.
+  private changeControlPanelEquipmentEnabledCount(delta: number): void {
+    const group = this.getSelectedControlPanelEquipmentGroup();
+    if (!group) {
+      return;
+    }
+    this.setControlPanelEquipmentEnabledCount(group, this.getControlPanelEquipmentEnabledCount(group) + delta);
+  }
+
+  // Сохраняет черновое количество с ограничением по доступному числу единиц.
+  private setControlPanelEquipmentEnabledCount(group: EquipmentGroup, value: number): void {
+    this.sendControlPanelEquipmentMutation(group.ID, { enabledCount: clamp(value, 1, Math.max(1, group.Count)) });
+  }
+
+  // Отправляет изменение оборудования и кладет его поверх снимков до серверного подтверждения.
+  private sendControlPanelEquipmentMutation(groupId: number, update: { enabled?: boolean; enabledCount?: number }): void {
+    const mutation = this.gameClient?.sendControlPanelEquipmentUpdate({ equipmentGroupId: groupId, ...update });
+    if (!mutation) {
+      return;
+    }
+    const current = this.controlPanelPending.equipment[groupId] ?? {};
+    this.controlPanelPending = {
+      ...this.controlPanelPending,
+      equipment: {
+        ...this.controlPanelPending.equipment,
+        [groupId]: {
+          ...current,
+          enabled: update.enabled === undefined ? current.enabled : { ...mutation, value: update.enabled },
+          enabledCount: update.enabledCount === undefined ? current.enabledCount : { ...mutation, value: update.enabledCount },
+        },
+      },
+    };
+  }
+
+  // Возвращает серверную группу оборудования по ID из последнего UI-снимка.
+  private getControlPanelEquipmentGroup(groupId: number): EquipmentGroup | null {
+    return this.getControlPanelEquipmentGroups().find((group) => group.ID === groupId) ?? null;
+  }
+
+  // Возвращает выбранную группу или первую доступную группу оборудования текущего объекта.
+  private getSelectedControlPanelEquipmentGroup(): EquipmentGroup | null {
+    const groups = this.getControlPanelEquipmentGroups();
+    return groups.find((group) => group.ID === this.selectedControlPanelEquipmentGroupId) ?? groups[0] ?? null;
+  }
+
+  // Возвращает группы оборудования текущего объекта из последнего UI-снимка.
+  private getControlPanelEquipmentGroups(): EquipmentGroup[] {
+    const state = this.gameUi.state();
+    const objectId = state.selfObject?.ID;
+    if (!objectId) {
+      return [];
+    }
+    return state.equipmentGroups
+      .filter((group) => group.CosmicObjectID === objectId)
+      .sort((left, right) => left.ID - right.ID);
+  }
+
+  // Возвращает effective-признак включения группы оборудования из снимка с учетом pending.
+  private getControlPanelEquipmentEnabled(group: EquipmentGroup): boolean {
+    return group.Enabled;
+  }
+
+  // Возвращает effective-количество включенных единиц из снимка с учетом pending.
+  private getControlPanelEquipmentEnabledCount(group: EquipmentGroup): number {
+    return clamp(group.EnabledCount, 1, Math.max(1, group.Count));
   }
 
   // Применяет действия модального окна настроек и не пропускает их в демонстрационную панель.
@@ -747,6 +991,16 @@ export class GameScene extends Phaser.Scene {
     );
   }
 
+  // Возвращает состояние полосы прокрутки списка групп оборудования.
+  private getControlPanelEquipmentListScrollState(): ChatScrollState {
+    return this.getScrollState(
+      this.controlPanelEquipmentListScrollOffsetPx,
+      this.controlPanelEquipmentListViewportHeightPx(),
+      this.controlPanelEquipmentListContentHeightPx(),
+      this.controlPanelEquipmentListScrollbarDrag !== null,
+    );
+  }
+
   // Формирует универсальное состояние скролла для UI Kit полосы.
   private getScrollState(offsetPx: number, viewportHeightPx: number, contentHeightPx: number, dragging: boolean): ChatScrollState {
     const maxOffsetPx = Math.max(0, contentHeightPx - viewportHeightPx);
@@ -767,6 +1021,11 @@ export class GameScene extends Phaser.Scene {
   // Возвращает максимальный сдвиг раскрытого списка событий.
   private settingsDropdownMaxScrollOffset(): number {
     return Math.max(0, this.settingsDropdownContentHeightPx() - this.settingsDropdownViewportHeightPx());
+  }
+
+  // Возвращает максимальный сдвиг списка групп оборудования.
+  private controlPanelEquipmentListMaxScrollOffset(): number {
+    return Math.max(0, this.controlPanelEquipmentListContentHeightPx() - this.controlPanelEquipmentListViewportHeightPx());
   }
 
   // Измеряет видимую высоту списка действий.
@@ -790,6 +1049,17 @@ export class GameScene extends Phaser.Scene {
     const optionCount = Object.keys(this.referenceData?.InputEventType.Items ?? {}).length;
     return (optionCount * SETTINGS_DROPDOWN_ITEM_HEIGHT_VH + SETTINGS_DROPDOWN_CONTENT_PADDING_VH) * window.innerHeight / 100;
   }
+
+  // Измеряет видимую высоту списка групп оборудования.
+  private controlPanelEquipmentListViewportHeightPx(): number {
+    return document.querySelector<HTMLElement>(".control-panel-equipment-list .ui-kit-list")?.getBoundingClientRect().height ?? window.innerHeight * 0.31;
+  }
+
+  // Измеряет полную высоту списка групп оборудования.
+  private controlPanelEquipmentListContentHeightPx(): number {
+    const rowCount = this.getControlPanelEquipmentGroups().length;
+    return (rowCount * CONTROL_PANEL_EQUIPMENT_LIST_ITEM_HEIGHT_VH + SETTINGS_DROPDOWN_CONTENT_PADDING_VH) * window.innerHeight / 100;
+  }
 }
 
 const uiKind = (value: string | undefined): GameUiControlKind => {
@@ -804,5 +1074,9 @@ const isControlPanelTabValue = (value: unknown): value is ControlPanelTabValue =
   value === "schemas" ||
   value === "blueprints" ||
   value === "map";
+
+const isControlPanelEquipmentSubTabValue = (value: unknown): value is ControlPanelEquipmentSubTabValue =>
+  value === "setup" ||
+  value === "usage";
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));

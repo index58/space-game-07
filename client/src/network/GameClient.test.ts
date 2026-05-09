@@ -407,6 +407,63 @@ describe("GameClient", () => {
     client.destroy();
   });
 
+  // Проверяет, что команды панели управления получают общий ID сессии и возрастающие номера мутаций.
+  it("sends control panel mutations with shared session and increasing sequence", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+      clientSessionId: "session-1",
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    const objectMutation = client.sendControlPanelObjectUpdate({ enabled: false });
+    const equipmentMutation = client.sendControlPanelEquipmentUpdate({ equipmentGroupId: 12, enabledCount: 3 });
+
+    expect(objectMutation).toEqual({ sessionId: "session-1", seq: 1 });
+    expect(equipmentMutation).toEqual({ sessionId: "session-1", seq: 2 });
+    expect(JSON.parse(socket.sent[0])).toEqual({
+      type: "controlPanelObjectUpdate",
+      clientSessionId: "session-1",
+      mutationSeq: 1,
+      enabled: false,
+    });
+    expect(JSON.parse(socket.sent[1])).toEqual({
+      type: "controlPanelEquipmentUpdate",
+      clientSessionId: "session-1",
+      mutationSeq: 2,
+      equipmentGroupId: 12,
+      enabledCount: 3,
+    });
+
+    client.destroy();
+  });
+
+  // Проверяет, что отказ панели управления сохраняет номер отклоненной мутации.
+  it("stores control panel mutation error from server refusal", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "controlPanelError", clientSessionId: "session-1", mutationSeq: 4, message: "bad command" }) });
+
+    expect(client.getLatestControlPanelError()).toEqual({
+      type: "controlPanelError",
+      clientSessionId: "session-1",
+      mutationSeq: 4,
+      message: "bad command",
+    });
+    expect(client.getLatestControlPanelErrorSeq()).toBe(1);
+
+    client.destroy();
+  });
+
   // Проверяет, что клиент умеет явно запросить свежие настройки ввода при открытии окна.
   it("requests latest input settings while connected", () => {
     FakeWebSocket.instances = [];

@@ -1,6 +1,7 @@
 package world
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -52,7 +53,21 @@ type World struct {
 	data             Data                     // Справочники и игровые сущности, которыми управляет мир.
 	accountObjectIDs map[int64]int64          // Связь подключенных аккаунтов с управляемыми объектами.
 	inputs           map[int64]game.ShipInput // Последний принятый ввод для каждого подключенного аккаунта.
+	mutationAcks     map[string]int64         // Последний обработанный номер команды панели по аккаунту и сессии.
 	random           *rand.Rand               // Источник случайности для воспроизводимых команд.
+}
+
+// ControlPanelObjectUpdate описывает частичное изменение управляемого объекта.
+type ControlPanelObjectUpdate struct {
+	Enabled *bool   // Новое состояние включения объекта, если оно меняется.
+	Title   *string // Новое пользовательское название объекта, если оно меняется.
+}
+
+// ControlPanelEquipmentUpdate описывает частичное изменение группы оборудования.
+type ControlPanelEquipmentUpdate struct {
+	EquipmentGroupID int64  // Группа оборудования, которую нужно изменить.
+	Enabled          *bool  // Новое состояние включения группы, если оно меняется.
+	EnabledCount     *int64 // Новое количество включенных единиц, если оно меняется.
 }
 
 // Создает мир поверх уже загруженных серверных данных.
@@ -61,6 +76,7 @@ func New(seed int64, serverData Data) *World {
 		data:             serverData,
 		accountObjectIDs: map[int64]int64{},
 		inputs:           map[int64]game.ShipInput{},
+		mutationAcks:     map[string]int64{},
 		random:           rand.New(rand.NewSource(seed)),
 	}
 	created.ensureChatData()
@@ -237,6 +253,63 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	world.fillShipSupplies(cosmicObject)
 
 	return world.data.CosmicObjects.RebuildIndexes() == nil
+}
+
+// ApplyControlPanelObjectUpdate применяет подтвержденное изменение панели к объекту текущего аккаунта.
+func (world *World) ApplyControlPanelObjectUpdate(accountID int64, sessionID string, mutationSeq int64, update ControlPanelObjectUpdate) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+	if !ok {
+		return errors.New("controlled object not found")
+	}
+
+	if update.Enabled != nil {
+		cosmicObject.Enabled = *update.Enabled
+	}
+	if update.Title != nil {
+		cosmicObject.Title = *update.Title
+	}
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
+}
+
+// ApplyControlPanelEquipmentUpdate применяет подтвержденное изменение панели к оборудованию текущего объекта.
+func (world *World) ApplyControlPanelEquipmentUpdate(accountID int64, sessionID string, mutationSeq int64, update ControlPanelEquipmentUpdate) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	if world.data.EquipmentGroups == nil {
+		return errors.New("equipment groups are not loaded")
+	}
+	group, ok := world.data.EquipmentGroups.Get(update.EquipmentGroupID)
+	if !ok {
+		return errors.New("equipment group not found")
+	}
+	if group.CosmicObjectID != objectID {
+		return errors.New("equipment group does not belong to controlled object")
+	}
+
+	if update.EnabledCount != nil {
+		if *update.EnabledCount < 1 || *update.EnabledCount > group.Count {
+			return errors.New("enabled equipment count is out of range")
+		}
+		group.EnabledCount = *update.EnabledCount
+	}
+	if update.Enabled != nil {
+		group.Enabled = *update.Enabled
+	}
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
 }
 
 // Выполняет один шаг симуляции и возвращает общий снимок мира.
@@ -421,6 +494,22 @@ func sortedEquipmentGroups(groups []*data.EquipmentGroup) []*data.EquipmentGroup
 	return result
 }
 
+// ackMutationLocked запоминает последний обработанный номер команды панели под уже взятым mutex.
+func (world *World) ackMutationLocked(accountID int64, sessionID string, mutationSeq int64) {
+	if sessionID == "" || mutationSeq <= 0 {
+		return
+	}
+	key := mutationAckKey(accountID, sessionID)
+	if mutationSeq > world.mutationAcks[key] {
+		world.mutationAcks[key] = mutationSeq
+	}
+}
+
+// mutationAckKey собирает ключ подтверждения команд панели для аккаунта и сессии.
+func mutationAckKey(accountID int64, sessionID string) string {
+	return fmt.Sprintf("%d:%s", accountID, sessionID)
+}
+
 // Проверяет, что модель относится к кораблям.
 func (world *World) isShipModel(model *data.CosmicObjectModel) bool {
 	cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
@@ -483,6 +572,17 @@ func (world *World) ObjectIDForAccount(accountID int64) (int64, bool) {
 
 	objectID, ok := world.accountObjectIDs[accountID]
 	return objectID, ok
+}
+
+// ClientMutationAck возвращает последний обработанный номер команды панели для клиентской сессии.
+func (world *World) ClientMutationAck(accountID int64, sessionID string) game.ClientMutationAck {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	return game.ClientMutationAck{
+		SessionID:      sessionID,
+		LastAppliedSeq: world.mutationAcks[mutationAckKey(accountID, sessionID)],
+	}
 }
 
 // Возвращает персонажа по идентификатору из защищенного состояния.

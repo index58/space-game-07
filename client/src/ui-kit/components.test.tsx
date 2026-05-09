@@ -38,13 +38,14 @@ describe("ui-kit components", () => {
     dispose = render(() => (
       <>
         <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
-        <ListBox id="list" selectedValue="2" items={[{ value: "1", label: "One" }, { value: "2", label: "Two" }]} />
+        <ListBox id="list" selectedValue="2" scrollOffsetPx={12} items={[{ value: "1", label: "One" }, { value: "2", label: "Two" }]} />
         <TreeView id="tree" selectedValue="child" nodes={[{ value: "root", label: "Root", children: [{ value: "child", label: "Child" }] }]} />
         <VirtualList id="virtual" startIndex={10} items={Array.from({ length: 3 }, (_, index) => ({ value: String(index), label: `Item ${index}` }))} />
       </>
     ), root);
 
     expect(document.body.querySelector(".ui-kit-dropdown__menu")).not.toBeNull();
+    expect(root.querySelector<HTMLElement>("#list .ui-kit-list__content")?.style.transform).toBe("translateY(-12px)");
     expect(root.querySelector(".ui-kit-list__item.is-selected")?.textContent).toBe("Two");
     expect(root.querySelector(".ui-kit-tree__item.is-selected")?.textContent).toBe("Child");
     expect(root.querySelector(".ui-kit-virtual-list__index")?.textContent).toBe("10");
@@ -214,7 +215,7 @@ describe("ui-kit components", () => {
         <EditControl id="edit" text="abcdef" selectionStart={1} selectionEnd={4} focused={true} />
         <Tabs id="tabs" align="center" selectedValue="chat" tabs={[{ value: "map", label: "Map" }, { value: "chat", label: "Chat", badge: 2 }]} />
         <Scrollbar id="scroll" thumbTopPercent={25} thumbHeightPercent={40} dragging={true} />
-        <Slider id="slider" value={40} min={0} max={100} />
+        <Slider id="slider" value={40} min={0} max={100} label="40 / 100" />
         <NumericStepper id="stepper" value={7} />
         <Splitter id="splitter" vertical={true} />
         <ContextMenu id="menu" items={[{ value: "close", label: "Close" }]} />
@@ -228,6 +229,7 @@ describe("ui-kit components", () => {
     expect(root.querySelector(".ui-kit-tab.is-selected")?.textContent).toContain("Chat");
     expect(root.querySelector(".ui-kit-scrollbar.is-dragging")).not.toBeNull();
     expect(root.querySelector<HTMLElement>(".ui-kit-slider__fill")?.style.width).toBe("40%");
+    expect(root.querySelector(".ui-kit-slider__label")?.textContent).toBe("40 / 100");
     expect(root.querySelector(".ui-kit-stepper")?.textContent).toContain("7");
     expect(root.querySelector(".ui-kit-splitter.is-vertical")).not.toBeNull();
     expect(root.querySelector(".ui-kit-context-menu__item")?.textContent).toBe("Close");

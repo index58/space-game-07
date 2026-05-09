@@ -33,6 +33,32 @@ func closeWorldFloat(t *testing.T, actual float64, expected float64) {
 	}
 }
 
+// Возвращает указатель на логическое значение для проверки частичных команд.
+func boolPointer(value bool) *bool {
+	return &value
+}
+
+// Возвращает указатель на строку для проверки частичных команд.
+func stringPointer(value string) *string {
+	return &value
+}
+
+// Возвращает указатель на целое значение для проверки частичных команд.
+func int64Pointer(value int64) *int64 {
+	return &value
+}
+
+// Ищет группу оборудования в снимке мира по ID, чтобы тесты не зависели от порядка массива.
+func findEquipmentGroupInSnapshot(snapshot game.Snapshot, groupID int64) (data.EquipmentGroup, bool) {
+	for _, group := range snapshot.EquipmentGroups {
+		if group.ID == groupID {
+			return group, true
+		}
+	}
+
+	return data.EquipmentGroup{}, false
+}
+
 // Собирает минимальный игровой мир с кораблем, астероидом и станцией.
 // Устанавливает тестовый генератор на указанный объект.
 func addTestGenerator(t *testing.T, serverData world.Data, cosmicObjectID int64) *data.EquipmentGroup {
@@ -63,6 +89,78 @@ func addTestGenerator(t *testing.T, serverData world.Data, cosmicObjectID int64)
 		t.Fatal(err)
 	}
 	return group
+}
+
+// Проверяет, что команда панели управления меняет только объект текущего аккаунта и подтверждает мутацию.
+func TestApplyControlPanelObjectUpdateChangesControlledObjectAndAcknowledgesMutation(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	err := gameWorld.ApplyControlPanelObjectUpdate(1, "session-1", 4, world.ControlPanelObjectUpdate{
+		Enabled: boolPointer(false),
+		Title:   stringPointer("Новый корабль"),
+	})
+
+	if err != nil {
+		t.Fatalf("apply object update: %v", err)
+	}
+	snapshot := gameWorld.SnapshotForAccount(1)
+	object, ok := findCosmicObjectInSnapshot(snapshot, 1)
+	if !ok {
+		t.Fatal("controlled object not found")
+	}
+	if object.Enabled || object.Title != "Новый корабль" {
+		t.Fatalf("object was not updated: %+v", object)
+	}
+	ack := gameWorld.ClientMutationAck(1, "session-1")
+	if ack.SessionID != "session-1" || ack.LastAppliedSeq != 4 {
+		t.Fatalf("mutation ack mismatch: %+v", ack)
+	}
+}
+
+// Проверяет, что команда панели управления оборудованием ограничена оборудованием текущего объекта.
+func TestApplyControlPanelEquipmentUpdateChangesOwnedGroupOnly(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+	ownedGroup := serverData.EquipmentGroups.GetByCosmicObjectID(1)[0]
+	foreignGroup, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       2,
+		Title:                "Foreign",
+		EquipmentItemModelID: ownedGroup.EquipmentItemModelID,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = gameWorld.ApplyControlPanelEquipmentUpdate(1, "session-1", 5, world.ControlPanelEquipmentUpdate{
+		EquipmentGroupID: ownedGroup.ID,
+		Enabled:          boolPointer(false),
+		EnabledCount:     int64Pointer(1),
+	})
+
+	if err != nil {
+		t.Fatalf("apply equipment update: %v", err)
+	}
+	if ownedGroup.Enabled || ownedGroup.EnabledCount != 1 {
+		t.Fatalf("owned group was not updated: %+v", ownedGroup)
+	}
+	if err := gameWorld.ApplyControlPanelEquipmentUpdate(1, "session-1", 6, world.ControlPanelEquipmentUpdate{EquipmentGroupID: foreignGroup.ID, Enabled: boolPointer(false)}); err == nil {
+		t.Fatal("foreign group update was accepted")
+	}
+	snapshot := gameWorld.SnapshotForAccount(1)
+	group, ok := findEquipmentGroupInSnapshot(snapshot, ownedGroup.ID)
+	if !ok || group.Enabled || group.EnabledCount != 1 {
+		t.Fatalf("snapshot group mismatch: %+v", group)
+	}
 }
 
 // Собирает минимальный игровой мир с кораблем, астероидом и станцией.

@@ -83,6 +83,59 @@ export type InputSettingsErrorMessage = {
   message: string;
 };
 
+export type ControlPanelMutationAck = {
+  // Сессия клиента, к которой относится подтверждение.
+  sessionId: string;
+  // Последний обработанный сервером номер мутации этой сессии.
+  lastAppliedSeq: number;
+};
+
+export type ControlPanelMutationRef = {
+  // Сессия клиента, отправившая команду.
+  sessionId: string;
+  // Порядковый номер команды внутри сессии.
+  seq: number;
+};
+
+export type ControlPanelObjectUpdateMessage = {
+  // Вид команды изменения управляемого объекта.
+  type: "controlPanelObjectUpdate";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Новое состояние включения объекта.
+  enabled?: boolean;
+  // Новое пользовательское название объекта.
+  title?: string;
+};
+
+export type ControlPanelEquipmentUpdateMessage = {
+  // Вид команды изменения группы оборудования.
+  type: "controlPanelEquipmentUpdate";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Группа оборудования, которую нужно изменить.
+  equipmentGroupId: number;
+  // Новое состояние включения группы.
+  enabled?: boolean;
+  // Новое количество включенных единиц.
+  enabledCount?: number;
+};
+
+export type ControlPanelErrorMessage = {
+  // Вид сообщения с отказом команды панели управления.
+  type: "controlPanelError";
+  // Сессия клиента, команда которой была отклонена.
+  clientSessionId: string;
+  // Номер отклоненной команды.
+  mutationSeq: number;
+  // Текст ошибки для диагностики клиента.
+  message: string;
+};
+
 // Описывает одну строку истории в панели чата.
 export type ChatMessage = {
   // Уникальный числовой идентификатор записи.
@@ -253,6 +306,8 @@ export type SnapshotMessage = {
   objects: CosmicObject[];
   // Группы оборудования, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
+  // Подтверждение обработанных команд панели для текущей сессии.
+  clientMutationAck?: ControlPanelMutationAck;
 };
 
 // Хранит одну JSON-таблицу справочника в серверном формате.

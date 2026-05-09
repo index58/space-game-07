@@ -1,8 +1,8 @@
 import { createMemo, For, Match, Show, Switch, type Accessor, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 import { formatNumber } from "../domain/format";
-import type { CosmicObjectModelReference } from "../network/protocol";
-import type { ControlPanelTabValue, GameUiState, SettingsTabValue } from "./gameUiState";
+import type { CosmicObjectModelReference, EquipmentGroup, ItemModelReference } from "../network/protocol";
+import type { ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiState, SettingsTabValue } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
 import { getMinimapView, type MinimapPointView } from "./minimap";
@@ -195,6 +195,22 @@ type ControlPanelObjectRow = {
   value: string;
 };
 
+type ControlPanelEquipmentView = {
+  // Группа оборудования из серверного снимка.
+  group: EquipmentGroup;
+  // Видимое название модели оборудования.
+  modelTitle: string;
+  // Справочная модель установленного предмета.
+  itemModel: ItemModelReference | undefined;
+};
+
+type ControlPanelEquipmentInfoRow = {
+  // Видимая подпись характеристики выбранного оборудования.
+  label: string;
+  // Текстовое значение характеристики выбранного оборудования.
+  value: string;
+};
+
 type GameFormRowLabelProps = {
   // Дополнительный класс конкретной строки формы.
   className?: string;
@@ -215,6 +231,11 @@ const controlPanelTabs: Array<{ value: ControlPanelTabValue; label: string }> = 
   { value: "schemas", label: "Схемы" },
   { value: "blueprints", label: "Чертежи" },
   { value: "map", label: "Карта" },
+];
+
+const controlPanelEquipmentTabs: Array<{ value: ControlPanelEquipmentSubTabValue; label: string }> = [
+  { value: "setup", label: "Настройка" },
+  { value: "usage", label: "Использование" },
 ];
 
 // Задаёт общий экранный шаблон для всех игровых модальных окон.
@@ -489,6 +510,11 @@ const SettingsInputRows = (props: SettingsInputRowsProps) => (
 const ControlPanelModal = (props: ControlPanelModalProps) => {
   const modelTitle = createMemo(() => getControlPanelModelTitle(props.state()));
   const rows = createMemo(() => getControlPanelObjectRows(props.state()));
+  const equipmentGroups = createMemo(() => getControlPanelEquipmentGroups(props.state()));
+  const selectedEquipment = createMemo(() => getSelectedControlPanelEquipment(equipmentGroups(), props.state().selectedControlPanelEquipmentGroupId));
+  const selectedEquipmentEnabled = createMemo(() => getControlPanelEquipmentEnabled(props.state(), selectedEquipment()));
+  const selectedEquipmentEnabledCount = createMemo(() => getControlPanelEquipmentEnabledCount(props.state(), selectedEquipment()));
+  const selectedEquipmentRows = createMemo(() => getControlPanelEquipmentInfoRows(selectedEquipment()));
 
   return (
     <Show when={props.state().controlPanelVisible}>
@@ -536,7 +562,76 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                 </Show>
               </Match>
               <Match when={props.state().selectedControlPanelTab === "equipment"}>
-                <div class="control-panel-empty-page" />
+                <div class="control-panel-equipment-page">
+                  <Tabs id="control-panel-equipment-tabs" itemIdPrefix="control-panel-equipment-tab" align="center" className="control-panel-equipment-tabs" selectedValue={props.state().selectedControlPanelEquipmentTab} tabs={controlPanelEquipmentTabs} />
+                  <Switch>
+                    <Match when={props.state().selectedControlPanelEquipmentTab === "setup"}>
+                      <div class="control-panel-equipment-layout">
+                        <div class="control-panel-equipment-list">
+                          <ListBox
+                            id="control-panel-equipment-list"
+                            selectedValue={selectedEquipment() ? String(selectedEquipment()?.group.ID) : ""}
+                            items={equipmentGroups().map((equipment) => ({ value: String(equipment.group.ID), label: equipment.modelTitle }))}
+                            scrollOffsetPx={props.state().controlPanelEquipmentListScroll.contentOffsetPx}
+                          />
+                          <Show when={props.state().controlPanelEquipmentListScroll.visible}>
+                            <Scrollbar
+                              id="control-panel-equipment-list-scrollbar"
+                              className="control-panel-equipment-list-scrollbar"
+                              thumbTopPercent={props.state().controlPanelEquipmentListScroll.thumbTopPercent}
+                              thumbHeightPercent={props.state().controlPanelEquipmentListScroll.thumbHeightPercent}
+                              dragging={props.state().controlPanelEquipmentListScroll.dragging}
+                            />
+                          </Show>
+                        </div>
+                        <div class="control-panel-equipment-info">
+                          <Show when={selectedEquipment()} fallback={<div class="control-panel-empty-page" />}>
+                            {(equipment) => (
+                              <>
+                                <div class="control-panel-object-row">
+                                  <GameFormRowLabel className="control-panel-object-row__label">Название модели оборудования</GameFormRowLabel>
+                                  <div class="control-panel-object-row__value control-panel-object-row__value--readonly">{equipment().modelTitle}</div>
+                                </div>
+                                <div class="control-panel-object-row">
+                                  <GameFormRowLabel className="control-panel-object-row__label">Включено</GameFormRowLabel>
+                                  <div class="control-panel-object-row__value control-panel-object-row__value--control">
+                                    <Checkbox id="control-panel-equipment-enabled" label="" checked={selectedEquipmentEnabled()} />
+                                  </div>
+                                </div>
+                                <div class="control-panel-object-row">
+                                  <GameFormRowLabel className="control-panel-object-row__label">Количество включенных единиц</GameFormRowLabel>
+                                  <div class="control-panel-object-row__value control-panel-object-row__value--control">
+                                    <Slider
+                                      id="control-panel-equipment-enabled-slider"
+                                      value={selectedEquipmentEnabledCount()}
+                                      min={0}
+                                      max={Math.max(1, equipment().group.Count)}
+                                      label={`${formatMetric(selectedEquipmentEnabledCount())} / ${formatMetric(equipment().group.Count)}`}
+                                    />
+                                  </div>
+                                </div>
+                                <For each={selectedEquipmentRows()}>
+                                  {(row) => (
+                                    <div class="control-panel-object-row">
+                                      <GameFormRowLabel className="control-panel-object-row__label">{row.label}</GameFormRowLabel>
+                                      <div class="control-panel-object-row__value control-panel-object-row__value--readonly">{row.value}</div>
+                                    </div>
+                                  )}
+                                </For>
+                                <div class="control-panel-equipment-action">
+                                  <Button id="control-panel-equipment-usage-button" label="Использование" />
+                                </div>
+                              </>
+                            )}
+                          </Show>
+                        </div>
+                      </div>
+                    </Match>
+                    <Match when={props.state().selectedControlPanelEquipmentTab === "usage"}>
+                      <div class="control-panel-empty-page" />
+                    </Match>
+                  </Switch>
+                </div>
               </Match>
               <Match when={props.state().selectedControlPanelTab === "pilotTools"}>
                 <div class="control-panel-empty-page" />
@@ -582,13 +677,61 @@ const getControlPanelObjectRows = (state: GameUiState): ControlPanelObjectRow[] 
   ];
 };
 
+const getControlPanelEquipmentGroups = (state: GameUiState): ControlPanelEquipmentView[] => {
+  const objectId = state.selfObject?.ID;
+  if (!objectId) {
+    return [];
+  }
+
+  return state.equipmentGroups
+    .filter((group) => group.CosmicObjectID === objectId)
+    .sort((left, right) => left.ID - right.ID)
+    .map((group) => {
+      const itemModel = state.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
+      return {
+        group,
+        modelTitle: getReferenceTitle(itemModel) ?? group.Title,
+        itemModel,
+      };
+    });
+};
+
+const getSelectedControlPanelEquipment = (groups: ControlPanelEquipmentView[], selectedGroupId: number | null): ControlPanelEquipmentView | null =>
+  groups.find((equipment) => equipment.group.ID === selectedGroupId) ?? groups[0] ?? null;
+
+const getControlPanelEquipmentEnabled = (state: GameUiState, equipment: ControlPanelEquipmentView | null): boolean =>
+  equipment ? state.controlPanelEquipmentEnabledDrafts[equipment.group.ID] ?? equipment.group.Enabled : false;
+
+const getControlPanelEquipmentEnabledCount = (state: GameUiState, equipment: ControlPanelEquipmentView | null): number =>
+  equipment ? clampNumber(state.controlPanelEquipmentEnabledCountDrafts[equipment.group.ID] ?? equipment.group.EnabledCount, 1, Math.max(1, equipment.group.Count)) : 1;
+
+const getControlPanelEquipmentInfoRows = (equipment: ControlPanelEquipmentView | null): ControlPanelEquipmentInfoRow[] => {
+  if (!equipment) {
+    return [];
+  }
+  const group = equipment.group;
+  const model = equipment.itemModel;
+
+  return [
+    { label: "Активно", value: yesNo(group.Active) },
+    { label: "Масса", value: formatModelMetric(model, "Mass") },
+    { label: "Объём", value: formatModelMetric(model, "Volume") },
+    { label: "Потребляемая мощность", value: formatModelMetric(model, "ConsumingPower") },
+    { label: "Вырабатываемая мощность", value: formatModelMetric(model, "GeneratingPower") },
+    { label: "Продольная сила тяги", value: formatModelMetric(model, "MaxAlongForce") },
+    { label: "Поперечная сила тяги", value: formatModelMetric(model, "MaxAcrossForce") },
+    { label: "Крутящий момент", value: formatModelMetric(model, "MaxTorque") },
+    { label: "Сложность", value: formatModelMetric(model, "Complexity") },
+  ];
+};
+
 const getControlPanelModelTitle = (state: GameUiState): string => {
   const object = state.selfObject;
   const model = object ? state.referenceData?.CosmicObjectModel.Items[String(object.CosmicObjectModelID)] : undefined;
   return getReferenceTitle(model) ?? emptyValue();
 };
 
-const getReferenceTitle = (model: CosmicObjectModelReference | undefined): string | null => {
+const getReferenceTitle = (model: CosmicObjectModelReference | ItemModelReference | undefined): string | null => {
   if (!model) {
     return null;
   }
@@ -604,6 +747,13 @@ const emptyValue = (): string => "—";
 const formatMetric = (value: number): string => formatNumber(value, 0);
 const formatPreciseMetric = (value: number): string => formatNumber(value, 2);
 const formatPair = (current: number, maximum: number): string => `${formatMetric(current)} / ${formatMetric(maximum)}`;
+const clampNumber = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+const yesNo = (value: boolean): string => value ? "Да" : "Нет";
+const numericField = (record: Record<string, unknown> | undefined, key: string): number => {
+  const value = record?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+};
+const formatModelMetric = (model: ItemModelReference | undefined, key: string): string => formatMetric(numericField(model, key));
 
 // Показывает десять ячеек инструментов пилота в центральной нижней части экрана.
 const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (

@@ -7,6 +7,10 @@
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
+  ControlPanelEquipmentUpdateMessage,
+  ControlPanelErrorMessage,
+  ControlPanelMutationRef,
+  ControlPanelObjectUpdateMessage,
   InputSettingsErrorMessage,
   InputSettingsMessage,
   InputSettingsRequestMessage,
@@ -44,11 +48,22 @@ export type GameClientOptions = {
   inputIntervalMs?: number;
   // Фабрика соединений для тестов и нестандартных окружений.
   socketFactory?: (url: string) => WebSocketLike;
+  // Идентификатор клиентской сессии для тестов и восстановления pending-состояния.
+  clientSessionId?: string;
 };
 
 const DEFAULT_URL = "ws://127.0.0.1:8080/ws";
 const DEFAULT_RECONNECT_DELAY_MS = 1000;
 const DEFAULT_INPUT_INTERVAL_MS = 1000 / 30;
+
+// Создает достаточно уникальный идентификатор браузерной сессии без зависимости от одного API.
+const createClientSessionId = (): string => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+};
 
 // Возвращает нейтральное управление без тяги и поворота.
 const emptyInput = (): ClientInputState => ({
@@ -175,6 +190,20 @@ const isInputSettingsErrorMessage = (message: unknown): message is InputSettings
   return error.type === "inputSettingsError" && typeof error.message === "string";
 };
 
+// Проверяет пакет отказа команды панели управления.
+const isControlPanelErrorMessage = (message: unknown): message is ControlPanelErrorMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const error = message as ControlPanelErrorMessage;
+
+  return error.type === "controlPanelError" &&
+    typeof error.clientSessionId === "string" &&
+    typeof error.mutationSeq === "number" &&
+    typeof error.message === "string";
+};
+
 // Сохраняет секрет, если окружение предоставляет браузерное хранилище.
 const storeAccountToken = (token: string): void => {
   if (typeof localStorage === "undefined") {
@@ -194,6 +223,8 @@ export class GameClient {
   private readonly inputIntervalMs: number;
   // Фабрика сокета, позволяющая подменять транспорт в тестах.
   private readonly socketFactory: (url: string) => WebSocketLike;
+  // Сессия клиента для связывания pending-команд с серверным ack.
+  private readonly clientSessionId: string;
   // Текущее активное соединение, если оно открыто или открывается.
   private socket: WebSocketLike | null = null;
   // Состояние соединения для сцены и отладочного слоя.
@@ -214,10 +245,16 @@ export class GameClient {
   private latestInputSettingsError: string | null = null;
   // Порядковый номер ошибки настроек для повторного показа одинакового текста.
   private latestInputSettingsErrorSeq = 0;
+  // Последняя ошибка команды панели управления.
+  private latestControlPanelError: ControlPanelErrorMessage | null = null;
+  // Порядковый номер ошибки панели для повторной обработки одинакового текста.
+  private latestControlPanelErrorSeq = 0;
   // Последнее состояние управления, готовое к отправке.
   private latestInput: ClientInputState = emptyInput();
   // Последний выданный порядковый номер пакета ввода.
   private seq = 0;
+  // Последний выданный порядковый номер команды панели управления.
+  private mutationSeq = 0;
   // Таймер отложенного переподключения.
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   // Таймер периодической отправки ввода.
@@ -234,6 +271,7 @@ export class GameClient {
     this.reconnectDelayMs = options.reconnectDelayMs ?? DEFAULT_RECONNECT_DELAY_MS;
     this.inputIntervalMs = options.inputIntervalMs ?? DEFAULT_INPUT_INTERVAL_MS;
     this.socketFactory = options.socketFactory ?? ((url) => new WebSocket(url) as unknown as WebSocketLike);
+    this.clientSessionId = options.clientSessionId ?? createClientSessionId();
 
     this.connect();
   }
@@ -281,6 +319,16 @@ export class GameClient {
   // Возвращает счетчик ошибок сохранения настроек ввода.
   getLatestInputSettingsErrorSeq(): number {
     return this.latestInputSettingsErrorSeq;
+  }
+
+  // Возвращает последнюю ошибку команды панели управления.
+  getLatestControlPanelError(): ControlPanelErrorMessage | null {
+    return this.latestControlPanelError;
+  }
+
+  // Возвращает счетчик ошибок панели управления.
+  getLatestControlPanelErrorSeq(): number {
+    return this.latestControlPanelErrorSeq;
   }
 
   // Обновляет состояние клавиш и накапливает относительный поворот мыши до отправки.
@@ -347,6 +395,42 @@ export class GameClient {
     };
 
     this.socket.send(JSON.stringify(payload));
+  }
+
+  // Отправляет частичное изменение объекта панели управления.
+  sendControlPanelObjectUpdate(update: Omit<ControlPanelObjectUpdateMessage, "type" | "clientSessionId" | "mutationSeq">): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelObjectUpdateMessage = {
+      type: "controlPanelObjectUpdate",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...update,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
+  }
+
+  // Отправляет частичное изменение группы оборудования панели управления.
+  sendControlPanelEquipmentUpdate(update: Omit<ControlPanelEquipmentUpdateMessage, "type" | "clientSessionId" | "mutationSeq">): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelEquipmentUpdateMessage = {
+      type: "controlPanelEquipmentUpdate",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...update,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
   }
 
   // Запрашивает у сервера последние сохраненные привязки ввода текущего аккаунта.
@@ -447,7 +531,21 @@ export class GameClient {
     if (isInputSettingsErrorMessage(parsed)) {
       this.latestInputSettingsError = parsed.message;
       this.latestInputSettingsErrorSeq++;
+      return;
     }
+
+    if (isControlPanelErrorMessage(parsed)) {
+      this.latestControlPanelError = parsed;
+      this.latestControlPanelErrorSeq++;
+    }
+  }
+
+  // Выдает следующий номер команды панели в общей последовательности клиента.
+  private nextControlPanelMutation(): ControlPanelMutationRef {
+    return {
+      sessionId: this.clientSessionId,
+      seq: ++this.mutationSeq,
+    };
   }
 
   // Переводит клиента в ожидание и запускает отложенное переподключение.
