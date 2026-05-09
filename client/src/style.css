@@ -873,6 +873,8 @@ body {
 .settings-input-table {
   position: relative;
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.4vh;
   min-height: 0;
   overflow: hidden;
   padding-right: 1.65vh;
@@ -880,6 +882,16 @@ body {
 
 .settings-empty-page {
   min-height: 0;
+}
+
+.settings-input-table__left {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.settings-input-table__right {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .settings-input-table__content {
@@ -891,7 +903,7 @@ body {
 
 .settings-input-row {
   display: grid;
-  grid-template-columns: minmax(22vh, 1fr) minmax(36vh, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.4vh;
   align-items: start;
 }
@@ -987,7 +999,7 @@ body {
 .control-panel-object-row {
   display: grid;
   grid-template-columns: minmax(18vh, 0.92fr) minmax(0, 1fr);
-  column-gap: 1.4vh;
+  column-gap: 0.8vh;
   align-items: start;
   height: var(--control-panel-object-row-height);
   min-width: 0;

@@ -16,7 +16,7 @@ import type {
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
 import type { ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
-import { getInputBindingMap, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
+import { getInputBindingMap, getInputSettingsLeftColumnRowCount, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
 import { applyUiKitDemoAction, createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
@@ -771,13 +771,13 @@ export class GameScene extends Phaser.Scene {
 
   // Измеряет видимую высоту списка действий.
   private settingsInputViewportHeightPx(): number {
-    return document.querySelector<HTMLElement>(".settings-input-table")?.getBoundingClientRect().height ?? window.innerHeight * 0.31;
+    return document.querySelector<HTMLElement>(".settings-input-table__left")?.getBoundingClientRect().height ?? window.innerHeight * 0.31;
   }
 
-  // Измеряет полную высоту списка действий.
+  // Измеряет полную высоту самой длинной колонки действий.
   private settingsInputContentHeightPx(): number {
     const rowCount = Object.keys(this.referenceData?.ActionType.Items ?? {}).length;
-    return rowCount * SETTINGS_INPUT_ROW_HEIGHT_VH * window.innerHeight / 100;
+    return getInputSettingsLeftColumnRowCount(rowCount) * SETTINGS_INPUT_ROW_HEIGHT_VH * window.innerHeight / 100;
   }
 
   // Измеряет видимую высоту раскрытого списка событий.

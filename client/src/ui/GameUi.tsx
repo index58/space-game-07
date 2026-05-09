@@ -8,7 +8,7 @@ import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicator
 import { getMinimapView, type MinimapPointView } from "./minimap";
 import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
 import { getInformationPanelView, type InformationPanelRow } from "./informationPanel";
-import { getInputEventOptions, getInputSettingsRows } from "./inputSettings";
+import { getInputEventOptions, getInputSettingsLeftColumnRowCount, getInputSettingsRows, type InputSettingsRow } from "./inputSettings";
 import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, TextInput, Tooltip, TreeView, VirtualList } from "../ui-kit/components";
 
 type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-middle" | "right-bottom" | "left-top";
@@ -163,6 +163,15 @@ type UiKitShowcaseProps = {
 };
 
 type SettingsModalProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
+type SettingsInputRowsProps = {
+  // Строки, которые должны быть показаны в одной половине вкладки ввода.
+  rows: InputSettingsRow[];
+  // Варианты событий ввода для выпадающих списков.
+  options: ReturnType<typeof getInputEventOptions>;
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
 };
@@ -403,6 +412,9 @@ const UiKitShowcase = (props: UiKitShowcaseProps) => (
 // Показывает окно настроек аккаунта поверх игрового HUD.
 const SettingsModal = (props: SettingsModalProps) => {
   const rows = createMemo(() => getInputSettingsRows(props.state().referenceData, props.state().inputSettingsValues));
+  const leftRowCount = createMemo(() => getInputSettingsLeftColumnRowCount(rows().length));
+  const leftRows = createMemo(() => rows().slice(0, leftRowCount()));
+  const rightRows = createMemo(() => rows().slice(leftRowCount()));
   const options = createMemo(() => getInputEventOptions(props.state().referenceData));
   return (
     <Show when={props.state().settingsVisible}>
@@ -419,21 +431,11 @@ const SettingsModal = (props: SettingsModalProps) => {
               </Match>
               <Match when={props.state().selectedSettingsTab === "input"}>
                 <div class="settings-input-table">
-                  <div class="settings-input-table__content" style={{ transform: `translateY(-${props.state().inputSettingsScroll.contentOffsetPx}px)` }}>
-                    <For each={rows()}>
-                      {(row) => (
-                        <div class="settings-input-row">
-                          <GameFormRowLabel className="settings-input-row__action">{row.actionTitle}</GameFormRowLabel>
-                          <Dropdown
-                            id={`settings-input-select-${row.actionTypeId}`}
-                            selectedValue={String(row.inputEventTypeId)}
-                            open={props.state().openInputSettingsActionId === row.actionTypeId}
-                            options={options()}
-                            menuScroll={props.state().inputSettingsDropdownScroll}
-                          />
-                        </div>
-                      )}
-                    </For>
+                  <div class="settings-input-table__left">
+                    <SettingsInputRows rows={leftRows()} options={options()} state={props.state} />
+                  </div>
+                  <div class="settings-input-table__right">
+                    <SettingsInputRows rows={rightRows()} options={options()} state={props.state} />
                   </div>
                   <Show when={props.state().inputSettingsScroll.visible}>
                     <Scrollbar
@@ -462,6 +464,26 @@ const SettingsModal = (props: SettingsModalProps) => {
     </Show>
   );
 };
+
+// Отрисовывает строки одной половины вкладки ввода с общим вертикальным смещением прокрутки.
+const SettingsInputRows = (props: SettingsInputRowsProps) => (
+  <div class="settings-input-table__content" style={{ transform: `translateY(-${props.state().inputSettingsScroll.contentOffsetPx}px)` }}>
+    <For each={props.rows}>
+      {(row) => (
+        <div class="settings-input-row">
+          <GameFormRowLabel className="settings-input-row__action">{row.actionTitle}</GameFormRowLabel>
+          <Dropdown
+            id={`settings-input-select-${row.actionTypeId}`}
+            selectedValue={String(row.inputEventTypeId)}
+            open={props.state().openInputSettingsActionId === row.actionTypeId}
+            options={props.options}
+            menuScroll={props.state().inputSettingsDropdownScroll}
+          />
+        </div>
+      )}
+    </For>
+  </div>
+);
 
 // Показывает модальную панель управления текущим объектом поверх игрового HUD.
 const ControlPanelModal = (props: ControlPanelModalProps) => {

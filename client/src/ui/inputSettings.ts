@@ -14,6 +14,9 @@ export type InputSettingsRow = {
 
 export type InputBindingMap = Record<string, string>;
 
+// Возвращает число строк в левой половине окна настроек с лишней строкой слева.
+export const getInputSettingsLeftColumnRowCount = (rowCount: number): number => Math.ceil(Math.max(0, rowCount) / 2);
+
 // Возвращает настройки по умолчанию как карту действия к событию.
 export const getDefaultInputSettingValues = (referenceData: ReferenceDataMessage | null): Record<number, number> => {
   if (!referenceData) {

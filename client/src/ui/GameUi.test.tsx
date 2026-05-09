@@ -151,6 +151,25 @@ const state = (): GameUiState => ({
   zoom: 4,
 });
 
+// Создаёт справочник с нужным числом действий, чтобы проверить раскладку строк настроек.
+const referenceDataWithActionTitles = (titles: string[]): ReferenceDataMessage => ({
+  ...referenceData,
+  ActionType: {
+    MaxID: titles.length,
+    Items: Object.fromEntries(titles.map((title, index) => {
+      const id = index + 1;
+      return [String(id), { ID: id, TitleRu: title, TitleEn: title, Acronym: `Action${id}` }];
+    })),
+  },
+  DefaultActionInputSetting: {
+    MaxID: titles.length,
+    Items: Object.fromEntries(titles.map((_, index) => {
+      const id = index + 1;
+      return [String(id), { ID: id, ActionTypeID: id, InputEventTypeID: 1 }];
+    })),
+  },
+}) as unknown as ReferenceDataMessage;
+
 describe("GameUi", () => {
   it("renders every top-level game panel through the shared HUD panel shell", () => {
     const root = document.createElement("div");
@@ -495,14 +514,32 @@ describe("GameUi", () => {
     const root = document.createElement("div");
     document.body.append(root);
 
-    dispose = render(() => <GameUi state={() => ({ ...state(), settingsVisible: true })} />, root);
+    dispose = render(() => <GameUi state={() => ({ ...state(), settingsVisible: true, inputSettingsScroll: { visible: true, thumbTopPercent: 0, thumbHeightPercent: 50, contentOffsetPx: 0, dragging: false } })} />, root);
 
     expect(Array.from(root.querySelectorAll(".settings-tabs .ui-kit-tab")).map((tab) => tab.textContent)).toEqual(["Видео", "Аудио", "Ввод"]);
     expect(root.querySelector("#settings-tabs")?.classList.contains("ui-kit-tabs--center")).toBe(true);
     expect(root.querySelector(".settings-tabs .ui-kit-tab.is-selected")?.textContent).toBe("Ввод");
     expect(root.querySelector(".settings-input-row__action")?.classList.contains("game-form-row-label")).toBe(true);
+    expect(root.querySelector(".settings-input-table__left .settings-input-row")).not.toBeNull();
+    expect(root.querySelector(".settings-input-table__right")?.textContent).toBe("");
+    expect(root.querySelector("#settings-input-scrollbar")?.parentElement?.className).toBe("settings-input-table");
     expect(root.querySelector(".settings-modal__actions")).not.toBeNull();
     expect(Array.from(root.querySelectorAll(".settings-modal__footer .ui-kit-button")).map((button) => button.id)).toEqual(["settings-save-button", "settings-cancel-button"]);
+  });
+
+  // Проверяет, что нечётное число строк настроек делится между половинами окна с лишней строкой слева.
+  it("splits input settings rows between settings window halves with the extra row on the left", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    const inputReferenceData = referenceDataWithActionTitles(["Первая", "Вторая", "Третья", "Четвёртая", "Пятая"]);
+    dispose = render(() => <GameUi state={() => ({ ...state(), settingsVisible: true, referenceData: inputReferenceData, inputSettingsValues: { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1 } })} />, root);
+
+    const leftRows = Array.from(root.querySelectorAll(".settings-input-table__left .settings-input-row__action")).map((row) => row.textContent);
+    const rightRows = Array.from(root.querySelectorAll(".settings-input-table__right .settings-input-row__action")).map((row) => row.textContent);
+
+    expect(leftRows).toEqual(["Первая", "Вторая", "Третья"]);
+    expect(rightRows).toEqual(["Четвёртая", "Пятая"]);
   });
 
   // Проверяет, что каждая вкладка настроек управляет собственной страницей.
