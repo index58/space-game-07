@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { INITIAL_ZOOM } from "../domain/camera";
+import type { CosmicObject } from "../network/protocol";
 import { InputController } from "./InputController";
 
 const wheel = (deltaY: number, shiftKey: boolean) => {
@@ -69,7 +70,7 @@ const addChatInputDom = () => {
     toJSON: () => ({}),
   } as DOMRect);
   const viewport = document.createElement("div");
-  viewport.className = "chat-input__viewport";
+  viewport.className = "ui-kit-text-input__viewport";
   viewport.getBoundingClientRect = () => ({
     x: 505,
     y: 370,
@@ -82,10 +83,10 @@ const addChatInputDom = () => {
     toJSON: () => ({}),
   } as DOMRect);
   const text = document.createElement("span");
-  text.className = "chat-input__text";
+  text.className = "ui-kit-text-input__text";
   text.style.transform = "translateX(0px)";
   const measure = document.createElement("span");
-  measure.className = "chat-input__measure";
+  measure.className = "ui-kit-text-input__measure";
   measure.getBoundingClientRect = () => ({
     x: 0,
     y: 0,
@@ -94,6 +95,54 @@ const addChatInputDom = () => {
     right: 70,
     bottom: 20,
     width: 70,
+    height: 20,
+    toJSON: () => ({}),
+  } as DOMRect);
+  viewport.append(text, measure);
+  input.append(viewport);
+  document.body.append(input);
+};
+
+const addControlPanelTitleInputDom = () => {
+  const input = document.createElement("div");
+  input.id = "control-panel-object-title-input";
+  input.getBoundingClientRect = () => ({
+    x: 500,
+    y: 370,
+    left: 500,
+    top: 370,
+    right: 620,
+    bottom: 400,
+    width: 120,
+    height: 30,
+    toJSON: () => ({}),
+  } as DOMRect);
+  const viewport = document.createElement("div");
+  viewport.className = "ui-kit-text-input__viewport";
+  viewport.getBoundingClientRect = () => ({
+    x: 505,
+    y: 370,
+    left: 505,
+    top: 370,
+    right: 615,
+    bottom: 400,
+    width: 110,
+    height: 30,
+    toJSON: () => ({}),
+  } as DOMRect);
+  const text = document.createElement("span");
+  text.className = "ui-kit-text-input__text";
+  text.style.transform = "translateX(0px)";
+  const measure = document.createElement("span");
+  measure.className = "ui-kit-text-input__measure";
+  measure.getBoundingClientRect = () => ({
+    x: 0,
+    y: 0,
+    left: 0,
+    top: 0,
+    right: 80,
+    bottom: 20,
+    width: 80,
     height: 20,
     toJSON: () => ({}),
   } as DOMRect);
@@ -132,6 +181,45 @@ const addChatMessagesDom = (contentHeight: number) => {
   messagesPanel.append(content);
   document.body.append(messagesPanel);
 };
+
+const controlPanelObject = (partial: Partial<CosmicObject> = {}): CosmicObject => ({
+  ID: 1,
+  Title: "Ship",
+  CosmicObjectModelID: 10,
+  OwnerCharacterID: 7,
+  OwnerNpcClanID: 0,
+  CreatorCharacterID: 7,
+  Mass: 1,
+  Capacity: 0,
+  MaxArmor: 100,
+  MaxSpeed: 0,
+  MaxAngularSpeed: 0,
+  X: 0,
+  Y: 0,
+  Rotation: 0,
+  Armor: 100,
+  MaxAlongForce: 0,
+  MaxAcrossForce: 0,
+  MaxTorque: 0,
+  GeneratingPower: 10,
+  ConsumingPower: 5,
+  AlongForce: 0,
+  AcrossForce: 0,
+  Torque: 0,
+  Enabled: true,
+  LastReceivedDamageTime: 0,
+  Anchored: false,
+  Complexity: 0,
+  OccupiedVolume: 0,
+  MaxFuel: 100,
+  Fuel: 50,
+  Speed: 0,
+  VelocityX: 0,
+  VelocityY: 0,
+  AngularSpeed: 0,
+  TargetRotation: 0,
+  ...partial,
+});
 
 const addChatTabDom = (id: number, rect: Partial<DOMRect>) => {
   const tab = document.createElement("div");
@@ -671,6 +759,48 @@ describe("InputController", () => {
     expect(controller.isSettingsVisible()).toBe(true);
   });
 
+  // Проверяет, что клавиша I открывает панель управления и переводит ввод в режим игрового указателя.
+  it("toggles control panel from keyboard", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("KeyI", "i");
+    pressKey("KeyW", "w");
+
+    expect(controller.isControlPanelVisible()).toBe(true);
+    expect(controller.getGameCursor().visible).toBe(true);
+    expect(controller.consumeShipInput().thrustForward).toBe(false);
+  });
+
+  // Проверяет, что открытие панели управления закрывает другие модальные окна.
+  it("closes other modal windows when opening control panel", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("F10", "F10");
+    releaseKey("F10");
+    pressKey("KeyI", "i");
+
+    expect(controller.isSettingsVisible()).toBe(false);
+    expect(controller.isControlPanelVisible()).toBe(true);
+  });
+
+  // Проверяет, что ввод буквы в активный чат не открывает панель управления.
+  it("keeps control panel shortcut out of focused chat input", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressKey("Enter", "Enter");
+    releaseKey("Enter");
+    pressKey("KeyI", "i");
+
+    expect(controller.isControlPanelVisible()).toBe(false);
+    expect(controller.getChatInputText()).toBe("i");
+  });
+
   // Проверяет, что повторная команда текущего модального окна закрывает его без открытия другого.
   it("closes current modal window when toggling the same modal again", () => {
     const canvas = document.createElement("canvas");
@@ -683,6 +813,7 @@ describe("InputController", () => {
 
     expect(controller.isSettingsVisible()).toBe(false);
     expect(controller.isUiKitShowcaseVisible()).toBe(false);
+    expect(controller.isControlPanelVisible()).toBe(false);
   });
 
   // Проверяет, что общий runtime отдаёт действие по зарегистрированному HUD-контролу.
@@ -706,6 +837,171 @@ describe("InputController", () => {
     window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
 
     expect(controller.consumeGameUiAction()).toMatchObject({ type: "click", controlId: "demo-button" });
+  });
+
+  // Проверяет, что общий крестик модального окна закрывает активное окно без передачи клика в демо-контролы.
+  it("closes modal window from shared close button", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.updateGameUiControls([{
+      id: "settings-modal-close-button",
+      kind: "button",
+      rect: { left: 500, top: 370, width: 60, height: 40 },
+      zIndex: 1200,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("F10", "F10");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+
+    expect(controller.isSettingsVisible()).toBe(false);
+    expect(controller.consumeGameUiAction()).toBeNull();
+  });
+
+  // Проверяет, что чекбокс панели управления меняет локальный черновик, а не уходит в демо-контролы.
+  it("toggles control panel enabled draft from checkbox", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelObject(controlPanelObject({ Enabled: true }));
+    controller.updateGameUiControls([{
+      id: "control-panel-object-enabled",
+      kind: "checkbox",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+
+    expect(controller.getControlPanelObjectEnabled(true)).toBe(false);
+    expect(controller.consumeGameUiAction()).toBeNull();
+  });
+
+  // Проверяет, что поле названия объекта получает native-фокус и сохраняет введенный текст в черновик.
+  it("edits control panel object title through hidden native textarea", async () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelObject(controlPanelObject({ Title: "Ship" }));
+    controller.updateGameUiControls([{
+      id: "control-panel-object-title-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+    const textarea = document.querySelector<HTMLTextAreaElement>("[data-ui-kit-edit-id='control-panel-object-title-input']");
+    if (!textarea) {
+      throw new Error("Нативное поле названия объекта не создано.");
+    }
+
+    textarea.value = "Renamed";
+    textarea.setSelectionRange(7, 7);
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    await waitForNativeEditSync();
+
+    expect(controller.getControlPanelObjectTitle("Ship")).toBe("Renamed");
+    expect(controller.getControlPanelObjectTitleEditState().focused).toBe(true);
+    expect(controller.getControlPanelObjectTitleEditState().selectionStart).toBe(7);
+  });
+
+  // Проверяет, что клик по полю названия объекта ставит каретку в позицию под игровым курсором.
+  it("places control panel object title caret by mouse click", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelObject(controlPanelObject({ Title: "ABCDEFGH" }));
+    addControlPanelTitleInputDom();
+    controller.updateGameUiControls([{
+      id: "control-panel-object-title-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    moveMouse(23, 0);
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+
+    expect(controller.getControlPanelObjectTitleEditState().focused).toBe(true);
+    expect(controller.getControlPanelObjectTitleEditState().selectionStart).toBe(3);
+  });
+
+  // Проверяет, что поле названия объекта выделяет текст перетаскиванием так же, как строка чата.
+  it("selects control panel object title text by mouse drag", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelObject(controlPanelObject({ Title: "ABCDEFGH" }));
+    addControlPanelTitleInputDom();
+    controller.updateGameUiControls([{
+      id: "control-panel-object-title-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    moveMouse(23, 0);
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    moveMouse(40, 0);
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+
+    expect(controller.getControlPanelObjectTitleEditState().selectionStart).toBe(3);
+    expect(controller.getControlPanelObjectTitleEditState().selectionEnd).toBe(7);
+  });
+
+  // Проверяет, что двойной клик по названию объекта выделяет слово тем же правилом, что и чат.
+  it("selects control panel object title word by double click", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelObject(controlPanelObject({ Title: "ABC DEF" }));
+    addControlPanelTitleInputDom();
+    controller.updateGameUiControls([{
+      id: "control-panel-object-title-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    moveMouse(53, 0);
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0, detail: 2 }));
+
+    expect(controller.getControlPanelObjectTitleEditState().selectionStart).toBe(4);
+    expect(controller.getControlPanelObjectTitleEditState().selectionEnd).toBe(7);
   });
 
   // Проверяет, что пункт выпадающего списка вне прямоугольника панели не считается кликом по космосу.

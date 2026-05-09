@@ -6,6 +6,7 @@ import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/show
 import type { GameUiControlState } from "../ui-kit/types";
 
 export type SettingsTabValue = "video" | "audio" | "input";
+export type ControlPanelTabValue = "object" | "equipment" | "pilotTools" | "schemas" | "blueprints" | "map";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
@@ -48,8 +49,22 @@ export type GameUiState = {
   uiKitShowcaseVisible: boolean;
   // Показывает модальное окно настроек игрока.
   settingsVisible: boolean;
+  // Показывает модальное окно панели управления объектом.
+  controlPanelVisible: boolean;
   // Текущая страница модального окна настроек.
   selectedSettingsTab: SettingsTabValue;
+  // Текущая страница модального окна панели управления.
+  selectedControlPanelTab: ControlPanelTabValue;
+  // Черновик признака включения объекта для интерактивного переключателя панели управления.
+  controlPanelObjectEnabled: boolean;
+  // Черновик пользовательского названия объекта для интерактивного поля панели управления.
+  controlPanelObjectTitleText: string;
+  // Начало выделения в поле названия объекта.
+  controlPanelObjectTitleSelectionStart: number;
+  // Конец выделения в поле названия объекта.
+  controlPanelObjectTitleSelectionEnd: number;
+  // Признак активного фокуса поля названия объекта.
+  controlPanelObjectTitleFocused: boolean;
   // Черновик выбранных привязок ввода по ID действия.
   inputSettingsValues: Record<number, number>;
   // ID действия с раскрытым списком событий ввода.
@@ -100,7 +115,14 @@ const initialGameUiState: GameUiState = {
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
   settingsVisible: false,
+  controlPanelVisible: false,
   selectedSettingsTab: "input",
+  selectedControlPanelTab: "object",
+  controlPanelObjectEnabled: false,
+  controlPanelObjectTitleText: "",
+  controlPanelObjectTitleSelectionStart: 0,
+  controlPanelObjectTitleSelectionEnd: 0,
+  controlPanelObjectTitleFocused: false,
   inputSettingsValues: {},
   openInputSettingsActionId: null,
   inputSettingsError: null,

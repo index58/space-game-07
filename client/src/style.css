@@ -297,12 +297,11 @@ body {
   animation-fill-mode: forwards;
 }
 
-.chat-input {
+.ui-kit-text-input {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 3.1vh;
-  margin-top: 0;
+  min-height: var(--hud-dropdown-min-height);
   padding: 0 0.8vh;
   box-sizing: border-box;
   color: rgba(216, 243, 255, 0.72);
@@ -310,11 +309,15 @@ body {
   font: 1.25vh/1 Consolas, monospace;
 }
 
-.chat-input.is-focused {
+.chat-input {
+  margin-top: 0;
+}
+
+.ui-kit-text-input.is-focused {
   color: #eefaff;
 }
 
-.chat-input__text {
+.ui-kit-text-input__text {
   display: inline-block;
   min-width: 0;
   white-space: pre;
@@ -322,7 +325,7 @@ body {
   will-change: transform;
 }
 
-.chat-input__viewport {
+.ui-kit-text-input__viewport {
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
@@ -330,7 +333,7 @@ body {
   white-space: pre;
 }
 
-.chat-input__measure {
+.ui-kit-text-input__measure {
   position: absolute;
   left: 0;
   top: 0;
@@ -338,14 +341,14 @@ body {
   white-space: pre;
 }
 
-.chat-input__selection {
+.ui-kit-text-input__selection {
   color: #001018;
   background: rgba(216, 243, 255, 0.86);
 }
 
-.chat-input__caret {
+.ui-kit-text-input__caret {
   position: absolute;
-  top: 50%;
+  top: 42%;
   transform: translateY(-50%);
   width: max(0.14vh, 2px);
   min-width: 2px;
@@ -421,12 +424,19 @@ body {
 }
 
 .ui-kit-checkbox__mark {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 1.5vh;
   height: 1.5vh;
   background: rgb(0, 0, 0);
+}
+
+.ui-kit-checkbox.is-checked .ui-kit-checkbox__mark::before {
+  content: "✓";
+  font-size: 1.2vh;
+  line-height: 1;
 }
 
 .ui-kit-radio {
@@ -616,6 +626,7 @@ body {
 .ui-kit-tree__item,
 .ui-kit-virtual-list,
 .ui-kit-virtual-list__item,
+.ui-kit-text-input,
 .ui-kit-edit,
 .ui-kit-tabs,
 .ui-kit-tab,
@@ -738,16 +749,58 @@ body {
 }
 
 .ui-kit-modal {
+  position: relative;
+  --hud-modal-title-height: 2.4vh;
   padding: 0.8vh;
   min-width: 36vh;
   border: 0.14vh solid var(--hud-surface-border);
 }
 
 .ui-kit-modal__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--hud-modal-title-height);
   margin-bottom: 0.7vh;
+  padding: 0 3.2vh;
   color: #eefaff;
   font: 1.25vh/1 Consolas, monospace;
   text-align: center;
+}
+
+.ui-kit-modal__close {
+  position: absolute;
+  right: 0.8vh;
+  top: 0.8vh;
+  width: var(--hud-modal-title-height);
+  min-height: var(--hud-modal-title-height);
+  height: var(--hud-modal-title-height);
+  padding: 0;
+  color: var(--hud-tab-inactive-text);
+  background: transparent;
+  font-size: 0;
+  line-height: 0;
+  z-index: 2;
+}
+
+.ui-kit-modal__close::before,
+.ui-kit-modal__close::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.35vh;
+  height: 0.16vh;
+  background: var(--hud-tab-inactive-text);
+  transform-origin: center;
+}
+
+.ui-kit-modal__close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.ui-kit-modal__close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .ui-kit-showcase {
@@ -774,6 +827,12 @@ body {
 .game-window-layer--showcase {
   width: min(118vh, calc((var(--game-ui-vw) * 100) - 4vh));
   height: min(62vh, calc(100vh - 4vh));
+}
+
+.game-window-layer--control-panel {
+  width: min(132vh, calc((var(--game-ui-vw) * 100) - 2vh));
+  height: min(74vh, calc(100vh - 2vh));
+  z-index: 19;
 }
 
 .game-window-layer--settings {
@@ -833,11 +892,11 @@ body {
 .settings-input-row {
   display: grid;
   grid-template-columns: minmax(22vh, 1fr) minmax(36vh, 1fr);
-  gap: 0.8vh;
+  gap: 1.4vh;
   align-items: start;
 }
 
-.settings-input-row__action {
+.game-form-row-label {
   display: flex;
   align-items: center;
   min-height: var(--hud-dropdown-min-height);
@@ -850,6 +909,10 @@ body {
   font-family: var(--hud-control-font-family);
   font-size: var(--hud-control-font-size);
   line-height: 1.25;
+}
+
+.settings-input-row__action {
+  width: 100%;
 }
 
 .settings-input-row .ui-kit-dropdown {
@@ -892,6 +955,93 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   font: 1.05vh/1.3 Consolas, monospace;
+}
+
+.control-panel {
+  display: grid;
+  grid-template-rows: calc(var(--hud-tab-height) + var(--hud-tab-panel-padding) * 2) minmax(0, 1fr);
+  gap: 0.9vh;
+  height: 100%;
+  min-height: 0;
+}
+
+.control-panel-tabs {
+  align-self: start;
+}
+
+.control-panel-object-page {
+  --control-panel-object-row-height: 2.45vh;
+  --control-panel-object-row-gap: 0.25vh;
+  --control-panel-object-left-row-count: 9;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(var(--control-panel-object-left-row-count), var(--control-panel-object-row-height));
+  grid-auto-flow: column;
+  gap: var(--control-panel-object-row-gap) 1.4vh;
+  align-content: start;
+  height: 24.05vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.control-panel-object-row {
+  display: grid;
+  grid-template-columns: minmax(18vh, 0.92fr) minmax(0, 1fr);
+  column-gap: 1.4vh;
+  align-items: start;
+  height: var(--control-panel-object-row-height);
+  min-width: 0;
+}
+
+.control-panel-object-row__value {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: var(--hud-dropdown-min-height);
+  padding: 0.45vh var(--hud-control-padding-x);
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: var(--hud-control-font-family);
+  font-size: var(--hud-control-font-size);
+  line-height: 1.25;
+}
+
+.control-panel-object-row__label {
+  width: 100%;
+}
+
+.control-panel-object-row__value {
+  color: rgba(238, 250, 255, 0.92);
+  overflow-wrap: anywhere;
+}
+
+.control-panel-object-row__value--readonly {
+  background: var(--hud-settings-action-bg);
+}
+
+.control-panel-object-row__value--control {
+  padding: 0;
+  background: transparent;
+}
+
+.control-panel-object-row__value .ui-kit-text-input {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--hud-dropdown-min-height);
+}
+
+.control-panel-object-row__value .ui-kit-checkbox {
+  width: var(--hud-dropdown-min-height);
+  min-width: var(--hud-dropdown-min-height);
+  min-height: var(--hud-dropdown-min-height);
+  flex: 0 0 var(--hud-dropdown-min-height);
+  justify-content: flex-start;
+  padding: 0;
+  background: transparent;
+}
+
+.control-panel-empty-page {
+  min-height: 0;
 }
 
 @keyframes chat-error-fade-odd {

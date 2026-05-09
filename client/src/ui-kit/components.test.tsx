@@ -1,6 +1,6 @@
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
-import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, Tooltip, TreeView, VirtualList } from "./components";
+import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, TextInput, Tooltip, TreeView, VirtualList } from "./components";
 import type { DropdownProps, UiKitOption } from "./components";
 
 let dispose: (() => void) | null = null;
@@ -232,7 +232,36 @@ describe("ui-kit components", () => {
     expect(root.querySelector(".ui-kit-splitter.is-vertical")).not.toBeNull();
     expect(root.querySelector(".ui-kit-context-menu__item")?.textContent).toBe("Close");
     expect(root.querySelector(".ui-kit-modal__title")?.textContent).toBe("Panel");
+    expect(root.querySelector("#modal-close-button")?.textContent).toBe("");
     expect(root.querySelector(".ui-kit-tooltip")?.textContent).toBe("Hint");
+  });
+
+  // Проверяет, что общий текстовый ввод использует чатовый шаблон с измерителем, выделением и кареткой.
+  it("renders reusable text input from shared ui kit source", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <TextInput id="name-input" text="abcdef" selectionStart={1} selectionEnd={4} focused={true} className="compact-input" />, root);
+
+    expect(root.querySelector("#name-input")?.className).toBe("ui-kit-control ui-kit-text-input compact-input is-focused");
+    expect(root.querySelector(".ui-kit-text-input__text")?.textContent).toBe("abcdef");
+    expect(root.querySelector(".ui-kit-text-input__selection")?.textContent).toBe("bcd");
+    expect(root.querySelectorAll(".ui-kit-text-input__measure").length).toBe(2);
+    expect(root.querySelector(".ui-kit-text-input__caret")).not.toBeNull();
+  });
+
+  // Проверяет, что каждое окно получает кнопку закрытия из общего шаблона модального окна.
+  it("renders shared modal close button", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <Modal id="modal" title="Panel">Body</Modal>, root);
+
+    const closeButton = root.querySelector<HTMLElement>("#modal-close-button");
+    expect(closeButton?.dataset.uiKind).toBe("button");
+    expect(closeButton?.className).toBe("ui-kit-control ui-kit-button ui-kit-modal__close");
+    expect(closeButton?.getAttribute("aria-label")).toBe("Закрыть окно");
+    expect(closeButton?.textContent).toBe("");
   });
 
   // Проверяет, что обычная полоса прокрутки не получает overlay-приоритет раскрытого списка.

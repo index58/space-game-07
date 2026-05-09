@@ -15,7 +15,7 @@ import type {
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
-import type { GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
+import type { ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
 import { getInputBindingMap, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
@@ -82,6 +82,8 @@ export class GameScene extends Phaser.Scene {
   private inputSettingsSaving = false;
   // Активная страница окна настроек.
   private selectedSettingsTab: SettingsTabValue = "input";
+  // Активная страница панели управления.
+  private selectedControlPanelTab: ControlPanelTabValue = "object";
   // Предыдущее состояние видимости окна настроек для запроса свежих данных при открытии.
   private previousSettingsVisible = false;
   // Вертикальный сдвиг списка действий в окне настроек.
@@ -151,6 +153,7 @@ export class GameScene extends Phaser.Scene {
 
     const status = this.gameClient?.getStatus() ?? "connecting";
     const settingsVisible = this.inputController.isSettingsVisible();
+    const controlPanelVisible = this.inputController.isControlPanelVisible();
     this.requestInputSettingsOnOpen(settingsVisible);
     this.syncInputSettingsFromServer();
     const snapshot = this.gameClient?.getLatestSnapshot() ?? null;
@@ -169,6 +172,8 @@ export class GameScene extends Phaser.Scene {
     const inputSettingsScroll = this.getSettingsInputScrollState();
     const inputSettingsDropdownScroll = this.getSettingsDropdownScrollState();
     const selfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
+    this.inputController.syncControlPanelObject(selfObject);
+    const controlPanelObjectTitleEditState = this.inputController.getControlPanelObjectTitleEditState(selfObject?.Title ?? "");
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
 
@@ -195,7 +200,14 @@ export class GameScene extends Phaser.Scene {
         chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
         uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
         settingsVisible,
+        controlPanelVisible,
         selectedSettingsTab: this.selectedSettingsTab,
+        selectedControlPanelTab: this.selectedControlPanelTab,
+        controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(false),
+        controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
+        controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
+        controlPanelObjectTitleSelectionEnd: controlPanelObjectTitleEditState.selectionEnd,
+        controlPanelObjectTitleFocused: controlPanelObjectTitleEditState.focused,
         inputSettingsValues: this.inputSettingsValues,
         openInputSettingsActionId: this.openInputSettingsActionId,
         inputSettingsError: this.inputSettingsError,
@@ -238,7 +250,14 @@ export class GameScene extends Phaser.Scene {
       chatScroll: this.inputController.getChatScrollState(),
       uiKitShowcaseVisible: this.inputController.isUiKitShowcaseVisible(),
       settingsVisible,
+      controlPanelVisible,
       selectedSettingsTab: this.selectedSettingsTab,
+      selectedControlPanelTab: this.selectedControlPanelTab,
+      controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(selfObject.Enabled),
+      controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
+      controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
+      controlPanelObjectTitleSelectionEnd: controlPanelObjectTitleEditState.selectionEnd,
+      controlPanelObjectTitleFocused: controlPanelObjectTitleEditState.focused,
       inputSettingsValues: this.inputSettingsValues,
       openInputSettingsActionId: this.openInputSettingsActionId,
       inputSettingsError: this.inputSettingsError,
@@ -495,9 +514,27 @@ export class GameScene extends Phaser.Scene {
         action = this.inputController.consumeGameUiAction();
         continue;
       }
+      if (this.inputController.isControlPanelVisible() && this.consumeControlPanelUiAction(action)) {
+        action = this.inputController.consumeGameUiAction();
+        continue;
+      }
       this.uiKitDemoState = applyUiKitDemoAction(this.uiKitDemoState, action);
       action = this.inputController.consumeGameUiAction();
     }
+  }
+
+  // Применяет действия панели управления и не пропускает их в отладочную витрину.
+  private consumeControlPanelUiAction(action: GameUiAction): boolean {
+    if (action.type === "click" && action.controlId.startsWith("control-panel-tab-")) {
+      if (isControlPanelTabValue(action.value)) {
+        this.selectedControlPanelTab = action.value;
+      }
+      return true;
+    }
+    if (action.controlId === "control-panel-modal") {
+      return true;
+    }
+    return action.controlId.startsWith("control-panel-");
   }
 
   // Применяет действия модального окна настроек и не пропускает их в демонстрационную панель.
@@ -759,5 +796,13 @@ const uiKind = (value: string | undefined): GameUiControlKind => {
   const allowed = new Set<GameUiControlKind>(["edit", "button", "checkbox", "radio", "select", "list", "tree", "tabs", "menu", "modal", "tooltip", "scrollbar", "slider", "stepper", "hotkey", "splitter", "dragItem"]);
   return value && allowed.has(value as GameUiControlKind) ? value as GameUiControlKind : "button";
 };
+
+const isControlPanelTabValue = (value: unknown): value is ControlPanelTabValue =>
+  value === "object" ||
+  value === "equipment" ||
+  value === "pilotTools" ||
+  value === "schemas" ||
+  value === "blueprints" ||
+  value === "map";
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));

@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, onCleanup, Show, type JSX } from "solid-js";
+import { createEffect, createSignal, For, onCleanup, onMount, Show, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 
 export type UiKitOption = {
@@ -18,6 +18,12 @@ type ButtonProps = {
   id: string;
   // Видимая подпись.
   label: string;
+  // Дополнительный CSS-класс для специализированного размещения общего контрола.
+  className?: string;
+  // Доступное название, если видимая подпись является только символом.
+  ariaLabel?: string;
+  // Overlay-приоритет для hit-test игровым курсором.
+  zIndex?: number;
   // Визуальное состояние для отладки и HUD.
   state?: "normal" | "hovered" | "pressed" | "focused" | "disabled" | "error";
 };
@@ -124,6 +130,21 @@ type EditControlProps = {
   focused: boolean;
 };
 
+type TextInputProps = {
+  // Стабильный идентификатор поля.
+  id: string;
+  // Видимый текст.
+  text: string;
+  // Начало выделения.
+  selectionStart: number;
+  // Конец выделения.
+  selectionEnd: number;
+  // Признак активного фокуса.
+  focused: boolean;
+  // Дополнительный CSS-класс для специализированного размещения общего поля.
+  className?: string;
+};
+
 type TabsProps = {
   // Стабильный идентификатор набора вкладок.
   id: string;
@@ -210,15 +231,17 @@ type TooltipProps = {
 };
 
 export const Button = (props: ButtonProps) => (
-  <div id={props.id} data-ui-kind="button" class={`ui-kit-control ui-kit-button ${stateClass(props.state)}`}>{props.label}</div>
+  <div id={props.id} data-ui-kind="button" data-ui-z-index={props.zIndex} aria-label={props.ariaLabel} class={buttonClass(props)}>{props.label}</div>
 );
 
 export const IconButton = Button;
 
 export const Checkbox = (props: CheckboxProps) => (
   <div id={props.id} data-ui-kind="checkbox" class={`ui-kit-control ui-kit-checkbox ${props.checked ? "is-checked" : ""}`}>
-    <span class="ui-kit-checkbox__mark">{props.checked ? "✓" : ""}</span>
-    <span>{props.label}</span>
+    <span class="ui-kit-checkbox__mark" />
+    <Show when={props.label.trim() !== ""}>
+      <span>{props.label}</span>
+    </Show>
   </div>
 );
 
@@ -341,6 +364,78 @@ export const EditControl = (props: EditControlProps) => (
   </div>
 );
 
+export const TextInput = (props: TextInputProps) => {
+  let viewportElement: HTMLDivElement | undefined;
+  let textMeasureElement: HTMLSpanElement | undefined;
+  let caretMeasureElement: HTMLSpanElement | undefined;
+  const [metrics, setMetrics] = createSignal({ textOffsetPx: 0, caretLeftPx: 0 });
+  const selectionStart = () => Math.max(0, Math.min(props.text.length, Math.min(props.selectionStart, props.selectionEnd)));
+  const selectionEnd = () => Math.max(0, Math.min(props.text.length, Math.max(props.selectionStart, props.selectionEnd)));
+
+  // Держит каретку внутри видимой области без зависимости от конкретного окна.
+  const updateMetrics = () => {
+    const viewportWidth = viewportElement?.getBoundingClientRect().width ?? 0;
+    const textWidth = textMeasureElement?.getBoundingClientRect().width ?? 0;
+    const caretWidth = caretMeasureElement?.getBoundingClientRect().width ?? 0;
+    if (viewportWidth <= 0) {
+      setMetrics({ textOffsetPx: 0, caretLeftPx: caretWidth });
+      return;
+    }
+
+    const edgePaddingPx = Math.min(12, viewportWidth * 0.08);
+    const maxOffsetPx = Math.max(0, Math.max(textWidth, caretWidth) - viewportWidth + edgePaddingPx);
+    const previousOffsetPx = metrics().textOffsetPx;
+    let nextOffsetPx = previousOffsetPx;
+    if (caretWidth - nextOffsetPx > viewportWidth - edgePaddingPx) {
+      nextOffsetPx = caretWidth - viewportWidth + edgePaddingPx;
+    }
+    if (caretWidth - nextOffsetPx < edgePaddingPx) {
+      nextOffsetPx = caretWidth - edgePaddingPx;
+    }
+
+    const textOffsetPx = Math.max(0, Math.min(maxOffsetPx, nextOffsetPx));
+    setMetrics({
+      textOffsetPx,
+      caretLeftPx: Math.max(0, Math.min(viewportWidth, caretWidth - textOffsetPx)),
+    });
+  };
+
+  createEffect(() => {
+    props.text;
+    props.selectionStart;
+    props.selectionEnd;
+    props.focused;
+    queueMicrotask(updateMetrics);
+  });
+
+  onMount(() => {
+    window.addEventListener("resize", updateMetrics);
+  });
+
+  onCleanup(() => {
+    window.removeEventListener("resize", updateMetrics);
+  });
+
+  return (
+    <div id={props.id} data-ui-kind="edit" class={textInputClass(props)}>
+      <div class="ui-kit-text-input__viewport" ref={(element) => { viewportElement = element; }}>
+        <span class="ui-kit-text-input__text" style={{ transform: `translateX(${-metrics().textOffsetPx}px)` }}>
+          <span>{props.text.slice(0, selectionStart())}</span>
+          <Show when={selectionEnd() > selectionStart()}>
+            <span class="ui-kit-text-input__selection">{props.text.slice(selectionStart(), selectionEnd())}</span>
+          </Show>
+          <span>{props.text.slice(selectionEnd())}</span>
+        </span>
+        <span class="ui-kit-text-input__measure" ref={(element) => { textMeasureElement = element; }} aria-hidden="true">{props.text}</span>
+        <span class="ui-kit-text-input__measure" ref={(element) => { caretMeasureElement = element; }} aria-hidden="true">{props.text.slice(0, selectionEnd())}</span>
+        <Show when={props.focused}>
+          <span class="ui-kit-text-input__caret" style={{ left: `${metrics().caretLeftPx}px` }} />
+        </Show>
+      </div>
+    </div>
+  );
+};
+
 export const Tabs = (props: TabsProps) => (
   <div id={props.id} data-ui-kind="tabs" class={`ui-kit-control ui-kit-tabs ${tabsAlignmentClass(props.align)} ${props.className ?? ""}`}>
     <For each={props.tabs}>
@@ -387,6 +482,7 @@ export const ContextMenu = (props: ContextMenuProps) => (
 export const Modal = (props: ModalProps) => (
   <div id={props.id} data-ui-kind="modal" class="ui-kit-control ui-kit-modal">
     <div class="ui-kit-modal__title">{props.title}</div>
+    <Button id={`${props.id}-close-button`} label="" className="ui-kit-modal__close" ariaLabel="Закрыть окно" zIndex={1200} />
     <div class="ui-kit-modal__body">{props.children}</div>
   </div>
 );
@@ -398,6 +494,10 @@ export const Tooltip = (props: TooltipProps) => (
 export const HotkeyCapture = EditControl;
 
 const stateClass = (state: ButtonProps["state"]): string => state && state !== "normal" ? `is-${state}` : "";
+
+const buttonClass = (props: ButtonProps): string => ["ui-kit-control", "ui-kit-button", props.className, stateClass(props.state)].filter(Boolean).join(" ");
+
+const textInputClass = (props: TextInputProps): string => ["ui-kit-control", "ui-kit-text-input", props.className, props.focused ? "is-focused" : ""].filter(Boolean).join(" ");
 
 // Дополнительный класс нужен только для вкладок, где левый край выравнивается по квадратному значку.
 const markerClass = (marker: JSX.Element | undefined): string => marker ? "ui-kit-tab--with-marker" : "";

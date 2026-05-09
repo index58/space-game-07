@@ -1,9 +1,9 @@
 ﻿import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
-import type { ChatSendMessage, ChatStateMessage, ClientInputState } from "../network/protocol";
+import type { ChatSendMessage, ChatStateMessage, ClientInputState, CosmicObject } from "../network/protocol";
 import { GameUiRuntime } from "../ui-kit/runtime";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
 import { TextEditController } from "../ui-kit/textEdit";
-import type { GameUiAction, GameUiControlState } from "../ui-kit/types";
+import type { GameUiAction, GameUiControlState, TextEditState } from "../ui-kit/types";
 import { isFreshKeyboardBinding, isFreshKeyDown, toShipInput, type InputBindingMap } from "./inputState";
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
@@ -137,16 +137,32 @@ export class InputController {
   private uiKitShowcaseVisible = false;
   // Показывает окно настроек игрока.
   private settingsVisible = false;
+  // Показывает окно панели управления объектом.
+  private controlPanelVisible = false;
   // Накопленная прокрутка окна настроек игровым колесом.
   private settingsWheelDeltaY = 0;
   // Текущие системные привязки действий, полученные из настроек аккаунта.
   private inputBindings: InputBindingMap = {};
   // Нативный движок редактирования строки чата.
   private readonly chatEdit = new TextEditController({ id: "chat-input", mode: "singleLine" });
+  // Нативный движок редактирования названия объекта в панели управления.
+  private readonly controlPanelObjectTitleEdit = new TextEditController({ id: "control-panel-object-title-input", mode: "singleLine" });
+  // Объект, для которого сейчас хранится черновик панели управления.
+  private controlPanelObjectId: number | null = null;
+  // Черновик состояния включения объекта в панели управления.
+  private controlPanelObjectEnabledDraft: boolean | null = null;
+  // Черновик пользовательского названия объекта в панели управления.
+  private controlPanelObjectTitleDraft: string | null = null;
   // Показывает, что игровой курсор сейчас выделяет текст чата мышью.
   private chatEditDragActive = false;
   // Позиция начала выделения текстового поля игровым курсором.
   private chatEditDragAnchorIndex = 0;
+  // Показывает, что игровой курсор сейчас выделяет название объекта мышью.
+  private controlPanelObjectTitleEditDragActive = false;
+  // Позиция начала выделения названия объекта игровым курсором.
+  private controlPanelObjectTitleEditDragAnchorIndex = 0;
+  // Блокирует click после перетаскивания, чтобы выделение не схлопывалось на отпускании.
+  private controlPanelObjectTitleSuppressClick = false;
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -160,6 +176,7 @@ export class InputController {
         this.chatInputFocused = false;
         this.chatContextMenu = null;
         this.chatEdit.blur();
+        this.controlPanelObjectTitleEdit.blur();
         this.keys[event.code] = true;
         return;
       }
@@ -176,6 +193,15 @@ export class InputController {
         return;
       }
       if (this.handleChatKeyDown(event)) {
+        return;
+      }
+      if (this.handleControlPanelObjectTitleKeyDown(event)) {
+        return;
+      }
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyI")) {
+        this.toggleControlPanelModal();
+        this.keys[event.code] = true;
+        event.preventDefault();
         return;
       }
       if (this.isGameCursorVisible()) {
@@ -210,6 +236,9 @@ export class InputController {
         this.enqueueUiAction(this.uiRuntime.pointerMove(this.cursorX, this.cursorY));
         if (this.chatEditDragActive) {
           this.updateChatEditSelectionFromCursor();
+        }
+        if (this.controlPanelObjectTitleEditDragActive) {
+          this.updateControlPanelObjectTitleEditSelectionFromCursor();
         }
         if (this.chatScrollbarDragActive) {
           this.updateChatScrollFromCursor();
@@ -271,6 +300,10 @@ export class InputController {
         event.preventDefault();
         return;
       }
+      if (this.startControlPanelObjectTitleEditPointerSelection(event.detail)) {
+        event.preventDefault();
+        return;
+      }
       if (this.closeChatContextMenuItem(this.cursorX, this.cursorY) || this.closeChatContextMenuItem(event.clientX, event.clientY)) {
         event.preventDefault();
         return;
@@ -294,6 +327,8 @@ export class InputController {
       if (event.button === 0) {
         this.enqueueUiAction(this.uiRuntime.pointerUp(this.cursorX, this.cursorY, event.button));
         this.chatEditDragActive = false;
+        this.controlPanelObjectTitleEditDragActive = false;
+        this.controlPanelObjectTitleSuppressClick = false;
         this.chatScrollbarDragActive = false;
         this.chatScrollbarDrag = null;
       }
@@ -320,6 +355,9 @@ export class InputController {
     this.chatEdit.element().addEventListener("input", () => this.syncChatInputFromNativeEdit());
     this.chatEdit.element().addEventListener("select", () => this.syncChatInputFromNativeEdit());
     this.chatEdit.element().addEventListener("keyup", () => this.syncChatInputFromNativeEdit());
+    this.controlPanelObjectTitleEdit.element().addEventListener("input", () => this.syncControlPanelObjectTitleFromNativeEdit());
+    this.controlPanelObjectTitleEdit.element().addEventListener("select", () => this.syncControlPanelObjectTitleFromNativeEdit());
+    this.controlPanelObjectTitleEdit.element().addEventListener("keyup", () => this.syncControlPanelObjectTitleFromNativeEdit());
   }
 
   // Возвращает пользовательский уровень зума без пересчета в пиксели.
@@ -418,6 +456,54 @@ export class InputController {
     return this.chatScrollState;
   }
 
+  // Синхронизирует черновик панели управления с текущим объектом без перезаписи уже введенных правок.
+  syncControlPanelObject(object: CosmicObject | null): void {
+    if (!object) {
+      this.controlPanelObjectId = null;
+      this.controlPanelObjectEnabledDraft = null;
+      this.controlPanelObjectTitleDraft = null;
+      this.controlPanelObjectTitleEdit.blur();
+      return;
+    }
+    if (this.controlPanelObjectId !== object.ID) {
+      this.controlPanelObjectId = object.ID;
+      this.controlPanelObjectEnabledDraft = object.Enabled;
+      this.controlPanelObjectTitleDraft = object.Title;
+      this.controlPanelObjectTitleEdit.blur();
+      return;
+    }
+    this.controlPanelObjectEnabledDraft ??= object.Enabled;
+    this.controlPanelObjectTitleDraft ??= object.Title;
+  }
+
+  // Возвращает черновик переключателя панели управления или серверное значение до синхронизации.
+  getControlPanelObjectEnabled(fallback: boolean): boolean {
+    return this.controlPanelObjectEnabledDraft ?? fallback;
+  }
+
+  // Возвращает черновик названия объекта или серверное значение до синхронизации.
+  getControlPanelObjectTitle(fallback: string): string {
+    return this.controlPanelObjectTitleDraft ?? fallback;
+  }
+
+  // Возвращает состояние редактирования названия объекта для отрисовки UI Kit поля.
+  getControlPanelObjectTitleEditState(fallback = ""): TextEditState {
+    const snapshot = this.controlPanelObjectTitleEdit.snapshot();
+    if (snapshot.focused) {
+      return snapshot;
+    }
+    const text = this.getControlPanelObjectTitle(fallback);
+    return {
+      text,
+      selectionStart: text.length,
+      selectionEnd: text.length,
+      selectionDirection: "none",
+      scrollX: 0,
+      scrollY: 0,
+      focused: false,
+    };
+  }
+
   // Обновляет registry общего UI runtime из актуально отрисованных HUD-контролов.
   updateGameUiControls(controls: GameUiControlState[]): void {
     this.uiRuntime.updateControls(controls);
@@ -436,6 +522,11 @@ export class InputController {
   // Возвращает видимость окна настроек.
   isSettingsVisible(): boolean {
     return this.settingsVisible;
+  }
+
+  // Возвращает видимость панели управления.
+  isControlPanelVisible(): boolean {
+    return this.controlPanelVisible;
   }
 
   // Закрывает окно настроек после внешнего UI-действия.
@@ -496,6 +587,7 @@ export class InputController {
     if (!isPointerLocked) {
       this.chatInputFocused = false;
       this.chatEdit.blur();
+      this.controlPanelObjectTitleEdit.blur();
       this.chatContextMenu = null;
       this.chatScrollbarDragActive = false;
       this.chatEditDragActive = false;
@@ -600,6 +692,25 @@ export class InputController {
     return true;
   }
 
+  // Отдает клавиатуру native-полю названия объекта, пока оно находится в фокусе.
+  private handleControlPanelObjectTitleKeyDown(event: KeyboardEvent): boolean {
+    if (!this.controlPanelObjectTitleEdit.snapshot().focused) {
+      return false;
+    }
+    if (event.target !== this.controlPanelObjectTitleEdit.element()) {
+      return false;
+    }
+    if (event.code === "Escape" || event.code === "Enter") {
+      this.controlPanelObjectTitleEdit.blur();
+      this.syncControlPanelObjectTitleFromNativeEdit();
+      event.preventDefault();
+      return true;
+    }
+
+    window.setTimeout(() => this.syncControlPanelObjectTitleFromNativeEdit(), 0);
+    return true;
+  }
+
   // Превращает локальную строку в обычную или адресную сетевую команду.
   private queueChatAction(): void {
     const text = this.chatInputText.trim();
@@ -637,7 +748,7 @@ export class InputController {
 
   // Показывает, что игровой указатель нужен для текущего UI-взаимодействия.
   private isGameCursorVisible(): boolean {
-    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible || this.settingsVisible);
+    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible || this.settingsVisible || this.controlPanelVisible);
   }
 
   // Переключает окно настроек так, чтобы остальные модальные окна были закрыты.
@@ -654,17 +765,61 @@ export class InputController {
     this.uiKitShowcaseVisible = nextVisible;
   }
 
+  // Переключает панель управления так, чтобы остальные модальные окна были закрыты.
+  private toggleControlPanelModal(): void {
+    const nextVisible = !this.controlPanelVisible;
+    this.closeModalWindows();
+    this.controlPanelVisible = nextVisible;
+  }
+
   // Закрывает все модальные окна, которыми управляет игровой ввод.
   private closeModalWindows(): void {
     this.settingsVisible = false;
     this.uiKitShowcaseVisible = false;
+    this.controlPanelVisible = false;
+    this.controlPanelObjectTitleEdit.blur();
   }
 
   // Сохраняет действие общего runtime до обработки сценой.
   private enqueueUiAction(action: GameUiAction | null): void {
     if (action) {
+      if (this.consumeInternalUiAction(action)) {
+        return;
+      }
       this.uiActions.push(action);
     }
+  }
+
+  // Обрабатывает команды, которые принадлежат самому каркасу игрового UI.
+  private consumeInternalUiAction(action: GameUiAction): boolean {
+    if (action.type === "click" && action.controlId.endsWith("-close-button")) {
+      this.closeModalWindows();
+      return true;
+    }
+    if (action.type === "click" && action.controlId === "control-panel-object-enabled") {
+      this.controlPanelObjectTitleEdit.blur();
+      this.controlPanelObjectEnabledDraft = !this.getControlPanelObjectEnabled(false);
+      return true;
+    }
+    if (action.type === "click" && action.controlId === "control-panel-object-title-input") {
+      if (this.controlPanelObjectTitleSuppressClick) {
+        return true;
+      }
+      const text = this.getControlPanelObjectTitle("");
+      const index = this.textInputIndexAtCursor("control-panel-object-title-input", text);
+      this.controlPanelObjectTitleEdit.focus(text, index, index);
+      this.syncControlPanelObjectTitleFromNativeEdit();
+      return true;
+    }
+    if (action.type === "click" && action.controlId.startsWith("control-panel-")) {
+      this.controlPanelObjectTitleEdit.blur();
+    }
+    return false;
+  }
+
+  // Переносит данные native-поля в черновик панели управления.
+  private syncControlPanelObjectTitleFromNativeEdit(): void {
+    this.controlPanelObjectTitleDraft = this.controlPanelObjectTitleEdit.snapshot().text;
   }
 
   // Узнает слой, который должен только закрыть раскрытый список и не запускать нижний UI.
@@ -758,6 +913,8 @@ export class InputController {
     this.chatContextMenu = null;
     this.uiKitShowcaseVisible = false;
     this.settingsVisible = false;
+    this.controlPanelVisible = false;
+    this.controlPanelObjectTitleEdit.blur();
     return true;
   }
 
@@ -789,9 +946,47 @@ export class InputController {
     this.syncChatInputFromNativeEdit();
   }
 
+  // Начинает постановку каретки или выделение названия объекта игровым курсором.
+  private startControlPanelObjectTitleEditPointerSelection(clickCount: number): boolean {
+    if (!this.isGameCursorVisible() || !this.isCursorOverTextInput("control-panel-object-title-input")) {
+      return false;
+    }
+
+    const text = this.getControlPanelObjectTitle("");
+    const index = this.textInputIndexAtCursor("control-panel-object-title-input", text);
+    if (clickCount >= 2) {
+      this.controlPanelObjectTitleEdit.focus(text, index, index);
+      this.controlPanelObjectTitleEdit.selectWordAt(index);
+      this.syncControlPanelObjectTitleFromNativeEdit();
+      this.controlPanelObjectTitleSuppressClick = true;
+      return true;
+    }
+
+    this.controlPanelObjectTitleEditDragActive = true;
+    this.controlPanelObjectTitleEditDragAnchorIndex = index;
+    this.controlPanelObjectTitleSuppressClick = false;
+    this.controlPanelObjectTitleEdit.focus(text, index, index);
+    this.syncControlPanelObjectTitleFromNativeEdit();
+    return true;
+  }
+
+  // Обновляет выделение названия объекта при перетаскивании по общему полю ввода.
+  private updateControlPanelObjectTitleEditSelectionFromCursor(): void {
+    const text = this.getControlPanelObjectTitle("");
+    const index = this.textInputIndexAtCursor("control-panel-object-title-input", text);
+    this.controlPanelObjectTitleSuppressClick = this.controlPanelObjectTitleEditDragAnchorIndex !== index;
+    this.controlPanelObjectTitleEdit.focus(text, this.controlPanelObjectTitleEditDragAnchorIndex, index);
+    this.syncControlPanelObjectTitleFromNativeEdit();
+  }
+
   // Проверяет попадание игрового курсора в визуальную строку ввода.
   private isCursorOverChatInput(): boolean {
-    const rect = document.getElementById("chat-input")?.getBoundingClientRect();
+    return this.isCursorOverTextInput("chat-input");
+  }
+
+  // Проверяет попадание игрового курсора в общее поле ввода.
+  private isCursorOverTextInput(inputId: string): boolean {
+    const rect = document.getElementById(inputId)?.getBoundingClientRect();
     return Boolean(rect &&
       this.cursorX >= rect.left &&
       this.cursorX <= rect.right &&
@@ -801,20 +996,25 @@ export class InputController {
 
   // Находит ближайшую позицию текста в строке чата по координате игрового курсора.
   private chatTextIndexAtCursor(): number {
-    const viewport = document.querySelector<HTMLElement>("#chat-input .chat-input__viewport");
-    const text = document.querySelector<HTMLElement>("#chat-input .chat-input__text");
-    const measure = document.querySelector<HTMLElement>("#chat-input .chat-input__measure");
+    return this.textInputIndexAtCursor("chat-input", this.chatInputText);
+  }
+
+  // Находит ближайшую позицию текста в общем поле ввода по координате игрового курсора.
+  private textInputIndexAtCursor(inputId: string, value: string): number {
+    const viewport = document.querySelector<HTMLElement>(`#${inputId} .ui-kit-text-input__viewport`);
+    const text = document.querySelector<HTMLElement>(`#${inputId} .ui-kit-text-input__text`);
+    const measure = document.querySelector<HTMLElement>(`#${inputId} .ui-kit-text-input__measure`);
     const viewportRect = viewport?.getBoundingClientRect();
-    if (!viewportRect || this.chatInputText.length === 0) {
-      return this.chatInputText.length;
+    if (!viewportRect || value.length === 0) {
+      return value.length;
     }
 
-    const textWidth = measure?.getBoundingClientRect().width ?? this.chatInputText.length * 8;
-    const charWidth = Math.max(1, textWidth / Math.max(1, this.chatInputText.length));
+    const textWidth = measure?.getBoundingClientRect().width ?? value.length * 8;
+    const charWidth = Math.max(1, textWidth / Math.max(1, value.length));
     const transform = text?.style.transform ?? "";
     const offset = Number(transform.match(/translateX\((-?\d+(?:\.\d+)?)px\)/)?.[1] ?? 0);
     const localX = this.cursorX - viewportRect.left - offset;
-    return clamp(Math.round(localX / charWidth), 0, this.chatInputText.length);
+    return clamp(Math.round(localX / charWidth), 0, value.length);
   }
 
   private syncChatInputFromNativeEdit(): void {

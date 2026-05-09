@@ -31,7 +31,14 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   chatScroll: scrollState,
   uiKitShowcaseVisible: false,
   settingsVisible: true,
+  controlPanelVisible: false,
   selectedSettingsTab: "input",
+  selectedControlPanelTab: "object",
+  controlPanelObjectEnabled: true,
+  controlPanelObjectTitleText: "Ship",
+  controlPanelObjectTitleSelectionStart: 4,
+  controlPanelObjectTitleSelectionEnd: 4,
+  controlPanelObjectTitleFocused: false,
   inputSettingsValues: { 1: 1 },
   openInputSettingsActionId: null,
   inputSettingsError: null,
@@ -100,6 +107,14 @@ describe("getGameUiControlLayoutSignature", () => {
   it("changes when selected settings tab changes", () => {
     const first = getGameUiControlLayoutSignature(state({ selectedSettingsTab: "input" }), viewport);
     const second = getGameUiControlLayoutSignature(state({ selectedSettingsTab: "video" }), viewport);
+
+    expect(second).not.toBe(first);
+  });
+
+  // Проверяет, что смена страницы панели управления пересобирает DOM-области ее вкладок и содержимого.
+  it("changes when selected control panel tab changes", () => {
+    const first = getGameUiControlLayoutSignature(state({ controlPanelVisible: true, selectedControlPanelTab: "object" }), viewport);
+    const second = getGameUiControlLayoutSignature(state({ controlPanelVisible: true, selectedControlPanelTab: "equipment" }), viewport);
 
     expect(second).not.toBe(first);
   });

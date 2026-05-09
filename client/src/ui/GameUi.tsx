@@ -1,13 +1,15 @@
-import { createEffect, createMemo, createSignal, For, Match, onCleanup, onMount, Show, Switch, type Accessor, type JSX } from "solid-js";
+import { createMemo, For, Match, Show, Switch, type Accessor, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
-import type { GameUiState, SettingsTabValue } from "./gameUiState";
+import { formatNumber } from "../domain/format";
+import type { CosmicObjectModelReference } from "../network/protocol";
+import type { ControlPanelTabValue, GameUiState, SettingsTabValue } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
 import { getMinimapView, type MinimapPointView } from "./minimap";
 import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
 import { getInformationPanelView, type InformationPanelRow } from "./informationPanel";
 import { getInputEventOptions, getInputSettingsRows } from "./inputSettings";
-import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, Tooltip, TreeView, VirtualList } from "../ui-kit/components";
+import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, TextInput, Tooltip, TreeView, VirtualList } from "../ui-kit/components";
 
 type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-middle" | "right-bottom" | "left-top";
 
@@ -45,6 +47,7 @@ export const GameUi = (props: GameUiProps) => (
     <DebugOverlay state={props.state} />
     <UiKitShowcase state={props.state} />
     <SettingsModal state={props.state} />
+    <ControlPanelModal state={props.state} />
     <GameCursor state={props.state} />
   </>
 );
@@ -164,10 +167,29 @@ type SettingsModalProps = {
   state: Accessor<GameUiState>;
 };
 
+type ControlPanelModalProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
 type GameWindowLayerProps = {
   // Вид окна, который задаёт необходимые отличия поверх общего каркаса.
-  variant: "settings" | "showcase";
+  variant: "settings" | "showcase" | "control-panel";
   // Содержимое окна в общем экранном слое.
+  children: JSX.Element;
+};
+
+type ControlPanelObjectRow = {
+  // Видимая подпись характеристики или поля.
+  label: string;
+  // Текстовое значение, показанное справа от подписи.
+  value: string;
+};
+
+type GameFormRowLabelProps = {
+  // Дополнительный класс конкретной строки формы.
+  className?: string;
+  // Текст или содержимое общей подписи строки.
   children: JSX.Element;
 };
 
@@ -177,11 +199,25 @@ const settingsTabs: Array<{ value: SettingsTabValue; label: string }> = [
   { value: "input", label: "Ввод" },
 ];
 
+const controlPanelTabs: Array<{ value: ControlPanelTabValue; label: string }> = [
+  { value: "object", label: "Объект" },
+  { value: "equipment", label: "Оборудование" },
+  { value: "pilotTools", label: "Инструменты пилота" },
+  { value: "schemas", label: "Схемы" },
+  { value: "blueprints", label: "Чертежи" },
+  { value: "map", label: "Карта" },
+];
+
 // Задаёт общий экранный шаблон для всех игровых модальных окон.
 const GameWindowLayer = (props: GameWindowLayerProps) => (
   <div class={`game-window-layer game-window-layer--${props.variant}`}>
     {props.children}
   </div>
+);
+
+// Рисует левую часть строк игровых форм по единому шаблону окна настроек.
+const GameFormRowLabel = (props: GameFormRowLabelProps) => (
+  <div class={`game-form-row-label ${props.className ?? ""}`}>{props.children}</div>
 );
 
 type PilotToolSlotProps = {
@@ -254,52 +290,6 @@ const ChatPanel = (props: ChatPanelProps) => {
     marker: getChatTabMarker(chatTab.communityTypeAcronym),
     badge: (chatTab.unreadCount ?? 0) > 0 ? chatTab.unreadCount : undefined,
   }));
-  let chatInputViewport: HTMLDivElement | undefined;
-  let chatInputTextMeasure: HTMLSpanElement | undefined;
-  let chatInputCaretMeasure: HTMLSpanElement | undefined;
-  const [chatInputMetrics, setChatInputMetrics] = createSignal({ textOffsetPx: 0, caretLeftPx: 0 });
-
-  // Рассчитывает горизонтальный сдвиг так, чтобы каретка оставалась внутри видимой части строки.
-  const updateChatInputMetrics = () => {
-    const viewportWidth = chatInputViewport?.getBoundingClientRect().width ?? 0;
-    const textWidth = chatInputTextMeasure?.getBoundingClientRect().width ?? 0;
-    const caretWidth = chatInputCaretMeasure?.getBoundingClientRect().width ?? 0;
-    if (viewportWidth <= 0) {
-      setChatInputMetrics({ textOffsetPx: 0, caretLeftPx: caretWidth });
-      return;
-    }
-
-    const edgePaddingPx = Math.min(12, viewportWidth * 0.08);
-    const maxOffsetPx = Math.max(0, Math.max(textWidth, caretWidth) - viewportWidth + edgePaddingPx);
-    const previousOffsetPx = chatInputMetrics().textOffsetPx;
-    let nextOffsetPx = previousOffsetPx;
-    if (caretWidth - nextOffsetPx > viewportWidth - edgePaddingPx) {
-      nextOffsetPx = caretWidth - viewportWidth + edgePaddingPx;
-    }
-    if (caretWidth - nextOffsetPx < edgePaddingPx) {
-      nextOffsetPx = caretWidth - edgePaddingPx;
-    }
-
-    const textOffsetPx = Math.max(0, Math.min(maxOffsetPx, nextOffsetPx));
-    setChatInputMetrics({
-      textOffsetPx,
-      caretLeftPx: Math.max(0, Math.min(viewportWidth, caretWidth - textOffsetPx)),
-    });
-  };
-
-  createEffect(() => {
-    props.state().chatInputText;
-    props.state().chatCursorIndex;
-    queueMicrotask(updateChatInputMetrics);
-  });
-
-  onMount(() => {
-    window.addEventListener("resize", updateChatInputMetrics);
-  });
-
-  onCleanup(() => {
-    window.removeEventListener("resize", updateChatInputMetrics);
-  });
 
   return (
     <Show when={props.state().chatState && selectedTab()}>
@@ -333,25 +323,14 @@ const ChatPanel = (props: ChatPanelProps) => {
           <Show when={props.state().chatError}>
             {(error) => <div class="chat-error" style={{ "animation-name": chatErrorAnimationName() }}>{error()}</div>}
           </Show>
-          <div id="chat-input" data-ui-kind="edit" class={`ui-kit-control ui-kit-edit chat-input ${props.state().chatInputFocused ? "is-focused" : ""}`}>
-            <div class="chat-input__viewport" ref={chatInputViewport}>
-              <span
-                class="chat-input__text"
-                style={{ transform: `translateX(${-chatInputMetrics().textOffsetPx}px)` }}
-              >
-                <span>{props.state().chatInputText.slice(0, chatSelectionStart())}</span>
-                <Show when={chatSelectionEnd() > chatSelectionStart()}>
-                  <span class="chat-input__selection">{props.state().chatInputText.slice(chatSelectionStart(), chatSelectionEnd())}</span>
-                </Show>
-                <span>{props.state().chatInputText.slice(chatSelectionEnd())}</span>
-              </span>
-              <span class="chat-input__measure" ref={chatInputTextMeasure} aria-hidden="true">{props.state().chatInputText}</span>
-              <span class="chat-input__measure" ref={chatInputCaretMeasure} aria-hidden="true">{props.state().chatInputText.slice(0, props.state().chatCursorIndex)}</span>
-              <Show when={props.state().chatInputFocused}>
-                <span class="chat-input__caret" style={{ left: `${chatInputMetrics().caretLeftPx}px` }} />
-              </Show>
-            </div>
-          </div>
+          <TextInput
+            id="chat-input"
+            className="chat-input"
+            text={props.state().chatInputText}
+            selectionStart={chatSelectionStart()}
+            selectionEnd={chatSelectionEnd()}
+            focused={props.state().chatInputFocused}
+          />
           <Tabs
             id="chat-tabs"
             itemIdPrefix="chat-tab"
@@ -444,7 +423,7 @@ const SettingsModal = (props: SettingsModalProps) => {
                     <For each={rows()}>
                       {(row) => (
                         <div class="settings-input-row">
-                          <div class="settings-input-row__action">{row.actionTitle}</div>
+                          <GameFormRowLabel className="settings-input-row__action">{row.actionTitle}</GameFormRowLabel>
                           <Dropdown
                             id={`settings-input-select-${row.actionTypeId}`}
                             selectedValue={String(row.inputEventTypeId)}
@@ -483,6 +462,126 @@ const SettingsModal = (props: SettingsModalProps) => {
     </Show>
   );
 };
+
+// Показывает модальную панель управления текущим объектом поверх игрового HUD.
+const ControlPanelModal = (props: ControlPanelModalProps) => {
+  const modelTitle = createMemo(() => getControlPanelModelTitle(props.state()));
+  const rows = createMemo(() => getControlPanelObjectRows(props.state()));
+
+  return (
+    <Show when={props.state().controlPanelVisible}>
+      <GameWindowLayer variant="control-panel">
+        <Modal id="control-panel-modal" title="Панель управления">
+          <div class="control-panel">
+            <Tabs id="control-panel-tabs" itemIdPrefix="control-panel-tab" align="center" className="control-panel-tabs" selectedValue={props.state().selectedControlPanelTab} tabs={controlPanelTabs} />
+            <Switch>
+              <Match when={props.state().selectedControlPanelTab === "object"}>
+                <Show when={props.state().selfObject} fallback={<div class="control-panel-empty-page" />}>
+                  {(_selfObject) => (
+                    <div class="control-panel-object-page">
+                      <div class="control-panel-object-row">
+                        <GameFormRowLabel className="control-panel-object-row__label">Название модели космического объекта</GameFormRowLabel>
+                        <div class="control-panel-object-row__value control-panel-object-row__value--readonly">{modelTitle()}</div>
+                      </div>
+                      <div class="control-panel-object-row">
+                        <GameFormRowLabel className="control-panel-object-row__label">Включен</GameFormRowLabel>
+                        <div class="control-panel-object-row__value control-panel-object-row__value--control">
+                          <Checkbox id="control-panel-object-enabled" label="" checked={props.state().controlPanelObjectEnabled} />
+                        </div>
+                      </div>
+                      <div class="control-panel-object-row">
+                        <GameFormRowLabel className="control-panel-object-row__label">Пользовательское название объекта</GameFormRowLabel>
+                        <div class="control-panel-object-row__value control-panel-object-row__value--control">
+                          <TextInput
+                            id="control-panel-object-title-input"
+                            text={props.state().controlPanelObjectTitleText}
+                            selectionStart={props.state().controlPanelObjectTitleSelectionStart}
+                            selectionEnd={props.state().controlPanelObjectTitleSelectionEnd}
+                            focused={props.state().controlPanelObjectTitleFocused}
+                          />
+                        </div>
+                      </div>
+                      <For each={rows()}>
+                        {(row) => (
+                          <div class="control-panel-object-row">
+                            <GameFormRowLabel className="control-panel-object-row__label">{row.label}</GameFormRowLabel>
+                            <div class="control-panel-object-row__value control-panel-object-row__value--readonly">{row.value}</div>
+                          </div>
+                        )}
+                      </For>
+                    </div>
+                  )}
+                </Show>
+              </Match>
+              <Match when={props.state().selectedControlPanelTab === "equipment"}>
+                <div class="control-panel-empty-page" />
+              </Match>
+              <Match when={props.state().selectedControlPanelTab === "pilotTools"}>
+                <div class="control-panel-empty-page" />
+              </Match>
+              <Match when={props.state().selectedControlPanelTab === "schemas"}>
+                <div class="control-panel-empty-page" />
+              </Match>
+              <Match when={props.state().selectedControlPanelTab === "blueprints"}>
+                <div class="control-panel-empty-page" />
+              </Match>
+              <Match when={props.state().selectedControlPanelTab === "map"}>
+                <div class="control-panel-empty-page" />
+              </Match>
+            </Switch>
+          </div>
+        </Modal>
+      </GameWindowLayer>
+    </Show>
+  );
+};
+
+const getControlPanelObjectRows = (state: GameUiState): ControlPanelObjectRow[] => {
+  const object = state.selfObject;
+  if (!object) {
+    return [];
+  }
+
+  return [
+    { label: "Никнейм аккаунта персонажа-владельца", value: emptyValue() },
+    { label: "Никнейм аккаунта персонажа-создателя", value: emptyValue() },
+    { label: "Масса", value: formatMetric(object.Mass) },
+    { label: "Объём оборудования / Вместимость", value: formatPair(object.OccupiedVolume, object.Capacity) },
+    { label: "Броня / Максимум брони", value: formatPair(object.Armor, object.MaxArmor) },
+    { label: "Сложность", value: formatMetric(object.Complexity) },
+    { label: "Максимальная скорость", value: formatPreciseMetric(object.MaxSpeed) },
+    { label: "Максимальная угловая скорость", value: formatPreciseMetric(object.MaxAngularSpeed) },
+    { label: "Продольная сила тяги (максимальная)", value: formatPreciseMetric(object.MaxAlongForce) },
+    { label: "Поперечная сила тяги (максимальная)", value: formatPreciseMetric(object.MaxAcrossForce) },
+    { label: "Крутящий момент (максимальный)", value: formatPreciseMetric(object.MaxTorque) },
+    { label: "Потребляемая мощность / Вырабатываемая мощность", value: formatPair(object.ConsumingPower, object.GeneratingPower) },
+    { label: "Запас топлива / Максимальный запас топлива", value: formatPair(object.Fuel, object.MaxFuel) },
+    { label: "Занято на складе / Объём склада", value: formatPair(object.OccupiedVolume, object.Capacity) },
+  ];
+};
+
+const getControlPanelModelTitle = (state: GameUiState): string => {
+  const object = state.selfObject;
+  const model = object ? state.referenceData?.CosmicObjectModel.Items[String(object.CosmicObjectModelID)] : undefined;
+  return getReferenceTitle(model) ?? emptyValue();
+};
+
+const getReferenceTitle = (model: CosmicObjectModelReference | undefined): string | null => {
+  if (!model) {
+    return null;
+  }
+  return stringField(model, "TitleRu") ?? stringField(model, "TitleEn") ?? stringField(model, "Acronym");
+};
+
+const stringField = (record: Record<string, unknown>, key: string): string | null => {
+  const value = record[key];
+  return typeof value === "string" && value.trim() !== "" ? value : null;
+};
+
+const emptyValue = (): string => "—";
+const formatMetric = (value: number): string => formatNumber(value, 0);
+const formatPreciseMetric = (value: number): string => formatNumber(value, 2);
+const formatPair = (current: number, maximum: number): string => `${formatMetric(current)} / ${formatMetric(maximum)}`;
 
 // Показывает десять ячеек инструментов пилота в центральной нижней части экрана.
 const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (

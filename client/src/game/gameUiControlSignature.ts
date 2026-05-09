@@ -45,6 +45,12 @@ export const getGameUiControlLayoutSignature = (
     listScroll: scrollSignature(state.inputSettingsScroll),
     dropdownScroll: scrollSignature(state.inputSettingsDropdownScroll),
   },
+  controlPanel: {
+    visible: state.controlPanelVisible,
+    selectedTab: state.selectedControlPanelTab,
+    hasSelfObject: state.selfObject !== null,
+    objectId: state.selfObject?.ID ?? null,
+  },
 });
 
 const scrollSignature = (scroll: GameUiState["inputSettingsScroll"]) => ({

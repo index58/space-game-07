@@ -53,6 +53,9 @@ const object = (partial: Partial<CosmicObject> = {}): CosmicObject => ({
   ...partial,
 });
 
+const visibleControlText = (element: Element | null): string | null =>
+  element?.querySelector(".ui-kit-text-input__text")?.textContent ?? element?.textContent ?? null;
+
 const referenceData = {
   type: "referenceData",
   NpcClan: { MaxID: 0, Items: {} },
@@ -128,7 +131,14 @@ const state = (): GameUiState => ({
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
   settingsVisible: false,
+  controlPanelVisible: false,
   selectedSettingsTab: "input",
+  selectedControlPanelTab: "object",
+  controlPanelObjectEnabled: true,
+  controlPanelObjectTitleText: "Ship",
+  controlPanelObjectTitleSelectionStart: 4,
+  controlPanelObjectTitleSelectionEnd: 4,
+  controlPanelObjectTitleFocused: false,
   inputSettingsValues: { 1: 1 },
   openInputSettingsActionId: null,
   inputSettingsError: null,
@@ -255,15 +265,15 @@ describe("GameUi", () => {
     expect(Array.from(root.querySelector(".chat-panel")?.children ?? []).map((element) => element.className.replace(/\s+/g, " ").trim())).toEqual([
       "chat-messages",
       "chat-error",
-      "ui-kit-control ui-kit-edit chat-input is-focused",
+      "ui-kit-control ui-kit-text-input chat-input is-focused",
       "ui-kit-control ui-kit-tabs chat-tabs",
       "ui-kit-control chat-context-menu",
     ]);
     expect(Array.from(root.querySelectorAll(".chat-message")).map((message) => message.textContent)).toEqual(["Pilot1: old", "Pilot2: new"]);
     expect(Array.from(root.querySelectorAll(".chat-message__separator")).map((separator) => separator.textContent)).toEqual([": ", ": "]);
     expect(Array.from(root.querySelectorAll(".chat-message__text")).map((message) => message.textContent)).toEqual(["old", "new"]);
-    expect(root.querySelector(".chat-input__text")?.textContent).toBe("draft");
-    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("0px");
+    expect(root.querySelector(".ui-kit-text-input__text")?.textContent).toBe("draft");
+    expect(root.querySelector<HTMLElement>(".ui-kit-text-input__caret")?.style.left).toBe("0px");
     expect(root.querySelector(".chat-error")?.textContent).toBe("Адресат не найден");
     expect(root.querySelector(".chat-context-menu__item")?.textContent).toBe("Закрыть");
     expect(root.querySelector(".chat-scrollbar .ui-kit-scrollbar__thumb")).not.toBeNull();
@@ -320,7 +330,7 @@ describe("GameUi", () => {
     dispose = render(() => <GameUi state={() => ({ ...state(), uiKitShowcaseVisible: true, uiKitDemoState: { ...state().uiKitDemoState, buttonClicks: 2, checkboxChecked: false, tabValue: "one" } })} />, root);
 
     expect(root.querySelector(".ui-kit-showcase")).not.toBeNull();
-    expect(root.querySelector(".ui-kit-button")?.textContent).toBe("Button 2");
+    expect(root.querySelector("#ui-kit-demo-button")?.textContent).toBe("Button 2");
     expect(Array.from(root.querySelector(".ui-kit-checkbox")?.classList ?? [])).not.toContain("is-checked");
     expect(root.querySelector(".ui-kit-dropdown")).not.toBeNull();
     expect(root.querySelector(".ui-kit-tree")).not.toBeNull();
@@ -329,15 +339,129 @@ describe("GameUi", () => {
     expect(root.querySelector(".ui-kit-tooltip")).not.toBeNull();
   });
 
-  // Проверяет, что витрина UI Kit и настройки используют один каркас игрового окна.
-  it("renders settings and UI kit showcase through the same game window shell", () => {
+  // Проверяет, что модальные окна используют один каркас игрового окна.
+  it("renders modal windows through the same game window shell", () => {
     const root = document.createElement("div");
     document.body.append(root);
 
-    dispose = render(() => <GameUi state={() => ({ ...state(), uiKitShowcaseVisible: true, settingsVisible: true })} />, root);
+    dispose = render(() => <GameUi state={() => ({ ...state(), uiKitShowcaseVisible: true, settingsVisible: true, controlPanelVisible: true })} />, root);
 
     expect(root.querySelector("#ui-kit-showcase-modal")?.parentElement?.className).toBe("game-window-layer game-window-layer--showcase");
     expect(root.querySelector("#settings-modal")?.parentElement?.className).toBe("game-window-layer game-window-layer--settings");
+    expect(root.querySelector("#control-panel-modal")?.parentElement?.className).toBe("game-window-layer game-window-layer--control-panel");
+    expect(Array.from(root.querySelectorAll(".game-window-layer .ui-kit-modal__close")).map((button) => button.id)).toEqual(["ui-kit-showcase-modal-close-button", "settings-modal-close-button", "control-panel-modal-close-button"]);
+  });
+
+  // Проверяет, что панель управления показывает все вкладки и наполняет только страницу объекта.
+  it("renders control panel tabs and object page", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({ ...state(), controlPanelVisible: true })} />, root);
+
+    expect(root.querySelector("#control-panel-modal .ui-kit-modal__title")?.textContent).toBe("Панель управления");
+    expect(Array.from(root.querySelectorAll(".control-panel-tabs .ui-kit-tab")).map((tab) => tab.textContent)).toEqual([
+      "Объект",
+      "Оборудование",
+      "Инструменты пилота",
+      "Схемы",
+      "Чертежи",
+      "Карта",
+    ]);
+    expect(root.querySelector(".control-panel-tabs .ui-kit-tab.is-selected")?.textContent).toBe("Объект");
+    expect(root.querySelector("#control-panel-object-enabled")?.textContent).toBe("");
+    expect(root.querySelector("#control-panel-object-title-input .ui-kit-text-input__text")?.textContent).toBe("Ship");
+    expect(root.querySelector("#control-panel-object-title-input")?.classList.contains("ui-kit-text-input")).toBe(true);
+    expect(Array.from(root.querySelectorAll(".control-panel-object-row__value--control")).map((row) => row.querySelector(".ui-kit-control")?.id)).toEqual(["control-panel-object-enabled", "control-panel-object-title-input"]);
+    expect(Array.from(root.querySelectorAll(".control-panel-object-row__label")).every((row) => row.classList.contains("game-form-row-label"))).toBe(true);
+    expect(Array.from(root.querySelectorAll(".control-panel-object-row__value--readonly")).map(visibleControlText)).toEqual([
+      "Корабль",
+      "—",
+      "—",
+      "1",
+      "0 / 0",
+      "100 / 100",
+      "0",
+      "0.00",
+      "0.00",
+      "0.00",
+      "0.00",
+      "0.00",
+      "5 / 10",
+      "50 / 100",
+      "0 / 0",
+    ]);
+    expect(Array.from(root.querySelectorAll(".control-panel-object-row__label")).map((row) => row.textContent)).toEqual([
+      "Название модели космического объекта",
+      "Включен",
+      "Пользовательское название объекта",
+      "Никнейм аккаунта персонажа-владельца",
+      "Никнейм аккаунта персонажа-создателя",
+      "Масса",
+      "Объём оборудования / Вместимость",
+      "Броня / Максимум брони",
+      "Сложность",
+      "Максимальная скорость",
+      "Максимальная угловая скорость",
+      "Продольная сила тяги (максимальная)",
+      "Поперечная сила тяги (максимальная)",
+      "Крутящий момент (максимальный)",
+      "Потребляемая мощность / Вырабатываемая мощность",
+      "Запас топлива / Максимальный запас топлива",
+      "Занято на складе / Объём склада",
+    ]);
+    expect(Array.from(root.querySelectorAll(".control-panel-object-row__value")).map(visibleControlText)).toEqual([
+      "Корабль",
+      "",
+      "Ship",
+      "—",
+      "—",
+      "1",
+      "0 / 0",
+      "100 / 100",
+      "0",
+      "0.00",
+      "0.00",
+      "0.00",
+      "0.00",
+      "0.00",
+      "5 / 10",
+      "50 / 100",
+      "0 / 0",
+    ]);
+  });
+
+  // Проверяет, что панель управления рисует интерактивные черновики, а не только серверное состояние объекта.
+  it("renders control panel object drafts for active controls", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      controlPanelObjectEnabled: false,
+      controlPanelObjectTitleText: "Draft",
+      controlPanelObjectTitleSelectionStart: 2,
+      controlPanelObjectTitleSelectionEnd: 5,
+      controlPanelObjectTitleFocused: true,
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-object-enabled")?.textContent).toBe("");
+    expect(Array.from(root.querySelector("#control-panel-object-enabled")?.classList ?? [])).not.toContain("is-checked");
+    expect(root.querySelector("#control-panel-object-title-input .ui-kit-text-input__text")?.textContent).toBe("Draft");
+    expect(root.querySelector("#control-panel-object-title-input .ui-kit-text-input__selection")?.textContent).toBe("aft");
+    expect(root.querySelector("#control-panel-object-title-input .ui-kit-text-input__caret")).not.toBeNull();
+  });
+
+  // Проверяет, что будущие вкладки панели управления уже переключают пустую страницу.
+  it("renders empty control panel page for future tabs", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({ ...state(), controlPanelVisible: true, selectedControlPanelTab: "equipment" })} />, root);
+
+    expect(root.querySelector(".control-panel-empty-page")?.textContent).toBe("");
+    expect(root.querySelector(".control-panel-object-page")).toBeNull();
   });
 
   // Проверяет, что частые счетчики кадра не пересоздают строки окна настроек.
@@ -376,6 +500,7 @@ describe("GameUi", () => {
     expect(Array.from(root.querySelectorAll(".settings-tabs .ui-kit-tab")).map((tab) => tab.textContent)).toEqual(["Видео", "Аудио", "Ввод"]);
     expect(root.querySelector("#settings-tabs")?.classList.contains("ui-kit-tabs--center")).toBe(true);
     expect(root.querySelector(".settings-tabs .ui-kit-tab.is-selected")?.textContent).toBe("Ввод");
+    expect(root.querySelector(".settings-input-row__action")?.classList.contains("game-form-row-label")).toBe(true);
     expect(root.querySelector(".settings-modal__actions")).not.toBeNull();
     expect(Array.from(root.querySelectorAll(".settings-modal__footer .ui-kit-button")).map((button) => button.id)).toEqual(["settings-save-button", "settings-cancel-button"]);
   });
@@ -416,9 +541,9 @@ describe("GameUi", () => {
     });
 
     dispose = render(() => <GameUi state={chatState} />, root);
-    const viewport = root.querySelector<HTMLElement>(".chat-input__viewport");
-    const textMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[0];
-    const caretMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[1];
+    const viewport = root.querySelector<HTMLElement>(".ui-kit-text-input__viewport");
+    const textMeasure = root.querySelectorAll<HTMLElement>(".ui-kit-text-input__measure")[0];
+    const caretMeasure = root.querySelectorAll<HTMLElement>(".ui-kit-text-input__measure")[1];
     if (!viewport || !textMeasure || !caretMeasure) {
       throw new Error("Строка ввода чата не отрисована.");
     }
@@ -429,8 +554,8 @@ describe("GameUi", () => {
     setChatState({ ...chatState(), chatCursorIndex: 30 });
     await Promise.resolve();
 
-    expect(root.querySelector<HTMLElement>(".chat-input__text")?.style.transform).toBe("translateX(-118px)");
-    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("92px");
+    expect(root.querySelector<HTMLElement>(".ui-kit-text-input__text")?.style.transform).toBe("translateX(-118px)");
+    expect(root.querySelector<HTMLElement>(".ui-kit-text-input__caret")?.style.left).toBe("92px");
   });
 
   // Проверяет, что каретка в конце длинной строки не обрезается правой границей поля.
@@ -450,9 +575,9 @@ describe("GameUi", () => {
     });
 
     dispose = render(() => <GameUi state={chatState} />, root);
-    const viewport = root.querySelector<HTMLElement>(".chat-input__viewport");
-    const textMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[0];
-    const caretMeasure = root.querySelectorAll<HTMLElement>(".chat-input__measure")[1];
+    const viewport = root.querySelector<HTMLElement>(".ui-kit-text-input__viewport");
+    const textMeasure = root.querySelectorAll<HTMLElement>(".ui-kit-text-input__measure")[0];
+    const caretMeasure = root.querySelectorAll<HTMLElement>(".ui-kit-text-input__measure")[1];
     if (!viewport || !textMeasure || !caretMeasure) {
       throw new Error("Строка ввода чата не отрисована.");
     }
@@ -463,8 +588,8 @@ describe("GameUi", () => {
     setChatState({ ...chatState(), chatCursorIndex: 36 });
     await Promise.resolve();
 
-    expect(root.querySelector<HTMLElement>(".chat-input__text")?.style.transform).toBe("translateX(-168px)");
-    expect(root.querySelector<HTMLElement>(".chat-input__caret")?.style.left).toBe("92px");
+    expect(root.querySelector<HTMLElement>(".ui-kit-text-input__text")?.style.transform).toBe("translateX(-168px)");
+    expect(root.querySelector<HTMLElement>(".ui-kit-text-input__caret")?.style.left).toBe("92px");
   });
 
   it("remounts repeated chat error when sequence changes", () => {

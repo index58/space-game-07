@@ -14,6 +14,31 @@ const readCssBlock = (selector: string): string => {
   return match[1];
 };
 
+const readStandaloneCssBlock = (selector: string): string => {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const matches = Array.from(css.matchAll(new RegExp(`^${escapedSelector}\\s*\\{([^}]*)\\}`, "gm")));
+  const match = matches.at(-1);
+
+  if (!match) {
+    throw new Error(`Не найден отдельный CSS-блок ${selector}`);
+  }
+
+  return match[1];
+};
+
+const readLastCssBlockWithSelectorSetting = (selector: string, setting: string): string => {
+  const matches = Array.from(css.matchAll(/([^{}]+)\{([^}]*)\}/g))
+    .filter((match) => match[1].split(",").map((part) => part.trim()).includes(selector))
+    .filter((match) => match[2].includes(setting));
+  const match = matches.at(-1);
+
+  if (!match) {
+    throw new Error(`Не найден последний CSS-блок с селектором ${selector} и свойством ${setting}`);
+  }
+
+  return match[2];
+};
+
 describe("HUD styles", () => {
   // Проверяет, что игровая область сохраняет минимум 4:3 и оставляет черные полосы вне игры.
   it("letterboxes the game viewport when the browser is narrower than 4 to 3", () => {
@@ -122,7 +147,7 @@ describe("HUD styles", () => {
   it("uses one shared font for core ui kit controls", () => {
     const theme = readCssBlock(":root");
     const controlFont = readCssBlock(
-      ".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-list__item,\n.ui-kit-tree,\n.ui-kit-tree__item,\n.ui-kit-virtual-list,\n.ui-kit-virtual-list__item,\n.ui-kit-edit,\n.ui-kit-tabs,\n.ui-kit-tab,\n.ui-kit-stepper,\n.ui-kit-stepper .ui-kit-control,\n.ui-kit-context-menu,\n.ui-kit-context-menu__item,\n.ui-kit-tooltip",
+      ".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-list__item,\n.ui-kit-tree,\n.ui-kit-tree__item,\n.ui-kit-virtual-list,\n.ui-kit-virtual-list__item,\n.ui-kit-text-input,\n.ui-kit-edit,\n.ui-kit-tabs,\n.ui-kit-tab,\n.ui-kit-stepper,\n.ui-kit-stepper .ui-kit-control,\n.ui-kit-context-menu,\n.ui-kit-context-menu__item,\n.ui-kit-tooltip",
     );
     const dropdown = readCssBlock(".ui-kit-dropdown");
     const listItems = readCssBlock(".ui-kit-dropdown__item,\n.ui-kit-context-menu__item,\n.ui-kit-list__item,\n.ui-kit-tree__item,\n.ui-kit-virtual-list__item");
@@ -145,7 +170,7 @@ describe("HUD styles", () => {
       ".object-indicator__bar",
       ".chat-messages",
       ".chat-error",
-      ".chat-input",
+      ".ui-kit-text-input",
       ".ui-kit-button,\n.ui-kit-checkbox,\n.ui-kit-radio__option,\n.ui-kit-dropdown,\n.ui-kit-dropdown__item,\n.ui-kit-list,\n.ui-kit-tree,\n.ui-kit-virtual-list,\n.ui-kit-edit,\n.ui-kit-stepper,\n.ui-kit-context-menu,\n.ui-kit-modal,\n.ui-kit-tooltip",
       ".ui-kit-button",
       ".ui-kit-button.is-hovered,\n.ui-kit-button.is-focused,\n.ui-kit-list__item.is-selected,\n.ui-kit-tree__item.is-selected,\n.ui-kit-dropdown__item.is-selected",
@@ -167,13 +192,18 @@ describe("HUD styles", () => {
       expect(readCssBlock(selector)).not.toMatch(/\bborder(?:-color)?\s*:/);
     }
 
-    expect(readCssBlock(".chat-input")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-text-input")).toContain("background: rgb(0, 0, 0);");
     expect(readCssBlock(".ui-kit-edit")).toContain("background: rgb(0, 0, 0);");
     expect(readCssBlock(".ui-kit-dropdown")).toContain("background: rgb(0, 0, 0);");
     expect(readCssBlock(".ui-kit-dropdown__menu")).toContain("background: rgb(0, 0, 0);");
     expect(readCssBlock(".ui-kit-list")).toContain("background: rgb(0, 0, 0);");
     expect(readCssBlock(".ui-kit-checkbox__mark")).toContain("background: rgb(0, 0, 0);");
     expect(readCssBlock(".ui-kit-radio__option")).toContain("background: rgb(0, 0, 0);");
+  });
+
+  // Проверяет, что общий текстовый ввод не перекрашивается поздним surface-правилом и остается черным.
+  it("keeps text input background black after the shared surface cascade", () => {
+    expect(readLastCssBlockWithSelectorSetting(".ui-kit-text-input", "background:")).toContain("background: rgb(0, 0, 0);");
   });
 
   // Проверяет, что окна и выпадающие списки имеют светлую обводку как явное исключение из общего правила.
@@ -192,6 +222,35 @@ describe("HUD styles", () => {
     const title = readCssBlock(".ui-kit-modal__title");
 
     expect(title).toContain("text-align: center;");
+  });
+
+  // Проверяет, что крестик модального окна позиционируется общим правилом поверх заголовка.
+  it("positions modal close button from the shared source", () => {
+    const modal = readCssBlock(".ui-kit-modal");
+    const title = readCssBlock(".ui-kit-modal__title");
+    const closeButton = readCssBlock(".ui-kit-modal__close");
+    const crossLine = readCssBlock(".ui-kit-modal__close::before,\n.ui-kit-modal__close::after");
+    const crossLeft = readCssBlock(".ui-kit-modal__close::before");
+    const crossRight = readStandaloneCssBlock(".ui-kit-modal__close::after");
+
+    expect(modal).toContain("position: relative;");
+    expect(modal).toContain("--hud-modal-title-height: 2.4vh;");
+    expect(title).toContain("padding: 0 3.2vh;");
+    expect(title).toContain("min-height: var(--hud-modal-title-height);");
+    expect(closeButton).toContain("position: absolute;");
+    expect(closeButton).toContain("right: 0.8vh;");
+    expect(closeButton).toContain("top: 0.8vh;");
+    expect(closeButton).toContain("width: var(--hud-modal-title-height);");
+    expect(closeButton).toContain("height: var(--hud-modal-title-height);");
+    expect(closeButton).toContain("min-height: var(--hud-modal-title-height);");
+    expect(closeButton).toContain("background: transparent;");
+    expect(closeButton).toContain("color: var(--hud-tab-inactive-text);");
+    expect(closeButton).toContain("font-size: 0;");
+    expect(crossLine).toContain("background: var(--hud-tab-inactive-text);");
+    expect(crossLine).toContain("width: 1.35vh;");
+    expect(crossLine).toContain("height: 0.16vh;");
+    expect(crossLeft).toContain("rotate(45deg)");
+    expect(crossRight).toContain("rotate(-45deg)");
   });
 
   // Проверяет, что размеры выпадающего списка берутся из одного места, а не переопределяются отдельно в настройках.
@@ -268,7 +327,7 @@ describe("HUD styles", () => {
     expect(readCssBlock(".pilot-tool-slot")).toContain("background: var(--hud-surface-soft-bg);");
     expect(readCssBlock(".minimap-compass")).toContain("background: var(--hud-surface-bg);");
     expect(readCssBlock(".minimap-map")).toContain("var(--hud-surface-bg)");
-    expect(readCssBlock(".chat-input")).toContain("background: rgb(0, 0, 0);");
+    expect(readCssBlock(".ui-kit-text-input")).toContain("background: rgb(0, 0, 0);");
     expect(readCssBlock(".ui-kit-dropdown")).toContain("background: rgb(0, 0, 0);");
   });
 
@@ -315,6 +374,7 @@ describe("HUD styles", () => {
     const row = readCssBlock(".settings-input-row");
     const menu = readCssBlock(".ui-kit-dropdown__menu");
     const viewport = readCssBlock(".ui-kit-dropdown__menu[id^=\"settings-input-select-\"] .ui-kit-dropdown__menu-viewport");
+    const label = readCssBlock(".game-form-row-label");
     const action = readCssBlock(".settings-input-row__action");
     const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar");
 
@@ -335,19 +395,93 @@ describe("HUD styles", () => {
     expect(actions).toContain("grid-column: 2;");
     expect(actions).toContain("justify-content: center;");
     expect(row).toContain("grid-template-columns: minmax(22vh, 1fr) minmax(36vh, 1fr);");
+    expect(row).toContain("gap: 1.4vh;");
     expect(menu).toContain("grid-template-columns: minmax(0, 1fr);");
     expect(menu).toContain("position: fixed;");
     expect(menu).not.toContain("max-height: 22vh;");
     expect(viewport).toContain("height: 22vh;");
     expect(viewport).toContain("max-height: 22vh;");
-    expect(action).toContain("padding: var(--hud-dropdown-padding-y) var(--hud-control-padding-x);");
-    expect(action).toContain("background: var(--hud-settings-action-bg);");
-    expect(action).toContain("border: 0;");
-    expect(action).toContain("font-family: var(--hud-control-font-family);");
-    expect(action).toContain("font-size: var(--hud-control-font-size);");
-    expect(action).not.toContain("text-shadow");
+    expect(label).toContain("padding: var(--hud-dropdown-padding-y) var(--hud-control-padding-x);");
+    expect(label).toContain("background: var(--hud-settings-action-bg);");
+    expect(label).toContain("border: 0;");
+    expect(label).toContain("font-family: var(--hud-control-font-family);");
+    expect(label).toContain("font-size: var(--hud-control-font-size);");
+    expect(label).not.toContain("text-shadow");
+    expect(action).not.toContain("padding:");
+    expect(action).not.toContain("background:");
+    expect(action).not.toContain("font-family:");
     expect(sharedScrollbars).toContain("position: absolute;");
     expect(sharedScrollbars).toContain("min-height: 0;");
+  });
+
+  // Проверяет, что панель управления расширяет общий каркас модального окна без локальной копии окна.
+  it("styles control panel as a large shared game window", () => {
+    const layer = readCssBlock(".game-window-layer");
+    const controlLayer = readCssBlock(".game-window-layer--control-panel");
+    const modal = readCssBlock(".game-window-layer .ui-kit-modal");
+    const panel = readCssBlock(".control-panel");
+    const objectPage = readCssBlock(".control-panel-object-page");
+    const row = readCssBlock(".control-panel-object-row");
+    const value = readCssBlock(".control-panel-object-row__value");
+    const readonlyValue = readCssBlock(".control-panel-object-row__value--readonly");
+    const controlValue = readCssBlock(".control-panel-object-row__value--control");
+    const sharedLabel = readCssBlock(".game-form-row-label");
+    const controlLabel = readCssBlock(".control-panel-object-row__label");
+    const checkbox = readCssBlock(".control-panel-object-row__value .ui-kit-checkbox");
+    const input = readCssBlock(".control-panel-object-row__value .ui-kit-text-input");
+
+    expect(layer).toContain("position: absolute;");
+    expect(controlLayer).toContain("width: min(132vh, calc((var(--game-ui-vw) * 100) - 2vh));");
+    expect(controlLayer).toContain("height: min(74vh, calc(100vh - 2vh));");
+    expect(controlLayer).toContain("z-index: 19;");
+    expect(modal).toContain("grid-template-rows: auto minmax(0, 1fr);");
+    expect(panel).toContain("display: grid;");
+    expect(panel).toContain("grid-template-rows: calc(var(--hud-tab-height) + var(--hud-tab-panel-padding) * 2) minmax(0, 1fr);");
+    expect(objectPage).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
+    expect(objectPage).toContain("--control-panel-object-row-height: 2.45vh;");
+    expect(objectPage).toContain("--control-panel-object-row-gap: 0.25vh;");
+    expect(objectPage).toContain("--control-panel-object-left-row-count: 9;");
+    expect(objectPage).toContain("grid-template-rows: repeat(var(--control-panel-object-left-row-count), var(--control-panel-object-row-height));");
+    expect(objectPage).toContain("grid-auto-flow: column;");
+    expect(objectPage).toContain("gap: var(--control-panel-object-row-gap) 1.4vh;");
+    expect(objectPage).toContain("overflow: hidden;");
+    expect(row).toContain("grid-template-columns: minmax(18vh, 0.92fr) minmax(0, 1fr);");
+    expect(row).toContain("column-gap: 1.4vh;");
+    expect(row).toContain("height: var(--control-panel-object-row-height);");
+    expect(row).toContain("align-items: start;");
+    expect(row).not.toContain("background:");
+    expect(sharedLabel).toContain("font-family: var(--hud-control-font-family);");
+    expect(sharedLabel).toContain("font-size: var(--hud-control-font-size);");
+    expect(controlLabel).not.toContain("padding:");
+    expect(controlLabel).not.toContain("font-family:");
+    expect(value).toContain("font-family: var(--hud-control-font-family);");
+    expect(value).toContain("font-size: var(--hud-control-font-size);");
+    expect(value).toContain("min-height: var(--hud-dropdown-min-height);");
+    expect(value).not.toContain("height: 100%;");
+    expect(readonlyValue).toContain("background: var(--hud-settings-action-bg);");
+    expect(controlValue).toContain("padding: 0;");
+    expect(controlValue).toContain("background: transparent;");
+    expect(checkbox).toContain("width: var(--hud-dropdown-min-height);");
+    expect(checkbox).toContain("flex: 0 0 var(--hud-dropdown-min-height);");
+    expect(checkbox).toContain("justify-content: flex-start;");
+    expect(checkbox).toContain("background: transparent;");
+    expect(checkbox).toContain("padding: 0;");
+    expect(input).toContain("width: 100%;");
+    expect(input).toContain("min-width: 0;");
+    expect(input).not.toContain("height: 100%;");
+  });
+
+  // Проверяет, что визуальная галочка остается черным квадратом со старым знаком внутри.
+  it("renders checkbox mark as the original black square", () => {
+    const mark = readCssBlock(".ui-kit-checkbox__mark");
+    const checked = readCssBlock(".ui-kit-checkbox.is-checked .ui-kit-checkbox__mark::before");
+
+    expect(mark).toContain("width: 1.5vh;");
+    expect(mark).toContain("height: 1.5vh;");
+    expect(mark).toContain("background: rgb(0, 0, 0);");
+    expect(checked).toContain('content: "✓";');
+    expect(checked).not.toContain("border-left:");
+    expect(checked).not.toContain("border-bottom:");
   });
 
   it("uses smooth chat history movement and a dark solid game cursor", () => {
@@ -367,9 +501,9 @@ describe("HUD styles", () => {
     const tabWithMarker = readCssBlock(".ui-kit-tab--with-marker");
     const uiKitBadge = readCssBlock(".ui-kit-tab__badge");
     const error = readCssBlock(".chat-error");
-    const input = readCssBlock(".chat-input");
-    const inputText = readCssBlock(".chat-input__text");
-    const inputCaret = readCssBlock(".chat-input__caret");
+    const input = readCssBlock(".ui-kit-text-input");
+    const inputText = readCssBlock(".ui-kit-text-input__text");
+    const inputCaret = readCssBlock(".ui-kit-text-input__caret");
     const cursor = readCssBlock(".game-cursor");
     const cursorHighlight = readCssBlock(".game-cursor::after");
 
@@ -424,9 +558,11 @@ describe("HUD styles", () => {
     expect(css).toContain("@keyframes chat-error-fade-odd");
     expect(css).toContain("@keyframes chat-error-fade-even");
     expect(input).toContain("position: relative;");
-    expect(input).toContain("margin-top: 0;");
+    expect(input).toContain("min-height: var(--hud-dropdown-min-height);");
+    expect(input).not.toContain("min-height: 3.1vh;");
     expect(inputText).not.toContain("display: flex;");
     expect(inputCaret).toContain("position: absolute;");
+    expect(inputCaret).toContain("top: 42%;");
     expect(inputCaret).toContain("min-width: 2px;");
     expect(cursor).toContain("#252c32");
     expect(cursor).toContain("clip-path: polygon(0 0, 0 82%, 31% 58%, 50% 100%, 64% 94%, 45% 54%, 76% 54%);");
