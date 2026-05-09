@@ -91,6 +91,35 @@ func addTestGenerator(t *testing.T, serverData world.Data, cosmicObjectID int64)
 	return group
 }
 
+// Устанавливает тестовый источник электроэнергии без расхода топлива.
+func addTestPowerProducer(t *testing.T, serverData world.Data, cosmicObjectID int64) *data.EquipmentGroup {
+	t.Helper()
+
+	serverData.ItemModels.Items[105] = &data.ItemModel{
+		ID:              105,
+		TitleRu:         "Power Producer",
+		TitleEn:         "Power Producer",
+		Acronym:         "PowerProducer",
+		ItemtypeID:      1,
+		GeneratingPower: 60000,
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	group, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       cosmicObjectID,
+		Title:                "Power Producer",
+		EquipmentItemModelID: 105,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return group
+}
+
 // Проверяет, что команда панели управления меняет только объект текущего аккаунта и подтверждает мутацию.
 func TestApplyControlPanelObjectUpdateChangesControlledObjectAndAcknowledgesMutation(t *testing.T) {
 	serverData := testWorldData(t)
@@ -532,6 +561,7 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	if !ok {
 		t.Fatalf("account was not connected")
 	}
+	addTestPowerProducer(t, serverData, objectID)
 	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
 	snapshot := gameWorld.Tick(1.0 / 30.0)
 	object, ok := findCosmicObjectInSnapshot(snapshot, objectID)
@@ -544,6 +574,55 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 	if serverData.CosmicObjects.Items[1].Y <= 0 {
 		t.Fatalf("got stored Y %v, want positive", serverData.CosmicObjects.Items[1].Y)
+	}
+}
+
+// Проверяет, что выключенные двигатели не создают тягу и не двигают корабль.
+func TestTickDoesNotApplyThrustFromDisabledEngines(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	serverData.CosmicObjects.Items[objectID].Fuel = 50
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		group.Enabled = false
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true, ThrustRight: true, TargetRotationDelta: 1})
+	snapshot := gameWorld.Tick(1)
+	object, ok := findCosmicObjectInSnapshot(snapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+
+	if object.VelocityX != 0 || object.VelocityY != 0 || object.AlongForce != 0 || object.AcrossForce != 0 || object.Torque != 0 {
+		t.Fatalf("disabled engines affected movement: %+v", object)
+	}
+}
+
+// Проверяет, что двигатели без выработки электроэнергии не создают тягу.
+func TestTickDoesNotApplyThrustWithoutGeneratedPower(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	serverData.CosmicObjects.Items[objectID].Fuel = 50
+
+	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
+	snapshot := gameWorld.Tick(1)
+	object, ok := findCosmicObjectInSnapshot(snapshot, objectID)
+	if !ok {
+		t.Fatalf("object %v not found in snapshot", objectID)
+	}
+
+	if object.VelocityY != 0 || object.AlongForce != 0 || object.ConsumingPower != 0 {
+		t.Fatalf("engines worked without generated power: %+v", object)
 	}
 }
 
@@ -644,6 +723,7 @@ func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 		t.Fatalf("account was not connected")
 	}
 	serverData.CosmicObjects.Items[objectID].Fuel = 50
+	addTestPowerProducer(t, serverData, objectID)
 
 	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
 	gameWorld.Tick(2)
@@ -652,8 +732,8 @@ func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	if cosmicObject.ConsumingPower != 30000 {
 		t.Fatalf("consuming power = %v, want 30000", cosmicObject.ConsumingPower)
 	}
-	if cosmicObject.GeneratingPower != 0 {
-		t.Fatalf("generating power = %v, want 0", cosmicObject.GeneratingPower)
+	if cosmicObject.GeneratingPower != 60000 {
+		t.Fatalf("generating power = %v, want 60000", cosmicObject.GeneratingPower)
 	}
 	closeWorldFloat(t, cosmicObject.Fuel, 48)
 
@@ -766,13 +846,13 @@ func TestTickSpendsGeneratorFuelAboveBaseRateWhenPowerDemandExceedsGeneration(t 
 	gameWorld.Tick(2)
 
 	cosmicObject := serverData.CosmicObjects.Items[objectID]
-	if cosmicObject.ConsumingPower != 90000 {
-		t.Fatalf("consuming power = %v, want 90000", cosmicObject.ConsumingPower)
+	if cosmicObject.ConsumingPower != 60000 {
+		t.Fatalf("consuming power = %v, want 60000", cosmicObject.ConsumingPower)
 	}
 	if cosmicObject.GeneratingPower != 60000 {
 		t.Fatalf("generating power = %v, want 60000", cosmicObject.GeneratingPower)
 	}
-	closeWorldFloat(t, cosmicObject.Fuel, 38)
+	closeWorldFloat(t, cosmicObject.Fuel, 42)
 	if !generator.Active {
 		t.Fatalf("generator must be active with power demand: %+v", generator)
 	}
@@ -1309,6 +1389,7 @@ func TestSaveDataWritesCosmicObjectPosition(t *testing.T) {
 	if _, ok := gameWorld.ConnectAccount(1); !ok {
 		t.Fatalf("account was not connected")
 	}
+	addTestPowerProducer(t, serverData, 1)
 	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
 	gameWorld.Tick(1)
 	if err := gameWorld.SaveData(workingDirectory); err != nil {

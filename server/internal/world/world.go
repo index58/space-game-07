@@ -381,7 +381,7 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 		input, controlled := inputsByObjectID[objectID]
 		isShip := world.isShipModel(model)
 		if controlled && (!isShip || shipHasFuel(*cosmicObject)) {
-			*cosmicObject = physics.StepShip(*cosmicObject, *model, input, dtSeconds)
+			*cosmicObject = world.stepControlledObject(*cosmicObject, *model, input, dtSeconds)
 		} else if isShip {
 			*cosmicObject = physics.StepUnpilotedShip(*cosmicObject, dtSeconds)
 		} else {
@@ -389,6 +389,69 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 		}
 		world.updateEquipmentUsage(cosmicObject, dtSeconds)
 	}
+}
+
+// Выполняет физический шаг с силами, доступными только от включенного оборудования.
+func (world *World) stepControlledObject(cosmicObject data.CosmicObject, model data.CosmicObjectModel, input game.ShipInput, dtSeconds float64) data.CosmicObject {
+	effectiveObject := world.objectWithEnabledEquipmentForces(cosmicObject, input)
+	next := physics.StepShip(effectiveObject, model, input, dtSeconds)
+	next.MaxAlongForce = cosmicObject.MaxAlongForce
+	next.MaxAcrossForce = cosmicObject.MaxAcrossForce
+	next.MaxTorque = cosmicObject.MaxTorque
+	return next
+}
+
+// objectWithEnabledEquipmentForces рассчитывает доступную тягу и момент по включенным группам оборудования.
+func (world *World) objectWithEnabledEquipmentForces(cosmicObject data.CosmicObject, input game.ShipInput) data.CosmicObject {
+	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
+		return cosmicObject
+	}
+
+	electricShare := world.electricShareForInput(cosmicObject, input)
+	cosmicObject.MaxAlongForce = 0
+	cosmicObject.MaxAcrossForce = 0
+	cosmicObject.MaxTorque = 0
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)) {
+		enabledCount := enabledEquipmentCount(group)
+		if enabledCount <= 0 {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok {
+			continue
+		}
+		cosmicObject.MaxAlongForce += model.MaxAlongForce * float64(enabledCount) * electricShare
+		cosmicObject.MaxAcrossForce += model.MaxAcrossForce * float64(enabledCount) * electricShare
+		cosmicObject.MaxTorque += model.MaxTorque * float64(enabledCount) * electricShare
+	}
+	return cosmicObject
+}
+
+// electricShareForInput возвращает долю электричества, доступную всем потребителям при текущем вводе.
+func (world *World) electricShareForInput(cosmicObject data.CosmicObject, input game.ShipInput) float64 {
+	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
+		return 1
+	}
+
+	generatedPower := 0.0
+	neededPower := 0.0
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)) {
+		enabledCount := enabledEquipmentCount(group)
+		if enabledCount <= 0 {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok {
+			continue
+		}
+		count := float64(enabledCount)
+		generatedPower += model.GeneratingPower * count
+		if equipmentNeedsElectricityForInput(input, *model) {
+			neededPower += model.ConsumingPower * count
+		}
+	}
+
+	return electricWorkShare(generatedPower, neededPower)
 }
 
 // Обновляет активность оборудования, мощность и запас топлива после шага объекта.
@@ -399,9 +462,9 @@ func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeco
 		return
 	}
 
-	fuelConsumptionPerSecond := 0.0
+	consumerFuelConsumptionPerSecond := 0.0
 	generatorFuelConsumptionPerSecond := 0.0
-	generatorPower := 0.0
+	neededPower := 0.0
 	generatorGroups := make([]*data.EquipmentGroup, 0)
 	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)) {
 		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
@@ -420,15 +483,14 @@ func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeco
 			continue
 		}
 
-		if model.GeneratingPower > 0 {
-			cosmicObject.GeneratingPower += model.GeneratingPower * float64(enabledCount)
-			generatorPower += model.GeneratingPower * float64(enabledCount)
-			if model.ConsumingItemModelID > 0 && model.ConsumingCount > 0 {
-				generatorFuelConsumptionPerSecond += model.ConsumingCount * float64(enabledCount)
-			}
+		count := float64(enabledCount)
+		cosmicObject.GeneratingPower += model.GeneratingPower * count
+		if model.GeneratingPower != 0 {
 			group.Active = false
 			generatorGroups = append(generatorGroups, group)
-			continue
+			if model.ConsumingItemModelID > 0 && model.ConsumingCount > 0 {
+				generatorFuelConsumptionPerSecond += model.ConsumingCount * count
+			}
 		}
 
 		group.Active = equipmentIsActive(*cosmicObject, *model)
@@ -436,15 +498,19 @@ func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeco
 			continue
 		}
 
-		cosmicObject.ConsumingPower += model.ConsumingPower * float64(enabledCount)
+		neededPower += model.ConsumingPower * count
 		if model.ConsumingItemModelID > 0 && model.ConsumingCount > 0 {
-			fuelConsumptionPerSecond += model.ConsumingCount * float64(enabledCount)
+			consumerFuelConsumptionPerSecond += model.ConsumingCount * count
 		}
 	}
 
-	if generatorPower > 0 && cosmicObject.ConsumingPower > 0 && generatorFuelConsumptionPerSecond > 0 {
-		generatorLoadRatio := cosmicObject.ConsumingPower / generatorPower
-		fuelConsumptionPerSecond += generatorFuelConsumptionPerSecond * generatorLoadRatio
+	electricShare := electricWorkShare(cosmicObject.GeneratingPower, neededPower)
+	cosmicObject.ConsumingPower = neededPower * electricShare
+
+	fuelConsumptionPerSecond := consumerFuelConsumptionPerSecond * electricShare
+	if math.Abs(cosmicObject.ConsumingPower) > physics.Epsilon && math.Abs(cosmicObject.GeneratingPower) > physics.Epsilon {
+		generatorLoad := math.Abs(cosmicObject.ConsumingPower / cosmicObject.GeneratingPower)
+		fuelConsumptionPerSecond += generatorFuelConsumptionPerSecond * generatorLoad
 		for _, group := range generatorGroups {
 			group.Active = true
 		}
@@ -473,10 +539,29 @@ func equipmentConsumesStoredFuel(model data.ItemModel) bool {
 	return model.ConsumingItemModelID > 0 && model.ConsumingCount > 0
 }
 
+// Определяет долю работы, которую можно обеспечить имеющейся электроэнергией.
+func electricWorkShare(generatedPower float64, neededPower float64) float64 {
+	if neededPower <= 0 || generatedPower >= neededPower {
+		return 1
+	}
+	if generatedPower <= 0 {
+		return 0
+	}
+	return generatedPower / neededPower
+}
+
+// Проверяет, будет ли модель тратить электричество при текущем управлении.
+func equipmentNeedsElectricityForInput(input game.ShipInput, model data.ItemModel) bool {
+	usesAlongForce := model.MaxAlongForce != 0 && (input.ThrustForward || input.ThrustBackward)
+	usesAcrossForce := model.MaxAcrossForce != 0 && (input.ThrustLeft || input.ThrustRight)
+	usesTorque := model.MaxTorque != 0 && input.TargetRotationDelta != 0
+	return usesAlongForce || usesAcrossForce || usesTorque
+}
+
 // Определяет, выполняет ли оборудование работу в текущем тике.
 func equipmentIsActive(cosmicObject data.CosmicObject, model data.ItemModel) bool {
-	usesLinearForce := model.MaxAlongForce > 0 || model.MaxAcrossForce > 0
-	usesTorque := model.MaxTorque > 0
+	usesLinearForce := model.MaxAlongForce != 0 || model.MaxAcrossForce != 0
+	usesTorque := model.MaxTorque != 0
 	if usesLinearForce || usesTorque {
 		return (usesLinearForce && (math.Abs(cosmicObject.AlongForce) > physics.Epsilon || math.Abs(cosmicObject.AcrossForce) > physics.Epsilon)) ||
 			(usesTorque && math.Abs(cosmicObject.Torque) > physics.Epsilon)
