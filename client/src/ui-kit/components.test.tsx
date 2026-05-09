@@ -234,4 +234,33 @@ describe("ui-kit components", () => {
     expect(root.querySelector(".ui-kit-modal__title")?.textContent).toBe("Panel");
     expect(root.querySelector(".ui-kit-tooltip")?.textContent).toBe("Hint");
   });
+
+  // Проверяет, что обычная полоса прокрутки не получает overlay-приоритет раскрытого списка.
+  it("keeps ordinary scrollbar below dropdown overlay blocker", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <Scrollbar id="scroll" thumbTopPercent={25} thumbHeightPercent={40} dragging={false} />, root);
+
+    expect(root.querySelector("#scroll")?.getAttribute("data-ui-z-index")).toBeNull();
+  });
+
+  // Проверяет, что полоса прокрутки раскрытого списка остается доступной поверх его блокирующего слоя.
+  it("keeps dropdown scrollbar above its overlay blocker", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => (
+      <Dropdown
+        id="select"
+        open={true}
+        selectedValue="b"
+        options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]}
+        menuScroll={{ visible: true, thumbTopPercent: 10, thumbHeightPercent: 50, contentOffsetPx: 0, dragging: false }}
+      />
+    ), root);
+
+    expect(document.body.querySelector("#select-outside-blocker")?.getAttribute("data-ui-z-index")).toBe("900");
+    expect(document.body.querySelector("#select-scrollbar")?.getAttribute("data-ui-z-index")).toBe("1100");
+  });
 });

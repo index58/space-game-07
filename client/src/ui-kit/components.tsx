@@ -151,6 +151,8 @@ type ScrollbarProps = {
   id: string;
   // Дополнительный CSS-класс корня для конкретной панели.
   className?: string;
+  // Overlay-приоритет для hit-test, когда полоса должна лежать поверх блокирующего слоя.
+  zIndex?: number;
   // Верх ползунка в процентах.
   thumbTopPercent: number;
   // Высота ползунка в процентах.
@@ -286,6 +288,7 @@ export const Dropdown = (props: DropdownProps) => {
               <Scrollbar
                 id={`${props.id}-scrollbar`}
                 className="ui-kit-dropdown-scrollbar"
+                zIndex={1100}
                 thumbTopPercent={props.menuScroll?.thumbTopPercent ?? 0}
                 thumbHeightPercent={props.menuScroll?.thumbHeightPercent ?? 100}
                 dragging={props.menuScroll?.dragging ?? false}
@@ -353,7 +356,7 @@ export const Tabs = (props: TabsProps) => (
 );
 
 export const Scrollbar = (props: ScrollbarProps) => (
-  <div id={props.id} data-ui-kind="scrollbar" data-ui-z-index="1100" class={`ui-kit-control ui-kit-scrollbar ${props.className ?? ""} ${props.dragging ? "is-dragging" : ""}`}>
+  <div id={props.id} data-ui-kind="scrollbar" data-ui-z-index={props.zIndex} class={`ui-kit-control ui-kit-scrollbar ${props.className ?? ""} ${props.dragging ? "is-dragging" : ""}`}>
     <div class="ui-kit-scrollbar__thumb" style={{ top: `${props.thumbTopPercent}%`, height: `${props.thumbHeightPercent}%` }} />
   </div>
 );

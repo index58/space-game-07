@@ -15,6 +15,33 @@ const readCssBlock = (selector: string): string => {
 };
 
 describe("HUD styles", () => {
+  // Проверяет, что игровая область сохраняет минимум 4:3 и оставляет черные полосы вне игры.
+  it("letterboxes the game viewport when the browser is narrower than 4 to 3", () => {
+    const gameRoot = readCssBlock("#game-root,\n#ui-root");
+    const gameCanvas = readCssBlock("#game-root canvas");
+    const hudPanel = readCssBlock(".hud-panel");
+    const windowLayer = readCssBlock(".game-window-layer");
+    const cursor = readCssBlock(".game-cursor");
+
+    expect(gameRoot).toContain("position: fixed;");
+    expect(gameRoot).toContain("left: 50%;");
+    expect(gameRoot).toContain("top: 50%;");
+    expect(gameRoot).toContain("width: 100vw;");
+    expect(gameRoot).toContain("height: min(100vh, 75vw);");
+    expect(gameRoot).toContain("transform: translate(-50%, -50%);");
+    expect(gameCanvas).toContain("width: 100% !important;");
+    expect(gameCanvas).toContain("height: 100% !important;");
+    expect(css).toContain("--game-ui-vw: 1vw;");
+    expect(css).toContain("width: var(--game-ui-layout-width, 100vw);");
+    expect(css).toContain("height: var(--game-ui-layout-height, min(100vh, 75vw));");
+    expect(css).toContain("transform: translate(-50%, -50%) scale(var(--game-ui-scale, 1));");
+    expect(css).toContain("transform-origin: center;");
+    expect(css).toContain("pointer-events: none;");
+    expect(hudPanel).toContain("position: absolute;");
+    expect(windowLayer).toContain("position: absolute;");
+    expect(cursor).toContain("position: fixed;");
+  });
+
   it("keeps pilot toolbar slots inside the toolbar grid", () => {
     const slots = readCssBlock(".pilot-toolbar__slots");
     const slot = readCssBlock(".pilot-tool-slot");
@@ -291,9 +318,9 @@ describe("HUD styles", () => {
     const action = readCssBlock(".settings-input-row__action");
     const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar");
 
-    expect(layer).toContain("position: fixed;");
+    expect(layer).toContain("position: absolute;");
     expect(layer).toContain("transform: translate(-50%, -50%);");
-    expect(sharedLayerSize).toContain("width: min(118vh, calc(100vw - 4vh));");
+    expect(sharedLayerSize).toContain("width: min(118vh, calc((var(--game-ui-vw) * 100) - 4vh));");
     expect(sharedLayerSize).toContain("height: min(62vh, calc(100vh - 4vh));");
     expect(settingsLayer).toContain("z-index: 18;");
     expect(css).toContain(".game-window-layer--showcase {\n  z-index: 17;\n}");
@@ -349,6 +376,7 @@ describe("HUD styles", () => {
     expect(chatPanel).toContain("display: grid;");
     expect(chatPanel).toContain("grid-template-rows: 24vh auto auto;");
     expect(chatPanel).toContain("gap: 0.7vh;");
+    expect(chatPanel).toContain("width: min(48vh, calc(var(--game-ui-vw) * 42));");
     expect(messagesPanel).toContain("padding: 0 1.6vh 0 0;");
     expect(messageContent).toContain("left: 0;");
     expect(messageContent).toContain("bottom: 0;");

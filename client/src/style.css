@@ -29,17 +29,40 @@ body {
   --hud-tab-panel-padding: 0.35vh;
 }
 
+#game-root,
 #ui-root {
-  /* Игровой DOM UI лежит поверх canvas, но мышь остаётся во владении игрового ввода. */
+  /* Игровая область центрируется внутри окна браузера и не становится уже 4:3. */
   position: fixed;
-  inset: 0;
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  width: 100vw;
+  height: min(100vh, 75vw);
+  transform: translate(-50%, -50%);
+}
+
+#game-root {
+  z-index: 0;
+}
+
+#game-root canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#ui-root {
+  --game-ui-vw: 1vw;
+  width: var(--game-ui-layout-width, 100vw);
+  height: var(--game-ui-layout-height, min(100vh, 75vw));
+  transform: translate(-50%, -50%) scale(var(--game-ui-scale, 1));
+  transform-origin: center;
   z-index: 10;
   pointer-events: none;
 }
 
 .hud-panel {
   /* Единый технический каркас всех неинтерактивных HUD-панелей игрового режима. */
-  position: fixed;
+  position: absolute;
   box-sizing: border-box;
   color: #d8f3ff;
   background: var(--hud-surface-soft-bg);
@@ -159,7 +182,7 @@ body {
   display: grid;
   grid-template-rows: 24vh auto auto;
   gap: 0.7vh;
-  width: min(48vh, 42vw);
+  width: min(48vh, calc(var(--game-ui-vw) * 42));
   min-width: 34vh;
   padding: 0.8vh;
   background: var(--hud-surface-solid-bg);
@@ -346,12 +369,6 @@ body {
   color: #d8f3ff;
   font-family: Consolas, monospace;
   pointer-events: none;
-}
-
-#game-root,
-#ui-root {
-  width: 100%;
-  height: 100%;
 }
 
 .ui-kit-button,
@@ -746,7 +763,7 @@ body {
 }
 
 .game-window-layer {
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -755,7 +772,7 @@ body {
 
 .game-window-layer--settings,
 .game-window-layer--showcase {
-  width: min(118vh, calc(100vw - 4vh));
+  width: min(118vh, calc((var(--game-ui-vw) * 100) - 4vh));
   height: min(62vh, calc(100vh - 4vh));
 }
 
