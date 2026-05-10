@@ -350,6 +350,8 @@ export type ItemtypeReference = Record<string, unknown> & {
   Acronym: string;
   // Разрешает назначать предметы этого типа в панель пилота.
   IsPilotInstrument: boolean;
+  // Разрешает внутреннее использование предметов этого типа из панели управления.
+  IsInternalUsable: boolean;
 };
 
 // Описывает поля модели предмета, нужные клиентскому UI.

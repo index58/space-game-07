@@ -418,6 +418,11 @@ body {
   background: rgba(126, 212, 255, 0.16);
 }
 
+.ui-kit-button.is-disabled {
+  color: rgba(216, 243, 255, 0.42);
+  background: rgba(126, 212, 255, 0.07);
+}
+
 .ui-kit-tab.is-selected {
   color: #eefaff;
   background: var(--hud-surface-solid-bg);

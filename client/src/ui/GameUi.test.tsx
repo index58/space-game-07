@@ -421,18 +421,18 @@ describe("GameUi", () => {
       "Пользовательское название объекта",
       "Никнейм аккаунта персонажа-владельца",
       "Никнейм аккаунта персонажа-создателя",
-      "Масса",
-      "Объём оборудования / Вместимость",
+      "Масса (кг)",
+      "Объём оборудования / Вместимость (м³)",
       "Броня / Максимум брони",
       "Сложность",
-      "Максимальная скорость",
-      "Максимальная угловая скорость",
-      "Продольная сила тяги (максимальная)",
-      "Поперечная сила тяги (максимальная)",
-      "Крутящий момент (максимальный)",
-      "Потребляемая мощность / Вырабатываемая мощность",
+      "Максимальная скорость (м/с)",
+      "Максимальная угловая скорость (рад/с)",
+      "Продольная сила тяги (максимальная) (Н)",
+      "Поперечная сила тяги (максимальная) (Н)",
+      "Крутящий момент (максимальный) (Н·м)",
+      "Потребляемая мощность / Вырабатываемая мощность (Вт)",
       "Запас топлива / Максимальный запас топлива",
-      "Занято на складе / Объём склада",
+      "Занято на складе / Объём склада (м³)",
     ]);
     expect(Array.from(root.querySelectorAll(".control-panel-object-row__value")).map(visibleControlText)).toEqual([
       "Корабль",
@@ -486,14 +486,15 @@ describe("GameUi", () => {
       Itemtype: {
         MaxID: 1,
         Items: {
-          "1": { ID: 1, Acronym: "Thruster", IsPilotInstrument: true },
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "Generator", IsPilotInstrument: false, IsInternalUsable: false },
         },
       },
       ItemModel: {
         MaxID: 2,
         Items: {
-          "1": { ID: 1, ItemtypeID: 1, Acronym: "SimpleThruster", TitleRu: "Простой двигатель", Mass: 12, Volume: 3, ConsumingPower: 4, GeneratingPower: 0, MaxAlongForce: 15, MaxAcrossForce: 6, MaxTorque: 2, Complexity: 7 },
-          "2": { ID: 2, ItemtypeID: 1, Acronym: "CompactGenerator", TitleRu: "Компактный генератор", Mass: 8, Volume: 2, ConsumingPower: 0, GeneratingPower: 20, MaxAlongForce: 0, MaxAcrossForce: 0, MaxTorque: 0, Complexity: 3 },
+          "1": { ID: 1, ItemtypeID: 1, Acronym: "SimpleContainer", TitleRu: "Простой контейнер", Mass: 12, Volume: 3, ConsumingPower: 4, GeneratingPower: 0, MaxAlongForce: 15, MaxAcrossForce: 6, MaxTorque: 2, Complexity: 7 },
+          "2": { ID: 2, ItemtypeID: 2, Acronym: "CompactGenerator", TitleRu: "Компактный генератор", Mass: 8, Volume: 2, ConsumingPower: 0, GeneratingPower: 20, MaxAlongForce: 0, MaxAcrossForce: 0, MaxTorque: 0, Complexity: 3 },
         },
       },
     } as unknown as ReferenceDataMessage;
@@ -516,7 +517,7 @@ describe("GameUi", () => {
 
     expect(Array.from(root.querySelectorAll(".control-panel-equipment-tabs .ui-kit-tab")).map((tab) => tab.textContent)).toEqual(["Настройка", "Использование"]);
     expect(root.querySelector(".control-panel-equipment-tabs .ui-kit-tab.is-selected")?.textContent).toBe("Настройка");
-    expect(Array.from(root.querySelectorAll(".control-panel-equipment-list .ui-kit-list__item")).map((item) => item.textContent)).toEqual(["Простой двигатель", "Компактный генератор"]);
+    expect(Array.from(root.querySelectorAll(".control-panel-equipment-list .ui-kit-list__item")).map((item) => item.textContent)).toEqual(["Простой контейнер", "Компактный генератор"]);
     expect(root.querySelector(".control-panel-equipment-list .ui-kit-list__item.is-selected")?.textContent).toBe("Компактный генератор");
     expect(root.querySelector<HTMLElement>(".control-panel-equipment-list .ui-kit-list__content")?.style.transform).toBe("translateY(-17px)");
     expect(Array.from(root.querySelector("#control-panel-equipment-list-scrollbar")?.classList ?? [])).toContain("is-dragging");
@@ -525,22 +526,23 @@ describe("GameUi", () => {
     expect(root.querySelector("#control-panel-equipment-enabled-count")).toBeNull();
     expect(root.querySelector<HTMLElement>("#control-panel-equipment-enabled-slider .ui-kit-slider__fill")?.style.width).toBe("50%");
     expect(root.querySelector("#control-panel-equipment-enabled-slider .ui-kit-slider__label")?.textContent).toBe("1 / 2");
-    expect(root.querySelector("#control-panel-equipment-usage-button")?.textContent).toBe("Использование");
-    expect(root.querySelector(".control-panel-equipment-action #control-panel-equipment-usage-button")?.textContent).toBe("Использование");
-    expect(root.querySelector(".control-panel-equipment-info > .control-panel-equipment-action #control-panel-equipment-usage-button")?.textContent).toBe("Использование");
+    expect(root.querySelector("#control-panel-equipment-usage-button")?.textContent).toBe("Использовать");
+    expect(root.querySelector("#control-panel-equipment-usage-button")?.classList.contains("is-disabled")).toBe(true);
+    expect(root.querySelector(".control-panel-equipment-action #control-panel-equipment-usage-button")?.textContent).toBe("Использовать");
+    expect(root.querySelector(".control-panel-equipment-info > .control-panel-equipment-action #control-panel-equipment-usage-button")?.textContent).toBe("Использовать");
     expect(root.querySelector(".control-panel-equipment-layout > .control-panel-equipment-action")).toBeNull();
     expect(Array.from(root.querySelectorAll(".control-panel-equipment-info .control-panel-object-row__label")).map((row) => row.textContent)).toEqual([
       "Название модели оборудования",
       "Включено",
       "Количество включенных единиц",
       "Активно",
-      "Масса",
-      "Объём",
-      "Потребляемая мощность",
-      "Вырабатываемая мощность",
-      "Продольная сила тяги",
-      "Поперечная сила тяги",
-      "Крутящий момент",
+      "Масса (кг)",
+      "Объём (м³)",
+      "Потребляемая мощность (Вт)",
+      "Вырабатываемая мощность (Вт)",
+      "Продольная сила тяги (Н)",
+      "Поперечная сила тяги (Н)",
+      "Крутящий момент (Н·м)",
       "Сложность",
     ]);
     expect(Array.from(root.querySelectorAll(".control-panel-equipment-info .control-panel-object-row__value")).map(visibleControlText)).toEqual([

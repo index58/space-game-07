@@ -16,6 +16,7 @@ type Itemtype struct {
 	IsEquipmentForShip    bool   `json:"IsEquipmentForShip"`    // Разрешает устанавливать предмет этого типа на корабль.
 	IsEquipmentForStation bool   `json:"IsEquipmentForStation"` // Разрешает устанавливать предмет этого типа на станцию.
 	IsPilotInstrument     bool   `json:"IsPilotInstrument"`     // Разрешает назначать предмет этого типа в панель пилота.
+	IsInternalUsable      bool   `json:"IsInternalUsable"`      // Разрешает внутреннее использование предмета этого типа из панели управления оборудованием.
 	CountMustBeInteger    bool   `json:"CountMustBeInteger"`    // Требует хранить количество только целыми единицами.
 }
 

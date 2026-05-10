@@ -51,6 +51,7 @@ export const getGameUiControlLayoutSignature = (
     selectedEquipmentTab: state.selectedControlPanelEquipmentTab,
     selectedEquipmentGroupId: state.selectedControlPanelEquipmentGroupId,
     equipmentIds: state.equipmentGroups.map((group) => `${group.ID}:${group.CosmicObjectID}:${group.EquipmentItemModelID}`).join(","),
+    itemtypeInternalUsable: Object.values(state.referenceData?.Itemtype.Items ?? {}).sort((left, right) => left.ID - right.ID).map((itemtype) => `${itemtype.ID}:${itemtype.IsInternalUsable}`).join(","),
     equipmentListScroll: scrollSignature(state.controlPanelEquipmentListScroll),
     hasSelfObject: state.selfObject !== null,
     objectId: state.selfObject?.ID ?? null,

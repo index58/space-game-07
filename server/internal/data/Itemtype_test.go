@@ -159,6 +159,7 @@ func TestItemtypesJSONKeysMatchGoFieldNames(t *testing.T) {
 		`"IsEquipmentForShip"`,
 		`"IsEquipmentForStation"`,
 		`"IsPilotInstrument"`,
+		`"IsInternalUsable"`,
 		`"CountMustBeInteger"`,
 	}
 	for _, expectedKey := range expectedKeys {

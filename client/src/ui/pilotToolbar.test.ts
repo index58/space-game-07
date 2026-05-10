@@ -59,8 +59,8 @@ const referenceData: ReferenceDataMessage = {
   Itemtype: {
     MaxID: 2,
     Items: {
-      "1": { ID: 1, Acronym: "Weapon", IsPilotInstrument: true },
-      "2": { ID: 2, Acronym: "Container", IsPilotInstrument: false },
+      "1": { ID: 1, Acronym: "Weapon", IsPilotInstrument: true, IsInternalUsable: false },
+      "2": { ID: 2, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
     },
   },
   CosmicObjectModel: { MaxID: 0, Items: {} },

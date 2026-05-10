@@ -514,6 +514,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
   const selectedEquipment = createMemo(() => getSelectedControlPanelEquipment(equipmentGroups(), props.state().selectedControlPanelEquipmentGroupId));
   const selectedEquipmentEnabled = createMemo(() => getControlPanelEquipmentEnabled(props.state(), selectedEquipment()));
   const selectedEquipmentEnabledCount = createMemo(() => getControlPanelEquipmentEnabledCount(props.state(), selectedEquipment()));
+  const selectedEquipmentCanBeUsed = createMemo(() => canUseControlPanelEquipment(props.state(), selectedEquipment()));
   const selectedEquipmentRows = createMemo(() => getControlPanelEquipmentInfoRows(selectedEquipment()));
 
   return (
@@ -619,7 +620,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                   )}
                                 </For>
                                 <div class="control-panel-equipment-action">
-                                  <Button id="control-panel-equipment-usage-button" label="Использование" />
+                                  <Button id="control-panel-equipment-usage-button" label="Использовать" state={selectedEquipmentCanBeUsed() ? "normal" : "disabled"} />
                                 </div>
                               </>
                             )}
@@ -662,18 +663,18 @@ const getControlPanelObjectRows = (state: GameUiState): ControlPanelObjectRow[] 
   return [
     { label: "Никнейм аккаунта персонажа-владельца", value: emptyValue() },
     { label: "Никнейм аккаунта персонажа-создателя", value: emptyValue() },
-    { label: "Масса", value: formatMetric(object.Mass) },
-    { label: "Объём оборудования / Вместимость", value: formatPair(object.OccupiedVolume, object.Capacity) },
+    { label: "Масса (кг)", value: formatMetric(object.Mass) },
+    { label: "Объём оборудования / Вместимость (м³)", value: formatPair(object.OccupiedVolume, object.Capacity) },
     { label: "Броня / Максимум брони", value: formatPair(object.Armor, object.MaxArmor) },
     { label: "Сложность", value: formatMetric(object.Complexity) },
-    { label: "Максимальная скорость", value: formatPreciseMetric(object.MaxSpeed) },
-    { label: "Максимальная угловая скорость", value: formatPreciseMetric(object.MaxAngularSpeed) },
-    { label: "Продольная сила тяги (максимальная)", value: formatPreciseMetric(object.MaxAlongForce) },
-    { label: "Поперечная сила тяги (максимальная)", value: formatPreciseMetric(object.MaxAcrossForce) },
-    { label: "Крутящий момент (максимальный)", value: formatPreciseMetric(object.MaxTorque) },
-    { label: "Потребляемая мощность / Вырабатываемая мощность", value: formatPair(object.ConsumingPower, object.GeneratingPower) },
+    { label: "Максимальная скорость (м/с)", value: formatPreciseMetric(object.MaxSpeed) },
+    { label: "Максимальная угловая скорость (рад/с)", value: formatPreciseMetric(object.MaxAngularSpeed) },
+    { label: "Продольная сила тяги (максимальная) (Н)", value: formatPreciseMetric(object.MaxAlongForce) },
+    { label: "Поперечная сила тяги (максимальная) (Н)", value: formatPreciseMetric(object.MaxAcrossForce) },
+    { label: "Крутящий момент (максимальный) (Н·м)", value: formatPreciseMetric(object.MaxTorque) },
+    { label: "Потребляемая мощность / Вырабатываемая мощность (Вт)", value: formatPair(object.ConsumingPower, object.GeneratingPower) },
     { label: "Запас топлива / Максимальный запас топлива", value: formatPair(object.Fuel, object.MaxFuel) },
-    { label: "Занято на складе / Объём склада", value: formatPair(object.OccupiedVolume, object.Capacity) },
+    { label: "Занято на складе / Объём склада (м³)", value: formatPair(object.OccupiedVolume, object.Capacity) },
   ];
 };
 
@@ -705,6 +706,14 @@ const getControlPanelEquipmentEnabled = (state: GameUiState, equipment: ControlP
 const getControlPanelEquipmentEnabledCount = (state: GameUiState, equipment: ControlPanelEquipmentView | null): number =>
   equipment ? clampNumber(state.controlPanelEquipmentEnabledCountDrafts[equipment.group.ID] ?? equipment.group.EnabledCount, 1, Math.max(1, equipment.group.Count)) : 1;
 
+const canUseControlPanelEquipment = (state: GameUiState, equipment: ControlPanelEquipmentView | null): boolean => {
+  if (!equipment) {
+    return false;
+  }
+  const itemtype = state.referenceData?.Itemtype.Items[String(equipment.itemModel?.ItemtypeID)];
+  return Boolean(itemtype?.IsInternalUsable);
+};
+
 const getControlPanelEquipmentInfoRows = (equipment: ControlPanelEquipmentView | null): ControlPanelEquipmentInfoRow[] => {
   if (!equipment) {
     return [];
@@ -714,13 +723,13 @@ const getControlPanelEquipmentInfoRows = (equipment: ControlPanelEquipmentView |
 
   return [
     { label: "Активно", value: yesNo(group.Active) },
-    { label: "Масса", value: formatModelMetric(model, "Mass") },
-    { label: "Объём", value: formatModelMetric(model, "Volume") },
-    { label: "Потребляемая мощность", value: formatModelMetric(model, "ConsumingPower") },
-    { label: "Вырабатываемая мощность", value: formatModelMetric(model, "GeneratingPower") },
-    { label: "Продольная сила тяги", value: formatModelMetric(model, "MaxAlongForce") },
-    { label: "Поперечная сила тяги", value: formatModelMetric(model, "MaxAcrossForce") },
-    { label: "Крутящий момент", value: formatModelMetric(model, "MaxTorque") },
+    { label: "Масса (кг)", value: formatModelMetric(model, "Mass") },
+    { label: "Объём (м³)", value: formatModelMetric(model, "Volume") },
+    { label: "Потребляемая мощность (Вт)", value: formatModelMetric(model, "ConsumingPower") },
+    { label: "Вырабатываемая мощность (Вт)", value: formatModelMetric(model, "GeneratingPower") },
+    { label: "Продольная сила тяги (Н)", value: formatModelMetric(model, "MaxAlongForce") },
+    { label: "Поперечная сила тяги (Н)", value: formatModelMetric(model, "MaxAcrossForce") },
+    { label: "Крутящий момент (Н·м)", value: formatModelMetric(model, "MaxTorque") },
     { label: "Сложность", value: formatModelMetric(model, "Complexity") },
   ];
 };

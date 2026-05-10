@@ -9,6 +9,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": true,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "2": {
@@ -19,6 +20,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": true,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "3": {
@@ -29,6 +31,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": false,
       "IsPilotInstrument": true,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "4": {
@@ -39,6 +42,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": false,
       "IsPilotInstrument": true,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "5": {
@@ -49,6 +53,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": true,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "6": {
@@ -59,6 +64,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "7": {
@@ -69,6 +75,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": false,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "8": {
@@ -79,6 +86,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "9": {
@@ -89,6 +97,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": false,
+      "IsInternalUsable": true,
       "CountMustBeInteger": true
     },
     "10": {
@@ -99,6 +108,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": false,
       "IsPilotInstrument": false,
+      "IsInternalUsable": true,
       "CountMustBeInteger": true
     },
     "11": {
@@ -109,6 +119,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": true,
+      "IsInternalUsable": true,
       "CountMustBeInteger": true
     },
     "12": {
@@ -119,6 +130,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": true,
+      "IsInternalUsable": true,
       "CountMustBeInteger": true
     },
     "13": {
@@ -129,6 +141,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "14": {
@@ -139,6 +152,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "15": {
@@ -149,6 +163,7 @@
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
       "IsPilotInstrument": true,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "16": {
@@ -159,6 +174,7 @@
       "IsEquipmentForShip": false,
       "IsEquipmentForStation": false,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     },
     "17": {
@@ -169,6 +185,7 @@
       "IsEquipmentForShip": false,
       "IsEquipmentForStation": false,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": false
     },
     "18": {
@@ -179,6 +196,7 @@
       "IsEquipmentForShip": false,
       "IsEquipmentForStation": false,
       "IsPilotInstrument": false,
+      "IsInternalUsable": false,
       "CountMustBeInteger": true
     }
   }

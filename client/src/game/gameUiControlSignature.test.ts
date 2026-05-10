@@ -84,6 +84,22 @@ const viewport = {
   scaleHeight: 800,
 };
 
+const referenceDataWithInternalUsableItemtype = (isInternalUsable: boolean): NonNullable<GameUiState["referenceData"]> => ({
+  ActionType: { MaxID: 0, Items: {} },
+  Blueprint: { MaxID: 0, Items: {} },
+  BlueprintComponent: { MaxID: 0, Items: {} },
+  CosmicObjectModel: { MaxID: 0, Items: {} },
+  CosmicObjectType: { MaxID: 0, Items: {} },
+  DefaultActionInputSetting: { MaxID: 0, Items: {} },
+  InputEventType: { MaxID: 0, Items: {} },
+  ItemModel: { MaxID: 0, Items: {} },
+  Itemtype: { MaxID: 1, Items: { "1": { ID: 1, Acronym: "Weapon", IsPilotInstrument: true, IsInternalUsable: isInternalUsable } } },
+  NpcClan: { MaxID: 0, Items: {} },
+  Schema: { MaxID: 0, Items: {} },
+  SchemaComponent: { MaxID: 0, Items: {} },
+  type: "referenceData",
+});
+
 describe("getGameUiControlLayoutSignature", () => {
   // Проверяет, что частые значения кадра не заставляют заново измерять DOM-контролы.
   it("ignores frame-only fields", () => {
@@ -131,6 +147,22 @@ describe("getGameUiControlLayoutSignature", () => {
       controlPanelVisible: true,
       selectedControlPanelTab: "equipment",
       controlPanelEquipmentListScroll: { ...scrollState, visible: true, contentOffsetPx: 32 },
+    }), viewport);
+
+    expect(second).not.toBe(first);
+  });
+
+  // Проверяет, что изменение внутреннего использования типа оборудования пересобирает состояние кнопки использования.
+  it("changes when selected equipment usability changes", () => {
+    const first = getGameUiControlLayoutSignature(state({
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      referenceData: referenceDataWithInternalUsableItemtype(false),
+    }), viewport);
+    const second = getGameUiControlLayoutSignature(state({
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      referenceData: referenceDataWithInternalUsableItemtype(true),
     }), viewport);
 
     expect(second).not.toBe(first);
