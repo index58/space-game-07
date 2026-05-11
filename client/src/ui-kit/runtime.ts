@@ -51,7 +51,7 @@ export class GameUiRuntime {
   }
 
   // Начинает нажатие или перетаскивание на верхнем контроле.
-  pointerDown(x: number, y: number, button: number): GameUiAction | null {
+  pointerDown(x: number, y: number, button: number, modifiers: GameUiActionModifiers = {}): GameUiAction | null {
     if (button !== 0) {
       return null;
     }
@@ -68,13 +68,13 @@ export class GameUiRuntime {
     }
     if (dragKinds.has(target.kind)) {
       this.activeCaptureControlId = target.id;
-      return action("dragStart", target, x, y);
+      return action("dragStart", target, x, y, modifiers);
     }
     return null;
   }
 
   // Завершает нажатие или drag-capture.
-  pointerUp(x: number, y: number, button: number): GameUiAction | null {
+  pointerUp(x: number, y: number, button: number, modifiers: GameUiActionModifiers = {}): GameUiAction | null {
     if (button !== 0) {
       return null;
     }
@@ -82,14 +82,14 @@ export class GameUiRuntime {
       const captured = this.controlById(this.activeCaptureControlId);
       this.activeCaptureControlId = null;
       this.pressedControlId = null;
-      return captured ? action("dragEnd", captured, x, y) : null;
+      return captured ? action("dragEnd", captured, x, y, modifiers) : null;
     }
 
     const pressed = this.pressedControlId ? this.controlById(this.pressedControlId) : null;
     const released = this.hitTest(x, y);
     this.pressedControlId = null;
     if (pressed && released?.id === pressed.id) {
-      return action("click", pressed, x, y);
+      return action("click", pressed, x, y, modifiers);
     }
     return null;
   }
@@ -126,13 +126,16 @@ const contains = (control: GameUiControlState, x: number, y: number): boolean =>
   y <= control.rect.top + control.rect.height
 );
 
-const action = (type: GameUiAction["type"], control: GameUiControlState, x: number, y: number): GameUiAction => {
+type GameUiActionModifiers = Pick<GameUiAction, "ctrlKey" | "metaKey" | "shiftKey">;
+
+const action = (type: GameUiAction["type"], control: GameUiControlState, x: number, y: number, modifiers: GameUiActionModifiers = {}): GameUiAction => {
   const result: GameUiAction = {
     type,
     controlId: control.id,
     kind: control.kind,
     x,
     y,
+    ...modifiers,
   };
   if (control.value !== null && control.value !== undefined) {
     result.value = control.value;

@@ -633,4 +633,14 @@ describe("HUD styles", () => {
     expect(label).toContain("inset: 0;");
     expect(label).toContain("justify-content: center;");
   });
+
+  // Проверяет, что кнопки окна количества топлива стоят рядом по центру без растягивания по краям.
+  it("keeps fuel amount dialog action buttons adjacent", () => {
+    const actions = readCssBlock(".control-panel-fuel-drain-dialog__actions");
+
+    expect(actions).toContain("display: flex;");
+    expect(actions).toContain("justify-content: center;");
+    expect(actions).toContain("gap: 0.8vh;");
+    expect(css).not.toContain(".control-panel-fuel-drain-dialog__actions .ui-kit-button");
+  });
 });

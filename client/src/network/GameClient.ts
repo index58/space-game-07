@@ -10,6 +10,7 @@
   ControlPanelEquipmentUpdateMessage,
   ControlPanelContainerTransferMessage,
   ControlPanelErrorMessage,
+  ControlPanelFuelTransferMessage,
   ControlPanelMutationRef,
   ControlPanelObjectUpdateMessage,
   InputSettingsErrorMessage,
@@ -443,6 +444,24 @@ export class GameClient {
     const mutation = this.nextControlPanelMutation();
     const payload: ControlPanelContainerTransferMessage = {
       type: "controlPanelContainerTransfer",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...transfer,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
+  }
+
+  // Отправляет перенос топлива между контейнером и баком панели управления.
+  sendControlPanelFuelTransfer(transfer: Omit<ControlPanelFuelTransferMessage, "type" | "clientSessionId" | "mutationSeq">): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelFuelTransferMessage = {
+      type: "controlPanelFuelTransfer",
       clientSessionId: this.clientSessionId,
       mutationSeq: mutation.seq,
       ...transfer,

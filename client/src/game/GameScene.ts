@@ -26,6 +26,9 @@ import { applyUiKitDemoAction, createInitialUiKitDemoState, type UiKitDemoState 
 import type { GameUiAction, GameUiControlKind, GameUiControlState } from "../ui-kit/types";
 import { bodyPolygonToPilotScreen } from "./bodyPolygon";
 import { applyControlPanelPendingToEquipmentGroups, applyControlPanelPendingToObject, emptyControlPanelPendingState, pruneControlPanelPending, rejectControlPanelPending, type ControlPanelPendingState } from "./controlPanelMutations";
+import { getControlPanelFuelFillMaxAmount } from "./controlPanelFuelAmount";
+import { applyControlPanelListSelection } from "./controlPanelListSelection";
+import { normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
 import { FrameRateMeter } from "./frameRateMeter";
 import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
 import { InputController, type ChatScrollState } from "./InputController";
@@ -102,8 +105,30 @@ export class GameScene extends Phaser.Scene {
   private openControlPanelUsageSelect: "left" | "right" | null = null;
   // Выбранные строки содержимого левого контейнера.
   private selectedControlPanelUsageLeftItemGroupIds: number[] = [];
+  // Опорная строка левого контейнера для выбора диапазона через Shift.
+  private selectedControlPanelUsageLeftAnchorItemGroupId: number | null = null;
   // Выбранные строки содержимого правого контейнера.
   private selectedControlPanelUsageRightItemGroupIds: number[] = [];
+  // Опорная строка правого контейнера для выбора диапазона через Shift.
+  private selectedControlPanelUsageRightAnchorItemGroupId: number | null = null;
+  // Показывает окно подтверждения слива топлива из бака.
+  private controlPanelFuelDrainDialogOpen = false;
+  // Показывает окно подтверждения залива топлива в бак.
+  private controlPanelFuelFillDialogOpen = false;
+  // Показывает окно подтверждения частичного переноса предметов между контейнерами.
+  private controlPanelContainerTransferDialogOpen = false;
+  // Максимальное количество предметов для частичного переноса между контейнерами.
+  private controlPanelContainerTransferMaxAmount = 0;
+  // Источник ожидающего подтверждения переноса между контейнерами.
+  private controlPanelContainerTransferSourceGroupId: number | null = null;
+  // Получатель ожидающего подтверждения переноса между контейнерами.
+  private controlPanelContainerTransferTargetGroupId: number | null = null;
+  // Строка содержимого, ожидающая частичного переноса между контейнерами.
+  private controlPanelContainerTransferItemGroupIds: number[] = [];
+  // Максимальное количество топлива, доступное для залива в бак.
+  private controlPanelFuelFillMaxAmount = 0;
+  // Количество топлива, выбранное для слива из бака.
+  private controlPanelFuelDrainAmount = 0;
   // Ожидающие подтверждения сервером изменения панели управления.
   private controlPanelPending: ControlPanelPendingState = emptyControlPanelPendingState();
   // Последний обработанный номер ошибки панели управления.
@@ -203,8 +228,15 @@ export class GameScene extends Phaser.Scene {
     const serverSelfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
     const effectiveEquipmentGroups = snapshot ? applyControlPanelPendingToEquipmentGroups(snapshot.equipmentGroups ?? [], this.controlPanelPending) : [];
     const selfObject = applyControlPanelPendingToObject(serverSelfObject, this.controlPanelPending);
+    this.syncControlPanelUsageSelection(selfObject?.ID ?? null, effectiveEquipmentGroups);
+    this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(selfObject, effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
     this.inputController.syncControlPanelObject(selfObject);
+    if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen) {
+      const maxAmount = this.controlPanelContainerTransferDialogOpen ? this.controlPanelContainerTransferMaxAmount : this.controlPanelFuelFillDialogOpen ? this.controlPanelFuelFillMaxAmount : Math.max(0, selfObject?.Fuel ?? 0);
+      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, maxAmount);
+    }
     const controlPanelObjectTitleEditState = this.inputController.getControlPanelObjectTitleEditState(selfObject?.Title ?? "");
+    const controlPanelFuelDrainAmountEditState = this.inputController.getControlPanelFuelDrainAmountEditState();
     this.commitControlPanelObjectTitleIfNeeded(serverSelfObject);
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
@@ -243,6 +275,16 @@ export class GameScene extends Phaser.Scene {
         openControlPanelUsageSelect: this.openControlPanelUsageSelect,
         selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
         selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
+        controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
+        controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
+        controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
+        controlPanelContainerTransferMaxAmount: this.controlPanelContainerTransferMaxAmount,
+        controlPanelFuelFillMaxAmount: this.controlPanelFuelFillMaxAmount,
+        controlPanelFuelDrainAmount: this.controlPanelFuelDrainAmount,
+        controlPanelFuelDrainAmountText: controlPanelFuelDrainAmountEditState.text,
+        controlPanelFuelDrainAmountSelectionStart: controlPanelFuelDrainAmountEditState.selectionStart,
+        controlPanelFuelDrainAmountSelectionEnd: controlPanelFuelDrainAmountEditState.selectionEnd,
+        controlPanelFuelDrainAmountFocused: controlPanelFuelDrainAmountEditState.focused,
         controlPanelEquipmentEnabledDrafts: {},
         controlPanelEquipmentEnabledCountDrafts: {},
         controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
@@ -304,6 +346,16 @@ export class GameScene extends Phaser.Scene {
       openControlPanelUsageSelect: this.openControlPanelUsageSelect,
       selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
       selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
+      controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
+      controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
+      controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
+      controlPanelContainerTransferMaxAmount: this.controlPanelContainerTransferMaxAmount,
+      controlPanelFuelFillMaxAmount: this.controlPanelFuelFillMaxAmount,
+      controlPanelFuelDrainAmount: this.controlPanelFuelDrainAmount,
+      controlPanelFuelDrainAmountText: controlPanelFuelDrainAmountEditState.text,
+      controlPanelFuelDrainAmountSelectionStart: controlPanelFuelDrainAmountEditState.selectionStart,
+      controlPanelFuelDrainAmountSelectionEnd: controlPanelFuelDrainAmountEditState.selectionEnd,
+      controlPanelFuelDrainAmountFocused: controlPanelFuelDrainAmountEditState.focused,
       controlPanelEquipmentEnabledDrafts: {},
       controlPanelEquipmentEnabledCountDrafts: {},
       controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
@@ -578,6 +630,33 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // Синхронизирует реальный выбор использования с первым доступным значением, которое показывает UI.
+  private syncControlPanelUsageSelection(objectId: number | null, equipmentGroups: EquipmentGroup[]): void {
+    const selection = normalizeControlPanelUsageSelection({
+      objectId,
+      equipmentGroups,
+      referenceData: this.referenceData,
+      selection: {
+        leftContainerGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
+        rightEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+      },
+    });
+
+    this.selectedControlPanelUsageLeftContainerGroupId = selection.leftContainerGroupId;
+    this.selectedControlPanelUsageRightEquipmentGroupId = selection.rightEquipmentGroupId;
+  }
+
+  // Возвращает количество топлива, доступное для залива из текущего выбора в левом контейнере.
+  private getControlPanelFuelFillMaxAmount(object: CosmicObject | null, equipmentGroups: EquipmentGroup[], itemGroups: GameUiState["itemGroups"]): number {
+    return getControlPanelFuelFillMaxAmount({
+      object,
+      fuelTankGroup: equipmentGroups.find((group) => group.ID === this.selectedControlPanelUsageRightEquipmentGroupId) ?? null,
+      itemGroups,
+      selectedItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
+      referenceData: this.referenceData,
+    });
+  }
+
   // Отправляет завершенное редактирование названия объекта, если текст отличается от серверного снимка.
   private commitControlPanelObjectTitleIfNeeded(serverSelfObject: CosmicObject | null): void {
     const title = this.inputController.consumeControlPanelObjectTitleCommit();
@@ -622,6 +701,10 @@ export class GameScene extends Phaser.Scene {
     if (action.kind === "slider" && action.controlId === "control-panel-equipment-enabled-slider") {
       return this.consumeControlPanelEquipmentSliderAction(action);
     }
+    if (action.kind === "slider" && action.controlId === "control-panel-fuel-drain-amount-slider") {
+      this.updateControlPanelFuelDrainAmountFromSlider(action);
+      return true;
+    }
     if (action.type !== "click") {
       return action.controlId.startsWith("control-panel-");
     }
@@ -644,7 +727,7 @@ export class GameScene extends Phaser.Scene {
     }
     if (action.type === "click" && action.controlId === "control-panel-equipment-usage-button") {
       this.selectedControlPanelEquipmentTab = "usage";
-      this.selectedControlPanelUsageRightEquipmentGroupId = this.selectedControlPanelEquipmentGroupId;
+      this.selectedControlPanelUsageRightEquipmentGroupId = this.getSelectedControlPanelEquipmentGroup()?.ID ?? null;
       this.openControlPanelUsageSelect = null;
       return true;
     }
@@ -696,19 +779,86 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId.startsWith("control-panel-usage-left-container-content-") && typeof action.value === "string") {
-      this.selectedControlPanelUsageLeftItemGroupIds = [Number(action.value)].filter((value) => value > 0);
+      const selection = this.updateControlPanelUsageItemSelection(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageLeftItemGroupIds, this.selectedControlPanelUsageLeftAnchorItemGroupId, Number(action.value), action);
+      this.selectedControlPanelUsageLeftItemGroupIds = selection.selectedIds;
+      this.selectedControlPanelUsageLeftAnchorItemGroupId = selection.anchorId;
       return true;
     }
     if (action.controlId.startsWith("control-panel-usage-right-container-content-") && typeof action.value === "string") {
-      this.selectedControlPanelUsageRightItemGroupIds = [Number(action.value)].filter((value) => value > 0);
+      const selection = this.updateControlPanelUsageItemSelection(this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageRightItemGroupIds, this.selectedControlPanelUsageRightAnchorItemGroupId, Number(action.value), action);
+      this.selectedControlPanelUsageRightItemGroupIds = selection.selectedIds;
+      this.selectedControlPanelUsageRightAnchorItemGroupId = selection.anchorId;
       return true;
     }
     if (action.controlId === "control-panel-container-transfer-to-right") {
-      this.sendControlPanelContainerTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftItemGroupIds);
+      this.startControlPanelContainerTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftItemGroupIds);
       return true;
     }
     if (action.controlId === "control-panel-container-transfer-to-left") {
-      this.sendControlPanelContainerTransfer(this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightItemGroupIds);
+      this.startControlPanelContainerTransfer(this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightItemGroupIds);
+      return true;
+    }
+    if (action.controlId === "control-panel-container-transfer-cancel") {
+      this.controlPanelContainerTransferDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-container-transfer-ok") {
+      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, this.controlPanelContainerTransferMaxAmount);
+      this.sendControlPanelContainerTransfer(this.controlPanelContainerTransferSourceGroupId, this.controlPanelContainerTransferTargetGroupId, this.controlPanelContainerTransferItemGroupIds, this.controlPanelFuelDrainAmount);
+      this.controlPanelContainerTransferDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-transfer-to-tank") {
+      this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(this.gameUi.state().selfObject, this.gameUi.state().equipmentGroups, this.gameUi.state().itemGroups);
+      if (this.controlPanelFuelFillMaxAmount > 0) {
+        this.controlPanelFuelFillDialogOpen = true;
+        this.controlPanelFuelDrainDialogOpen = false;
+        this.controlPanelContainerTransferDialogOpen = false;
+        this.controlPanelFuelDrainAmount = this.controlPanelFuelFillMaxAmount;
+        this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+      }
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-fill-cancel") {
+      this.controlPanelFuelFillDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-fill-ok") {
+      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, this.controlPanelFuelFillMaxAmount);
+      this.sendControlPanelFuelTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftItemGroupIds, this.controlPanelFuelDrainAmount);
+      this.controlPanelFuelFillDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-drain-open") {
+      this.controlPanelFuelDrainDialogOpen = true;
+      this.controlPanelFuelFillDialogOpen = false;
+      this.controlPanelContainerTransferDialogOpen = false;
+      this.controlPanelFuelDrainAmount = Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0);
+      this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-drain-cancel") {
+      this.controlPanelFuelDrainDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-drain-amount-decrement") {
+      this.changeControlPanelFuelDrainAmount(-1);
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-drain-amount" || action.controlId === "control-panel-fuel-drain-amount-increment") {
+      this.changeControlPanelFuelDrainAmount(1);
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-drain-ok") {
+      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0));
+      this.sendControlPanelFuelTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, [], this.controlPanelFuelDrainAmount);
+      this.controlPanelFuelDrainDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
     if (action.controlId === "control-panel-equipment-enabled") {
@@ -798,6 +948,59 @@ export class GameScene extends Phaser.Scene {
     this.sendControlPanelEquipmentMutation(group.ID, { enabledCount: clamp(value, 1, Math.max(1, group.Count)) });
   }
 
+  // Меняет количество топлива для слива в пределах текущего запаса.
+  private changeControlPanelFuelDrainAmount(delta: number): void {
+    const maxFuel = this.controlPanelContainerTransferDialogOpen ? this.controlPanelContainerTransferMaxAmount : this.controlPanelFuelFillDialogOpen ? this.controlPanelFuelFillMaxAmount : Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0);
+    this.controlPanelFuelDrainAmount = clamp(this.controlPanelFuelDrainAmount + delta, 0, maxFuel);
+    this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+  }
+
+  // Меняет количество слива топлива по позиции курсора на полосе.
+  private updateControlPanelFuelDrainAmountFromSlider(action: GameUiAction): void {
+    if (!action.controlRect || (action.type !== "dragStart" && action.type !== "dragMove")) {
+      return;
+    }
+    const maxFuel = this.controlPanelContainerTransferDialogOpen ? this.controlPanelContainerTransferMaxAmount : this.controlPanelFuelFillDialogOpen ? this.controlPanelFuelFillMaxAmount : Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0);
+    const position = clamp((action.x - action.controlRect.left) / Math.max(1, action.controlRect.width), 0, 1);
+    this.controlPanelFuelDrainAmount = Math.round(maxFuel * position);
+    this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+  }
+
+  // Запускает перенос между контейнерами сразу или через окно количества для одной строки.
+  private startControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, itemGroupIds: number[]): void {
+    if (itemGroupIds.length !== 1) {
+      this.sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId, targetContainerEquipmentGroupId, itemGroupIds);
+      return;
+    }
+    const itemGroup = this.gameUi.state().itemGroups.find((group) => group.ID === itemGroupIds[0]);
+    if (!itemGroup || itemGroup.Count <= 0) {
+      return;
+    }
+    this.controlPanelContainerTransferSourceGroupId = sourceContainerEquipmentGroupId;
+    this.controlPanelContainerTransferTargetGroupId = targetContainerEquipmentGroupId;
+    this.controlPanelContainerTransferItemGroupIds = itemGroupIds;
+    this.controlPanelContainerTransferMaxAmount = itemGroup.Count;
+    this.controlPanelFuelDrainAmount = itemGroup.Count;
+    this.controlPanelContainerTransferDialogOpen = true;
+    this.controlPanelFuelDrainDialogOpen = false;
+    this.controlPanelFuelFillDialogOpen = false;
+    this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+  }
+
+  // Возвращает новый выбор строк содержимого контейнера с учетом Ctrl и Shift.
+  private updateControlPanelUsageItemSelection(containerGroupId: number | null, selectedIds: number[], anchorId: number | null, clickedId: number, action: GameUiAction): { selectedIds: number[]; anchorId: number } {
+    const orderedIds = this.gameUi.state().itemGroups
+      .filter((itemGroup) => itemGroup.ContainerEquipmentGroupID === containerGroupId)
+      .map((itemGroup) => itemGroup.ID);
+    return applyControlPanelListSelection({
+      orderedIds,
+      selectedIds,
+      clickedId,
+      anchorId,
+      action,
+    });
+  }
+
   // Отправляет изменение оборудования и кладет его поверх снимков до серверного подтверждения.
   private sendControlPanelEquipmentMutation(groupId: number, update: { enabled?: boolean; enabledCount?: number }): void {
     const mutation = this.gameClient?.sendControlPanelEquipmentUpdate({ equipmentGroupId: groupId, ...update });
@@ -819,7 +1022,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Отправляет перенос между двумя выбранными контейнерами панели управления.
-  private sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, itemGroupIds: number[]): void {
+  private sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, itemGroupIds: number[], amount = 0): void {
     if (!sourceContainerEquipmentGroupId || !targetContainerEquipmentGroupId || sourceContainerEquipmentGroupId === targetContainerEquipmentGroupId || itemGroupIds.length === 0) {
       return;
     }
@@ -827,6 +1030,20 @@ export class GameScene extends Phaser.Scene {
       sourceContainerEquipmentGroupId,
       targetContainerEquipmentGroupId,
       itemGroupIds,
+      amount: amount > 0 ? amount : undefined,
+    });
+  }
+
+  // Отправляет перенос топлива между левым контейнером и выбранным топливным баком.
+  private sendControlPanelFuelTransfer(containerEquipmentGroupId: number | null, fuelTankEquipmentGroupId: number | null, itemGroupIds: number[], amount = 0): void {
+    if (!containerEquipmentGroupId || !fuelTankEquipmentGroupId || (itemGroupIds.length === 0 && amount <= 0)) {
+      return;
+    }
+    this.gameClient?.sendControlPanelFuelTransfer({
+      containerEquipmentGroupId,
+      fuelTankEquipmentGroupId,
+      itemGroupIds,
+      amount: amount > 0 ? amount : undefined,
     });
   }
 

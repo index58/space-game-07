@@ -1147,6 +1147,78 @@ body {
   min-height: 0;
 }
 
+.control-panel-fuel-tank {
+  position: relative;
+  align-self: stretch;
+  justify-self: center;
+  width: min(18vh, 42%);
+  min-width: 6vh;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: 0.18vh solid rgb(105, 116, 128);
+  background: rgb(0, 0, 0);
+  box-sizing: border-box;
+}
+
+.control-panel-fuel-tank__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(20, 120, 255);
+}
+
+.control-panel-fuel-tank__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8vh;
+  color: rgb(238, 244, 255);
+  font-size: clamp(12px, 1.55vh, 18px);
+  text-align: center;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.control-panel-fuel-drain-dialog {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1100;
+  display: grid;
+  grid-template-rows: auto auto var(--hud-dropdown-min-height);
+  gap: 1vh;
+  width: min(30vh, 72%);
+  padding: 1.2vh;
+  border: 0.18vh solid rgb(85, 97, 112);
+  background: rgb(18, 22, 28);
+  box-shadow: 0 1.2vh 3vh rgba(0, 0, 0, 0.42);
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+.control-panel-fuel-drain-dialog__title {
+  color: rgb(231, 236, 242);
+  font-size: clamp(13px, 1.6vh, 18px);
+}
+
+.control-panel-fuel-drain-dialog__amount {
+  display: grid;
+  grid-template-rows: var(--hud-dropdown-min-height) var(--hud-dropdown-min-height);
+  gap: 0.6vh;
+  min-width: 0;
+}
+
+.control-panel-fuel-drain-dialog__actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8vh;
+}
+
 .control-panel-object-row {
   display: grid;
   grid-template-columns: minmax(18vh, 0.92fr) minmax(0, 1fr);

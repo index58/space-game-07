@@ -147,6 +147,8 @@ export class InputController {
   private readonly chatEdit = new TextEditController({ id: "chat-input", mode: "singleLine" });
   // Нативный движок редактирования названия объекта в панели управления.
   private readonly controlPanelObjectTitleEdit = new TextEditController({ id: "control-panel-object-title-input", mode: "singleLine" });
+  // Нативный движок редактирования количества сливаемого топлива.
+  private readonly controlPanelFuelDrainAmountEdit = new TextEditController({ id: "control-panel-fuel-drain-amount-input", mode: "singleLine" });
   // Объект, для которого сейчас хранится черновик панели управления.
   private controlPanelObjectId: number | null = null;
   // Черновик состояния включения объекта в панели управления.
@@ -165,6 +167,8 @@ export class InputController {
   private controlPanelObjectTitleEditDragAnchorIndex = 0;
   // Блокирует click после перетаскивания, чтобы выделение не схлопывалось на отпускании.
   private controlPanelObjectTitleSuppressClick = false;
+  // Черновой текст количества сливаемого топлива.
+  private controlPanelFuelDrainAmountText = "0";
 
   constructor(
     // Игровой canvas, который получает захват указателя.
@@ -179,6 +183,7 @@ export class InputController {
         this.chatContextMenu = null;
         this.chatEdit.blur();
         this.controlPanelObjectTitleEdit.blur();
+        this.controlPanelFuelDrainAmountEdit.blur();
         this.keys[event.code] = true;
         return;
       }
@@ -198,6 +203,9 @@ export class InputController {
         return;
       }
       if (this.handleControlPanelObjectTitleKeyDown(event)) {
+        return;
+      }
+      if (this.handleControlPanelFuelDrainAmountKeyDown(event)) {
         return;
       }
       if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "KeyI")) {
@@ -293,7 +301,7 @@ export class InputController {
         return;
       }
       const uiTarget = this.uiRuntime.hitTest(this.cursorX, this.cursorY);
-      this.enqueueUiAction(this.uiRuntime.pointerDown(this.cursorX, this.cursorY, event.button));
+      this.enqueueUiAction(this.uiRuntime.pointerDown(this.cursorX, this.cursorY, event.button, uiActionModifiers(event)));
       if (this.isDropdownOutsideBlocker(uiTarget)) {
         event.preventDefault();
         return;
@@ -327,7 +335,7 @@ export class InputController {
 
     window.addEventListener("mouseup", (event) => {
       if (event.button === 0) {
-        this.enqueueUiAction(this.uiRuntime.pointerUp(this.cursorX, this.cursorY, event.button));
+        this.enqueueUiAction(this.uiRuntime.pointerUp(this.cursorX, this.cursorY, event.button, uiActionModifiers(event)));
         this.chatEditDragActive = false;
         this.controlPanelObjectTitleEditDragActive = false;
         this.controlPanelObjectTitleSuppressClick = false;
@@ -361,6 +369,10 @@ export class InputController {
     this.controlPanelObjectTitleEdit.element().addEventListener("select", () => this.syncControlPanelObjectTitleFromNativeEdit());
     this.controlPanelObjectTitleEdit.element().addEventListener("keyup", () => this.syncControlPanelObjectTitleFromNativeEdit());
     this.controlPanelObjectTitleEdit.element().addEventListener("keydown", (event) => this.handleControlPanelObjectTitleKeyDown(event));
+    this.controlPanelFuelDrainAmountEdit.element().addEventListener("input", () => this.syncControlPanelFuelDrainAmountFromNativeEdit());
+    this.controlPanelFuelDrainAmountEdit.element().addEventListener("select", () => this.syncControlPanelFuelDrainAmountFromNativeEdit());
+    this.controlPanelFuelDrainAmountEdit.element().addEventListener("keyup", () => this.syncControlPanelFuelDrainAmountFromNativeEdit());
+    this.controlPanelFuelDrainAmountEdit.element().addEventListener("keydown", (event) => this.handleControlPanelFuelDrainAmountKeyDown(event));
   }
 
   // Возвращает пользовательский уровень зума без пересчета в пиксели.
@@ -509,6 +521,41 @@ export class InputController {
     };
   }
 
+  // Задает количество слива топлива из внешнего состояния панели.
+  setControlPanelFuelDrainAmount(value: number): void {
+    this.controlPanelFuelDrainAmountText = formatFuelDrainAmount(value);
+    this.controlPanelFuelDrainAmountEdit.blur();
+  }
+
+  // Возвращает числовое количество слива, набранное в поле.
+  getControlPanelFuelDrainAmount(fallback = 0): number {
+    const value = Number(this.controlPanelFuelDrainAmountText.replace(",", "."));
+    return Number.isFinite(value) ? Math.max(0, value) : fallback;
+  }
+
+  // Возвращает состояние редактирования количества топлива для отрисовки поля.
+  getControlPanelFuelDrainAmountEditState(): TextEditState {
+    const snapshot = this.controlPanelFuelDrainAmountEdit.snapshot();
+    if (snapshot.focused) {
+      return snapshot;
+    }
+    const text = this.controlPanelFuelDrainAmountText;
+    return {
+      text,
+      selectionStart: text.length,
+      selectionEnd: text.length,
+      selectionDirection: "none",
+      scrollX: 0,
+      scrollY: 0,
+      focused: false,
+    };
+  }
+
+  // Снимает фокус с поля количества слива топлива.
+  blurControlPanelFuelDrainAmount(): void {
+    this.controlPanelFuelDrainAmountEdit.blur();
+  }
+
   // Обновляет registry общего UI runtime из актуально отрисованных HUD-контролов.
   updateGameUiControls(controls: GameUiControlState[]): void {
     this.uiRuntime.updateControls(controls);
@@ -600,6 +647,7 @@ export class InputController {
       this.chatInputFocused = false;
       this.chatEdit.blur();
       this.controlPanelObjectTitleEdit.blur();
+      this.controlPanelFuelDrainAmountEdit.blur();
       this.chatContextMenu = null;
       this.chatScrollbarDragActive = false;
       this.chatEditDragActive = false;
@@ -723,6 +771,25 @@ export class InputController {
     return true;
   }
 
+  // Отдает клавиатуру native-полю количества слива топлива, пока оно находится в фокусе.
+  private handleControlPanelFuelDrainAmountKeyDown(event: KeyboardEvent): boolean {
+    if (!this.controlPanelFuelDrainAmountEdit.snapshot().focused) {
+      return false;
+    }
+    if (event.target !== this.controlPanelFuelDrainAmountEdit.element()) {
+      return false;
+    }
+    if (event.code === "Escape" || event.code === "Enter") {
+      this.syncControlPanelFuelDrainAmountFromNativeEdit();
+      this.controlPanelFuelDrainAmountEdit.blur();
+      event.preventDefault();
+      return true;
+    }
+
+    window.setTimeout(() => this.syncControlPanelFuelDrainAmountFromNativeEdit(), 0);
+    return true;
+  }
+
   // Превращает локальную строку в обычную или адресную сетевую команду.
   private queueChatAction(): void {
     const text = this.chatInputText.trim();
@@ -790,6 +857,7 @@ export class InputController {
     this.uiKitShowcaseVisible = false;
     this.controlPanelVisible = false;
     this.controlPanelObjectTitleEdit.blur();
+    this.controlPanelFuelDrainAmountEdit.blur();
   }
 
   // Сохраняет действие общего runtime до обработки сценой.
@@ -822,6 +890,11 @@ export class InputController {
       this.syncControlPanelObjectTitleFromNativeEdit();
       return true;
     }
+    if (action.type === "click" && action.controlId === "control-panel-fuel-drain-amount-input") {
+      this.controlPanelFuelDrainAmountEdit.focus(this.controlPanelFuelDrainAmountText, 0, this.controlPanelFuelDrainAmountText.length);
+      this.syncControlPanelFuelDrainAmountFromNativeEdit();
+      return true;
+    }
     if (action.type === "click" && action.controlId.startsWith("control-panel-")) {
       this.commitAndBlurControlPanelObjectTitle();
     }
@@ -831,6 +904,11 @@ export class InputController {
   // Переносит данные native-поля в черновик панели управления.
   private syncControlPanelObjectTitleFromNativeEdit(): void {
     this.controlPanelObjectTitleDraft = this.controlPanelObjectTitleEdit.snapshot().text;
+  }
+
+  // Переносит данные native-поля количества слива в черновик панели.
+  private syncControlPanelFuelDrainAmountFromNativeEdit(): void {
+    this.controlPanelFuelDrainAmountText = this.controlPanelFuelDrainAmountEdit.snapshot().text;
   }
 
   // Завершает native-редактирование названия и запоминает изменение для сцены.
@@ -1332,3 +1410,17 @@ export class InputController {
 }
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+
+const formatFuelDrainAmount = (value: number): string => {
+  if (!Number.isFinite(value)) {
+    return "0";
+  }
+  return String(Math.max(0, value));
+};
+
+// Возвращает клавиши-модификаторы для действия игрового UI.
+const uiActionModifiers = (event: MouseEvent): Pick<GameUiAction, "ctrlKey" | "metaKey" | "shiftKey"> => ({
+  ctrlKey: event.ctrlKey,
+  metaKey: event.metaKey,
+  shiftKey: event.shiftKey,
+});

@@ -72,6 +72,12 @@ export type GameUiAction = {
   y: number;
   // Значение контрола на момент действия, если оно задано.
   value?: unknown;
+  // Признак зажатой клавиши Ctrl во время действия мышью.
+  ctrlKey?: boolean;
+  // Признак зажатой клавиши Meta во время действия мышью.
+  metaKey?: boolean;
+  // Признак зажатой клавиши Shift во время действия мышью.
+  shiftKey?: boolean;
   // Экранная область контрола на момент действия, если runtime её знает.
   controlRect?: GameUiRect;
 };

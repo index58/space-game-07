@@ -138,6 +138,25 @@ export type ControlPanelContainerTransferMessage = {
   targetContainerEquipmentGroupId: number;
   // Группы предметов, выбранные для переноса.
   itemGroupIds: number[];
+  // Количество предметов для частичного переноса одной выбранной группы.
+  amount?: number;
+};
+
+export type ControlPanelFuelTransferMessage = {
+  // Вид команды переноса топлива между контейнером и баком.
+  type: "controlPanelFuelTransfer";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Контейнер, из которого берётся или куда сливается топливо.
+  containerEquipmentGroupId: number;
+  // Топливный бак, с которым работает игрок.
+  fuelTankEquipmentGroupId: number;
+  // Группы топлива, выбранные в контейнере для заливки.
+  itemGroupIds: number[];
+  // Количество топлива для залива в бак или слива из бака.
+  amount?: number;
 };
 
 export type ControlPanelErrorMessage = {

@@ -1,5 +1,5 @@
 {
-  "MaxID": 120,
+  "MaxID": 131,
   "Items": {
     "39": {
       "ID": 39,
@@ -45,7 +45,7 @@
     },
     "114": {
       "ID": 114,
-      "ContainerEquipmentGroupID": 1058,
+      "ContainerEquipmentGroupID": 1059,
       "ContentItemModelID": 3,
       "Count": 10
     },
@@ -57,7 +57,7 @@
     },
     "116": {
       "ID": 116,
-      "ContainerEquipmentGroupID": 1058,
+      "ContainerEquipmentGroupID": 1059,
       "ContentItemModelID": 4,
       "Count": 10
     },
@@ -71,12 +71,6 @@
       "ID": 118,
       "ContainerEquipmentGroupID": 1058,
       "ContentItemModelID": 5,
-      "Count": 10
-    },
-    "119": {
-      "ID": 119,
-      "ContainerEquipmentGroupID": 1058,
-      "ContentItemModelID": 8,
       "Count": 10
     },
     "120": {

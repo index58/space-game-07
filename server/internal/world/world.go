@@ -75,9 +75,18 @@ type ControlPanelContainerTransfer struct {
 	SourceContainerEquipmentGroupID int64   // Группа контейнеров, из которой переносятся все предметы.
 	TargetContainerEquipmentGroupID int64   // Группа контейнеров, в которую переносятся все предметы.
 	ItemGroupIDs                    []int64 // Группы предметов, выбранные для переноса.
+	Amount                          float64 // Количество предметов для частичного переноса одной выбранной группы.
 }
 
 // Создает мир поверх уже загруженных серверных данных.
+// ControlPanelFuelTransfer описывает перенос топлива между контейнером и баком текущего объекта.
+type ControlPanelFuelTransfer struct {
+	ContainerEquipmentGroupID int64   // Группа контейнеров, из которой берется или куда сливается топливо.
+	FuelTankEquipmentGroupID  int64   // Группа топливных баков, с которой работает игрок.
+	ItemGroupIDs              []int64 // Группы топлива, выбранные для заливки из контейнера.
+	Amount                    float64 // Количество топлива для слива из бака в контейнер.
+}
+
 func New(seed int64, serverData Data) *World {
 	created := &World{
 		data:             serverData,
@@ -358,13 +367,27 @@ func (world *World) ApplyControlPanelContainerTransfer(accountID int64, sessionI
 		if itemGroup.ContainerEquipmentGroupID != source.ID {
 			return errors.New("item group does not belong to source container")
 		}
+		moved := itemGroup.Count
+		if transfer.Amount > 0 && len(transfer.ItemGroupIDs) == 1 {
+			moved = math.Min(itemGroup.Count, transfer.Amount)
+		}
 		if existing := targetByModel[itemGroup.ContentItemModelID]; existing != nil {
-			existing.Count += itemGroup.Count
-			delete(world.data.ItemGroups.Items, itemGroup.ID)
+			existing.Count += moved
+		} else if moved < itemGroup.Count {
+			created, err := world.data.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: target.ID, ContentItemModelID: itemGroup.ContentItemModelID, Count: moved})
+			if err != nil {
+				return err
+			}
+			targetByModel[created.ContentItemModelID] = created
+		} else {
+			itemGroup.ContainerEquipmentGroupID = target.ID
+			targetByModel[itemGroup.ContentItemModelID] = itemGroup
 			continue
 		}
-		itemGroup.ContainerEquipmentGroupID = target.ID
-		targetByModel[itemGroup.ContentItemModelID] = itemGroup
+		itemGroup.Count -= moved
+		if itemGroup.Count <= physics.Epsilon {
+			delete(world.data.ItemGroups.Items, itemGroup.ID)
+		}
 	}
 	if err := world.data.ItemGroups.RebuildIndexes(); err != nil {
 		return err
@@ -374,6 +397,46 @@ func (world *World) ApplyControlPanelContainerTransfer(accountID int64, sessionI
 }
 
 // controlledContainerEquipmentLocked возвращает контейнер текущего объекта; вызывается только под mutex.
+// ApplyControlPanelFuelTransfer переносит топливо между контейнером и общим запасом текущего объекта.
+func (world *World) ApplyControlPanelFuelTransfer(accountID int64, sessionID string, mutationSeq int64, transfer ControlPanelFuelTransfer) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+	if !ok {
+		return errors.New("controlled object not found")
+	}
+	if world.data.EquipmentGroups == nil || world.data.ItemGroups == nil {
+		return errors.New("equipment or item groups are not loaded")
+	}
+	container, err := world.controlledContainerEquipmentLocked(objectID, transfer.ContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	fuelModelID, err := world.controlledFuelTankFuelModelIDLocked(objectID, transfer.FuelTankEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	if len(transfer.ItemGroupIDs) > 0 {
+		if err := world.fillFuelFromContainerLocked(cosmicObject, container.ID, fuelModelID, transfer.ItemGroupIDs, transfer.Amount); err != nil {
+			return err
+		}
+	} else if transfer.Amount > 0 {
+		if err := world.drainFuelToContainerLocked(cosmicObject, container.ID, fuelModelID, transfer.Amount); err != nil {
+			return err
+		}
+	}
+	if err := world.data.ItemGroups.RebuildIndexes(); err != nil {
+		return err
+	}
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
+}
+
 func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID int64) (*data.EquipmentGroup, error) {
 	group, ok := world.data.EquipmentGroups.Get(groupID)
 	if !ok {
@@ -389,6 +452,84 @@ func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID i
 }
 
 // equipmentGroupIsContainerLocked проверяет тип установленного предмета; вызывается только под mutex.
+// controlledFuelTankFuelModelIDLocked возвращает модель топлива для выбранного бака текущего объекта.
+func (world *World) controlledFuelTankFuelModelIDLocked(objectID int64, groupID int64) (int64, error) {
+	group, ok := world.data.EquipmentGroups.Get(groupID)
+	if !ok {
+		return 0, errors.New("equipment group not found")
+	}
+	if group.CosmicObjectID != objectID {
+		return 0, errors.New("equipment group does not belong to controlled object")
+	}
+	model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+	if !ok {
+		return 0, errors.New("fuel tank model not found")
+	}
+	itemtype, ok := world.data.Itemtypes.Get(model.ItemtypeID)
+	if !ok || itemtype.Acronym != "FuelTank" {
+		return 0, errors.New("equipment group is not a fuel tank")
+	}
+	if model.ConsumingItemModelID <= 0 {
+		return 0, errors.New("fuel tank fuel model is not set")
+	}
+	return model.ConsumingItemModelID, nil
+}
+
+// fillFuelFromContainerLocked забирает выбранное топливо из контейнера до заполнения общего запаса.
+func (world *World) fillFuelFromContainerLocked(cosmicObject *data.CosmicObject, containerID int64, fuelModelID int64, itemGroupIDs []int64, amount float64) error {
+	freeFuel := math.Max(0, cosmicObject.MaxFuel-cosmicObject.Fuel)
+	if freeFuel <= 0 {
+		return nil
+	}
+	remainingAmount := freeFuel
+	if amount > 0 {
+		remainingAmount = math.Min(freeFuel, amount)
+	}
+	for _, itemGroupID := range itemGroupIDs {
+		if remainingAmount <= 0 {
+			break
+		}
+		itemGroup, ok := world.data.ItemGroups.Get(itemGroupID)
+		if !ok {
+			return errors.New("item group not found")
+		}
+		if itemGroup.ContainerEquipmentGroupID != containerID {
+			return errors.New("item group does not belong to source container")
+		}
+		if itemGroup.ContentItemModelID != fuelModelID {
+			return errors.New("item group is not fuel for selected tank")
+		}
+		moved := math.Min(itemGroup.Count, remainingAmount)
+		cosmicObject.Fuel += moved
+		remainingAmount -= moved
+		itemGroup.Count -= moved
+		if itemGroup.Count <= physics.Epsilon {
+			delete(world.data.ItemGroups.Items, itemGroup.ID)
+		}
+	}
+	return nil
+}
+
+// drainFuelToContainerLocked сливает указанное топливо из общего запаса в выбранный контейнер.
+func (world *World) drainFuelToContainerLocked(cosmicObject *data.CosmicObject, containerID int64, fuelModelID int64, amount float64) error {
+	moved := math.Min(math.Max(0, amount), cosmicObject.Fuel)
+	if moved <= 0 {
+		return nil
+	}
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(containerID) {
+		if itemGroup.ContentItemModelID == fuelModelID {
+			itemGroup.Count += moved
+			cosmicObject.Fuel -= moved
+			return nil
+		}
+	}
+	if _, err := world.data.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: containerID, ContentItemModelID: fuelModelID, Count: moved}); err != nil {
+		return err
+	}
+	cosmicObject.Fuel -= moved
+	return nil
+}
+
 func (world *World) equipmentGroupIsContainerLocked(group *data.EquipmentGroup) bool {
 	if group == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil {
 		return false

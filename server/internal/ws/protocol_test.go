@@ -130,6 +130,32 @@ func TestDecodeControlPanelContainerTransferMessageUsesAgreedJSONFields(t *testi
 }
 
 // Проверяет, что команда чата читает выбранную вкладку и адресный ник из JSON.
+// Проверяет, что команда переноса топлива читается из согласованных JSON-полей.
+func TestDecodeControlPanelFuelTransferMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeControlPanelFuelTransferMessage([]byte(`{
+		"type": "controlPanelFuelTransfer",
+		"clientSessionId": "session-1",
+		"mutationSeq": 6,
+		"containerEquipmentGroupId": 11,
+		"fuelTankEquipmentGroupId": 12,
+		"itemGroupIds": [21],
+		"amount": 15
+	}`))
+
+	if !ok {
+		t.Fatalf("fuel transfer message was not decoded")
+	}
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 6 {
+		t.Fatalf("mutation fields were decoded incorrectly: %+v", message)
+	}
+	if message.ContainerEquipmentGroupID != 11 || message.FuelTankEquipmentGroupID != 12 || message.Amount != 15 {
+		t.Fatalf("fuel transfer fields were decoded incorrectly: %+v", message)
+	}
+	if len(message.ItemGroupIDs) != 1 || message.ItemGroupIDs[0] != 21 {
+		t.Fatalf("item group fields were decoded incorrectly: %+v", message)
+	}
+}
+
 func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeChatSendMessage([]byte(`{
 		"type": "chatSend",

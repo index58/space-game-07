@@ -1288,6 +1288,60 @@ func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *tes
 }
 
 // Проверяет, что команда панели не переносит предметы в группу оборудования, которая не является контейнером.
+// Проверяет, что команда панели переносит из одной выбранной строки только указанное количество.
+func TestApplyControlPanelContainerTransferMovesRequestedAmount(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var source *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			source = group
+			break
+		}
+	}
+	if source == nil {
+		t.Fatalf("source container was not installed")
+	}
+	target, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Target Container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	selectedItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: source.ID, ContentItemModelID: 303, Count: 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 9, world.ControlPanelContainerTransfer{
+		SourceContainerEquipmentGroupID: source.ID,
+		TargetContainerEquipmentGroupID: target.ID,
+		ItemGroupIDs:                    []int64{selectedItem.ID},
+		Amount:                          4,
+	}); err != nil {
+		t.Fatalf("container transfer returned error: %v", err)
+	}
+
+	sourceItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID)
+	if len(sourceItems) != 1 || sourceItems[0].Count != 6 {
+		t.Fatalf("source item was not reduced by requested amount: %+v", sourceItems)
+	}
+	targetItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(target.ID)
+	if len(targetItems) != 1 || targetItems[0].Count != 4 {
+		t.Fatalf("target item was not created with requested amount: %+v", targetItems)
+	}
+}
+
 func TestApplyControlPanelContainerTransferRejectsNonContainerTarget(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1327,6 +1381,195 @@ func TestApplyControlPanelContainerTransferRejectsNonContainerTarget(t *testing.
 }
 
 // Проверяет, что случайная смена выбирает другую корабельную модель и заменяет характеристики с оборудованием.
+// Проверяет, что команда панели переливает выбранное топливо из контейнера в общий запас топлива объекта до свободного места.
+func TestApplyControlPanelFuelTransferFillsObjectFuelFromContainer(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
+	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemtypeID: 7}
+	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemtypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	cosmicObject.Fuel = 20
+	cosmicObject.MaxFuel = 50
+	var container *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			container = group
+			break
+		}
+	}
+	if container == nil {
+		t.Fatalf("container was not installed")
+	}
+	fuelTank, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Fuel Tank",
+		EquipmentItemModelID: 304,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fuelItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: container.ID, ContentItemModelID: 7, Count: 40})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelFuelTransfer(1, "session-1", 6, world.ControlPanelFuelTransfer{
+		ContainerEquipmentGroupID: container.ID,
+		FuelTankEquipmentGroupID:  fuelTank.ID,
+		ItemGroupIDs:              []int64{fuelItem.ID},
+	}); err != nil {
+		t.Fatalf("fuel transfer returned error: %v", err)
+	}
+
+	if cosmicObject.Fuel != 50 {
+		t.Fatalf("object fuel = %v, want 50", cosmicObject.Fuel)
+	}
+	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
+	if len(items) != 1 || items[0].Count != 10 {
+		t.Fatalf("container fuel item was not reduced to remainder: %+v", items)
+	}
+}
+
+// Проверяет, что команда панели сливает указанное топливо из общего запаса объекта в левый контейнер.
+// Проверяет, что команда панели заливает из контейнера только указанное количество топлива.
+func TestApplyControlPanelFuelTransferFillsOnlyRequestedAmount(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
+	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemtypeID: 7}
+	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemtypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	cosmicObject.Fuel = 20
+	cosmicObject.MaxFuel = 50
+	var container *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			container = group
+			break
+		}
+	}
+	if container == nil {
+		t.Fatalf("container was not installed")
+	}
+	fuelTank, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Fuel Tank",
+		EquipmentItemModelID: 304,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fuelItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: container.ID, ContentItemModelID: 7, Count: 40})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelFuelTransfer(1, "session-1", 8, world.ControlPanelFuelTransfer{
+		ContainerEquipmentGroupID: container.ID,
+		FuelTankEquipmentGroupID:  fuelTank.ID,
+		ItemGroupIDs:              []int64{fuelItem.ID},
+		Amount:                    12,
+	}); err != nil {
+		t.Fatalf("fuel transfer returned error: %v", err)
+	}
+
+	if cosmicObject.Fuel != 32 {
+		t.Fatalf("object fuel = %v, want 32", cosmicObject.Fuel)
+	}
+	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
+	if len(items) != 1 || items[0].Count != 28 {
+		t.Fatalf("container fuel item was not reduced by requested amount: %+v", items)
+	}
+}
+
+func TestApplyControlPanelFuelTransferDrainsObjectFuelToContainer(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
+	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemtypeID: 7}
+	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemtypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	cosmicObject.Fuel = 20
+	cosmicObject.MaxFuel = 50
+	var container *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			container = group
+			break
+		}
+	}
+	if container == nil {
+		t.Fatalf("container was not installed")
+	}
+	fuelTank, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Fuel Tank",
+		EquipmentItemModelID: 304,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelFuelTransfer(1, "session-1", 7, world.ControlPanelFuelTransfer{
+		ContainerEquipmentGroupID: container.ID,
+		FuelTankEquipmentGroupID:  fuelTank.ID,
+		Amount:                    12,
+	}); err != nil {
+		t.Fatalf("fuel drain returned error: %v", err)
+	}
+
+	if cosmicObject.Fuel != 8 {
+		t.Fatalf("object fuel = %v, want 8", cosmicObject.Fuel)
+	}
+	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
+	if len(items) != 1 || items[0].ContentItemModelID != 7 || items[0].Count != 12 {
+		t.Fatalf("container fuel item was not created: %+v", items)
+	}
+}
+
 func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)

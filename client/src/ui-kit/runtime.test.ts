@@ -79,6 +79,26 @@ describe("GameUiRuntime", () => {
     expect(runtime.pointerUp(10, 10, 0)).toEqual({ type: "click", controlId: "ok", kind: "button", x: 10, y: 10, controlRect: { left: 0, top: 0, width: 100, height: 40 } });
   });
 
+  // Проверяет, что слайдер внутри модального окна получает перетаскивание поверх фонового слоя.
+  it("emits drag start for slider inside modal bounds", () => {
+    const runtime = new GameUiRuntime();
+
+    runtime.updateControls([
+      control({ id: "behind", zIndex: 1, rect: { left: 0, top: 0, width: 240, height: 180 } }),
+      control({ id: "modal", kind: "modal", zIndex: 10, rect: { left: 40, top: 40, width: 160, height: 100 }, focusable: false }),
+      control({ id: "modal-slider", kind: "slider", zIndex: 11, rect: { left: 60, top: 90, width: 100, height: 20 } }),
+    ]);
+
+    expect(runtime.pointerDown(110, 100, 0)).toEqual({
+      type: "dragStart",
+      controlId: "modal-slider",
+      kind: "slider",
+      x: 110,
+      y: 100,
+      controlRect: { left: 60, top: 90, width: 100, height: 20 },
+    });
+  });
+
   // Проверяет, что клик мимо контролов отдаёт действие закрытия для раскрытых overlay-контролов.
   it("emits cancel when pressing outside controls", () => {
     const runtime = new GameUiRuntime();

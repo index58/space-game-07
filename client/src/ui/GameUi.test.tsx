@@ -142,6 +142,16 @@ const state = (): GameUiState => ({
   openControlPanelUsageSelect: null,
   selectedControlPanelUsageLeftItemGroupIds: [],
   selectedControlPanelUsageRightItemGroupIds: [],
+  controlPanelFuelDrainDialogOpen: false,
+  controlPanelFuelFillDialogOpen: false,
+  controlPanelContainerTransferDialogOpen: false,
+  controlPanelContainerTransferMaxAmount: 0,
+  controlPanelFuelFillMaxAmount: 0,
+  controlPanelFuelDrainAmount: 0,
+  controlPanelFuelDrainAmountText: "0",
+  controlPanelFuelDrainAmountSelectionStart: 1,
+  controlPanelFuelDrainAmountSelectionEnd: 1,
+  controlPanelFuelDrainAmountFocused: false,
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
@@ -621,6 +631,144 @@ describe("GameUi", () => {
     expect(Array.from(root.querySelectorAll(".control-panel-container-content .ui-kit-list__item.is-selected")).map((row) => row.textContent)).toEqual(["Руда7", "Руда3"]);
     expect(root.querySelector("#control-panel-container-transfer-to-right")?.getAttribute("aria-label")).toBe("Переместить выбранные предметы в правый контейнер");
     expect(root.querySelector("#control-panel-container-transfer-to-left")?.getAttribute("aria-label")).toBe("Переместить выбранные предметы в левый контейнер");
+  });
+
+  // Проверяет, что выбранный топливный бак в правой панели использования показывает шкалу общего топлива объекта.
+  it("renders control panel equipment usage fuel tank UI", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const equipmentReferenceData = {
+      ...referenceData,
+      Itemtype: {
+        MaxID: 3,
+        Items: {
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "FuelTank", IsPilotInstrument: false, IsInternalUsable: true },
+          "3": { ID: 3, Acronym: "Resource", IsPilotInstrument: false, IsInternalUsable: false },
+        },
+      },
+      ItemModel: {
+        MaxID: 3,
+        Items: {
+          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemtypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
+          "3": { ID: 3, ItemtypeID: 3, Acronym: "Melit", TitleRu: "Мелит" },
+        },
+      },
+    } as unknown as ReferenceDataMessage;
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      selfObject: { ...object(), Fuel: 40, MaxFuel: 100 },
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageLeftContainerGroupId: 10,
+      selectedControlPanelUsageRightEquipmentGroupId: 11,
+      selectedControlPanelUsageLeftItemGroupIds: [1],
+      controlPanelFuelDrainDialogOpen: true,
+      controlPanelFuelDrainAmount: 12,
+      controlPanelFuelDrainAmountText: "12",
+      controlPanelFuelDrainAmountSelectionStart: 2,
+      controlPanelFuelDrainAmountSelectionEnd: 2,
+      referenceData: equipmentReferenceData,
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 1, Title: "Склад", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 11, CosmicObjectID: 1, Title: "Основной бак", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+      itemGroups: [
+        { ID: 1, ContainerEquipmentGroupID: 10, ContentItemModelID: 3, Count: 70 },
+      ],
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-usage-right-equipment-select .ui-kit-dropdown__value")?.textContent).toBe("Основной бак");
+    expect(root.querySelector(".control-panel-fuel-tank__label")?.textContent).toBe("40 / 100");
+    expect((root.querySelector(".control-panel-fuel-tank__fill") as HTMLElement | null)?.style.height).toBe("40%");
+    expect(root.querySelector("#control-panel-fuel-transfer-to-tank")?.getAttribute("aria-label")).toBe("Переместить выбранное топливо в топливный бак");
+    expect(root.querySelector("#control-panel-fuel-drain-open")?.getAttribute("aria-label")).toBe("Слить топливо в левый контейнер");
+    expect(root.querySelector("#control-panel-fuel-drain-dialog .control-panel-fuel-drain-dialog__title")?.textContent).toBe("Слив топлива");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-input .ui-kit-text-input__text")?.textContent).toBe("12");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-slider .ui-kit-slider__fill")).not.toBeNull();
+    expect(root.querySelector("#control-panel-fuel-drain-ok")?.textContent).toBe("ОК");
+  });
+
+  // Проверяет, что топливный бак показывает окно выбора количества для залива топлива.
+  it("renders fuel fill amount dialog for selected fuel tank", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const equipmentReferenceData = {
+      ...referenceData,
+      Itemtype: {
+        MaxID: 3,
+        Items: {
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "FuelTank", IsPilotInstrument: false, IsInternalUsable: true },
+          "3": { ID: 3, Acronym: "Resource", IsPilotInstrument: false, IsInternalUsable: false },
+        },
+      },
+      ItemModel: {
+        MaxID: 3,
+        Items: {
+          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemtypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
+          "3": { ID: 3, ItemtypeID: 3, Acronym: "Melit", TitleRu: "Мелит" },
+        },
+      },
+    } as unknown as ReferenceDataMessage;
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      selfObject: { ...object(), Fuel: 40, MaxFuel: 100 },
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageLeftContainerGroupId: 10,
+      selectedControlPanelUsageRightEquipmentGroupId: 11,
+      selectedControlPanelUsageLeftItemGroupIds: [1],
+      controlPanelFuelFillDialogOpen: true,
+      controlPanelFuelFillMaxAmount: 30,
+      controlPanelFuelDrainAmount: 18,
+      controlPanelFuelDrainAmountText: "18",
+      controlPanelFuelDrainAmountSelectionStart: 2,
+      controlPanelFuelDrainAmountSelectionEnd: 2,
+      referenceData: equipmentReferenceData,
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 1, Title: "Склад", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 11, CosmicObjectID: 1, Title: "Основной бак", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+      itemGroups: [
+        { ID: 1, ContainerEquipmentGroupID: 10, ContentItemModelID: 3, Count: 70 },
+      ],
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-fuel-fill-dialog .control-panel-fuel-drain-dialog__title")?.textContent).toBe("Залив топлива");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-input .ui-kit-text-input__text")?.textContent).toBe("18");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-slider .ui-kit-slider__fill")).not.toBeNull();
+    expect(root.querySelector("#control-panel-fuel-fill-ok")?.textContent).toBe("ОК");
+  });
+
+  // Проверяет, что контейнерный перенос одной строки показывает окно выбора количества.
+  it("renders container transfer amount dialog", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      controlPanelContainerTransferDialogOpen: true,
+      controlPanelContainerTransferMaxAmount: 7,
+      controlPanelFuelDrainAmount: 3,
+      controlPanelFuelDrainAmountText: "3",
+      controlPanelFuelDrainAmountSelectionStart: 1,
+      controlPanelFuelDrainAmountSelectionEnd: 1,
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-container-transfer-dialog .control-panel-fuel-drain-dialog__title")?.textContent).toBe("Перенос предметов");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-input .ui-kit-text-input__text")?.textContent).toBe("3");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-slider .ui-kit-slider__fill")).not.toBeNull();
+    expect(root.querySelector("#control-panel-container-transfer-ok")?.textContent).toBe("ОК");
   });
 
   // Проверяет, что будущие вкладки панели управления уже переключают пустую страницу.

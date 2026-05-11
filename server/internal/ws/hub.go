@@ -145,6 +145,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeControlPanelContainerTransferMessage(payload); ok {
 				hub.handleControlPanelContainerTransfer(client, message)
 			}
+			if message, ok := DecodeControlPanelFuelTransferMessage(payload); ok {
+				hub.handleControlPanelFuelTransfer(client, message)
+			}
 			continue
 		}
 
@@ -184,6 +187,7 @@ func (hub *Hub) handleControlPanelContainerTransfer(client *Client, message Cont
 		SourceContainerEquipmentGroupID: message.SourceContainerEquipmentGroupID,
 		TargetContainerEquipmentGroupID: message.TargetContainerEquipmentGroupID,
 		ItemGroupIDs:                    message.ItemGroupIDs,
+		Amount:                          message.Amount,
 	})
 	if err != nil {
 		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
@@ -191,6 +195,20 @@ func (hub *Hub) handleControlPanelContainerTransfer(client *Client, message Cont
 }
 
 // setClientMutationSession запоминает сессию команд панели под mutex диспетчера.
+// handleControlPanelFuelTransfer применяет перенос топлива или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelFuelTransfer(client *Client, message ControlPanelFuelTransferMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelFuelTransfer(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelFuelTransfer{
+		ContainerEquipmentGroupID: message.ContainerEquipmentGroupID,
+		FuelTankEquipmentGroupID:  message.FuelTankEquipmentGroupID,
+		ItemGroupIDs:              message.ItemGroupIDs,
+		Amount:                    message.Amount,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
 func (hub *Hub) setClientMutationSession(client *Client, sessionID string) {
 	hub.mu.Lock()
 	defer hub.mu.Unlock()

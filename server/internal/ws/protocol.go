@@ -91,9 +91,20 @@ type ControlPanelContainerTransferMessage struct {
 	SourceContainerEquipmentGroupID int64   `json:"sourceContainerEquipmentGroupId"` // Контейнер, из которого нужно забрать выбранное содержимое.
 	TargetContainerEquipmentGroupID int64   `json:"targetContainerEquipmentGroupId"` // Контейнер, в который нужно переложить выбранное содержимое.
 	ItemGroupIDs                    []int64 `json:"itemGroupIds"`                    // Группы предметов, выбранные для переноса.
+	Amount                          float64 `json:"amount,omitempty"`                // Количество предметов для частичного переноса одной выбранной группы.
 }
 
 // ControlPanelErrorMessage передает отказ команды панели управления.
+// ControlPanelFuelTransferMessage передает перенос топлива между контейнером и баком объекта.
+type ControlPanelFuelTransferMessage struct {
+	Type string `json:"type"` // Вид команды для маршрутизации переноса топлива.
+	ControlPanelMutationMessage
+	ContainerEquipmentGroupID int64   `json:"containerEquipmentGroupId"` // Контейнер, из которого берется или куда сливается топливо.
+	FuelTankEquipmentGroupID  int64   `json:"fuelTankEquipmentGroupId"`  // Топливный бак, с которым работает игрок.
+	ItemGroupIDs              []int64 `json:"itemGroupIds"`              // Группы топлива, выбранные для заливки.
+	Amount                    float64 `json:"amount,omitempty"`          // Количество топлива для слива из бака.
+}
+
 type ControlPanelErrorMessage struct {
 	Type            string `json:"type"`            // Вид пакета для клиентского маршрутизатора.
 	ClientSessionID string `json:"clientSessionId"` // Сессия, команда которой была отклонена.
@@ -220,6 +231,20 @@ func DecodeControlPanelContainerTransferMessage(payload []byte) (ControlPanelCon
 }
 
 // Сериализует снимок мира в формат WebSocket-сообщения.
+// DecodeControlPanelFuelTransferMessage разбирает клиентский JSON и пропускает только команды переноса топлива.
+func DecodeControlPanelFuelTransferMessage(payload []byte) (ControlPanelFuelTransferMessage, bool) {
+	var message ControlPanelFuelTransferMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelFuelTransferMessage{}, false
+	}
+
+	if message.Type != "controlPanelFuelTransfer" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.ContainerEquipmentGroupID <= 0 || message.FuelTankEquipmentGroupID <= 0 || (len(message.ItemGroupIDs) == 0 && message.Amount <= 0) {
+		return ControlPanelFuelTransferMessage{}, false
+	}
+
+	return message, true
+}
+
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
 }

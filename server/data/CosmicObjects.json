@@ -15,7 +15,7 @@
       "MaxAngularSpeed": 3,
       "X": -182.64227412890855,
       "Y": 177.08177999646134,
-      "Rotation": -5.016259769589412,
+      "Rotation": -4.918759769589415,
       "Armor": 2436,
       "MaxAlongForce": 2200000,
       "MaxAcrossForce": 2200000,
@@ -31,12 +31,12 @@
       "Complexity": 26305,
       "OccupiedVolume": 190,
       "MaxFuel": 7500,
-      "Fuel": 7498.468750000002,
+      "Fuel": 7497.852083333348,
       "Speed": 0,
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -5.016259769589412
+      "TargetRotation": -4.918759769589415
     },
     "2": {
       "ID": 2,

@@ -667,12 +667,21 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                             selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
                             options={usageInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
                           />
-                          <Show when={isContainerEquipment(usageRightEquipment(), props.state()) ? usageRightEquipment() : null} fallback={<div class="control-panel-empty-page" />}>
+                          <Show when={isFuelTankEquipment(usageRightEquipment(), props.state())}>
+                            <div class="control-panel-equipment-usage-container">
+                              <div class="control-panel-equipment-usage-container__actions">
+                                <Button id="control-panel-fuel-drain-open" label="<" ariaLabel="Слить топливо в левый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
+                                <Button id="control-panel-fuel-transfer-to-tank" label=">" ariaLabel="Переместить выбранное топливо в топливный бак" state={usageLeftContainer() && props.state().selectedControlPanelUsageLeftItemGroupIds.length > 0 ? "normal" : "disabled"} />
+                              </div>
+                              <ControlPanelFuelTank object={props.state().selfObject} />
+                            </div>
+                          </Show>
+                          <Show when={!isFuelTankEquipment(usageRightEquipment(), props.state()) && isContainerEquipment(usageRightEquipment(), props.state()) ? usageRightEquipment() : null} fallback={<Show when={!isFuelTankEquipment(usageRightEquipment(), props.state())}><div class="control-panel-empty-page" /></Show>}>
                             {(equipment) => (
                               <div class="control-panel-equipment-usage-container">
                                 <div class="control-panel-equipment-usage-container__actions">
-                                  <Button id="control-panel-container-transfer-to-right" label=">" ariaLabel="Переместить выбранные предметы в правый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
                                   <Button id="control-panel-container-transfer-to-left" label="<" ariaLabel="Переместить выбранные предметы в левый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
+                                  <Button id="control-panel-container-transfer-to-right" label=">" ariaLabel="Переместить выбранные предметы в правый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
                                 </div>
                                 <ControlPanelContainerContent
                                   listId="control-panel-usage-right-container-content"
@@ -701,6 +710,48 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                 <div class="control-panel-empty-page" />
               </Match>
             </Switch>
+            <Show when={props.state().controlPanelFuelDrainDialogOpen}>
+              <ControlPanelFuelAmountDialog
+                id="control-panel-fuel-drain-dialog"
+                title="Слив топлива"
+                okId="control-panel-fuel-drain-ok"
+                cancelId="control-panel-fuel-drain-cancel"
+                amount={props.state().controlPanelFuelDrainAmount}
+                maxAmount={props.state().selfObject?.Fuel ?? 0}
+                text={props.state().controlPanelFuelDrainAmountText}
+                selectionStart={props.state().controlPanelFuelDrainAmountSelectionStart}
+                selectionEnd={props.state().controlPanelFuelDrainAmountSelectionEnd}
+                focused={props.state().controlPanelFuelDrainAmountFocused}
+              />
+            </Show>
+            <Show when={props.state().controlPanelFuelFillDialogOpen}>
+              <ControlPanelFuelAmountDialog
+                id="control-panel-fuel-fill-dialog"
+                title="Залив топлива"
+                okId="control-panel-fuel-fill-ok"
+                cancelId="control-panel-fuel-fill-cancel"
+                amount={props.state().controlPanelFuelDrainAmount}
+                maxAmount={props.state().controlPanelFuelFillMaxAmount}
+                text={props.state().controlPanelFuelDrainAmountText}
+                selectionStart={props.state().controlPanelFuelDrainAmountSelectionStart}
+                selectionEnd={props.state().controlPanelFuelDrainAmountSelectionEnd}
+                focused={props.state().controlPanelFuelDrainAmountFocused}
+              />
+            </Show>
+            <Show when={props.state().controlPanelContainerTransferDialogOpen}>
+              <ControlPanelFuelAmountDialog
+                id="control-panel-container-transfer-dialog"
+                title="Перенос предметов"
+                okId="control-panel-container-transfer-ok"
+                cancelId="control-panel-container-transfer-cancel"
+                amount={props.state().controlPanelFuelDrainAmount}
+                maxAmount={props.state().controlPanelContainerTransferMaxAmount}
+                text={props.state().controlPanelFuelDrainAmountText}
+                selectionStart={props.state().controlPanelFuelDrainAmountSelectionStart}
+                selectionEnd={props.state().controlPanelFuelDrainAmountSelectionEnd}
+                focused={props.state().controlPanelFuelDrainAmountFocused}
+              />
+            </Show>
           </div>
         </Modal>
       </GameWindowLayer>
@@ -717,6 +768,40 @@ const ControlPanelContainerContent = (props: { listId: string; rows: ControlPane
       selectedValues={props.selectedIds.map(String)}
       items={props.rows.map((row) => ({ value: String(row.id), label: row.title, secondaryLabel: row.count }))}
     />
+  </div>
+);
+
+// Показывает общий запас топлива объекта в виде вертикального бака.
+const ControlPanelFuelTank = (props: { object: { Fuel: number; MaxFuel: number } | null }) => {
+  const fuel = () => props.object?.Fuel ?? 0;
+  const maxFuel = () => props.object?.MaxFuel ?? 0;
+  const percent = () => `${clampNumber(maxFuel() > 0 ? fuel() / maxFuel() * 100 : 0, 0, 100)}%`;
+  return (
+    <div class="control-panel-fuel-tank">
+      <div class="control-panel-fuel-tank__fill" style={{ height: percent() }} />
+      <div class="control-panel-fuel-tank__label">{formatPair(fuel(), maxFuel())}</div>
+    </div>
+  );
+};
+
+// Показывает подтверждение переноса топлива с максимальным доступным количеством.
+const ControlPanelFuelAmountDialog = (props: { id: string; title: string; okId: string; cancelId: string; amount: number; maxAmount: number; text: string; selectionStart: number; selectionEnd: number; focused: boolean }) => (
+  <div id={props.id} data-ui-kind="modal" class="ui-kit-control control-panel-fuel-drain-dialog">
+    <div class="control-panel-fuel-drain-dialog__title">{props.title}</div>
+    <div class="control-panel-fuel-drain-dialog__amount">
+      <TextInput
+        id="control-panel-fuel-drain-amount-input"
+        text={props.text}
+        selectionStart={props.selectionStart}
+        selectionEnd={props.selectionEnd}
+        focused={props.focused}
+      />
+      <Slider id="control-panel-fuel-drain-amount-slider" value={props.amount} min={0} max={Math.max(1, props.maxAmount)} />
+    </div>
+    <div class="control-panel-fuel-drain-dialog__actions">
+      <Button id={props.okId} label="ОК" />
+      <Button id={props.cancelId} label="Отмена" />
+    </div>
   </div>
 );
 
@@ -797,6 +882,14 @@ const isContainerEquipment = (equipment: ControlPanelEquipmentView | null, state
   }
   const itemtype = state.referenceData?.Itemtype.Items[String(equipment.itemModel?.ItemtypeID)];
   return itemtype?.Acronym === "Container";
+};
+
+const isFuelTankEquipment = (equipment: ControlPanelEquipmentView | null, state: GameUiState): boolean => {
+  if (!equipment) {
+    return false;
+  }
+  const itemtype = state.referenceData?.Itemtype.Items[String(equipment.itemModel?.ItemtypeID)];
+  return itemtype?.Acronym === "FuelTank";
 };
 
 const getControlPanelContainerContentRows = (itemGroups: ItemGroup[], itemModels: Record<string, ItemModelReference> | undefined, containerGroupId: number): ControlPanelContainerContentRow[] =>

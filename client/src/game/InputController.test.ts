@@ -840,6 +840,29 @@ describe("InputController", () => {
   });
 
   // Проверяет, что общий крестик модального окна закрывает активное окно без передачи клика в демо-контролы.
+  // Проверяет, что клик HUD передаёт Ctrl и Shift для множественного выбора списков.
+  it("queues game UI click with keyboard modifiers", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.updateGameUiControls([{
+      id: "demo-list-1",
+      kind: "list",
+      rect: { left: 500, top: 370, width: 60, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: "1",
+    }]);
+
+    pressKey("F9", "F9");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0, ctrlKey: true, shiftKey: true }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0, ctrlKey: true, shiftKey: true }));
+
+    expect(controller.consumeGameUiAction()).toMatchObject({ type: "click", controlId: "demo-list-1", ctrlKey: true, shiftKey: true });
+  });
+
   it("closes modal window from shared close button", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
@@ -958,6 +981,41 @@ describe("InputController", () => {
   });
 
   // Проверяет, что клик по полю названия объекта ставит каретку в позицию под игровым курсором.
+  // Проверяет, что поле количества слива топлива получает native-фокус и отдаёт введённое число.
+  it("edits control panel fuel drain amount through hidden native textarea", async () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.setControlPanelFuelDrainAmount(40);
+    controller.updateGameUiControls([{
+      id: "control-panel-fuel-drain-amount-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+    const textarea = document.querySelector<HTMLTextAreaElement>("[data-ui-kit-edit-id='control-panel-fuel-drain-amount-input']");
+    if (!textarea) {
+      throw new Error("Нативное поле количества слива топлива не создано.");
+    }
+
+    textarea.value = "12";
+    textarea.setSelectionRange(2, 2);
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    await waitForNativeEditSync();
+
+    expect(controller.getControlPanelFuelDrainAmount()).toBe(12);
+    expect(controller.getControlPanelFuelDrainAmountEditState().focused).toBe(true);
+    expect(controller.getControlPanelFuelDrainAmountEditState().selectionStart).toBe(2);
+  });
+
   it("places control panel object title caret by mouse click", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);

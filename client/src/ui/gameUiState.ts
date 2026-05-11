@@ -73,6 +73,26 @@ export type GameUiState = {
   // ID выбранных строк содержимого правого контейнера.
   selectedControlPanelUsageRightItemGroupIds: number[];
   // Черновики признака включения групп оборудования по ID группы.
+  // Показывает окно подтверждения слива топлива из бака.
+  controlPanelFuelDrainDialogOpen: boolean;
+  // Показывает окно подтверждения залива топлива в бак.
+  controlPanelFuelFillDialogOpen: boolean;
+  // Показывает окно подтверждения частичного переноса предметов между контейнерами.
+  controlPanelContainerTransferDialogOpen: boolean;
+  // Максимальное количество предметов для частичного переноса между контейнерами.
+  controlPanelContainerTransferMaxAmount: number;
+  // Максимальное количество топлива, доступное для залива в бак.
+  controlPanelFuelFillMaxAmount: number;
+  // Количество топлива, выбранное для слива из бака.
+  controlPanelFuelDrainAmount: number;
+  // Текст количества топлива в поле слива из бака.
+  controlPanelFuelDrainAmountText: string;
+  // Начало выделения в поле количества слива топлива.
+  controlPanelFuelDrainAmountSelectionStart: number;
+  // Конец выделения в поле количества слива топлива.
+  controlPanelFuelDrainAmountSelectionEnd: number;
+  // Признак активного фокуса поля количества слива топлива.
+  controlPanelFuelDrainAmountFocused: boolean;
   controlPanelEquipmentEnabledDrafts: Record<number, boolean>;
   // Черновики количества включенных единиц оборудования по ID группы.
   controlPanelEquipmentEnabledCountDrafts: Record<number, number>;
@@ -149,6 +169,16 @@ const initialGameUiState: GameUiState = {
   openControlPanelUsageSelect: null,
   selectedControlPanelUsageLeftItemGroupIds: [],
   selectedControlPanelUsageRightItemGroupIds: [],
+  controlPanelFuelDrainDialogOpen: false,
+  controlPanelFuelFillDialogOpen: false,
+  controlPanelContainerTransferDialogOpen: false,
+  controlPanelContainerTransferMaxAmount: 0,
+  controlPanelFuelFillMaxAmount: 0,
+  controlPanelFuelDrainAmount: 0,
+  controlPanelFuelDrainAmountText: "0",
+  controlPanelFuelDrainAmountSelectionStart: 1,
+  controlPanelFuelDrainAmountSelectionEnd: 1,
+  controlPanelFuelDrainAmountFocused: false,
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
