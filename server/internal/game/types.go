@@ -56,6 +56,7 @@ type Snapshot struct {
 	SelfObjectID      int64                 `json:"selfObjectId"`                // Управляемый объект получателя снимка.
 	Objects           []data.CosmicObject   `json:"objects"`                     // Объекты мира, видимые клиенту в текущем снимке.
 	EquipmentGroups   []data.EquipmentGroup `json:"equipmentGroups"`             // Группы оборудования, нужные UI для панели пилота.
+	ItemGroups        []data.ItemGroup      `json:"itemGroups"`                  // Группы предметов, лежащие внутри контейнерного оборудования.
 	ClientMutationAck *ClientMutationAck    `json:"clientMutationAck,omitempty"` // Подтверждение обработанных команд панели для текущей сессии клиента.
 }
 

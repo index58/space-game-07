@@ -8,6 +8,7 @@
   ClientInputState,
   ConnectionStatus,
   ControlPanelEquipmentUpdateMessage,
+  ControlPanelContainerTransferMessage,
   ControlPanelErrorMessage,
   ControlPanelMutationRef,
   ControlPanelObjectUpdateMessage,
@@ -427,6 +428,24 @@ export class GameClient {
       clientSessionId: this.clientSessionId,
       mutationSeq: mutation.seq,
       ...update,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
+  }
+
+  // Отправляет перенос содержимого между контейнерами панели управления.
+  sendControlPanelContainerTransfer(transfer: Omit<ControlPanelContainerTransferMessage, "type" | "clientSessionId" | "mutationSeq">): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelContainerTransferMessage = {
+      type: "controlPanelContainerTransfer",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...transfer,
     };
 
     this.socket.send(JSON.stringify(payload));

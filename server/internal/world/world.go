@@ -70,6 +70,13 @@ type ControlPanelEquipmentUpdate struct {
 	EnabledCount     *int64 // Новое количество включенных единиц, если оно меняется.
 }
 
+// ControlPanelContainerTransfer описывает перенос предметов между контейнерами текущего объекта.
+type ControlPanelContainerTransfer struct {
+	SourceContainerEquipmentGroupID int64   // Группа контейнеров, из которой переносятся все предметы.
+	TargetContainerEquipmentGroupID int64   // Группа контейнеров, в которую переносятся все предметы.
+	ItemGroupIDs                    []int64 // Группы предметов, выбранные для переноса.
+}
+
 // Создает мир поверх уже загруженных серверных данных.
 func New(seed int64, serverData Data) *World {
 	created := &World{
@@ -310,6 +317,88 @@ func (world *World) ApplyControlPanelEquipmentUpdate(accountID int64, sessionID 
 	}
 	world.ackMutationLocked(accountID, sessionID, mutationSeq)
 	return nil
+}
+
+// ApplyControlPanelContainerTransfer переносит всё содержимое из одного контейнера текущего объекта в другой.
+func (world *World) ApplyControlPanelContainerTransfer(accountID int64, sessionID string, mutationSeq int64, transfer ControlPanelContainerTransfer) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	if world.data.EquipmentGroups == nil {
+		return errors.New("equipment groups are not loaded")
+	}
+	if world.data.ItemGroups == nil {
+		return errors.New("item groups are not loaded")
+	}
+	source, err := world.controlledContainerEquipmentLocked(objectID, transfer.SourceContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	target, err := world.controlledContainerEquipmentLocked(objectID, transfer.TargetContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	if source.ID == target.ID {
+		return errors.New("source and target containers must be different")
+	}
+
+	targetByModel := make(map[int64]*data.ItemGroup)
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(target.ID) {
+		targetByModel[itemGroup.ContentItemModelID] = itemGroup
+	}
+	for _, itemGroupID := range transfer.ItemGroupIDs {
+		itemGroup, ok := world.data.ItemGroups.Get(itemGroupID)
+		if !ok {
+			return errors.New("item group not found")
+		}
+		if itemGroup.ContainerEquipmentGroupID != source.ID {
+			return errors.New("item group does not belong to source container")
+		}
+		if existing := targetByModel[itemGroup.ContentItemModelID]; existing != nil {
+			existing.Count += itemGroup.Count
+			delete(world.data.ItemGroups.Items, itemGroup.ID)
+			continue
+		}
+		itemGroup.ContainerEquipmentGroupID = target.ID
+		targetByModel[itemGroup.ContentItemModelID] = itemGroup
+	}
+	if err := world.data.ItemGroups.RebuildIndexes(); err != nil {
+		return err
+	}
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
+}
+
+// controlledContainerEquipmentLocked возвращает контейнер текущего объекта; вызывается только под mutex.
+func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID int64) (*data.EquipmentGroup, error) {
+	group, ok := world.data.EquipmentGroups.Get(groupID)
+	if !ok {
+		return nil, errors.New("equipment group not found")
+	}
+	if group.CosmicObjectID != objectID {
+		return nil, errors.New("equipment group does not belong to controlled object")
+	}
+	if !world.equipmentGroupIsContainerLocked(group) {
+		return nil, errors.New("equipment group is not a container")
+	}
+	return group, nil
+}
+
+// equipmentGroupIsContainerLocked проверяет тип установленного предмета; вызывается только под mutex.
+func (world *World) equipmentGroupIsContainerLocked(group *data.EquipmentGroup) bool {
+	if group == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil {
+		return false
+	}
+	model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+	if !ok {
+		return false
+	}
+	itemtype, ok := world.data.Itemtypes.Get(model.ItemtypeID)
+	return ok && itemtype.Acronym == "Container"
 }
 
 // Выполняет один шаг симуляции и возвращает общий снимок мира.
@@ -822,12 +911,31 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		}
 	}
 
+	itemGroups := make([]data.ItemGroup, 0)
+	if world.data.ItemGroups != nil {
+		itemGroupIDs := make([]int64, 0, len(world.data.ItemGroups.Items))
+		for itemGroupID := range world.data.ItemGroups.Items {
+			itemGroupIDs = append(itemGroupIDs, itemGroupID)
+		}
+		sort.Slice(itemGroupIDs, func(left int, right int) bool {
+			return itemGroupIDs[left] < itemGroupIDs[right]
+		})
+		for _, itemGroupID := range itemGroupIDs {
+			itemGroup, ok := world.data.ItemGroups.Get(itemGroupID)
+			if !ok {
+				continue
+			}
+			itemGroups = append(itemGroups, *itemGroup)
+		}
+	}
+
 	return game.Snapshot{
 		Type:            "snapshot",
 		Tick:            world.tick,
 		SelfObjectID:    selfObjectID,
 		Objects:         objects,
 		EquipmentGroups: equipmentGroups,
+		ItemGroups:      itemGroups,
 	}
 }
 
@@ -944,7 +1052,7 @@ func (world *World) installEquipmentFromAssembly(cosmicObjectID int64, assembly 
 	return nil
 }
 
-// Заполняет новый корабль топливом и кладет боеприпасы в установленные контейнеры.
+// Заполняет новый корабль топливом и кладет образцы предметов в первый контейнер.
 func (world *World) fillShipSupplies(cosmicObject *data.CosmicObject) {
 	if cosmicObject == nil {
 		return
@@ -960,7 +1068,6 @@ func (world *World) fillShipSupplies(cosmicObject *data.CosmicObject) {
 	}
 
 	containerIDs := make([]int64, 0)
-	ammoByModelID := make(map[int64]float64)
 	for _, group := range world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID) {
 		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
 		if !ok {
@@ -969,11 +1076,8 @@ func (world *World) fillShipSupplies(cosmicObject *data.CosmicObject) {
 		if model.ItemtypeID == containerType.ID {
 			containerIDs = append(containerIDs, group.ID)
 		}
-		if model.AmmoItemModelID > 0 && model.FiringRate > 0 && group.Count > 0 {
-			ammoByModelID[model.AmmoItemModelID] += float64(group.Count) * model.FiringRate * 15 * 60
-		}
 	}
-	if len(containerIDs) == 0 || len(ammoByModelID) == 0 {
+	if len(containerIDs) == 0 {
 		return
 	}
 	sort.Slice(containerIDs, func(left int, right int) bool {
@@ -981,18 +1085,40 @@ func (world *World) fillShipSupplies(cosmicObject *data.CosmicObject) {
 	})
 	world.data.ItemGroups.DeleteByContainerEquipmentGroupIDs(containerIDs)
 
-	ammoModelIDs := make([]int64, 0, len(ammoByModelID))
-	for ammoModelID := range ammoByModelID {
-		ammoModelIDs = append(ammoModelIDs, ammoModelID)
-	}
-	sort.Slice(ammoModelIDs, func(left int, right int) bool {
-		return ammoModelIDs[left] < ammoModelIDs[right]
-	})
-	for _, ammoModelID := range ammoModelIDs {
+	sampleModelIDs := world.firstItemModelIDsByType()
+	for _, itemModelID := range sampleModelIDs {
 		_, _ = world.data.ItemGroups.Add(&data.ItemGroup{
 			ContainerEquipmentGroupID: containerIDs[0],
-			ContentItemModelID:        ammoModelID,
-			Count:                     math.Ceil(ammoByModelID[ammoModelID]),
+			ContentItemModelID:        itemModelID,
+			Count:                     10,
 		})
 	}
+}
+
+// Возвращает первую модель предмета каждого типа в стабильном порядке типов.
+func (world *World) firstItemModelIDsByType() []int64 {
+	firstByType := make(map[int64]int64)
+	for itemModelID, model := range world.data.ItemModels.Items {
+		if model == nil || model.ItemtypeID <= 0 {
+			continue
+		}
+		current, ok := firstByType[model.ItemtypeID]
+		if !ok || itemModelID < current {
+			firstByType[model.ItemtypeID] = itemModelID
+		}
+	}
+
+	typeIDs := make([]int64, 0, len(firstByType))
+	for itemtypeID := range firstByType {
+		typeIDs = append(typeIDs, itemtypeID)
+	}
+	sort.Slice(typeIDs, func(left int, right int) bool {
+		return typeIDs[left] < typeIDs[right]
+	})
+
+	result := make([]int64, 0, len(typeIDs))
+	for _, itemtypeID := range typeIDs {
+		result = append(result, firstByType[itemtypeID])
+	}
+	return result
 }

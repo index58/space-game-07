@@ -94,6 +94,16 @@ export class GameScene extends Phaser.Scene {
   private selectedControlPanelEquipmentTab: ControlPanelEquipmentSubTabValue = "setup";
   // ID выбранной группы оборудования в панели управления.
   private selectedControlPanelEquipmentGroupId: number | null = null;
+  // ID контейнера в левой панели использования оборудования.
+  private selectedControlPanelUsageLeftContainerGroupId: number | null = null;
+  // ID оборудования в правой панели использования оборудования.
+  private selectedControlPanelUsageRightEquipmentGroupId: number | null = null;
+  // Открытый выпадающий список использования оборудования.
+  private openControlPanelUsageSelect: "left" | "right" | null = null;
+  // Выбранные строки содержимого левого контейнера.
+  private selectedControlPanelUsageLeftItemGroupIds: number[] = [];
+  // Выбранные строки содержимого правого контейнера.
+  private selectedControlPanelUsageRightItemGroupIds: number[] = [];
   // Ожидающие подтверждения сервером изменения панели управления.
   private controlPanelPending: ControlPanelPendingState = emptyControlPanelPendingState();
   // Последний обработанный номер ошибки панели управления.
@@ -206,6 +216,7 @@ export class GameScene extends Phaser.Scene {
         selfObject: null,
         objects: snapshot?.objects ?? [],
         equipmentGroups: effectiveEquipmentGroups,
+        itemGroups: snapshot?.itemGroups ?? [],
         selectedPilotToolIndex: this.selectedPilotToolIndex,
         referenceData: this.referenceData,
         textureFilePath: null,
@@ -227,6 +238,11 @@ export class GameScene extends Phaser.Scene {
         selectedControlPanelTab: this.selectedControlPanelTab,
         selectedControlPanelEquipmentTab: this.selectedControlPanelEquipmentTab,
         selectedControlPanelEquipmentGroupId: this.selectedControlPanelEquipmentGroupId,
+        selectedControlPanelUsageLeftContainerGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
+        selectedControlPanelUsageRightEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+        openControlPanelUsageSelect: this.openControlPanelUsageSelect,
+        selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
+        selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
         controlPanelEquipmentEnabledDrafts: {},
         controlPanelEquipmentEnabledCountDrafts: {},
         controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
@@ -261,6 +277,7 @@ export class GameScene extends Phaser.Scene {
       selfObject,
       objects: snapshot.objects,
       equipmentGroups: effectiveEquipmentGroups,
+      itemGroups: snapshot.itemGroups ?? [],
       selectedPilotToolIndex: this.selectedPilotToolIndex,
       referenceData: this.referenceData,
       textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
@@ -282,6 +299,11 @@ export class GameScene extends Phaser.Scene {
       selectedControlPanelTab: this.selectedControlPanelTab,
       selectedControlPanelEquipmentTab: this.selectedControlPanelEquipmentTab,
       selectedControlPanelEquipmentGroupId: this.selectedControlPanelEquipmentGroupId,
+      selectedControlPanelUsageLeftContainerGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
+      selectedControlPanelUsageRightEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+      openControlPanelUsageSelect: this.openControlPanelUsageSelect,
+      selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
+      selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
       controlPanelEquipmentEnabledDrafts: {},
       controlPanelEquipmentEnabledCountDrafts: {},
       controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
@@ -603,6 +625,10 @@ export class GameScene extends Phaser.Scene {
     if (action.type !== "click") {
       return action.controlId.startsWith("control-panel-");
     }
+    if (action.type === "click" && action.controlId.endsWith("-outside-blocker")) {
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
     if (action.type === "click" && action.controlId.startsWith("control-panel-tab-")) {
       if (isControlPanelTabValue(action.value)) {
         this.selectedControlPanelTab = action.value;
@@ -612,11 +638,14 @@ export class GameScene extends Phaser.Scene {
     if (action.type === "click" && action.controlId.startsWith("control-panel-equipment-tab-")) {
       if (isControlPanelEquipmentSubTabValue(action.value)) {
         this.selectedControlPanelEquipmentTab = action.value;
+        this.openControlPanelUsageSelect = null;
       }
       return true;
     }
     if (action.type === "click" && action.controlId === "control-panel-equipment-usage-button") {
       this.selectedControlPanelEquipmentTab = "usage";
+      this.selectedControlPanelUsageRightEquipmentGroupId = this.selectedControlPanelEquipmentGroupId;
+      this.openControlPanelUsageSelect = null;
       return true;
     }
     if (action.controlId === "control-panel-object-enabled") {
@@ -637,8 +666,49 @@ export class GameScene extends Phaser.Scene {
       const groupId = Number(action.value);
       if (this.getControlPanelEquipmentGroup(groupId)) {
         this.selectedControlPanelEquipmentGroupId = groupId;
+        this.openControlPanelUsageSelect = null;
         this.controlPanelEquipmentListScrollOffsetPx = clamp(this.controlPanelEquipmentListScrollOffsetPx, 0, this.controlPanelEquipmentListMaxScrollOffset());
       }
+      return true;
+    }
+    if (action.controlId === "control-panel-usage-left-container-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "left" ? null : "left";
+      return true;
+    }
+    if (action.controlId === "control-panel-usage-right-equipment-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "right" ? null : "right";
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-usage-left-container-select-") && typeof action.value === "string") {
+      const groupId = Number(action.value);
+      if (this.getControlPanelEquipmentGroup(groupId)) {
+        this.selectedControlPanelUsageLeftContainerGroupId = groupId;
+      }
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-usage-right-equipment-select-") && typeof action.value === "string") {
+      const groupId = Number(action.value);
+      if (this.getControlPanelEquipmentGroup(groupId)) {
+        this.selectedControlPanelUsageRightEquipmentGroupId = groupId;
+      }
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-usage-left-container-content-") && typeof action.value === "string") {
+      this.selectedControlPanelUsageLeftItemGroupIds = [Number(action.value)].filter((value) => value > 0);
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-usage-right-container-content-") && typeof action.value === "string") {
+      this.selectedControlPanelUsageRightItemGroupIds = [Number(action.value)].filter((value) => value > 0);
+      return true;
+    }
+    if (action.controlId === "control-panel-container-transfer-to-right") {
+      this.sendControlPanelContainerTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftItemGroupIds);
+      return true;
+    }
+    if (action.controlId === "control-panel-container-transfer-to-left") {
+      this.sendControlPanelContainerTransfer(this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightItemGroupIds);
       return true;
     }
     if (action.controlId === "control-panel-equipment-enabled") {
@@ -746,6 +816,18 @@ export class GameScene extends Phaser.Scene {
         },
       },
     };
+  }
+
+  // Отправляет перенос между двумя выбранными контейнерами панели управления.
+  private sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, itemGroupIds: number[]): void {
+    if (!sourceContainerEquipmentGroupId || !targetContainerEquipmentGroupId || sourceContainerEquipmentGroupId === targetContainerEquipmentGroupId || itemGroupIds.length === 0) {
+      return;
+    }
+    this.gameClient?.sendControlPanelContainerTransfer({
+      sourceContainerEquipmentGroupId,
+      targetContainerEquipmentGroupId,
+      itemGroupIds,
+    });
   }
 
   // Возвращает серверную группу оборудования по ID из последнего UI-снимка.

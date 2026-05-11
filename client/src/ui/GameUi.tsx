@@ -1,7 +1,7 @@
 import { createMemo, For, Match, Show, Switch, type Accessor, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 import { formatNumber } from "../domain/format";
-import type { CosmicObjectModelReference, EquipmentGroup, ItemModelReference } from "../network/protocol";
+import type { CosmicObjectModelReference, EquipmentGroup, ItemGroup, ItemModelReference } from "../network/protocol";
 import type { ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiState, SettingsTabValue } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
@@ -209,6 +209,15 @@ type ControlPanelEquipmentInfoRow = {
   label: string;
   // Текстовое значение характеристики выбранного оборудования.
   value: string;
+};
+
+type ControlPanelContainerContentRow = {
+  // ID группы предметов для клика и выделения.
+  id: number;
+  // Видимое название модели предмета в контейнере.
+  title: string;
+  // Текстовое количество предметов указанной модели.
+  count: string;
 };
 
 type GameFormRowLabelProps = {
@@ -516,6 +525,10 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
   const selectedEquipmentEnabledCount = createMemo(() => getControlPanelEquipmentEnabledCount(props.state(), selectedEquipment()));
   const selectedEquipmentCanBeUsed = createMemo(() => canUseControlPanelEquipment(props.state(), selectedEquipment()));
   const selectedEquipmentRows = createMemo(() => getControlPanelEquipmentInfoRows(selectedEquipment()));
+  const usageContainers = createMemo(() => getControlPanelContainerEquipment(equipmentGroups(), props.state()));
+  const usageInternalEquipment = createMemo(() => getControlPanelInternalEquipment(equipmentGroups(), props.state()));
+  const usageLeftContainer = createMemo(() => getSelectedControlPanelEquipment(usageContainers(), props.state().selectedControlPanelUsageLeftContainerGroupId));
+  const usageRightEquipment = createMemo(() => getSelectedControlPanelEquipment(usageInternalEquipment(), props.state().selectedControlPanelUsageRightEquipmentGroupId));
 
   return (
     <Show when={props.state().controlPanelVisible}>
@@ -629,7 +642,48 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                       </div>
                     </Match>
                     <Match when={props.state().selectedControlPanelEquipmentTab === "usage"}>
-                      <div class="control-panel-empty-page" />
+                      <div class="control-panel-equipment-usage">
+                        <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--left">
+                          <Dropdown
+                            id="control-panel-usage-left-container-select"
+                            open={props.state().openControlPanelUsageSelect === "left"}
+                            selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
+                            options={usageContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                          />
+                          <Show when={usageLeftContainer()} fallback={<div class="control-panel-empty-page" />}>
+                            {(container) => (
+                              <ControlPanelContainerContent
+                                listId="control-panel-usage-left-container-content"
+                                rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
+                                selectedIds={props.state().selectedControlPanelUsageLeftItemGroupIds}
+                              />
+                            )}
+                          </Show>
+                        </div>
+                        <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--right">
+                          <Dropdown
+                            id="control-panel-usage-right-equipment-select"
+                            open={props.state().openControlPanelUsageSelect === "right"}
+                            selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
+                            options={usageInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                          />
+                          <Show when={isContainerEquipment(usageRightEquipment(), props.state()) ? usageRightEquipment() : null} fallback={<div class="control-panel-empty-page" />}>
+                            {(equipment) => (
+                              <div class="control-panel-equipment-usage-container">
+                                <div class="control-panel-equipment-usage-container__actions">
+                                  <Button id="control-panel-container-transfer-to-right" label=">" ariaLabel="Переместить выбранные предметы в правый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
+                                  <Button id="control-panel-container-transfer-to-left" label="<" ariaLabel="Переместить выбранные предметы в левый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
+                                </div>
+                                <ControlPanelContainerContent
+                                  listId="control-panel-usage-right-container-content"
+                                  rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, equipment().group.ID)}
+                                  selectedIds={props.state().selectedControlPanelUsageRightItemGroupIds}
+                                />
+                              </div>
+                            )}
+                          </Show>
+                        </div>
+                      </div>
                     </Match>
                   </Switch>
                 </div>
@@ -653,6 +707,18 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
     </Show>
   );
 };
+
+// Показывает содержимое выбранного контейнера как обычный список с двумя колонками.
+const ControlPanelContainerContent = (props: { listId: string; rows: ControlPanelContainerContentRow[]; selectedIds: number[] }) => (
+  <div class="control-panel-container-content">
+    <ListBox
+      id={props.listId}
+      selectedValue=""
+      selectedValues={props.selectedIds.map(String)}
+      items={props.rows.map((row) => ({ value: String(row.id), label: row.title, secondaryLabel: row.count }))}
+    />
+  </div>
+);
 
 const getControlPanelObjectRows = (state: GameUiState): ControlPanelObjectRow[] => {
   const object = state.selfObject;
@@ -697,8 +763,19 @@ const getControlPanelEquipmentGroups = (state: GameUiState): ControlPanelEquipme
     });
 };
 
+const getControlPanelContainerEquipment = (groups: ControlPanelEquipmentView[], state: GameUiState): ControlPanelEquipmentView[] =>
+  groups.filter((equipment) => isContainerEquipment(equipment, state));
+
+const getControlPanelInternalEquipment = (groups: ControlPanelEquipmentView[], state: GameUiState): ControlPanelEquipmentView[] =>
+  groups.filter((equipment) => {
+    const itemtype = state.referenceData?.Itemtype.Items[String(equipment.itemModel?.ItemtypeID)];
+    return Boolean(itemtype?.IsInternalUsable);
+  });
+
 const getSelectedControlPanelEquipment = (groups: ControlPanelEquipmentView[], selectedGroupId: number | null): ControlPanelEquipmentView | null =>
   groups.find((equipment) => equipment.group.ID === selectedGroupId) ?? groups[0] ?? null;
+
+const getControlPanelEquipmentGroupTitle = (equipment: ControlPanelEquipmentView): string => equipment.group.Title.trim() || equipment.modelTitle;
 
 const getControlPanelEquipmentEnabled = (state: GameUiState, equipment: ControlPanelEquipmentView | null): boolean =>
   equipment ? state.controlPanelEquipmentEnabledDrafts[equipment.group.ID] ?? equipment.group.Enabled : false;
@@ -713,6 +790,23 @@ const canUseControlPanelEquipment = (state: GameUiState, equipment: ControlPanel
   const itemtype = state.referenceData?.Itemtype.Items[String(equipment.itemModel?.ItemtypeID)];
   return Boolean(itemtype?.IsInternalUsable);
 };
+
+const isContainerEquipment = (equipment: ControlPanelEquipmentView | null, state: GameUiState): boolean => {
+  if (!equipment) {
+    return false;
+  }
+  const itemtype = state.referenceData?.Itemtype.Items[String(equipment.itemModel?.ItemtypeID)];
+  return itemtype?.Acronym === "Container";
+};
+
+const getControlPanelContainerContentRows = (itemGroups: ItemGroup[], itemModels: Record<string, ItemModelReference> | undefined, containerGroupId: number): ControlPanelContainerContentRow[] =>
+  itemGroups
+    .filter((itemGroup) => itemGroup.ContainerEquipmentGroupID === containerGroupId)
+    .map((itemGroup) => ({
+      id: itemGroup.ID,
+      title: getReferenceTitle(itemModels?.[String(itemGroup.ContentItemModelID)]) ?? emptyValue(),
+      count: formatMetric(itemGroup.Count),
+    }));
 
 const getControlPanelEquipmentInfoRows = (equipment: ControlPanelEquipmentView | null): ControlPanelEquipmentInfoRow[] => {
   if (!equipment) {

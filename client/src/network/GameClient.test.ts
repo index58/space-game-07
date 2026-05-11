@@ -421,9 +421,11 @@ describe("GameClient", () => {
     socket.onopen?.();
     const objectMutation = client.sendControlPanelObjectUpdate({ enabled: false });
     const equipmentMutation = client.sendControlPanelEquipmentUpdate({ equipmentGroupId: 12, enabledCount: 3 });
+    const containerMutation = client.sendControlPanelContainerTransfer({ sourceContainerEquipmentGroupId: 21, targetContainerEquipmentGroupId: 22, itemGroupIds: [31] });
 
     expect(objectMutation).toEqual({ sessionId: "session-1", seq: 1 });
     expect(equipmentMutation).toEqual({ sessionId: "session-1", seq: 2 });
+    expect(containerMutation).toEqual({ sessionId: "session-1", seq: 3 });
     expect(JSON.parse(socket.sent[0])).toEqual({
       type: "controlPanelObjectUpdate",
       clientSessionId: "session-1",
@@ -436,6 +438,14 @@ describe("GameClient", () => {
       mutationSeq: 2,
       equipmentGroupId: 12,
       enabledCount: 3,
+    });
+    expect(JSON.parse(socket.sent[2])).toEqual({
+      type: "controlPanelContainerTransfer",
+      clientSessionId: "session-1",
+      mutationSeq: 3,
+      sourceContainerEquipmentGroupId: 21,
+      targetContainerEquipmentGroupId: 22,
+      itemGroupIds: [31],
     });
 
     client.destroy();

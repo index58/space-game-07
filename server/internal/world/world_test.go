@@ -1172,8 +1172,8 @@ func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 	}
 }
 
-// Проверяет, что стартовый корабль получает полный бак и боезапас в контейнере на заданное время стрельбы.
-func TestCreateStarterAccountFillsFuelAndContainerAmmo(t *testing.T) {
+// Проверяет, что стартовый корабль получает полный бак и по одному виду предметов каждого доступного типа в первом контейнере.
+func TestCreateStarterAccountFillsFuelAndFirstContainerWithTypeSamples(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
 
@@ -1206,11 +1206,123 @@ func TestCreateStarterAccountFillsFuelAndContainerAmmo(t *testing.T) {
 	}
 
 	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
-	if len(items) != 1 {
-		t.Fatalf("got %d container item groups, want 1", len(items))
+	if len(items) != 3 {
+		t.Fatalf("got %d container item groups, want 3", len(items))
 	}
-	if items[0].ContentItemModelID != 303 || items[0].Count != 1350 {
-		t.Fatalf("starter container ammo was not filled for 15 minutes: %+v", items[0])
+	counts := map[int64]float64{}
+	for _, item := range items {
+		counts[item.ContentItemModelID] = item.Count
+	}
+	for _, itemModelID := range []int64{101, 301, 303} {
+		if counts[itemModelID] != 10 {
+			t.Fatalf("starter container item model %d count = %v, want 10; all counts: %+v", itemModelID, counts[itemModelID], counts)
+		}
+	}
+}
+
+// Проверяет, что команда панели переносит всё содержимое из одного контейнера объекта в другой и объединяет одинаковые модели.
+func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var source *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			source = group
+			break
+		}
+	}
+	if source == nil {
+		t.Fatalf("source container was not installed")
+	}
+	target, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Target Container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	selectedItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: source.ID, ContentItemModelID: 303, Count: 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+	remainingItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: source.ID, ContentItemModelID: 403, Count: 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: target.ID, ContentItemModelID: 303, Count: 5}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 4, world.ControlPanelContainerTransfer{
+		SourceContainerEquipmentGroupID: source.ID,
+		TargetContainerEquipmentGroupID: target.ID,
+		ItemGroupIDs:                    []int64{selectedItem.ID},
+	}); err != nil {
+		t.Fatalf("container transfer returned error: %v", err)
+	}
+
+	sourceItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID)
+	if len(sourceItems) != 1 || sourceItems[0].ID != remainingItem.ID {
+		t.Fatalf("source container still has items: %+v", serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID))
+	}
+	targetItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(target.ID)
+	if len(targetItems) != 1 {
+		t.Fatalf("got %d target item groups, want 1: %+v", len(targetItems), targetItems)
+	}
+	counts := map[int64]float64{}
+	for _, item := range targetItems {
+		counts[item.ContentItemModelID] = item.Count
+	}
+	if counts[303] != 15 {
+		t.Fatalf("target container contents were not merged correctly: %+v", counts)
+	}
+}
+
+// Проверяет, что команда панели не переносит предметы в группу оборудования, которая не является контейнером.
+func TestApplyControlPanelContainerTransferRejectsNonContainerTarget(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var source *data.EquipmentGroup
+	var target *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			source = group
+		}
+		if group.EquipmentItemModelID == 302 {
+			target = group
+		}
+	}
+	if source == nil || target == nil {
+		t.Fatalf("required equipment was not installed: source=%+v target=%+v", source, target)
+	}
+	selectedItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: source.ID, ContentItemModelID: 303, Count: 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 5, world.ControlPanelContainerTransfer{
+		SourceContainerEquipmentGroupID: source.ID,
+		TargetContainerEquipmentGroupID: target.ID,
+		ItemGroupIDs:                    []int64{selectedItem.ID},
+	}); err == nil {
+		t.Fatalf("container transfer to non-container target succeeded")
+	}
+	if items := serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID); len(items) != 1 || items[0].Count != 10 {
+		t.Fatalf("source container changed after rejected transfer: %+v", items)
 	}
 }
 
@@ -1301,11 +1413,17 @@ func TestChangeControlledShipToRandomModelRefillsFuelAndContainerAmmo(t *testing
 	}
 
 	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
-	if len(items) != 1 {
-		t.Fatalf("got %d changed container item groups, want 1", len(items))
+	if len(items) != 3 {
+		t.Fatalf("got %d changed container item groups, want 3", len(items))
 	}
-	if items[0].ContentItemModelID != 403 || items[0].Count != 3600 {
-		t.Fatalf("changed container ammo was not filled for 15 minutes: %+v", items[0])
+	counts := map[int64]float64{}
+	for _, item := range items {
+		counts[item.ContentItemModelID] = item.Count
+	}
+	for _, itemModelID := range []int64{101, 301, 303} {
+		if counts[itemModelID] != 10 {
+			t.Fatalf("changed container item model %d count = %v, want 10; all counts: %+v", itemModelID, counts[itemModelID], counts)
+		}
 	}
 }
 

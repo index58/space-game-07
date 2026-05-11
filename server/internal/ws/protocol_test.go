@@ -104,6 +104,31 @@ func TestDecodeControlPanelEquipmentUpdateMessageUsesAgreedJSONFields(t *testing
 	}
 }
 
+// Проверяет, что команда перемещения содержимого контейнера читается из согласованных JSON-полей.
+func TestDecodeControlPanelContainerTransferMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeControlPanelContainerTransferMessage([]byte(`{
+		"type": "controlPanelContainerTransfer",
+		"clientSessionId": "session-1",
+		"mutationSeq": 5,
+		"sourceContainerEquipmentGroupId": 11,
+		"targetContainerEquipmentGroupId": 12,
+		"itemGroupIds": [21, 22]
+	}`))
+
+	if !ok {
+		t.Fatalf("container transfer message was not decoded")
+	}
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 5 {
+		t.Fatalf("mutation fields were decoded incorrectly: %+v", message)
+	}
+	if message.SourceContainerEquipmentGroupID != 11 || message.TargetContainerEquipmentGroupID != 12 {
+		t.Fatalf("container fields were decoded incorrectly: %+v", message)
+	}
+	if len(message.ItemGroupIDs) != 2 || message.ItemGroupIDs[0] != 21 || message.ItemGroupIDs[1] != 22 {
+		t.Fatalf("item group fields were decoded incorrectly: %+v", message)
+	}
+}
+
 // Проверяет, что команда чата читает выбранную вкладку и адресный ник из JSON.
 func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeChatSendMessage([]byte(`{
@@ -221,6 +246,14 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				EnabledCount:         2,
 			},
 		},
+		ItemGroups: []data.ItemGroup{
+			{
+				ID:                        4,
+				ContainerEquipmentGroupID: 3,
+				ContentItemModelID:        303,
+				Count:                     12,
+			},
+		},
 		ClientMutationAck: &game.ClientMutationAck{
 			SessionID:      "session-1",
 			LastAppliedSeq: 8,
@@ -242,6 +275,10 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		`"equipmentGroups":[`,
 		`"EquipmentItemModelID":101`,
 		`"EnabledCount":2`,
+		`"itemGroups":[`,
+		`"ContainerEquipmentGroupID":3`,
+		`"ContentItemModelID":303`,
+		`"Count":12`,
 		`"clientMutationAck":{"sessionId":"session-1","lastAppliedSeq":8}`,
 	} {
 		if !strings.Contains(jsonText, field) {

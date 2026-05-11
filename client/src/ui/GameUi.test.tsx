@@ -115,6 +115,7 @@ const state = (): GameUiState => ({
   selfObject: object(),
   objects: [object()],
   equipmentGroups: [],
+  itemGroups: [],
   selectedPilotToolIndex: 0,
   referenceData,
   textureFilePath: null,
@@ -136,6 +137,11 @@ const state = (): GameUiState => ({
   selectedControlPanelTab: "object",
   selectedControlPanelEquipmentTab: "setup",
   selectedControlPanelEquipmentGroupId: null,
+  selectedControlPanelUsageLeftContainerGroupId: null,
+  selectedControlPanelUsageRightEquipmentGroupId: null,
+  openControlPanelUsageSelect: null,
+  selectedControlPanelUsageLeftItemGroupIds: [],
+  selectedControlPanelUsageRightItemGroupIds: [],
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
@@ -559,6 +565,62 @@ describe("GameUi", () => {
       "0",
       "3",
     ]);
+  });
+
+  // Проверяет, что подвкладка использования показывает контейнер слева и выбранный контейнер справа по ФЗ.
+  it("renders control panel equipment usage container UI", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const equipmentReferenceData = {
+      ...referenceData,
+      Itemtype: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "Generator", IsPilotInstrument: false, IsInternalUsable: true },
+        },
+      },
+      ItemModel: {
+        MaxID: 4,
+        Items: {
+          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemtypeID: 2, Acronym: "Generator", TitleRu: "Генератор" },
+          "3": { ID: 3, ItemtypeID: 1, Acronym: "ReserveContainer", TitleRu: "Резервный контейнер" },
+          "4": { ID: 4, ItemtypeID: 2, Acronym: "Ore", TitleRu: "Руда" },
+        },
+      },
+    } as unknown as ReferenceDataMessage;
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageLeftContainerGroupId: 10,
+      selectedControlPanelUsageRightEquipmentGroupId: 12,
+      openControlPanelUsageSelect: null,
+      selectedControlPanelUsageLeftItemGroupIds: [1],
+      selectedControlPanelUsageRightItemGroupIds: [2],
+      referenceData: equipmentReferenceData,
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 1, Title: "Левый", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 11, CosmicObjectID: 1, Title: "Энергия", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 12, CosmicObjectID: 1, Title: "Правый", EquipmentItemModelID: 3, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+      itemGroups: [
+        { ID: 1, ContainerEquipmentGroupID: 10, ContentItemModelID: 4, Count: 7 },
+        { ID: 2, ContainerEquipmentGroupID: 12, ContentItemModelID: 4, Count: 3 },
+      ],
+    })} />, root);
+
+    expect(root.querySelector(".control-panel-equipment-tabs .ui-kit-tab.is-selected")?.textContent).toBe("Использование");
+    expect(root.querySelector("#control-panel-usage-left-container-select .ui-kit-dropdown__value")?.textContent).toBe("Левый");
+    expect(root.querySelector("#control-panel-usage-right-equipment-select .ui-kit-dropdown__value")?.textContent).toBe("Правый");
+    expect(root.querySelector(".control-panel-container-content__title")).toBeNull();
+    expect(Array.from(root.querySelectorAll(".control-panel-container-content .ui-kit-list__item")).map((row) => row.textContent)).toEqual(["Руда7", "Руда3"]);
+    expect(Array.from(root.querySelectorAll(".control-panel-container-content .ui-kit-list__item.is-selected")).map((row) => row.textContent)).toEqual(["Руда7", "Руда3"]);
+    expect(root.querySelector("#control-panel-container-transfer-to-right")?.getAttribute("aria-label")).toBe("Переместить выбранные предметы в правый контейнер");
+    expect(root.querySelector("#control-panel-container-transfer-to-left")?.getAttribute("aria-label")).toBe("Переместить выбранные предметы в левый контейнер");
   });
 
   // Проверяет, что будущие вкладки панели управления уже переключают пустую страницу.

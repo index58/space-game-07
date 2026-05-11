@@ -6,6 +6,8 @@ export type UiKitOption = {
   value: string;
   // Видимый текст пункта.
   label: string;
+  // Дополнительный текст справа для двухколоночных списков.
+  secondaryLabel?: string;
 };
 
 type TreeNode = UiKitOption & {
@@ -95,6 +97,8 @@ type ListBoxProps = {
   id: string;
   // Выбранное значение.
   selectedValue: string;
+  // Несколько выбранных значений для списков с множественным выделением.
+  selectedValues?: string[];
   // Пункты списка.
   items: UiKitOption[];
   // Вертикальный сдвиг содержимого для списков с внешней полосой прокрутки.
@@ -332,7 +336,14 @@ export const ListBox = (props: ListBoxProps) => (
   <div id={props.id} data-ui-kind="list" class="ui-kit-control ui-kit-list">
     <div class="ui-kit-list__content" style={{ transform: `translateY(-${props.scrollOffsetPx ?? 0}px)` }}>
       <For each={props.items}>
-        {(item) => <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} class={`ui-kit-control ui-kit-list__item ${item.value === props.selectedValue ? "is-selected" : ""}`}>{item.label}</div>}
+        {(item) => (
+          <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} class={`ui-kit-control ui-kit-list__item ${isListBoxItemSelected(props, item.value) ? "is-selected" : ""}`}>
+            <span class="ui-kit-list__item-label">{item.label}</span>
+            <Show when={item.secondaryLabel !== undefined}>
+              <span class="ui-kit-list__item-secondary">{item.secondaryLabel}</span>
+            </Show>
+          </div>
+        )}
       </For>
     </div>
   </div>
@@ -358,6 +369,9 @@ export const VirtualList = (props: VirtualListProps) => (
     </For>
   </div>
 );
+
+const isListBoxItemSelected = (props: ListBoxProps, value: string): boolean =>
+  props.selectedValues ? props.selectedValues.includes(value) : value === props.selectedValue;
 
 export const EditControl = (props: EditControlProps) => (
   <div id={props.id} data-ui-kind="edit" class={`ui-kit-control ui-kit-edit ${props.focused ? "is-focused" : ""}`}>

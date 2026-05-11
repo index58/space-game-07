@@ -84,6 +84,15 @@ type ControlPanelEquipmentUpdateMessage struct {
 	EnabledCount     *int64 `json:"enabledCount,omitempty"` // Новое количество включенных единиц, если оно меняется.
 }
 
+// ControlPanelContainerTransferMessage передает перенос содержимого между контейнерами объекта.
+type ControlPanelContainerTransferMessage struct {
+	Type string `json:"type"` // Вид команды для маршрутизации переноса содержимого.
+	ControlPanelMutationMessage
+	SourceContainerEquipmentGroupID int64   `json:"sourceContainerEquipmentGroupId"` // Контейнер, из которого нужно забрать выбранное содержимое.
+	TargetContainerEquipmentGroupID int64   `json:"targetContainerEquipmentGroupId"` // Контейнер, в который нужно переложить выбранное содержимое.
+	ItemGroupIDs                    []int64 `json:"itemGroupIds"`                    // Группы предметов, выбранные для переноса.
+}
+
 // ControlPanelErrorMessage передает отказ команды панели управления.
 type ControlPanelErrorMessage struct {
 	Type            string `json:"type"`            // Вид пакета для клиентского маршрутизатора.
@@ -191,6 +200,20 @@ func DecodeControlPanelEquipmentUpdateMessage(payload []byte) (ControlPanelEquip
 
 	if message.Type != "controlPanelEquipmentUpdate" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.EquipmentGroupID <= 0 || (message.Enabled == nil && message.EnabledCount == nil) {
 		return ControlPanelEquipmentUpdateMessage{}, false
+	}
+
+	return message, true
+}
+
+// Разбирает клиентский JSON и пропускает только команды переноса между контейнерами.
+func DecodeControlPanelContainerTransferMessage(payload []byte) (ControlPanelContainerTransferMessage, bool) {
+	var message ControlPanelContainerTransferMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelContainerTransferMessage{}, false
+	}
+
+	if message.Type != "controlPanelContainerTransfer" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.SourceContainerEquipmentGroupID <= 0 || message.TargetContainerEquipmentGroupID <= 0 || message.SourceContainerEquipmentGroupID == message.TargetContainerEquipmentGroupID || len(message.ItemGroupIDs) == 0 {
+		return ControlPanelContainerTransferMessage{}, false
 	}
 
 	return message, true

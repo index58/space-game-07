@@ -125,6 +125,21 @@ export type ControlPanelEquipmentUpdateMessage = {
   enabledCount?: number;
 };
 
+export type ControlPanelContainerTransferMessage = {
+  // Вид команды переноса содержимого между контейнерами.
+  type: "controlPanelContainerTransfer";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Контейнер, из которого переносятся предметы.
+  sourceContainerEquipmentGroupId: number;
+  // Контейнер, в который переносятся предметы.
+  targetContainerEquipmentGroupId: number;
+  // Группы предметов, выбранные для переноса.
+  itemGroupIds: number[];
+};
+
 export type ControlPanelErrorMessage = {
   // Вид сообщения с отказом команды панели управления.
   type: "controlPanelError";
@@ -294,6 +309,18 @@ export type EquipmentGroup = {
   LastRechargeStartTime: number;
 };
 
+// Повторяет серверный формат группы предметов внутри контейнера.
+export type ItemGroup = {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Группа контейнерного оборудования, внутри которой лежат предметы.
+  ContainerEquipmentGroupID: number;
+  // Модель предмета внутри контейнера.
+  ContentItemModelID: number;
+  // Количество предметов указанной модели.
+  Count: number;
+};
+
 // Является полным состоянием мира, которое сервер регулярно отправляет клиенту.
 export type SnapshotMessage = {
   // Вид сообщения, по которому клиент отличает снимок от других пакетов.
@@ -306,6 +333,8 @@ export type SnapshotMessage = {
   objects: CosmicObject[];
   // Группы оборудования, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
+  // Группы предметов внутри контейнерного оборудования.
+  itemGroups: ItemGroup[];
   // Подтверждение обработанных команд панели для текущей сессии.
   clientMutationAck?: ControlPanelMutationAck;
 };

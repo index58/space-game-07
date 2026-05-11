@@ -142,6 +142,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeControlPanelEquipmentUpdateMessage(payload); ok {
 				hub.handleControlPanelEquipmentUpdate(client, message)
 			}
+			if message, ok := DecodeControlPanelContainerTransferMessage(payload); ok {
+				hub.handleControlPanelContainerTransfer(client, message)
+			}
 			continue
 		}
 
@@ -168,6 +171,19 @@ func (hub *Hub) handleControlPanelEquipmentUpdate(client *Client, message Contro
 		EquipmentGroupID: message.EquipmentGroupID,
 		Enabled:          message.Enabled,
 		EnabledCount:     message.EnabledCount,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
+// handleControlPanelContainerTransfer применяет перенос между контейнерами или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelContainerTransfer(client *Client, message ControlPanelContainerTransferMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelContainerTransfer(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelContainerTransfer{
+		SourceContainerEquipmentGroupID: message.SourceContainerEquipmentGroupID,
+		TargetContainerEquipmentGroupID: message.TargetContainerEquipmentGroupID,
+		ItemGroupIDs:                    message.ItemGroupIDs,
 	})
 	if err != nil {
 		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())

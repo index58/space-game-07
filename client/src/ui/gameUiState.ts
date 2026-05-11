@@ -1,7 +1,7 @@
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
-import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
+import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, ItemGroup, ReferenceDataMessage } from "../network/protocol";
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiControlState } from "../ui-kit/types";
 
@@ -18,6 +18,8 @@ export type GameUiState = {
   objects: CosmicObject[];
   // Группы оборудования последнего серверного снимка, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
+  // Группы предметов последнего серверного снимка, лежащие внутри контейнеров.
+  itemGroups: ItemGroup[];
   // Выбранный индекс среди десяти ячеек панели пилота.
   selectedPilotToolIndex: number;
   // Справочники клиента, нужные UI для определения типов объектов.
@@ -60,6 +62,16 @@ export type GameUiState = {
   selectedControlPanelEquipmentTab: ControlPanelEquipmentSubTabValue;
   // ID выбранной группы оборудования в панели управления.
   selectedControlPanelEquipmentGroupId: number | null;
+  // ID контейнера в левой панели подвкладки использования.
+  selectedControlPanelUsageLeftContainerGroupId: number | null;
+  // ID оборудования в правой панели подвкладки использования.
+  selectedControlPanelUsageRightEquipmentGroupId: number | null;
+  // Открытый выпадающий список подвкладки использования.
+  openControlPanelUsageSelect: "left" | "right" | null;
+  // ID выбранных строк содержимого левого контейнера.
+  selectedControlPanelUsageLeftItemGroupIds: number[];
+  // ID выбранных строк содержимого правого контейнера.
+  selectedControlPanelUsageRightItemGroupIds: number[];
   // Черновики признака включения групп оборудования по ID группы.
   controlPanelEquipmentEnabledDrafts: Record<number, boolean>;
   // Черновики количества включенных единиц оборудования по ID группы.
@@ -110,6 +122,7 @@ const initialGameUiState: GameUiState = {
   selfObject: null,
   objects: [],
   equipmentGroups: [],
+  itemGroups: [],
   selectedPilotToolIndex: 0,
   referenceData: null,
   textureFilePath: null,
@@ -131,6 +144,11 @@ const initialGameUiState: GameUiState = {
   selectedControlPanelTab: "object",
   selectedControlPanelEquipmentTab: "setup",
   selectedControlPanelEquipmentGroupId: null,
+  selectedControlPanelUsageLeftContainerGroupId: null,
+  selectedControlPanelUsageRightEquipmentGroupId: null,
+  openControlPanelUsageSelect: null,
+  selectedControlPanelUsageLeftItemGroupIds: [],
+  selectedControlPanelUsageRightItemGroupIds: [],
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
