@@ -245,6 +245,39 @@ describe("GameUi", () => {
     ]);
   });
 
+  // Проверяет, что при отсутствии подключения остаётся видимой только отладочная панель.
+  it("hides panels and windows while server connection is missing", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      status: "waiting",
+      chatState: {
+        type: "chatState",
+        selectedChatId: 1,
+        tabs: [{ chatId: 1, title: "Server", communityTypeAcronym: "Server", duoChatKey: "", unreadCount: 0, messages: [] }],
+      },
+      gameCursor: { visible: true, x: 120, y: 80 },
+      hoveredGameUiControlId: "control-panel-constructor-schema-list-1",
+      uiKitShowcaseVisible: true,
+      settingsVisible: true,
+      controlPanelVisible: true,
+      controlPanelFuelDrainDialogOpen: true,
+      controlPanelConstructorProduceDialogOpen: true,
+    })} />, root);
+
+    expect(root.querySelector(".debug-overlay")).not.toBeNull();
+    expect(Array.from(root.querySelectorAll(".hud-panel")).map((panel) => panel.className)).toEqual(["hud-panel hud-panel--left-top debug-overlay"]);
+    expect(root.querySelector(".game-window-layer")).toBeNull();
+    expect(root.querySelector(".chat-panel")).toBeNull();
+    expect(root.querySelector(".object-indicators")).toBeNull();
+    expect(root.querySelector(".pilot-toolbar")).toBeNull();
+    expect(root.querySelector(".minimap")).toBeNull();
+    expect(document.body.querySelector(".game-cursor")).toBeNull();
+    expect(document.body.querySelector(".control-panel-constructor-recipe-tooltip")).toBeNull();
+  });
+
   it("renders the minimap anchor status as a sea anchor icon", () => {
     const root = document.createElement("div");
     document.body.append(root);

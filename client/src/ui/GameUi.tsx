@@ -39,17 +39,19 @@ type ObjectIndicatorProps = {
 // Корневой компонент всех текущих UI-слоёв поверх Phaser canvas.
 export const GameUi = (props: GameUiProps) => (
   <>
-    <ObjectIndicatorsPanel selfObject={props.state().selfObject} />
-    <ChatPanel state={props.state} />
-    <InformationPanel state={props.state} />
-    <PilotToolbarPanel state={props.state} />
-    <MinimapPanel state={props.state} />
+    <Show when={props.state().status === "connected"}>
+      <ObjectIndicatorsPanel selfObject={props.state().selfObject} />
+      <ChatPanel state={props.state} />
+      <InformationPanel state={props.state} />
+      <PilotToolbarPanel state={props.state} />
+      <MinimapPanel state={props.state} />
+      <UiKitShowcase state={props.state} />
+      <SettingsModal state={props.state} />
+      <ControlPanelModal state={props.state} />
+      <ControlPanelConstructorRecipeTooltip state={props.state} />
+      <GameCursor state={props.state} />
+    </Show>
     <DebugOverlay state={props.state} />
-    <UiKitShowcase state={props.state} />
-    <SettingsModal state={props.state} />
-    <ControlPanelModal state={props.state} />
-    <ControlPanelConstructorRecipeTooltip state={props.state} />
-    <GameCursor state={props.state} />
   </>
 );
 
