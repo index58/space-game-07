@@ -904,7 +904,11 @@ const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState
         />
       </Show>
       <div class="control-panel-constructor-recipes__make">
-        <Button id="control-panel-constructor-make-button" label="Изготовить" />
+        <Button
+          id="control-panel-constructor-make-button"
+          label="Изготовить"
+          state={props.state().selectedControlPanelConstructorTab === "items" && props.state().selectedControlPanelConstructorSchemaId ? "normal" : "disabled"}
+        />
       </div>
     </div>
   );

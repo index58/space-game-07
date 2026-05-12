@@ -423,11 +423,13 @@ describe("GameClient", () => {
     const equipmentMutation = client.sendControlPanelEquipmentUpdate({ equipmentGroupId: 12, enabledCount: 3 });
     const containerMutation = client.sendControlPanelContainerTransfer({ sourceContainerEquipmentGroupId: 21, targetContainerEquipmentGroupId: 22, itemGroupIds: [31], amount: 4 });
     const fuelMutation = client.sendControlPanelFuelTransfer({ containerEquipmentGroupId: 21, fuelTankEquipmentGroupId: 23, itemGroupIds: [32], amount: 12 });
+    const constructorMutation = client.sendControlPanelConstructorProduceItem({ constructorEquipmentGroupId: 24, materialContainerEquipmentGroupId: 21, productContainerEquipmentGroupId: 22, schemaId: 41 });
 
     expect(objectMutation).toEqual({ sessionId: "session-1", seq: 1 });
     expect(equipmentMutation).toEqual({ sessionId: "session-1", seq: 2 });
     expect(containerMutation).toEqual({ sessionId: "session-1", seq: 3 });
     expect(fuelMutation).toEqual({ sessionId: "session-1", seq: 4 });
+    expect(constructorMutation).toEqual({ sessionId: "session-1", seq: 5 });
     expect(JSON.parse(socket.sent[0])).toEqual({
       type: "controlPanelObjectUpdate",
       clientSessionId: "session-1",
@@ -458,6 +460,15 @@ describe("GameClient", () => {
       fuelTankEquipmentGroupId: 23,
       itemGroupIds: [32],
       amount: 12,
+    });
+    expect(JSON.parse(socket.sent[4])).toEqual({
+      type: "controlPanelConstructorProduceItem",
+      clientSessionId: "session-1",
+      mutationSeq: 5,
+      constructorEquipmentGroupId: 24,
+      materialContainerEquipmentGroupId: 21,
+      productContainerEquipmentGroupId: 22,
+      schemaId: 41,
     });
 
     client.destroy();

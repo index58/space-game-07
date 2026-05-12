@@ -1,6 +1,7 @@
 package world_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 	"space-game-07-server/internal/physics"
+	"space-game-07-server/internal/storage"
 	"space-game-07-server/internal/world"
 )
 
@@ -22,6 +24,19 @@ func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (data.Co
 	}
 
 	return data.CosmicObject{}, false
+}
+
+// Кладет запись в сырой справочник так же, как это делает загрузка JSON-файла.
+func addRawReferenceItem(t *testing.T, table *storage.RawReferenceTable, id int64, item any) {
+	t.Helper()
+	raw, err := json.Marshal(item)
+	if err != nil {
+		t.Fatal(err)
+	}
+	table.Items[fmt.Sprintf("%d", id)] = raw
+	if table.MaxID < id {
+		table.MaxID = id
+	}
 }
 
 // Сравнивает дробные значения с малым допуском для проверок симуляции.
@@ -1172,9 +1187,18 @@ func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 	}
 }
 
-// Проверяет, что стартовый корабль получает полный бак и по одному виду предметов каждого доступного типа в первом контейнере.
+// Проверяет, что стартовый корабль получает полный бак, образцы обычных типов и увеличенный запас всех ресурсов.
 func TestCreateStarterAccountFillsFuelAndFirstContainerWithTypeSamples(t *testing.T) {
 	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[17] = &data.Itemtype{ID: 17, TitleRu: "Resource", TitleEn: "Resource", Acronym: "Resource"}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Ore", TitleEn: "Ore", Acronym: "Ore", ItemtypeID: 17}
+	serverData.ItemModels.Items[502] = &data.ItemModel{ID: 502, TitleRu: "Dust", TitleEn: "Dust", Acronym: "Dust", ItemtypeID: 17}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
 	gameWorld := world.New(1, serverData)
 
 	account, err := gameWorld.CreateStarterAccount()
@@ -1206,8 +1230,8 @@ func TestCreateStarterAccountFillsFuelAndFirstContainerWithTypeSamples(t *testin
 	}
 
 	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
-	if len(items) != 3 {
-		t.Fatalf("got %d container item groups, want 3", len(items))
+	if len(items) != 5 {
+		t.Fatalf("got %d container item groups, want 5", len(items))
 	}
 	counts := map[int64]float64{}
 	for _, item := range items {
@@ -1216,6 +1240,11 @@ func TestCreateStarterAccountFillsFuelAndFirstContainerWithTypeSamples(t *testin
 	for _, itemModelID := range []int64{101, 301, 303} {
 		if counts[itemModelID] != 10 {
 			t.Fatalf("starter container item model %d count = %v, want 10; all counts: %+v", itemModelID, counts[itemModelID], counts)
+		}
+	}
+	for _, itemModelID := range []int64{501, 502} {
+		if counts[itemModelID] != 1000 {
+			t.Fatalf("starter container resource model %d count = %v, want 1000; all counts: %+v", itemModelID, counts[itemModelID], counts)
 		}
 	}
 }
@@ -1380,7 +1409,92 @@ func TestApplyControlPanelContainerTransferRejectsNonContainerTarget(t *testing.
 	}
 }
 
-// Проверяет, что случайная смена выбирает другую корабельную модель и заменяет характеристики с оборудованием.
+// Проверяет, что команда конструктора списывает компоненты выбранной схемы и кладет готовый предмет в контейнер продукции.
+func TestApplyControlPanelConstructorProduceItemConsumesMaterialsAndCreatesProduct(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Schemas = storage.NewRawReferenceTable()
+	serverData.SchemaComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 4})
+	addRawReferenceItem(t, serverData.SchemaComponents, 2, map[string]any{"ID": 2, "SchemaID": 1, "ComponentItemModelID": 403, "Count": 2})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	productContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Product Container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Constructor",
+		EquipmentItemModelID: 501,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 10}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 403, Count: 5}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", 11, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       constructor.ID,
+		MaterialContainerEquipmentGroupID: materialContainer.ID,
+		ProductContainerEquipmentGroupID:  productContainer.ID,
+		SchemaID:                          1,
+	}); err != nil {
+		t.Fatalf("constructor production returned error: %v", err)
+	}
+
+	materialCounts := map[int64]float64{}
+	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
+		materialCounts[item.ContentItemModelID] = item.Count
+	}
+	if materialCounts[303] != 6 || materialCounts[403] != 3 {
+		t.Fatalf("materials were not consumed correctly: %+v", materialCounts)
+	}
+	productCounts := map[int64]float64{}
+	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID) {
+		productCounts[item.ContentItemModelID] = item.Count
+	}
+	if productCounts[302] != 1 {
+		t.Fatalf("product was not created correctly: %+v", productCounts)
+	}
+}
+
 // Проверяет, что команда панели переливает выбранное топливо из контейнера в общий запас топлива объекта до свободного места.
 func TestApplyControlPanelFuelTransferFillsObjectFuelFromContainer(t *testing.T) {
 	serverData := testWorldData(t)

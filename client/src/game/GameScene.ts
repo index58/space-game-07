@@ -827,6 +827,7 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId === "control-panel-constructor-make-button") {
+      this.sendControlPanelConstructorProduceItem();
       return true;
     }
     if (action.controlId.startsWith("control-panel-usage-left-container-content-") && typeof action.value === "string") {
@@ -1104,6 +1105,25 @@ export class GameScene extends Phaser.Scene {
       fuelTankEquipmentGroupId,
       itemGroupIds,
       amount: amount > 0 ? amount : undefined,
+    });
+  }
+
+  // Отправляет изготовление одной партии предметов по выбранной схеме конструктора.
+  private sendControlPanelConstructorProduceItem(): void {
+    if (
+      this.selectedControlPanelConstructorTab !== "items" ||
+      !this.selectedControlPanelUsageRightEquipmentGroupId ||
+      !this.selectedControlPanelConstructorMaterialContainerGroupId ||
+      !this.selectedControlPanelUsageLeftContainerGroupId ||
+      !this.selectedControlPanelConstructorSchemaId
+    ) {
+      return;
+    }
+    this.gameClient?.sendControlPanelConstructorProduceItem({
+      constructorEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+      materialContainerEquipmentGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
+      productContainerEquipmentGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
+      schemaId: this.selectedControlPanelConstructorSchemaId,
     });
   }
 

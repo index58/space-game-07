@@ -7,6 +7,7 @@
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
+  ControlPanelConstructorProduceItemMessage,
   ControlPanelEquipmentUpdateMessage,
   ControlPanelContainerTransferMessage,
   ControlPanelErrorMessage,
@@ -465,6 +466,26 @@ export class GameClient {
       clientSessionId: this.clientSessionId,
       mutationSeq: mutation.seq,
       ...transfer,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
+  }
+
+  // Отправляет изготовление предмета по схеме конструктора панели управления.
+  sendControlPanelConstructorProduceItem(
+    production: Omit<ControlPanelConstructorProduceItemMessage, "type" | "clientSessionId" | "mutationSeq">,
+  ): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelConstructorProduceItemMessage = {
+      type: "controlPanelConstructorProduceItem",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...production,
     };
 
     this.socket.send(JSON.stringify(payload));

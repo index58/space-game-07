@@ -148,6 +148,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeControlPanelFuelTransferMessage(payload); ok {
 				hub.handleControlPanelFuelTransfer(client, message)
 			}
+			if message, ok := DecodeControlPanelConstructorProduceItemMessage(payload); ok {
+				hub.handleControlPanelConstructorProduceItem(client, message)
+			}
 			continue
 		}
 
@@ -203,6 +206,20 @@ func (hub *Hub) handleControlPanelFuelTransfer(client *Client, message ControlPa
 		FuelTankEquipmentGroupID:  message.FuelTankEquipmentGroupID,
 		ItemGroupIDs:              message.ItemGroupIDs,
 		Amount:                    message.Amount,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
+// handleControlPanelConstructorProduceItem применяет изготовление предмета или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelConstructorProduceItem(client *Client, message ControlPanelConstructorProduceItemMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelConstructorProduceItem(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       message.ConstructorEquipmentGroupID,
+		MaterialContainerEquipmentGroupID: message.MaterialContainerEquipmentGroupID,
+		ProductContainerEquipmentGroupID:  message.ProductContainerEquipmentGroupID,
+		SchemaID:                          message.SchemaID,
 	})
 	if err != nil {
 		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())

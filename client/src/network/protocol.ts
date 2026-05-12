@@ -159,6 +159,23 @@ export type ControlPanelFuelTransferMessage = {
   amount?: number;
 };
 
+export type ControlPanelConstructorProduceItemMessage = {
+  // Вид команды изготовления предмета в конструкторе.
+  type: "controlPanelConstructorProduceItem";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Группа конструкторов, которая выполняет изготовление.
+  constructorEquipmentGroupId: number;
+  // Контейнер, из которого списываются компоненты.
+  materialContainerEquipmentGroupId: number;
+  // Контейнер, в который кладется готовая продукция.
+  productContainerEquipmentGroupId: number;
+  // Схема предмета, выбранная для изготовления.
+  schemaId: number;
+};
+
 export type ControlPanelErrorMessage = {
   // Вид сообщения с отказом команды панели управления.
   type: "controlPanelError";

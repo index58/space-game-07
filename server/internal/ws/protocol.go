@@ -105,6 +105,16 @@ type ControlPanelFuelTransferMessage struct {
 	Amount                    float64 `json:"amount,omitempty"`          // Количество топлива для слива из бака.
 }
 
+// ControlPanelConstructorProduceItemMessage передает изготовление предмета по схеме конструктора.
+type ControlPanelConstructorProduceItemMessage struct {
+	Type string `json:"type"` // Вид команды для маршрутизации изготовления предмета.
+	ControlPanelMutationMessage
+	ConstructorEquipmentGroupID       int64 `json:"constructorEquipmentGroupId"`       // Конструктор, который выполняет изготовление.
+	MaterialContainerEquipmentGroupID int64 `json:"materialContainerEquipmentGroupId"` // Контейнер, из которого списываются материалы.
+	ProductContainerEquipmentGroupID  int64 `json:"productContainerEquipmentGroupId"`  // Контейнер, в который добавляется продукция.
+	SchemaID                          int64 `json:"schemaId"`                          // Схема предмета, выбранная игроком.
+}
+
 type ControlPanelErrorMessage struct {
 	Type            string `json:"type"`            // Вид пакета для клиентского маршрутизатора.
 	ClientSessionID string `json:"clientSessionId"` // Сессия, команда которой была отклонена.
@@ -240,6 +250,20 @@ func DecodeControlPanelFuelTransferMessage(payload []byte) (ControlPanelFuelTran
 
 	if message.Type != "controlPanelFuelTransfer" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.ContainerEquipmentGroupID <= 0 || message.FuelTankEquipmentGroupID <= 0 || (len(message.ItemGroupIDs) == 0 && message.Amount <= 0) {
 		return ControlPanelFuelTransferMessage{}, false
+	}
+
+	return message, true
+}
+
+// DecodeControlPanelConstructorProduceItemMessage разбирает клиентский JSON и пропускает только команды изготовления предметов.
+func DecodeControlPanelConstructorProduceItemMessage(payload []byte) (ControlPanelConstructorProduceItemMessage, bool) {
+	var message ControlPanelConstructorProduceItemMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelConstructorProduceItemMessage{}, false
+	}
+
+	if message.Type != "controlPanelConstructorProduceItem" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.ConstructorEquipmentGroupID <= 0 || message.MaterialContainerEquipmentGroupID <= 0 || message.ProductContainerEquipmentGroupID <= 0 || message.SchemaID <= 0 {
+		return ControlPanelConstructorProduceItemMessage{}, false
 	}
 
 	return message, true

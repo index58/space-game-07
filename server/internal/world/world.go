@@ -1,6 +1,7 @@
 package world
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -12,6 +13,7 @@ import (
 	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
 	"space-game-07-server/internal/physics"
+	"space-game-07-server/internal/storage"
 )
 
 const (
@@ -29,6 +31,8 @@ type Data struct {
 	CosmicObjectModels         *data.CosmicObjectModels         // Справочник моделей объектов для физики и отображения.
 	Itemtypes                  *data.Itemtypes                  // Справочник типов предметов для серверной логики.
 	ItemModels                 *data.ItemModels                 // Справочник моделей предметов для оборудования и содержимого контейнеров.
+	Schemas                    *storage.RawReferenceTable       // Справочник схем предметов для изготовления в конструкторе.
+	SchemaComponents           *storage.RawReferenceTable       // Справочник компонентов схем предметов для списания материалов.
 	EquipmentGroups            *data.EquipmentGroups            // Группы оборудования, установленные на объектах мира.
 	ItemGroups                 *data.ItemGroups                 // Группы предметов внутри контейнерного оборудования.
 	Assemblies                 *data.Assemblies                 // Справочник сборок для расчета характеристик кораблей.
@@ -85,6 +89,30 @@ type ControlPanelFuelTransfer struct {
 	FuelTankEquipmentGroupID  int64   // Группа топливных баков, с которой работает игрок.
 	ItemGroupIDs              []int64 // Группы топлива, выбранные для заливки из контейнера.
 	Amount                    float64 // Количество топлива для слива из бака в контейнер.
+}
+
+// ControlPanelConstructorProduceItem описывает изготовление предмета по схеме конструктора.
+type ControlPanelConstructorProduceItem struct {
+	ConstructorEquipmentGroupID       int64 // Группа конструкторов, которая выполняет изготовление.
+	MaterialContainerEquipmentGroupID int64 // Контейнер, из которого списываются компоненты схемы.
+	ProductContainerEquipmentGroupID  int64 // Контейнер, в который кладется готовая продукция.
+	SchemaID                          int64 // Схема предмета, выбранная игроком для изготовления.
+}
+
+// controlPanelItemSchema хранит нужные серверу поля одной сырой записи схемы.
+type controlPanelItemSchema struct {
+	ID                 int64   `json:"ID"`                 // Уникальный числовой идентификатор схемы.
+	ItemModelID        int64   `json:"ItemModelID"`        // Модель предмета, получаемого по схеме.
+	Count              float64 `json:"Count"`              // Количество предметов, получаемое за одно изготовление.
+	ProductionBaseTime float64 `json:"ProductionBaseTime"` // Базовое время изготовления, пока не используемое мгновенной командой.
+}
+
+// controlPanelItemSchemaComponent хранит нужные серверу поля одного компонента схемы.
+type controlPanelItemSchemaComponent struct {
+	ID                   int64   `json:"ID"`                   // Уникальный числовой идентификатор компонента схемы.
+	SchemaID             int64   `json:"SchemaID"`             // Схема, к которой относится компонент.
+	ComponentItemModelID int64   `json:"ComponentItemModelID"` // Модель предмета, которую нужно списать как компонент.
+	Count                float64 `json:"Count"`                // Количество компонента, требуемое для одного изготовления.
 }
 
 func New(seed int64, serverData Data) *World {
@@ -437,6 +465,79 @@ func (world *World) ApplyControlPanelFuelTransfer(accountID int64, sessionID str
 	return nil
 }
 
+// ApplyControlPanelConstructorProduceItem изготавливает одну партию предметов по выбранной схеме.
+func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, sessionID string, mutationSeq int64, production ControlPanelConstructorProduceItem) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	if world.data.EquipmentGroups == nil || world.data.ItemGroups == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil || world.data.Schemas == nil || world.data.SchemaComponents == nil {
+		return errors.New("constructor data is not loaded")
+	}
+	if _, err := world.controlledEquipmentItemtypeLocked(objectID, production.ConstructorEquipmentGroupID, "Constructor"); err != nil {
+		return err
+	}
+	materialContainer, err := world.controlledContainerEquipmentLocked(objectID, production.MaterialContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	productContainer, err := world.controlledContainerEquipmentLocked(objectID, production.ProductContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	schema, err := world.itemSchemaLocked(production.SchemaID)
+	if err != nil {
+		return err
+	}
+	if schema.Count <= 0 {
+		return errors.New("schema product count is invalid")
+	}
+	if _, ok := world.data.ItemModels.Get(schema.ItemModelID); !ok {
+		return errors.New("schema product item model not found")
+	}
+	components, err := world.itemSchemaComponentsLocked(schema.ID)
+	if err != nil {
+		return err
+	}
+	if len(components) == 0 {
+		return errors.New("schema components not found")
+	}
+
+	requiredByModel := map[int64]float64{}
+	for _, component := range components {
+		if component.Count <= 0 {
+			return errors.New("schema component count is invalid")
+		}
+		if _, ok := world.data.ItemModels.Get(component.ComponentItemModelID); !ok {
+			return errors.New("schema component item model not found")
+		}
+		requiredByModel[component.ComponentItemModelID] += component.Count
+	}
+	availableByModel := map[int64]float64{}
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
+		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
+	}
+	for itemModelID, required := range requiredByModel {
+		if availableByModel[itemModelID]+physics.Epsilon < required {
+			return errors.New("not enough schema components")
+		}
+	}
+	for itemModelID, required := range requiredByModel {
+		world.consumeItemModelFromContainerLocked(materialContainer.ID, itemModelID, required)
+	}
+	if err := world.addItemModelToContainerLocked(productContainer.ID, schema.ItemModelID, schema.Count); err != nil {
+		return err
+	}
+	if err := world.data.ItemGroups.RebuildIndexes(); err != nil {
+		return err
+	}
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
+}
+
 func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID int64) (*data.EquipmentGroup, error) {
 	group, ok := world.data.EquipmentGroups.Get(groupID)
 	if !ok {
@@ -451,7 +552,95 @@ func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID i
 	return group, nil
 }
 
-// equipmentGroupIsContainerLocked проверяет тип установленного предмета; вызывается только под mutex.
+// controlledEquipmentItemtypeLocked возвращает оборудование текущего объекта с ожидаемым типом предмета; вызывается только под mutex.
+func (world *World) controlledEquipmentItemtypeLocked(objectID int64, groupID int64, itemtypeAcronym string) (*data.EquipmentGroup, error) {
+	group, ok := world.data.EquipmentGroups.Get(groupID)
+	if !ok {
+		return nil, errors.New("equipment group not found")
+	}
+	if group.CosmicObjectID != objectID {
+		return nil, errors.New("equipment group does not belong to controlled object")
+	}
+	model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+	if !ok {
+		return nil, errors.New("equipment model not found")
+	}
+	itemtype, ok := world.data.Itemtypes.Get(model.ItemtypeID)
+	if !ok || itemtype.Acronym != itemtypeAcronym {
+		return nil, errors.New("equipment group has unexpected item type")
+	}
+	return group, nil
+}
+
+// itemSchemaLocked разбирает одну сырую запись схемы предмета; вызывается только под mutex.
+func (world *World) itemSchemaLocked(schemaID int64) (controlPanelItemSchema, error) {
+	raw, ok := world.data.Schemas.Items[fmt.Sprintf("%d", schemaID)]
+	if !ok {
+		return controlPanelItemSchema{}, errors.New("item schema not found")
+	}
+	var schema controlPanelItemSchema
+	if err := json.Unmarshal(raw, &schema); err != nil {
+		return controlPanelItemSchema{}, err
+	}
+	if schema.ID != schemaID || schema.ItemModelID <= 0 {
+		return controlPanelItemSchema{}, errors.New("item schema is invalid")
+	}
+	return schema, nil
+}
+
+// itemSchemaComponentsLocked возвращает компоненты выбранной схемы из сырого справочника; вызывается только под mutex.
+func (world *World) itemSchemaComponentsLocked(schemaID int64) ([]controlPanelItemSchemaComponent, error) {
+	components := make([]controlPanelItemSchemaComponent, 0)
+	for _, raw := range world.data.SchemaComponents.Items {
+		var component controlPanelItemSchemaComponent
+		if err := json.Unmarshal(raw, &component); err != nil {
+			return nil, err
+		}
+		if component.SchemaID == schemaID {
+			components = append(components, component)
+		}
+	}
+	sort.Slice(components, func(left int, right int) bool {
+		return components[left].ID < components[right].ID
+	})
+	return components, nil
+}
+
+// consumeItemModelFromContainerLocked списывает требуемое количество предметов одной модели из контейнера; вызывается только под mutex.
+func (world *World) consumeItemModelFromContainerLocked(containerID int64, itemModelID int64, amount float64) {
+	remaining := amount
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(containerID) {
+		if remaining <= physics.Epsilon {
+			return
+		}
+		if itemGroup.ContentItemModelID != itemModelID {
+			continue
+		}
+		consumed := math.Min(itemGroup.Count, remaining)
+		itemGroup.Count -= consumed
+		remaining -= consumed
+		if itemGroup.Count <= physics.Epsilon {
+			delete(world.data.ItemGroups.Items, itemGroup.ID)
+		}
+	}
+}
+
+// addItemModelToContainerLocked добавляет продукцию в существующую группу или создает новую; вызывается только под mutex.
+func (world *World) addItemModelToContainerLocked(containerID int64, itemModelID int64, amount float64) error {
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(containerID) {
+		if itemGroup.ContentItemModelID == itemModelID {
+			itemGroup.Count += amount
+			return nil
+		}
+	}
+	_, err := world.data.ItemGroups.Add(&data.ItemGroup{
+		ContainerEquipmentGroupID: containerID,
+		ContentItemModelID:        itemModelID,
+		Count:                     amount,
+	})
+	return err
+}
+
 // controlledFuelTankFuelModelIDLocked возвращает модель топлива для выбранного бака текущего объекта.
 func (world *World) controlledFuelTankFuelModelIDLocked(objectID int64, groupID int64) (int64, error) {
 	group, ok := world.data.EquipmentGroups.Get(groupID)
@@ -530,6 +719,7 @@ func (world *World) drainFuelToContainerLocked(cosmicObject *data.CosmicObject, 
 	return nil
 }
 
+// equipmentGroupIsContainerLocked проверяет тип установленного предмета; вызывается только под mutex.
 func (world *World) equipmentGroupIsContainerLocked(group *data.EquipmentGroup) bool {
 	if group == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil {
 		return false
@@ -1234,13 +1424,25 @@ func (world *World) fillShipSupplies(cosmicObject *data.CosmicObject) {
 			Count:                     10,
 		})
 	}
+	resourceModelIDs := world.resourceItemModelIDs()
+	for _, itemModelID := range resourceModelIDs {
+		_, _ = world.data.ItemGroups.Add(&data.ItemGroup{
+			ContainerEquipmentGroupID: containerIDs[0],
+			ContentItemModelID:        itemModelID,
+			Count:                     1000,
+		})
+	}
 }
 
 // Возвращает первую модель предмета каждого типа в стабильном порядке типов.
 func (world *World) firstItemModelIDsByType() []int64 {
 	firstByType := make(map[int64]int64)
+	resourceTypeID := int64(0)
+	if resourceType, ok := world.data.Itemtypes.GetByAcronym("Resource"); ok {
+		resourceTypeID = resourceType.ID
+	}
 	for itemModelID, model := range world.data.ItemModels.Items {
-		if model == nil || model.ItemtypeID <= 0 {
+		if model == nil || model.ItemtypeID <= 0 || model.ItemtypeID == resourceTypeID {
 			continue
 		}
 		current, ok := firstByType[model.ItemtypeID]
@@ -1261,5 +1463,23 @@ func (world *World) firstItemModelIDsByType() []int64 {
 	for _, itemtypeID := range typeIDs {
 		result = append(result, firstByType[itemtypeID])
 	}
+	return result
+}
+
+// resourceItemModelIDs возвращает все модели ресурсов в стабильном порядке для тестового запаса нового корабля.
+func (world *World) resourceItemModelIDs() []int64 {
+	resourceType, ok := world.data.Itemtypes.GetByAcronym("Resource")
+	if !ok || world.data.ItemModels == nil {
+		return nil
+	}
+	result := make([]int64, 0)
+	for itemModelID, model := range world.data.ItemModels.Items {
+		if model != nil && model.ItemtypeID == resourceType.ID {
+			result = append(result, itemModelID)
+		}
+	}
+	sort.Slice(result, func(left int, right int) bool {
+		return result[left] < result[right]
+	})
 	return result
 }

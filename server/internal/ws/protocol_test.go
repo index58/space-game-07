@@ -156,6 +156,29 @@ func TestDecodeControlPanelFuelTransferMessageUsesAgreedJSONFields(t *testing.T)
 	}
 }
 
+// Проверяет, что команда изготовления предмета читает выбранные группы оборудования и схему из согласованных JSON-полей.
+func TestDecodeControlPanelConstructorProduceItemMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeControlPanelConstructorProduceItemMessage([]byte(`{
+		"type": "controlPanelConstructorProduceItem",
+		"clientSessionId": "session-1",
+		"mutationSeq": 7,
+		"constructorEquipmentGroupId": 13,
+		"materialContainerEquipmentGroupId": 11,
+		"productContainerEquipmentGroupId": 12,
+		"schemaId": 21
+	}`))
+
+	if !ok {
+		t.Fatalf("constructor production message was not decoded")
+	}
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 7 {
+		t.Fatalf("mutation fields were decoded incorrectly: %+v", message)
+	}
+	if message.ConstructorEquipmentGroupID != 13 || message.MaterialContainerEquipmentGroupID != 11 || message.ProductContainerEquipmentGroupID != 12 || message.SchemaID != 21 {
+		t.Fatalf("constructor production fields were decoded incorrectly: %+v", message)
+	}
+}
+
 func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeChatSendMessage([]byte(`{
 		"type": "chatSend",

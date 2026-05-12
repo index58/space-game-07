@@ -1,5 +1,5 @@
 {
-  "MaxID": 12,
+  "MaxID": 15,
   "Items": {
     "1": {
       "ID": 1,
@@ -57,14 +57,6 @@
       "Count": 20,
       "ProductionBaseTime": 32
     },
-    "8": {
-      "ID": 8,
-      "TitleRu": "Схема: Мелит",
-      "TitleEn": "Schema: Melit",
-      "ItemModelID": 8,
-      "Count": 1,
-      "ProductionBaseTime": 15
-    },
     "9": {
       "ID": 9,
       "TitleRu": "Схема: Феррогель",
@@ -96,6 +88,30 @@
       "ItemModelID": 12,
       "Count": 1,
       "ProductionBaseTime": 45
+    },
+    "13": {
+      "ID": 13,
+      "TitleRu": "Схема: Плазменная смола",
+      "TitleEn": "Schema: Plasma Resin",
+      "ItemModelID": 18,
+      "Count": 1,
+      "ProductionBaseTime": 24
+    },
+    "14": {
+      "ID": 14,
+      "TitleRu": "Схема: Гравиполимер",
+      "TitleEn": "Schema: Gravipolymer",
+      "ItemModelID": 19,
+      "Count": 1,
+      "ProductionBaseTime": 54
+    },
+    "15": {
+      "ID": 15,
+      "TitleRu": "Схема: Нейтронная сетка",
+      "TitleEn": "Schema: Neutron Mesh",
+      "ItemModelID": 20,
+      "Count": 1,
+      "ProductionBaseTime": 60
     }
   }
 }
