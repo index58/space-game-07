@@ -1,7 +1,7 @@
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
-import type { ChatStateMessage, ConnectionStatus, CosmicObject, EquipmentGroup, ItemGroup, ReferenceDataMessage } from "../network/protocol";
+import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, EquipmentGroup, ItemGroup, ReferenceDataMessage } from "../network/protocol";
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiControlState } from "../ui-kit/types";
 
@@ -21,6 +21,8 @@ export type GameUiState = {
   equipmentGroups: EquipmentGroup[];
   // Группы предметов последнего серверного снимка, лежащие внутри контейнеров.
   itemGroups: ItemGroup[];
+  // Задания изготовления в очередях конструкторов.
+  constructorProductionJobs: ConstructorProductionJob[];
   // Выбранный индекс среди десяти ячеек панели пилота.
   selectedPilotToolIndex: number;
   // Справочники клиента, нужные UI для определения типов объектов.
@@ -156,6 +158,7 @@ const initialGameUiState: GameUiState = {
   objects: [],
   equipmentGroups: [],
   itemGroups: [],
+  constructorProductionJobs: [],
   selectedPilotToolIndex: 0,
   referenceData: null,
   textureFilePath: null,

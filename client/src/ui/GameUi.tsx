@@ -1,7 +1,7 @@
 import { createMemo, For, Match, Show, Switch, type Accessor, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 import { formatNumber } from "../domain/format";
-import type { BlueprintReference, EquipmentGroup, ItemGroup, ItemModelReference, SchemaReference } from "../network/protocol";
+import type { BlueprintReference, ConstructorProductionJob, EquipmentGroup, ItemGroup, ItemModelReference, SchemaReference } from "../network/protocol";
 import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiState, SettingsTabValue } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
@@ -241,6 +241,15 @@ type ControlPanelConstructorRecipeRow = {
   title: string;
   // Краткое описание результата и времени изготовления.
   description: string;
+};
+
+type ControlPanelConstructorQueueRow = {
+  // ID задания для стабильной строки в списке очереди.
+  id: number;
+  // Видимое название изготавливаемого предмета.
+  title: string;
+  // Оставшееся и полное время изготовления.
+  time: string;
 };
 
 type GameFormRowLabelProps = {
@@ -762,7 +771,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                           <Show when={isConstructorEquipment(usageRightEquipment(), props.state())}>
                             <div class="control-panel-constructor-usage">
                               <ControlPanelConstructorRecipePanel state={props.state} />
-                              <ControlPanelConstructorQueuePanel />
+                              <ControlPanelConstructorQueuePanel state={props.state} />
                             </div>
                           </Show>
                           <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && isFuelTankEquipment(usageRightEquipment(), props.state())}>
@@ -913,12 +922,24 @@ const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState
 };
 
 // Показывает основную и вспомогательную очереди конструктора по вертикали.
-const ControlPanelConstructorQueuePanel = () => (
-  <div class="control-panel-constructor-queues">
-    <ControlPanelConstructorQueueList id="control-panel-constructor-main-queue" />
-    <ControlPanelConstructorQueueList id="control-panel-constructor-required-queue" />
-  </div>
-);
+const ControlPanelConstructorQueuePanel = (props: { state: Accessor<GameUiState> }) => {
+  const mainRows = createMemo(() => getControlPanelConstructorQueueRows(props.state(), "main"));
+  const auxiliaryRows = createMemo(() => getControlPanelConstructorQueueRows(props.state(), "auxiliary"));
+  return (
+    <div class="control-panel-constructor-queues">
+      <ControlPanelConstructorQueueList
+        id="control-panel-constructor-main-queue"
+        rows={mainRows()}
+        scroll={props.state().listScroll["control-panel-constructor-main-queue"]}
+      />
+      <ControlPanelConstructorQueueList
+        id="control-panel-constructor-required-queue"
+        rows={auxiliaryRows()}
+        scroll={props.state().listScroll["control-panel-constructor-required-queue"]}
+      />
+    </div>
+  );
+};
 
 // Показывает один из списков схем или чертежей конструктора.
 const ControlPanelConstructorRecipeList = (props: { id: string; rows: ControlPanelConstructorRecipeRow[]; selectedId: number | null; scroll?: GameUiState["chatScroll"] }) => (
@@ -930,9 +951,14 @@ const ControlPanelConstructorRecipeList = (props: { id: string; rows: ControlPan
   />
 );
 
-// Показывает пустую очередь конструктора до появления серверного производства.
-const ControlPanelConstructorQueueList = (props: { id: string }) => (
-  <ListBox id={props.id} selectedValue="" items={[]} />
+// Показывает одну очередь заданий конструктора.
+const ControlPanelConstructorQueueList = (props: { id: string; rows: ControlPanelConstructorQueueRow[]; scroll?: GameUiState["chatScroll"] }) => (
+  <ListBox
+    id={props.id}
+    selectedValue=""
+    items={props.rows.map((row) => ({ value: String(row.id), label: row.title, secondaryLabel: row.time }))}
+    scroll={props.scroll}
+  />
 );
 
 // Показывает общий запас топлива объекта в виде вертикального бака.
@@ -1071,6 +1097,15 @@ const getControlPanelContainerContentRows = (itemGroups: ItemGroup[], itemModels
       id: itemGroup.ID,
       title: getReferenceTitle(itemModels?.[String(itemGroup.ContentItemModelID)]) ?? emptyValue(),
       count: formatMetric(itemGroup.Count),
+    }));
+
+const getControlPanelConstructorQueueRows = (state: GameUiState, queueType: ConstructorProductionJob["queueType"]): ControlPanelConstructorQueueRow[] =>
+  state.constructorProductionJobs
+    .filter((job) => job.constructorEquipmentGroupId === state.selectedControlPanelUsageRightEquipmentGroupId && job.queueType === queueType)
+    .map((job) => ({
+      id: job.id,
+      title: getReferenceTitle(state.referenceData?.ItemModel.Items[String(job.productItemModelId)]) ?? emptyValue(),
+      time: `${formatMetric(job.remainingTime)} / ${formatMetric(job.totalTime)} с`,
     }));
 
 const getControlPanelSchemaRows = (state: GameUiState): ControlPanelConstructorRecipeRow[] =>

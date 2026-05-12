@@ -357,6 +357,27 @@ export type ItemGroup = {
   Count: number;
 };
 
+export type ConstructorProductionJob = {
+  // Уникальный числовой идентификатор задания.
+  id: number;
+  // Конструктор, к очереди которого относится задание.
+  constructorEquipmentGroupId: number;
+  // Очередь задания: основная или вспомогательная.
+  queueType: "main" | "auxiliary";
+  // Схема, по которой изготавливается предмет.
+  schemaId: number;
+  // Модель предмета, который получится после завершения.
+  productItemModelId: number;
+  // Количество предметов, которое получится после завершения.
+  productCount: number;
+  // Оставшееся время изготовления в секундах.
+  remainingTime: number;
+  // Полное время изготовления в секундах.
+  totalTime: number;
+  // Показывает, что задание сейчас выполняется.
+  running: boolean;
+};
+
 // Является полным состоянием мира, которое сервер регулярно отправляет клиенту.
 export type SnapshotMessage = {
   // Вид сообщения, по которому клиент отличает снимок от других пакетов.
@@ -371,6 +392,8 @@ export type SnapshotMessage = {
   equipmentGroups: EquipmentGroup[];
   // Группы предметов внутри контейнерного оборудования.
   itemGroups: ItemGroup[];
+  // Задания изготовления в очередях конструкторов.
+  constructorProductionJobs: ConstructorProductionJob[];
   // Подтверждение обработанных команд панели для текущей сессии.
   clientMutationAck?: ControlPanelMutationAck;
 };

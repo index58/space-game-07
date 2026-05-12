@@ -1409,8 +1409,8 @@ func TestApplyControlPanelContainerTransferRejectsNonContainerTarget(t *testing.
 	}
 }
 
-// Проверяет, что команда конструктора списывает компоненты выбранной схемы и кладет готовый предмет в контейнер продукции.
-func TestApplyControlPanelConstructorProduceItemConsumesMaterialsAndCreatesProduct(t *testing.T) {
+// Проверяет, что конструктор ставит изготовление в очередь и завершает его только после указанного времени.
+func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductionTime(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
 	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
@@ -1479,6 +1479,24 @@ func TestApplyControlPanelConstructorProduceItemConsumesMaterialsAndCreatesProdu
 		t.Fatalf("constructor production returned error: %v", err)
 	}
 
+	productCounts := map[int64]float64{}
+	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID) {
+		productCounts[item.ContentItemModelID] = item.Count
+	}
+	if productCounts[302] != 0 {
+		t.Fatalf("product was created before production time passed: %+v", productCounts)
+	}
+	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
+	if len(queued) != 1 || queued[0].QueueType != "main" || queued[0].RemainingTime != 10 {
+		t.Fatalf("main production was not queued correctly: %+v", queued)
+	}
+
+	gameWorld.Tick(9)
+	if items := serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID); len(items) != 0 {
+		t.Fatalf("product was created too early: %+v", items)
+	}
+	gameWorld.Tick(1)
+
 	materialCounts := map[int64]float64{}
 	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
 		materialCounts[item.ContentItemModelID] = item.Count
@@ -1486,16 +1504,99 @@ func TestApplyControlPanelConstructorProduceItemConsumesMaterialsAndCreatesProdu
 	if materialCounts[303] != 6 || materialCounts[403] != 3 {
 		t.Fatalf("materials were not consumed correctly: %+v", materialCounts)
 	}
+	productCounts = map[int64]float64{}
+	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID) {
+		productCounts[item.ContentItemModelID] = item.Count
+	}
+	if productCounts[302] != 1 {
+		t.Fatalf("product was not created after production time: %+v", productCounts)
+	}
+	if queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs; len(queued) != 0 {
+		t.Fatalf("completed production stayed in queue: %+v", queued)
+	}
+}
+
+// Проверяет, что команда панели переливает выбранное топливо из контейнера в общий запас топлива объекта до свободного места.
+// Проверяет, что вспомогательная очередь изготавливает только недостающее количество компонентов.
+func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryComponents(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Schemas = storage.NewRawReferenceTable()
+	serverData.SchemaComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.Schemas, 2, map[string]any{"ID": 2, "ItemModelID": 303, "Count": 3, "ProductionBaseTime": 4})
+	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 5})
+	addRawReferenceItem(t, serverData.SchemaComponents, 2, map[string]any{"ID": 2, "SchemaID": 2, "ComponentItemModelID": 403, "Count": 2})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	productContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Product Container", EquipmentItemModelID: 301, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Constructor", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 4}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 403, Count: 2}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", 12, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       constructor.ID,
+		MaterialContainerEquipmentGroupID: materialContainer.ID,
+		ProductContainerEquipmentGroupID:  productContainer.ID,
+		SchemaID:                          1,
+	}); err != nil {
+		t.Fatalf("constructor production returned error: %v", err)
+	}
+
+	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
+	if len(queued) != 2 || queued[0].QueueType != "auxiliary" || queued[0].SchemaID != 2 || queued[1].QueueType != "main" {
+		t.Fatalf("auxiliary and main queues were not planned correctly: %+v", queued)
+	}
+	gameWorld.Tick(4)
+	gameWorld.Tick(10)
+
+	materialCounts := map[int64]float64{}
+	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
+		materialCounts[item.ContentItemModelID] = item.Count
+	}
+	if materialCounts[303] != 2 || materialCounts[403] != 0 {
+		t.Fatalf("auxiliary production did not leave expected material remainder: %+v", materialCounts)
+	}
 	productCounts := map[int64]float64{}
 	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID) {
 		productCounts[item.ContentItemModelID] = item.Count
 	}
 	if productCounts[302] != 1 {
-		t.Fatalf("product was not created correctly: %+v", productCounts)
+		t.Fatalf("main production did not complete after auxiliary production: %+v", productCounts)
 	}
 }
 
-// Проверяет, что команда панели переливает выбранное топливо из контейнера в общий запас топлива объекта до свободного места.
 func TestApplyControlPanelFuelTransferFillsObjectFuelFromContainer(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}

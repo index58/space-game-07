@@ -1,5 +1,5 @@
 {
-  "MaxID": 2,
+  "MaxID": 3,
   "Items": {
     "1": {
       "ID": 1,
@@ -12,6 +12,12 @@
       "CommunityTypeID": 2,
       "CommunityID": 2,
       "DuoChatKey": "2:3"
+    },
+    "3": {
+      "ID": 3,
+      "CommunityTypeID": 2,
+      "CommunityID": 3,
+      "DuoChatKey": "1:3"
     }
   }
 }

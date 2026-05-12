@@ -1,5 +1,5 @@
 {
-  "MaxID": 2,
+  "MaxID": 4,
   "Items": {
     "1": {
       "ID": 1,
@@ -10,6 +10,18 @@
     "2": {
       "ID": 2,
       "ChatID": 2,
+      "MemberCharacterID": 3,
+      "CommunityChatRoleID": 2
+    },
+    "3": {
+      "ID": 3,
+      "ChatID": 3,
+      "MemberCharacterID": 1,
+      "CommunityChatRoleID": 2
+    },
+    "4": {
+      "ID": 4,
+      "ChatID": 3,
       "MemberCharacterID": 3,
       "CommunityChatRoleID": 2
     }

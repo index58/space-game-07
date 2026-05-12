@@ -51,16 +51,30 @@ type ShipInput struct {
 
 // Содержит полный серверный снимок мира на конкретном тике.
 type Snapshot struct {
-	Type              string                `json:"type"`                        // Вид сетевого сообщения со снимком мира.
-	Tick              int64                 `json:"tick"`                        // Номер шага симуляции, на котором сделан снимок.
-	SelfObjectID      int64                 `json:"selfObjectId"`                // Управляемый объект получателя снимка.
-	Objects           []data.CosmicObject   `json:"objects"`                     // Объекты мира, видимые клиенту в текущем снимке.
-	EquipmentGroups   []data.EquipmentGroup `json:"equipmentGroups"`             // Группы оборудования, нужные UI для панели пилота.
-	ItemGroups        []data.ItemGroup      `json:"itemGroups"`                  // Группы предметов, лежащие внутри контейнерного оборудования.
-	ClientMutationAck *ClientMutationAck    `json:"clientMutationAck,omitempty"` // Подтверждение обработанных команд панели для текущей сессии клиента.
+	Type                      string                     `json:"type"`                        // Вид сетевого сообщения со снимком мира.
+	Tick                      int64                      `json:"tick"`                        // Номер шага симуляции, на котором сделан снимок.
+	SelfObjectID              int64                      `json:"selfObjectId"`                // Управляемый объект получателя снимка.
+	Objects                   []data.CosmicObject        `json:"objects"`                     // Объекты мира, видимые клиенту в текущем снимке.
+	EquipmentGroups           []data.EquipmentGroup      `json:"equipmentGroups"`             // Группы оборудования, нужные UI для панели пилота.
+	ItemGroups                []data.ItemGroup           `json:"itemGroups"`                  // Группы предметов, лежащие внутри контейнерного оборудования.
+	ConstructorProductionJobs []ConstructorProductionJob `json:"constructorProductionJobs"`   // Задания изготовления, видимые в очередях конструкторов.
+	ClientMutationAck         *ClientMutationAck         `json:"clientMutationAck,omitempty"` // Подтверждение обработанных команд панели для текущей сессии клиента.
 }
 
 // ClientMutationAck сообщает клиенту, до какого номера сервер обработал команды панели.
+// ConstructorProductionJob описывает одну строку основной или вспомогательной очереди конструктора.
+type ConstructorProductionJob struct {
+	ID                          int64   `json:"id"`                          // Уникальный числовой идентификатор задания.
+	ConstructorEquipmentGroupID int64   `json:"constructorEquipmentGroupId"` // Конструктор, к очереди которого относится задание.
+	QueueType                   string  `json:"queueType"`                   // Очередь задания: основная или вспомогательная.
+	SchemaID                    int64   `json:"schemaId"`                    // Схема, по которой изготавливается предмет.
+	ProductItemModelID          int64   `json:"productItemModelId"`          // Модель предмета, который получится после завершения.
+	ProductCount                float64 `json:"productCount"`                // Количество предметов, которое получится после завершения.
+	RemainingTime               float64 `json:"remainingTime"`               // Оставшееся время изготовления в секундах.
+	TotalTime                   float64 `json:"totalTime"`                   // Полное время изготовления в секундах.
+	Running                     bool    `json:"running"`                     // Показывает, что задание сейчас выполняется.
+}
+
 type ClientMutationAck struct {
 	SessionID      string `json:"sessionId"`      // Идентификатор клиентской сессии, к которой относится подтверждение.
 	LastAppliedSeq int64  `json:"lastAppliedSeq"` // Последний обработанный сервером номер мутации этой сессии.

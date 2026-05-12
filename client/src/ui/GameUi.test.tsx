@@ -116,6 +116,7 @@ const state = (): GameUiState => ({
   objects: [object()],
   equipmentGroups: [],
   itemGroups: [],
+  constructorProductionJobs: [],
   selectedPilotToolIndex: 0,
   referenceData,
   textureFilePath: null,
@@ -718,6 +719,10 @@ describe("GameUi", () => {
         { ID: 1, ContainerEquipmentGroupID: 12, ContentItemModelID: 3, Count: 15 },
         { ID: 2, ContainerEquipmentGroupID: 10, ContentItemModelID: 4, Count: 2 },
       ],
+      constructorProductionJobs: [
+        { id: 1, constructorEquipmentGroupId: 11, queueType: "main", schemaId: 1, productItemModelId: 4, productCount: 2, remainingTime: 12, totalTime: 30, running: true },
+        { id: 2, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingTime: 20, totalTime: 30, running: false },
+      ],
     })} />, root);
 
     expect(root.querySelector(".control-panel-equipment-usage--constructor")).not.toBeNull();
@@ -729,6 +734,8 @@ describe("GameUi", () => {
     expect(root.querySelector(".control-panel-constructor-queues")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
     expect(root.querySelector(".control-panel-constructor-usage")?.children[0]?.classList.contains("control-panel-constructor-recipes")).toBe(true);
     expect(root.querySelector(".control-panel-constructor-usage")?.children[1]?.classList.contains("control-panel-constructor-queues")).toBe(true);
+    expect(root.querySelector("#control-panel-constructor-main-queue-1")?.textContent).toBe("Пластина12 / 30 с");
+    expect(root.querySelector("#control-panel-constructor-required-queue-2")?.textContent).toBe("Пластина20 / 30 с");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.textContent).toBe("Пластина");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 30 с, Феррогель: 5");
     expect(root.querySelector("#control-panel-constructor-make-button")?.textContent).toBe("Изготовить");

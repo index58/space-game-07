@@ -262,6 +262,7 @@ export class GameScene extends Phaser.Scene {
         objects: snapshot?.objects ?? [],
         equipmentGroups: effectiveEquipmentGroups,
         itemGroups: snapshot?.itemGroups ?? [],
+        constructorProductionJobs: snapshot?.constructorProductionJobs ?? [],
         selectedPilotToolIndex: this.selectedPilotToolIndex,
         referenceData: this.referenceData,
         textureFilePath: null,
@@ -339,6 +340,7 @@ export class GameScene extends Phaser.Scene {
       objects: snapshot.objects,
       equipmentGroups: effectiveEquipmentGroups,
       itemGroups: snapshot.itemGroups ?? [],
+      constructorProductionJobs: snapshot.constructorProductionJobs ?? [],
       selectedPilotToolIndex: this.selectedPilotToolIndex,
       referenceData: this.referenceData,
       textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
@@ -1580,7 +1582,22 @@ export class GameScene extends Phaser.Scene {
     if (listId === "control-panel-constructor-blueprint-list") {
       return Object.keys(this.referenceData?.Blueprint.Items ?? {}).length;
     }
+    if (listId === "control-panel-constructor-main-queue") {
+      return this.getControlPanelConstructorProductionJobCount("main");
+    }
+    if (listId === "control-panel-constructor-required-queue") {
+      return this.getControlPanelConstructorProductionJobCount("auxiliary");
+    }
     return 0;
+  }
+
+  // Возвращает количество строк очереди выбранного конструктора.
+  private getControlPanelConstructorProductionJobCount(queueType: "main" | "auxiliary"): number {
+    const constructorID = this.gameUi.state().selectedControlPanelUsageRightEquipmentGroupId;
+    if (!constructorID) {
+      return 0;
+    }
+    return this.gameUi.state().constructorProductionJobs.filter((job) => job.constructorEquipmentGroupId === constructorID && job.queueType === queueType).length;
   }
 
   // Возвращает количество групп предметов в выбранном контейнере.

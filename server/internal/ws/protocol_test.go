@@ -303,6 +303,19 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				Count:                     12,
 			},
 		},
+		ConstructorProductionJobs: []game.ConstructorProductionJob{
+			{
+				ID:                          5,
+				ConstructorEquipmentGroupID: 6,
+				QueueType:                   "main",
+				SchemaID:                    9,
+				ProductItemModelID:          302,
+				ProductCount:                2,
+				RemainingTime:               7,
+				TotalTime:                   10,
+				Running:                     true,
+			},
+		},
 		ClientMutationAck: &game.ClientMutationAck{
 			SessionID:      "session-1",
 			LastAppliedSeq: 8,
@@ -328,6 +341,12 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		`"ContainerEquipmentGroupID":3`,
 		`"ContentItemModelID":303`,
 		`"Count":12`,
+		`"constructorProductionJobs":[`,
+		`"constructorEquipmentGroupId":6`,
+		`"queueType":"main"`,
+		`"schemaId":9`,
+		`"productItemModelId":302`,
+		`"remainingTime":7`,
 		`"clientMutationAck":{"sessionId":"session-1","lastAppliedSeq":8}`,
 	} {
 		if !strings.Contains(jsonText, field) {

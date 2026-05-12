@@ -1,5 +1,5 @@
 {
-  "MaxID": 8,
+  "MaxID": 9,
   "Items": {
     "1": {
       "ID": 1,
@@ -55,7 +55,14 @@
       "CharacterID": 1,
       "ChatID": 1,
       "LastReadMessageID": 60,
-      "ReadTime": "2026-05-12T13:06:18.6200541+03:00"
+      "ReadTime": "2026-05-12T17:48:21.8436361+03:00"
+    },
+    "9": {
+      "ID": 9,
+      "CharacterID": 1,
+      "ChatID": 3,
+      "LastReadMessageID": 62,
+      "ReadTime": "2026-05-12T17:48:21.1550653+03:00"
     }
   }
 }

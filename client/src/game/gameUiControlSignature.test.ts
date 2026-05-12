@@ -16,6 +16,7 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   objects: [],
   equipmentGroups: [],
   itemGroups: [],
+  constructorProductionJobs: [],
   selectedPilotToolIndex: 0,
   referenceData: null,
   textureFilePath: null,
@@ -185,6 +186,27 @@ describe("getGameUiControlLayoutSignature", () => {
       controlPanelVisible: true,
       selectedControlPanelTab: "equipment",
       referenceData: referenceDataWithInternalUsableItemtype(true),
+    }), viewport);
+
+    expect(second).not.toBe(first);
+  });
+
+  // Проверяет, что появление заданий изготовления пересобирает строки очередей конструктора.
+  it("changes when constructor production jobs change", () => {
+    const first = getGameUiControlLayoutSignature(state({
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageRightEquipmentGroupId: 10,
+    }), viewport);
+    const second = getGameUiControlLayoutSignature(state({
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageRightEquipmentGroupId: 10,
+      constructorProductionJobs: [
+        { id: 1, constructorEquipmentGroupId: 10, queueType: "main", schemaId: 2, productItemModelId: 3, productCount: 1, remainingTime: 5, totalTime: 10, running: true },
+      ],
     }), viewport);
 
     expect(second).not.toBe(first);

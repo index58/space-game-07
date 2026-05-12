@@ -52,13 +52,29 @@ type Data struct {
 
 // Управляет подключенными аккаунтами, вводом игроков и пошаговой симуляцией объектов.
 type World struct {
-	mu               sync.Mutex               // Защищает изменяемое состояние мира от параллельных горутин.
-	tick             int64                    // Номер последнего выполненного шага симуляции.
-	data             Data                     // Справочники и игровые сущности, которыми управляет мир.
-	accountObjectIDs map[int64]int64          // Связь подключенных аккаунтов с управляемыми объектами.
-	inputs           map[int64]game.ShipInput // Последний принятый ввод для каждого подключенного аккаунта.
-	mutationAcks     map[string]int64         // Последний обработанный номер команды панели по аккаунту и сессии.
-	random           *rand.Rand               // Источник случайности для воспроизводимых команд.
+	mu                             sync.Mutex                 // Защищает изменяемое состояние мира от параллельных горутин.
+	tick                           int64                      // Номер последнего выполненного шага симуляции.
+	data                           Data                       // Справочники и игровые сущности, которыми управляет мир.
+	accountObjectIDs               map[int64]int64            // Связь подключенных аккаунтов с управляемыми объектами.
+	inputs                         map[int64]game.ShipInput   // Последний принятый ввод для каждого подключенного аккаунта.
+	mutationAcks                   map[string]int64           // Последний обработанный номер команды панели по аккаунту и сессии.
+	random                         *rand.Rand                 // Источник случайности для воспроизводимых команд.
+	nextConstructorProductionJobID int64                      // Следующий идентификатор задания изготовления.
+	constructorProductionJobs      []constructorProductionJob // Задания изготовления, ожидающие или выполняющиеся в конструкторах.
+}
+
+type constructorProductionJob struct {
+	ID                                int64   // Уникальный числовой идентификатор задания.
+	ConstructorEquipmentGroupID       int64   // Конструктор, к очереди которого относится задание.
+	MaterialContainerEquipmentGroupID int64   // Контейнер, из которого списываются компоненты.
+	ProductContainerEquipmentGroupID  int64   // Контейнер, в который кладется результат.
+	QueueType                         string  // Очередь задания: основная или вспомогательная.
+	SchemaID                          int64   // Схема, по которой изготавливается предмет.
+	ProductItemModelID                int64   // Модель предмета, который получится после завершения.
+	ProductCount                      float64 // Количество предметов, которое получится после завершения.
+	RemainingTime                     float64 // Оставшееся время изготовления в секундах.
+	TotalTime                         float64 // Полное время изготовления в секундах.
+	Running                           bool    // Показывает, что задание сейчас выполняется.
 }
 
 // ControlPanelObjectUpdate описывает частичное изменение управляемого объекта.
@@ -520,22 +536,78 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
 		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
 	}
+	plannedJobs := make([]constructorProductionJob, 0)
 	for itemModelID, required := range requiredByModel {
-		if availableByModel[itemModelID]+physics.Epsilon < required {
-			return errors.New("not enough schema components")
+		if err := world.planMissingConstructorComponentsLocked(&plannedJobs, production.ConstructorEquipmentGroupID, materialContainer.ID, availableByModel, itemModelID, required, map[int64]bool{}); err != nil {
+			return err
 		}
 	}
-	for itemModelID, required := range requiredByModel {
-		world.consumeItemModelFromContainerLocked(materialContainer.ID, itemModelID, required)
-	}
-	if err := world.addItemModelToContainerLocked(productContainer.ID, schema.ItemModelID, schema.Count); err != nil {
-		return err
-	}
-	if err := world.data.ItemGroups.RebuildIndexes(); err != nil {
-		return err
-	}
+	plannedJobs = append(plannedJobs, world.newConstructorProductionJobLocked(production.ConstructorEquipmentGroupID, materialContainer.ID, productContainer.ID, "main", schema))
+	world.constructorProductionJobs = append(world.constructorProductionJobs, plannedJobs...)
 	world.ackMutationLocked(accountID, sessionID, mutationSeq)
 	return nil
+}
+
+// planMissingConstructorComponentsLocked добавляет во вспомогательную очередь только недостающее количество компонентов.
+func (world *World) planMissingConstructorComponentsLocked(plannedJobs *[]constructorProductionJob, constructorID int64, materialContainerID int64, availableByModel map[int64]float64, itemModelID int64, required float64, visiting map[int64]bool) error {
+	shortage := required - availableByModel[itemModelID]
+	if shortage <= physics.Epsilon {
+		availableByModel[itemModelID] -= required
+		return nil
+	}
+	schema, err := world.itemSchemaByProductModelLocked(itemModelID)
+	if err != nil {
+		return errors.New("not enough schema components")
+	}
+	if schema.Count <= 0 {
+		return errors.New("schema product count is invalid")
+	}
+	if visiting[schema.ID] {
+		return errors.New("schema dependency cycle")
+	}
+	availableByModel[itemModelID] = 0
+	batchCount := int64(math.Ceil(shortage / schema.Count))
+	visiting[schema.ID] = true
+	for batch := int64(0); batch < batchCount; batch++ {
+		components, err := world.itemSchemaComponentsLocked(schema.ID)
+		if err != nil {
+			return err
+		}
+		if len(components) == 0 {
+			return errors.New("schema components not found")
+		}
+		for _, component := range components {
+			if component.Count <= 0 {
+				return errors.New("schema component count is invalid")
+			}
+			if err := world.planMissingConstructorComponentsLocked(plannedJobs, constructorID, materialContainerID, availableByModel, component.ComponentItemModelID, component.Count, visiting); err != nil {
+				return err
+			}
+		}
+		*plannedJobs = append(*plannedJobs, world.newConstructorProductionJobLocked(constructorID, materialContainerID, materialContainerID, "auxiliary", schema))
+		availableByModel[itemModelID] += schema.Count
+	}
+	delete(visiting, schema.ID)
+	availableByModel[itemModelID] -= shortage
+	return nil
+}
+
+// newConstructorProductionJobLocked создает строку очереди по схеме; вызывается только под mutex.
+func (world *World) newConstructorProductionJobLocked(constructorID int64, materialContainerID int64, productContainerID int64, queueType string, schema controlPanelItemSchema) constructorProductionJob {
+	world.nextConstructorProductionJobID++
+	totalTime := math.Max(0, schema.ProductionBaseTime)
+	return constructorProductionJob{
+		ID:                                world.nextConstructorProductionJobID,
+		ConstructorEquipmentGroupID:       constructorID,
+		MaterialContainerEquipmentGroupID: materialContainerID,
+		ProductContainerEquipmentGroupID:  productContainerID,
+		QueueType:                         queueType,
+		SchemaID:                          schema.ID,
+		ProductItemModelID:                schema.ItemModelID,
+		ProductCount:                      schema.Count,
+		RemainingTime:                     totalTime,
+		TotalTime:                         totalTime,
+	}
 }
 
 func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID int64) (*data.EquipmentGroup, error) {
@@ -589,6 +661,30 @@ func (world *World) itemSchemaLocked(schemaID int64) (controlPanelItemSchema, er
 }
 
 // itemSchemaComponentsLocked возвращает компоненты выбранной схемы из сырого справочника; вызывается только под mutex.
+// itemSchemaByProductModelLocked находит схему, производящую указанную модель предмета; вызывается только под mutex.
+func (world *World) itemSchemaByProductModelLocked(itemModelID int64) (controlPanelItemSchema, error) {
+	schemaIDs := make([]int64, 0, len(world.data.Schemas.Items))
+	for key := range world.data.Schemas.Items {
+		var schemaID int64
+		if _, err := fmt.Sscanf(key, "%d", &schemaID); err == nil {
+			schemaIDs = append(schemaIDs, schemaID)
+		}
+	}
+	sort.Slice(schemaIDs, func(left int, right int) bool {
+		return schemaIDs[left] < schemaIDs[right]
+	})
+	for _, schemaID := range schemaIDs {
+		schema, err := world.itemSchemaLocked(schemaID)
+		if err != nil {
+			return controlPanelItemSchema{}, err
+		}
+		if schema.ItemModelID == itemModelID {
+			return schema, nil
+		}
+	}
+	return controlPanelItemSchema{}, errors.New("item schema not found")
+}
+
 func (world *World) itemSchemaComponentsLocked(schemaID int64) ([]controlPanelItemSchemaComponent, error) {
 	components := make([]controlPanelItemSchemaComponent, 0)
 	for _, raw := range world.data.SchemaComponents.Items {
@@ -739,9 +835,103 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 
 	world.stepMovableObjects(dtSeconds, world.inputsByObjectID())
 	world.resolveAllCollisions()
+	world.stepConstructorProductionJobsLocked(dtSeconds)
 
 	world.tick++
 	return world.snapshotLocked(0)
+}
+
+// stepConstructorProductionJobsLocked продвигает по одному заданию на каждый конструктор за текущий шаг мира.
+func (world *World) stepConstructorProductionJobsLocked(dtSeconds float64) {
+	if dtSeconds <= 0 || len(world.constructorProductionJobs) == 0 {
+		return
+	}
+	constructorIDs := world.constructorIDsWithProductionJobsLocked()
+	for _, constructorID := range constructorIDs {
+		jobIndex := world.activeConstructorProductionJobIndexLocked(constructorID)
+		if jobIndex < 0 {
+			continue
+		}
+		job := &world.constructorProductionJobs[jobIndex]
+		if !job.Running {
+			if !world.startConstructorProductionJobLocked(job) {
+				continue
+			}
+		}
+		job.RemainingTime = math.Max(0, job.RemainingTime-dtSeconds)
+		if job.RemainingTime > physics.Epsilon {
+			continue
+		}
+		if err := world.addItemModelToContainerLocked(job.ProductContainerEquipmentGroupID, job.ProductItemModelID, job.ProductCount); err != nil {
+			continue
+		}
+		world.constructorProductionJobs = append(world.constructorProductionJobs[:jobIndex], world.constructorProductionJobs[jobIndex+1:]...)
+		_ = world.data.ItemGroups.RebuildIndexes()
+	}
+}
+
+// constructorIDsWithProductionJobsLocked возвращает конструкторы с очередями в стабильном порядке.
+func (world *World) constructorIDsWithProductionJobsLocked() []int64 {
+	seen := map[int64]bool{}
+	constructorIDs := make([]int64, 0)
+	for _, job := range world.constructorProductionJobs {
+		if seen[job.ConstructorEquipmentGroupID] {
+			continue
+		}
+		seen[job.ConstructorEquipmentGroupID] = true
+		constructorIDs = append(constructorIDs, job.ConstructorEquipmentGroupID)
+	}
+	sort.Slice(constructorIDs, func(left int, right int) bool {
+		return constructorIDs[left] < constructorIDs[right]
+	})
+	return constructorIDs
+}
+
+// activeConstructorProductionJobIndexLocked выбирает текущее задание конструктора с приоритетом вспомогательной очереди.
+func (world *World) activeConstructorProductionJobIndexLocked(constructorID int64) int {
+	for index, job := range world.constructorProductionJobs {
+		if job.ConstructorEquipmentGroupID == constructorID && job.Running {
+			return index
+		}
+	}
+	for index, job := range world.constructorProductionJobs {
+		if job.ConstructorEquipmentGroupID == constructorID && job.QueueType == "auxiliary" {
+			return index
+		}
+	}
+	for index, job := range world.constructorProductionJobs {
+		if job.ConstructorEquipmentGroupID == constructorID && job.QueueType == "main" {
+			return index
+		}
+	}
+	return -1
+}
+
+// startConstructorProductionJobLocked списывает компоненты задания и переводит его в выполнение.
+func (world *World) startConstructorProductionJobLocked(job *constructorProductionJob) bool {
+	components, err := world.itemSchemaComponentsLocked(job.SchemaID)
+	if err != nil || len(components) == 0 {
+		return false
+	}
+	requiredByModel := map[int64]float64{}
+	for _, component := range components {
+		requiredByModel[component.ComponentItemModelID] += component.Count
+	}
+	availableByModel := map[int64]float64{}
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(job.MaterialContainerEquipmentGroupID) {
+		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
+	}
+	for itemModelID, required := range requiredByModel {
+		if availableByModel[itemModelID]+physics.Epsilon < required {
+			return false
+		}
+	}
+	for itemModelID, required := range requiredByModel {
+		world.consumeItemModelFromContainerLocked(job.MaterialContainerEquipmentGroupID, itemModelID, required)
+	}
+	job.Running = true
+	_ = world.data.ItemGroups.RebuildIndexes()
+	return true
 }
 
 // Собирает ввод подключенных аккаунтов по управляемым объектам.
@@ -1260,13 +1450,29 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		}
 	}
 
+	constructorProductionJobs := make([]game.ConstructorProductionJob, 0, len(world.constructorProductionJobs))
+	for _, job := range world.constructorProductionJobs {
+		constructorProductionJobs = append(constructorProductionJobs, game.ConstructorProductionJob{
+			ID:                          job.ID,
+			ConstructorEquipmentGroupID: job.ConstructorEquipmentGroupID,
+			QueueType:                   job.QueueType,
+			SchemaID:                    job.SchemaID,
+			ProductItemModelID:          job.ProductItemModelID,
+			ProductCount:                job.ProductCount,
+			RemainingTime:               job.RemainingTime,
+			TotalTime:                   job.TotalTime,
+			Running:                     job.Running,
+		})
+	}
+
 	return game.Snapshot{
-		Type:            "snapshot",
-		Tick:            world.tick,
-		SelfObjectID:    selfObjectID,
-		Objects:         objects,
-		EquipmentGroups: equipmentGroups,
-		ItemGroups:      itemGroups,
+		Type:                      "snapshot",
+		Tick:                      world.tick,
+		SelfObjectID:              selfObjectID,
+		Objects:                   objects,
+		EquipmentGroups:           equipmentGroups,
+		ItemGroups:                itemGroups,
+		ConstructorProductionJobs: constructorProductionJobs,
 	}
 }
 
