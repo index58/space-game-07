@@ -207,7 +207,7 @@ describe("getGameUiControlLayoutSignature", () => {
       selectedControlPanelEquipmentTab: "usage",
       selectedControlPanelUsageRightEquipmentGroupId: 10,
       constructorProductionJobs: [
-        { id: 1, constructorEquipmentGroupId: 10, queueType: "main", schemaId: 2, productItemModelId: 3, productCount: 1, remainingCount: 1, totalCount: 2, remainingTime: 5, totalTime: 10, running: true, parentJobId: 0 },
+        { id: 1, constructorEquipmentGroupId: 10, queueType: "main", schemaId: 2, blueprintId: 0, productItemModelId: 3, productCosmicObjectModelId: 0, productCount: 1, remainingCount: 1, totalCount: 2, remainingTime: 5, totalTime: 10, running: true, parentJobId: 0 },
       ],
     }), viewport);
 

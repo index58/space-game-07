@@ -180,6 +180,26 @@ func TestDecodeControlPanelConstructorProduceItemMessageUsesAgreedJSONFields(t *
 	}
 }
 
+// Проверяет, что команда изготовления объекта читает чертёж из согласованных JSON-полей.
+func TestDecodeControlPanelConstructorProduceItemMessageAcceptsBlueprintID(t *testing.T) {
+	message, ok := transport.DecodeControlPanelConstructorProduceItemMessage([]byte(`{
+		"type": "controlPanelConstructorProduceItem",
+		"clientSessionId": "session-1",
+		"mutationSeq": 8,
+		"constructorEquipmentGroupId": 13,
+		"materialContainerEquipmentGroupId": 11,
+		"blueprintId": 31,
+		"amount": 1
+	}`))
+
+	if !ok {
+		t.Fatalf("constructor blueprint production message was not decoded")
+	}
+	if message.BlueprintID != 31 || message.SchemaID != 0 || message.Amount != 1 {
+		t.Fatalf("constructor blueprint production fields were decoded incorrectly: %+v", message)
+	}
+}
+
 func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeChatSendMessage([]byte(`{
 		"type": "chatSend",
@@ -310,7 +330,9 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				ConstructorEquipmentGroupID: 6,
 				QueueType:                   "main",
 				SchemaID:                    9,
+				BlueprintID:                 0,
 				ProductItemModelID:          302,
+				ProductCosmicObjectModelID:  0,
 				ProductCount:                2,
 				RemainingCount:              4,
 				TotalCount:                  6,
@@ -349,7 +371,9 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		`"constructorEquipmentGroupId":6`,
 		`"queueType":"main"`,
 		`"schemaId":9`,
+		`"blueprintId":0`,
 		`"productItemModelId":302`,
+		`"productCosmicObjectModelId":0`,
 		`"remainingCount":4`,
 		`"totalCount":6`,
 		`"remainingTime":7`,

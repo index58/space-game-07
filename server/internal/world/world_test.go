@@ -1521,6 +1521,70 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 
 // Проверяет, что команда панели переливает выбранное топливо из контейнера в общий запас топлива объекта до свободного места.
 // Проверяет, что вспомогательная очередь изготавливает только недостающее количество компонентов.
+// Проверяет, что конструктор потребляет энергию и помечается активным во время изготовления.
+func TestTickActivatesConstructorEquipmentWhileProductionRuns(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19, ConsumingPower: 7000}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Schemas = storage.NewRawReferenceTable()
+	serverData.SchemaComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 4})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	addTestPowerProducer(t, serverData, objectID)
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	productContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Product Container", EquipmentItemModelID: 301, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Constructor", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 4}); err != nil {
+		t.Fatal(err)
+	}
+	if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", 15, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       constructor.ID,
+		MaterialContainerEquipmentGroupID: materialContainer.ID,
+		ProductContainerEquipmentGroupID:  productContainer.ID,
+		SchemaID:                          1,
+		Amount:                            1,
+	}); err != nil {
+		t.Fatalf("constructor production returned error: %v", err)
+	}
+
+	gameWorld.Tick(1)
+
+	cosmicObject := serverData.CosmicObjects.Items[objectID]
+	if !constructor.Active {
+		t.Fatalf("constructor must be active while production is running: %+v", constructor)
+	}
+	if cosmicObject.ConsumingPower != 7000 {
+		t.Fatalf("consuming power = %v, want 7000", cosmicObject.ConsumingPower)
+	}
+}
+
 func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryComponents(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
@@ -1600,6 +1664,156 @@ func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryCompon
 	}
 	if productCounts[302] != 2 {
 		t.Fatalf("main production did not complete after auxiliary production: %+v", productCounts)
+	}
+}
+
+// Проверяет, что конструктор создаёт объект по чертежу в космосе перед объектом-изготовителем.
+func TestApplyControlPanelConstructorProduceItemCreatesBlueprintObjectInFrontOfBuilder(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Blueprints = storage.NewRawReferenceTable()
+	serverData.BlueprintComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Blueprints, 1, map[string]any{"ID": 1, "CosmicObjectModelID": 4, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.BlueprintComponents, 1, map[string]any{"ID": 1, "BlueprintID": 1, "ComponentItemModelID": 303, "Count": 4})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	builder := serverData.CosmicObjects.Items[objectID]
+	builder.X = 10
+	builder.Y = 20
+	builder.Rotation = 0
+	builder.TargetRotation = 0
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Constructor", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 4}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", 13, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       constructor.ID,
+		MaterialContainerEquipmentGroupID: materialContainer.ID,
+		BlueprintID:                       1,
+		Amount:                            1,
+	}); err != nil {
+		t.Fatalf("constructor production returned error: %v", err)
+	}
+	if len(serverData.CosmicObjects.GetByCosmicObjectModelID(4)) != 0 {
+		t.Fatalf("object was created before production time passed")
+	}
+
+	gameWorld.Tick(10)
+
+	createdObjects := serverData.CosmicObjects.GetByCosmicObjectModelID(4)
+	if len(createdObjects) != 1 {
+		t.Fatalf("created object count = %d, want 1", len(createdObjects))
+	}
+	created := createdObjects[0]
+	if created.X != 10 || created.Y <= 20 || created.Rotation != builder.Rotation || created.TargetRotation != builder.Rotation {
+		t.Fatalf("created object was not placed in front of builder: %+v", created)
+	}
+	if created.OwnerCharacterID != builder.OwnerCharacterID || created.CreatorCharacterID != builder.OwnerCharacterID {
+		t.Fatalf("created object did not inherit character ownership: %+v", created)
+	}
+	if len(serverData.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID)) != 0 {
+		t.Fatalf("blueprint components were not consumed: %+v", serverData.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID))
+	}
+}
+
+// Проверяет, что занятое место перед изготовителем заставляет конструктор сдвинуть новый объект дальше по ходу.
+func TestApplyControlPanelConstructorProduceItemPlacesBlueprintObjectPastOccupiedSpot(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Blueprints = storage.NewRawReferenceTable()
+	serverData.BlueprintComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Blueprints, 1, map[string]any{"ID": 1, "CosmicObjectModelID": 4, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.BlueprintComponents, 1, map[string]any{"ID": 1, "BlueprintID": 1, "ComponentItemModelID": 303, "Count": 4})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	builder := serverData.CosmicObjects.Items[objectID]
+	builder.X = 0
+	builder.Y = 0
+	builder.Rotation = 0
+	builder.TargetRotation = 0
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Constructor", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 4}); err != nil {
+		t.Fatal(err)
+	}
+	blocker, err := serverData.CosmicObjects.Add(&data.CosmicObject{Title: "Blocker", CosmicObjectModelID: 4, Mass: 12, MaxArmor: 150, Armor: 150, X: 0, Y: 18.875, Rotation: 0, TargetRotation: 0, Enabled: true, Anchored: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", 14, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       constructor.ID,
+		MaterialContainerEquipmentGroupID: materialContainer.ID,
+		BlueprintID:                       1,
+		Amount:                            1,
+	}); err != nil {
+		t.Fatalf("constructor production returned error: %v", err)
+	}
+	gameWorld.Tick(10)
+
+	createdObjects := serverData.CosmicObjects.GetByCosmicObjectModelID(4)
+	if len(createdObjects) != 2 {
+		t.Fatalf("object count with blocker = %d, want 2", len(createdObjects))
+	}
+	var created *data.CosmicObject
+	for _, object := range createdObjects {
+		if object.ID != blocker.ID {
+			created = object
+		}
+	}
+	if created == nil || created.Y <= blocker.Y {
+		t.Fatalf("created object was not moved past occupied spot: blocker=%+v created=%+v", blocker, created)
+	}
+	if _, collided := physics.CollisionInfo(*created, *serverData.CosmicObjectModels.Items[4], *blocker, *serverData.CosmicObjectModels.Items[4]); collided {
+		t.Fatalf("created object still intersects blocker: blocker=%+v created=%+v", blocker, created)
 	}
 }
 

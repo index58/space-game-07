@@ -37,6 +37,8 @@ func main() {
 		CosmicObjectModels:         serverData.CosmicObjectModels,
 		Itemtypes:                  serverData.Itemtypes,
 		ItemModels:                 serverData.ItemModels,
+		Blueprints:                 serverData.Blueprints,
+		BlueprintComponents:        serverData.BlueprintComponents,
 		Schemas:                    serverData.Schemas,
 		SchemaComponents:           serverData.SchemaComponents,
 		EquipmentGroups:            serverData.EquipmentGroups,

@@ -113,6 +113,7 @@ type ControlPanelConstructorProduceItemMessage struct {
 	MaterialContainerEquipmentGroupID int64 `json:"materialContainerEquipmentGroupId"` // ?????????, ?? ???????? ??????????? ?????????.
 	ProductContainerEquipmentGroupID  int64 `json:"productContainerEquipmentGroupId"`  // ?????????, ? ??????? ??????????? ?????????.
 	SchemaID                          int64 `json:"schemaId"`                          // ????? ????????, ????????? ???????.
+	BlueprintID                       int64 `json:"blueprintId"`                       // Чертёж объекта, выбранный для изготовления.
 	Amount                            int64 `json:"amount"`                            // Количество запусков изготовления по выбранной схеме.
 }
 
@@ -263,7 +264,16 @@ func DecodeControlPanelConstructorProduceItemMessage(payload []byte) (ControlPan
 		return ControlPanelConstructorProduceItemMessage{}, false
 	}
 
-	if message.Type != "controlPanelConstructorProduceItem" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.ConstructorEquipmentGroupID <= 0 || message.MaterialContainerEquipmentGroupID <= 0 || message.ProductContainerEquipmentGroupID <= 0 || message.SchemaID <= 0 || message.Amount <= 0 {
+	if message.Type != "controlPanelConstructorProduceItem" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.ConstructorEquipmentGroupID <= 0 || message.MaterialContainerEquipmentGroupID <= 0 || message.Amount <= 0 {
+		return ControlPanelConstructorProduceItemMessage{}, false
+	}
+	if message.SchemaID <= 0 && message.BlueprintID <= 0 {
+		return ControlPanelConstructorProduceItemMessage{}, false
+	}
+	if message.SchemaID > 0 && (message.BlueprintID > 0 || message.ProductContainerEquipmentGroupID <= 0) {
+		return ControlPanelConstructorProduceItemMessage{}, false
+	}
+	if message.BlueprintID > 0 && message.SchemaID > 0 {
 		return ControlPanelConstructorProduceItemMessage{}, false
 	}
 

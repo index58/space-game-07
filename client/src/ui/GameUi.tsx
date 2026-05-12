@@ -904,6 +904,7 @@ const ControlPanelContainerContent = (props: { listId: string; rows: ControlPane
 const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState> }) => {
   const schemaRows = createMemo(() => getControlPanelSchemaRows(props.state()));
   const blueprintRows = createMemo(() => getControlPanelBlueprintRows(props.state()));
+  const canMake = createMemo(() => canMakeSelectedConstructorRecipe(props.state()));
   return (
     <div class="control-panel-constructor-recipes">
       <Tabs
@@ -934,12 +935,18 @@ const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState
         <Button
           id="control-panel-constructor-make-button"
           label="Изготовить"
-          state={props.state().selectedControlPanelConstructorTab === "items" && props.state().selectedControlPanelConstructorSchemaId ? "normal" : "disabled"}
+          state={canMake() ? "normal" : "disabled"}
         />
       </div>
     </div>
   );
 };
+
+// Проверяет, выбран ли рецепт текущей вкладки конструктора для включения кнопки запуска.
+const canMakeSelectedConstructorRecipe = (state: GameUiState): boolean =>
+  state.selectedControlPanelConstructorTab === "objects"
+    ? state.selectedControlPanelConstructorBlueprintId !== null
+    : state.selectedControlPanelConstructorSchemaId !== null;
 
 // Показывает основную и вспомогательную очереди конструктора по вертикали.
 const ControlPanelConstructorQueuePanel = (props: { state: Accessor<GameUiState> }) => {
@@ -1141,7 +1148,7 @@ const getControlPanelConstructorQueueRows = (state: GameUiState, queueType: Cons
       const totalProgress = total > 0 ? clampNumber((1 - remaining / total) * 100, 0, 100) : 0;
       return {
         id: first.id,
-        title: getReferenceTitle(state.referenceData?.ItemModel.Items[String(first.productItemModelId)]) ?? emptyValue(),
+        title: getConstructorProductionTitle(state, first),
         count: `${formatMetric(completed)} / ${formatMetric(total)}`,
         unitProgressPercent: unitProgress,
         totalProgressPercent: totalProgress,
@@ -1156,6 +1163,11 @@ const groupControlPanelConstructorQueueJobs = (jobs: ConstructorProductionJob[])
   }
   return [...groups.values()];
 };
+
+const getConstructorProductionTitle = (state: GameUiState, job: ConstructorProductionJob): string =>
+  job.productCosmicObjectModelId > 0
+    ? getReferenceTitle(state.referenceData?.CosmicObjectModel.Items[String(job.productCosmicObjectModelId)]) ?? emptyValue()
+    : getReferenceTitle(state.referenceData?.ItemModel.Items[String(job.productItemModelId)]) ?? emptyValue();
 
 const getControlPanelSchemaRows = (state: GameUiState): ControlPanelConstructorRecipeRow[] =>
   Object.values(state.referenceData?.Schema.Items ?? {})

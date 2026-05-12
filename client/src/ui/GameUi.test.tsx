@@ -777,10 +777,10 @@ describe("GameUi", () => {
         { ID: 2, ContainerEquipmentGroupID: 10, ContentItemModelID: 4, Count: 2 },
       ],
       constructorProductionJobs: [
-        { id: 1, constructorEquipmentGroupId: 11, queueType: "main", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 6, totalCount: 8, remainingTime: 12, totalTime: 30, running: true, parentJobId: 0 },
-        { id: 2, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 4, totalCount: 8, remainingTime: 20, totalTime: 30, running: false, parentJobId: 1 },
-        { id: 3, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 2, totalCount: 4, remainingTime: 10, totalTime: 30, running: true, parentJobId: 1 },
-        { id: 4, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 3, totalCount: 3, remainingTime: 30, totalTime: 30, running: false, parentJobId: 99 },
+        { id: 1, constructorEquipmentGroupId: 11, queueType: "main", schemaId: 1, blueprintId: 0, productItemModelId: 4, productCosmicObjectModelId: 0, productCount: 2, remainingCount: 6, totalCount: 8, remainingTime: 12, totalTime: 30, running: true, parentJobId: 0 },
+        { id: 2, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, blueprintId: 0, productItemModelId: 4, productCosmicObjectModelId: 0, productCount: 2, remainingCount: 4, totalCount: 8, remainingTime: 20, totalTime: 30, running: false, parentJobId: 1 },
+        { id: 3, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, blueprintId: 0, productItemModelId: 4, productCosmicObjectModelId: 0, productCount: 2, remainingCount: 2, totalCount: 4, remainingTime: 10, totalTime: 30, running: true, parentJobId: 1 },
+        { id: 4, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, blueprintId: 0, productItemModelId: 4, productCosmicObjectModelId: 0, productCount: 2, remainingCount: 3, totalCount: 3, remainingTime: 30, totalTime: 30, running: false, parentJobId: 99 },
       ],
     })} />, root);
 
@@ -804,6 +804,63 @@ describe("GameUi", () => {
     await Promise.resolve();
     expect(document.querySelector(".control-panel-constructor-recipe-tooltip")?.textContent).toBe("ПластинаФеррогель: 5Получается: 2Время: 30 с");
     expect(document.querySelector(".control-panel-constructor-recipe-tooltip__component")?.textContent).toBe("Феррогель: 5");
+  });
+
+  // Проверяет, что выбранный чертёж объекта включает кнопку запуска изготовления.
+  it("enables constructor make button for selected object blueprint", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const equipmentReferenceData = {
+      ...referenceData,
+      Itemtype: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "Constructor", IsPilotInstrument: false, IsInternalUsable: true },
+        },
+      },
+      ItemModel: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, TitleRu: "Контейнер", TitleEn: "Container", Acronym: "Container", ItemtypeID: 1 },
+          "2": { ID: 2, TitleRu: "Конструктор", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 2 },
+        },
+      },
+      Blueprint: {
+        MaxID: 1,
+        Items: {
+          "1": { ID: 1, TitleRu: "Чертёж: Катер", TitleEn: "Blueprint: Boat", CosmicObjectModelID: 12, ProductionBaseTime: 90 },
+        },
+      },
+      BlueprintComponent: {
+        MaxID: 1,
+        Items: {
+          "1": { ID: 1, BlueprintID: 1, ComponentItemModelID: 4, Count: 6 },
+        },
+      },
+    } as unknown as ReferenceDataMessage;
+
+    const dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageRightEquipmentGroupId: 11,
+      selectedControlPanelConstructorMaterialContainerGroupId: 12,
+      selectedControlPanelConstructorTab: "objects",
+      selectedControlPanelConstructorBlueprintId: 1,
+      referenceData: equipmentReferenceData,
+      equipmentGroups: [
+        { ID: 11, CosmicObjectID: 1, Title: "Сборщик", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 12, CosmicObjectID: 1, Title: "Материалы", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-constructor-make-button")).not.toBeNull();
+    expect(root.querySelector("#control-panel-constructor-make-button")?.classList.contains("is-disabled")).toBe(false);
+
+    dispose();
+    root.remove();
   });
 
   // Проверяет, что выбранный топливный бак в правой панели использования показывает шкалу общего топлива объекта.

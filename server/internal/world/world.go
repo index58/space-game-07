@@ -31,6 +31,8 @@ type Data struct {
 	CosmicObjectModels         *data.CosmicObjectModels         // Справочник моделей объектов для физики и отображения.
 	Itemtypes                  *data.Itemtypes                  // Справочник типов предметов для серверной логики.
 	ItemModels                 *data.ItemModels                 // Справочник моделей предметов для оборудования и содержимого контейнеров.
+	Blueprints                 *storage.RawReferenceTable       // Справочник чертежей объектов для изготовления в конструкторе.
+	BlueprintComponents        *storage.RawReferenceTable       // Справочник компонентов чертежей объектов для списания материалов.
 	Schemas                    *storage.RawReferenceTable       // Справочник схем предметов для изготовления в конструкторе.
 	SchemaComponents           *storage.RawReferenceTable       // Справочник компонентов схем предметов для списания материалов.
 	EquipmentGroups            *data.EquipmentGroups            // Группы оборудования, установленные на объектах мира.
@@ -70,7 +72,9 @@ type constructorProductionJob struct {
 	ProductContainerEquipmentGroupID  int64   // Контейнер, в который кладется результат.
 	QueueType                         string  // Очередь задания: основная или вспомогательная.
 	SchemaID                          int64   // Схема, по которой изготавливается предмет.
+	BlueprintID                       int64   // Чертёж, по которому изготавливается космический объект.
 	ProductItemModelID                int64   // Модель предмета, который получится после завершения.
+	ProductCosmicObjectModelID        int64   // Модель космического объекта, который появится после завершения.
 	ProductCount                      float64 // Количество предметов, которое получится после завершения.
 	RemainingBatches                  int64   // ���������� ��������, ������� ��� �������� ��������� �� ������.
 	TotalBatches                      int64   // ����� ���������� ��������, ��������������� �� ������.
@@ -116,6 +120,7 @@ type ControlPanelConstructorProduceItem struct {
 	MaterialContainerEquipmentGroupID int64 // Контейнер, из которого списываются компоненты схемы.
 	ProductContainerEquipmentGroupID  int64 // Контейнер, в который кладется готовая продукция.
 	SchemaID                          int64 // Схема предмета, выбранная игроком для изготовления.
+	BlueprintID                       int64 // Чертёж объекта, выбранный игроком для изготовления.
 	Amount                            int64 // Количество запусков изготовления по выбранной схеме.
 }
 
@@ -131,6 +136,19 @@ type controlPanelItemSchema struct {
 type controlPanelItemSchemaComponent struct {
 	ID                   int64   `json:"ID"`                   // Уникальный числовой идентификатор компонента схемы.
 	SchemaID             int64   `json:"SchemaID"`             // Схема, к которой относится компонент.
+	ComponentItemModelID int64   `json:"ComponentItemModelID"` // Модель предмета, которую нужно списать как компонент.
+	Count                float64 `json:"Count"`                // Количество компонента, требуемое для одного изготовления.
+}
+
+type controlPanelObjectBlueprint struct {
+	ID                  int64   `json:"ID"`                  // Уникальный числовой идентификатор чертежа.
+	CosmicObjectModelID int64   `json:"CosmicObjectModelID"` // Модель космического объекта, получаемого по чертежу.
+	ProductionBaseTime  float64 `json:"ProductionBaseTime"`  // Базовое время изготовления одного объекта.
+}
+
+type controlPanelObjectBlueprintComponent struct {
+	ID                   int64   `json:"ID"`                   // Уникальный числовой идентификатор компонента чертежа.
+	BlueprintID          int64   `json:"BlueprintID"`          // Чертёж, к которому относится компонент.
 	ComponentItemModelID int64   `json:"ComponentItemModelID"` // Модель предмета, которую нужно списать как компонент.
 	Count                float64 `json:"Count"`                // Количество компонента, требуемое для одного изготовления.
 }
@@ -494,7 +512,7 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 	if !ok {
 		return errors.New("account is not connected")
 	}
-	if world.data.EquipmentGroups == nil || world.data.ItemGroups == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil || world.data.Schemas == nil || world.data.SchemaComponents == nil {
+	if world.data.EquipmentGroups == nil || world.data.ItemGroups == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil {
 		return errors.New("constructor data is not loaded")
 	}
 	if _, err := world.controlledEquipmentItemtypeLocked(objectID, production.ConstructorEquipmentGroupID, "Constructor"); err != nil {
@@ -504,35 +522,21 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 	if err != nil {
 		return err
 	}
-	productContainer, err := world.controlledContainerEquipmentLocked(objectID, production.ProductContainerEquipmentGroupID)
+	if (production.SchemaID <= 0) == (production.BlueprintID <= 0) {
+		return errors.New("constructor production must select schema or blueprint")
+	}
+	mainJob, components, amount, err := world.newMainConstructorProductionJobLocked(objectID, production, materialContainer.ID)
 	if err != nil {
 		return err
-	}
-	schema, err := world.itemSchemaLocked(production.SchemaID)
-	if err != nil {
-		return err
-	}
-	if schema.Count <= 0 {
-		return errors.New("schema product count is invalid")
-	}
-	if _, ok := world.data.ItemModels.Get(schema.ItemModelID); !ok {
-		return errors.New("schema product item model not found")
-	}
-	components, err := world.itemSchemaComponentsLocked(schema.ID)
-	if err != nil {
-		return err
-	}
-	if len(components) == 0 {
-		return errors.New("schema components not found")
 	}
 
 	requiredByModel := map[int64]float64{}
 	for _, component := range components {
 		if component.Count <= 0 {
-			return errors.New("schema component count is invalid")
+			return errors.New("constructor component count is invalid")
 		}
 		if _, ok := world.data.ItemModels.Get(component.ComponentItemModelID); !ok {
-			return errors.New("schema component item model not found")
+			return errors.New("constructor component item model not found")
 		}
 		requiredByModel[component.ComponentItemModelID] += component.Count
 	}
@@ -540,11 +544,6 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
 		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
 	}
-	amount := production.Amount
-	if amount <= 0 {
-		amount = 1
-	}
-	mainJob := world.newConstructorProductionJobLocked(production.ConstructorEquipmentGroupID, materialContainer.ID, productContainer.ID, "main", schema, amount, 0)
 	plannedJobs := make([]constructorProductionJob, 0)
 	for itemModelID, required := range requiredByModel {
 		if err := world.planMissingConstructorComponentsLocked(&plannedJobs, production.ConstructorEquipmentGroupID, materialContainer.ID, availableByModel, itemModelID, required*float64(amount), mainJob.ID, map[int64]bool{}); err != nil {
@@ -558,11 +557,64 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 }
 
 // planMissingConstructorComponentsLocked добавляет во вспомогательную очередь только недостающее количество компонентов.
+// newMainConstructorProductionJobLocked собирает основную строку очереди по схеме или чертежу.
+func (world *World) newMainConstructorProductionJobLocked(objectID int64, production ControlPanelConstructorProduceItem, materialContainerID int64) (constructorProductionJob, []controlPanelItemSchemaComponent, int64, error) {
+	amount := production.Amount
+	if amount <= 0 {
+		amount = 1
+	}
+	if production.SchemaID > 0 {
+		productContainer, err := world.controlledContainerEquipmentLocked(objectID, production.ProductContainerEquipmentGroupID)
+		if err != nil {
+			return constructorProductionJob{}, nil, 0, err
+		}
+		schema, err := world.itemSchemaLocked(production.SchemaID)
+		if err != nil {
+			return constructorProductionJob{}, nil, 0, err
+		}
+		if schema.Count <= 0 {
+			return constructorProductionJob{}, nil, 0, errors.New("schema product count is invalid")
+		}
+		if _, ok := world.data.ItemModels.Get(schema.ItemModelID); !ok {
+			return constructorProductionJob{}, nil, 0, errors.New("schema product item model not found")
+		}
+		components, err := world.itemSchemaComponentsLocked(schema.ID)
+		if err != nil {
+			return constructorProductionJob{}, nil, 0, err
+		}
+		if len(components) == 0 {
+			return constructorProductionJob{}, nil, 0, errors.New("schema components not found")
+		}
+		return world.newConstructorProductionJobLocked(production.ConstructorEquipmentGroupID, materialContainerID, productContainer.ID, "main", schema, amount, 0), components, amount, nil
+	}
+	if world.data.Blueprints == nil || world.data.BlueprintComponents == nil || world.data.CosmicObjectModels == nil {
+		return constructorProductionJob{}, nil, 0, errors.New("blueprint data is not loaded")
+	}
+	blueprint, err := world.objectBlueprintLocked(production.BlueprintID)
+	if err != nil {
+		return constructorProductionJob{}, nil, 0, err
+	}
+	if _, ok := world.data.CosmicObjectModels.Get(blueprint.CosmicObjectModelID); !ok {
+		return constructorProductionJob{}, nil, 0, errors.New("blueprint object model not found")
+	}
+	components, err := world.objectBlueprintComponentsLocked(blueprint.ID)
+	if err != nil {
+		return constructorProductionJob{}, nil, 0, err
+	}
+	if len(components) == 0 {
+		return constructorProductionJob{}, nil, 0, errors.New("blueprint components not found")
+	}
+	return world.newConstructorObjectProductionJobLocked(production.ConstructorEquipmentGroupID, materialContainerID, "main", blueprint, 1, 0), components, 1, nil
+}
+
 func (world *World) planMissingConstructorComponentsLocked(plannedJobs *[]constructorProductionJob, constructorID int64, materialContainerID int64, availableByModel map[int64]float64, itemModelID int64, required float64, parentJobID int64, visiting map[int64]bool) error {
 	shortage := required - availableByModel[itemModelID]
 	if shortage <= physics.Epsilon {
 		availableByModel[itemModelID] -= required
 		return nil
+	}
+	if world.data.Schemas == nil || world.data.SchemaComponents == nil {
+		return errors.New("item schema data is not loaded")
 	}
 	schema, err := world.itemSchemaByProductModelLocked(itemModelID)
 	if err != nil {
@@ -616,6 +668,29 @@ func (world *World) newConstructorProductionJobLocked(constructorID int64, mater
 		SchemaID:                          schema.ID,
 		ProductItemModelID:                schema.ItemModelID,
 		ProductCount:                      schema.Count,
+		RemainingBatches:                  batches,
+		TotalBatches:                      batches,
+		RemainingTime:                     totalTime,
+		TotalTime:                         totalTime,
+		ParentJobID:                       parentJobID,
+	}
+}
+
+// newConstructorObjectProductionJobLocked создаёт строку очереди по чертежу объекта; вызывается только под mutex.
+func (world *World) newConstructorObjectProductionJobLocked(constructorID int64, materialContainerID int64, queueType string, blueprint controlPanelObjectBlueprint, batches int64, parentJobID int64) constructorProductionJob {
+	world.nextConstructorProductionJobID++
+	totalTime := math.Max(0, blueprint.ProductionBaseTime)
+	if batches <= 0 {
+		batches = 1
+	}
+	return constructorProductionJob{
+		ID:                                world.nextConstructorProductionJobID,
+		ConstructorEquipmentGroupID:       constructorID,
+		MaterialContainerEquipmentGroupID: materialContainerID,
+		QueueType:                         queueType,
+		BlueprintID:                       blueprint.ID,
+		ProductCosmicObjectModelID:        blueprint.CosmicObjectModelID,
+		ProductCount:                      1,
 		RemainingBatches:                  batches,
 		TotalBatches:                      batches,
 		RemainingTime:                     totalTime,
@@ -717,6 +792,44 @@ func (world *World) itemSchemaComponentsLocked(schemaID int64) ([]controlPanelIt
 }
 
 // consumeItemModelFromContainerLocked списывает требуемое количество предметов одной модели из контейнера; вызывается только под mutex.
+// objectBlueprintLocked разбирает одну сырую запись чертежа объекта; вызывается только под mutex.
+func (world *World) objectBlueprintLocked(blueprintID int64) (controlPanelObjectBlueprint, error) {
+	raw, ok := world.data.Blueprints.Items[fmt.Sprintf("%d", blueprintID)]
+	if !ok {
+		return controlPanelObjectBlueprint{}, errors.New("object blueprint not found")
+	}
+	var blueprint controlPanelObjectBlueprint
+	if err := json.Unmarshal(raw, &blueprint); err != nil {
+		return controlPanelObjectBlueprint{}, err
+	}
+	if blueprint.ID != blueprintID || blueprint.CosmicObjectModelID <= 0 {
+		return controlPanelObjectBlueprint{}, errors.New("object blueprint is invalid")
+	}
+	return blueprint, nil
+}
+
+// objectBlueprintComponentsLocked возвращает компоненты выбранного чертежа; вызывается только под mutex.
+func (world *World) objectBlueprintComponentsLocked(blueprintID int64) ([]controlPanelItemSchemaComponent, error) {
+	components := make([]controlPanelItemSchemaComponent, 0)
+	for _, raw := range world.data.BlueprintComponents.Items {
+		var component controlPanelObjectBlueprintComponent
+		if err := json.Unmarshal(raw, &component); err != nil {
+			return nil, err
+		}
+		if component.BlueprintID == blueprintID {
+			components = append(components, controlPanelItemSchemaComponent{
+				ID:                   component.ID,
+				ComponentItemModelID: component.ComponentItemModelID,
+				Count:                component.Count,
+			})
+		}
+	}
+	sort.Slice(components, func(left int, right int) bool {
+		return components[left].ID < components[right].ID
+	})
+	return components, nil
+}
+
 func (world *World) consumeItemModelFromContainerLocked(containerID int64, itemModelID int64, amount float64) {
 	remaining := amount
 	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(containerID) {
@@ -876,7 +989,7 @@ func (world *World) stepConstructorProductionJobsLocked(dtSeconds float64) {
 		if job.RemainingTime > physics.Epsilon {
 			continue
 		}
-		if err := world.addItemModelToContainerLocked(job.ProductContainerEquipmentGroupID, job.ProductItemModelID, job.ProductCount); err != nil {
+		if err := world.completeConstructorProductionJobLocked(job); err != nil {
 			continue
 		}
 		job.RemainingBatches--
@@ -891,7 +1004,85 @@ func (world *World) stepConstructorProductionJobsLocked(dtSeconds float64) {
 	}
 }
 
+// completeConstructorProductionJobLocked кладёт результат задания в контейнер или создаёт объект в космосе.
+func (world *World) completeConstructorProductionJobLocked(job *constructorProductionJob) error {
+	if job.ProductCosmicObjectModelID > 0 {
+		return world.createConstructedCosmicObjectLocked(job)
+	}
+	return world.addItemModelToContainerLocked(job.ProductContainerEquipmentGroupID, job.ProductItemModelID, job.ProductCount)
+}
+
 // constructorIDsWithProductionJobsLocked возвращает конструкторы с очередями в стабильном порядке.
+// createConstructedCosmicObjectLocked создаёт результат чертежа перед объектом-изготовителем.
+func (world *World) createConstructedCosmicObjectLocked(job *constructorProductionJob) error {
+	constructor, ok := world.data.EquipmentGroups.Get(job.ConstructorEquipmentGroupID)
+	if !ok {
+		return errors.New("constructor equipment group not found")
+	}
+	builder, ok := world.data.CosmicObjects.Get(constructor.CosmicObjectID)
+	if !ok {
+		return errors.New("builder object not found")
+	}
+	model, ok := world.data.CosmicObjectModels.Get(job.ProductCosmicObjectModelID)
+	if !ok {
+		return errors.New("blueprint object model not found")
+	}
+	assembly, ok := world.firstPublicDeveloperAssembly(model.ID)
+	if !ok {
+		return errors.New("blueprint object assembly not found")
+	}
+	cosmicObject := world.cosmicObjectFromModelAndAssembly(model, assembly)
+	cosmicObject.OwnerCharacterID = builder.OwnerCharacterID
+	cosmicObject.CreatorCharacterID = builder.OwnerCharacterID
+	cosmicObject.Rotation = builder.Rotation
+	cosmicObject.TargetRotation = builder.Rotation
+	world.placeConstructedCosmicObjectLocked(cosmicObject, *model, *builder)
+	createdObject, err := world.data.CosmicObjects.Add(cosmicObject)
+	if err != nil {
+		return err
+	}
+	return world.ensureEquipmentFromAssembly(createdObject.ID, assembly)
+}
+
+// placeConstructedCosmicObjectLocked ищет свободную точку прямо по ходу объекта-изготовителя.
+func (world *World) placeConstructedCosmicObjectLocked(created *data.CosmicObject, createdModel data.CosmicObjectModel, builder data.CosmicObject) {
+	builderModel, ok := world.data.CosmicObjectModels.Get(builder.CosmicObjectModelID)
+	if !ok {
+		created.X = builder.X
+		created.Y = builder.Y
+		return
+	}
+	forward := physics.ForwardVector(builder.Rotation)
+	gap := 1.0
+	baseDistance := builderModel.BodyLength/2 + createdModel.BodyLength/2 + gap
+	stepDistance := math.Max(1, createdModel.BodyLength/2)
+	for index := 0; index < 1000; index++ {
+		distance := baseDistance + float64(index)*stepDistance
+		created.X = builder.X + forward.X*distance
+		created.Y = builder.Y + forward.Y*distance
+		if !world.cosmicObjectIntersectsExistingLocked(*created, createdModel) {
+			return
+		}
+	}
+}
+
+// cosmicObjectIntersectsExistingLocked проверяет пересечение кандидата с уже существующими объектами.
+func (world *World) cosmicObjectIntersectsExistingLocked(candidate data.CosmicObject, candidateModel data.CosmicObjectModel) bool {
+	for _, existing := range world.data.CosmicObjects.Items {
+		if existing == nil {
+			continue
+		}
+		existingModel, ok := world.data.CosmicObjectModels.Get(existing.CosmicObjectModelID)
+		if !ok {
+			continue
+		}
+		if _, collided := physics.CollisionInfo(candidate, candidateModel, *existing, *existingModel); collided {
+			return true
+		}
+	}
+	return false
+}
+
 func (world *World) constructorIDsWithProductionJobsLocked() []int64 {
 	seen := map[int64]bool{}
 	constructorIDs := make([]int64, 0)
@@ -930,22 +1121,9 @@ func (world *World) activeConstructorProductionJobIndexLocked(constructorID int6
 
 // startConstructorProductionJobLocked списывает компоненты задания и переводит его в выполнение.
 func (world *World) startConstructorProductionJobLocked(job *constructorProductionJob) bool {
-	components, err := world.itemSchemaComponentsLocked(job.SchemaID)
-	if err != nil || len(components) == 0 {
+	requiredByModel, ok := world.constructorProductionRequirementsLocked(job)
+	if !ok {
 		return false
-	}
-	requiredByModel := map[int64]float64{}
-	for _, component := range components {
-		requiredByModel[component.ComponentItemModelID] += component.Count
-	}
-	availableByModel := map[int64]float64{}
-	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(job.MaterialContainerEquipmentGroupID) {
-		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
-	}
-	for itemModelID, required := range requiredByModel {
-		if availableByModel[itemModelID]+physics.Epsilon < required {
-			return false
-		}
 	}
 	for itemModelID, required := range requiredByModel {
 		world.consumeItemModelFromContainerLocked(job.MaterialContainerEquipmentGroupID, itemModelID, required)
@@ -957,6 +1135,53 @@ func (world *World) startConstructorProductionJobLocked(job *constructorProducti
 }
 
 // Собирает ввод подключенных аккаунтов по управляемым объектам.
+// constructorJobComponentsLocked возвращает компоненты задания по схеме или чертежу.
+// constructorEquipmentIsWorkingLocked проверяет, выполняет ли группа конструктора текущее или готовое к старту задание.
+func (world *World) constructorEquipmentIsWorkingLocked(groupID int64) bool {
+	jobIndex := world.activeConstructorProductionJobIndexLocked(groupID)
+	if jobIndex < 0 {
+		return false
+	}
+	job := &world.constructorProductionJobs[jobIndex]
+	if job.Running {
+		return true
+	}
+	_, ok := world.constructorProductionRequirementsLocked(job)
+	return ok
+}
+
+// constructorProductionRequirementsLocked собирает доступные к списанию компоненты для старта строки очереди.
+func (world *World) constructorProductionRequirementsLocked(job *constructorProductionJob) (map[int64]float64, bool) {
+	if world.data.ItemGroups == nil {
+		return nil, false
+	}
+	components, err := world.constructorJobComponentsLocked(job)
+	if err != nil || len(components) == 0 {
+		return nil, false
+	}
+	requiredByModel := map[int64]float64{}
+	for _, component := range components {
+		requiredByModel[component.ComponentItemModelID] += component.Count
+	}
+	availableByModel := map[int64]float64{}
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(job.MaterialContainerEquipmentGroupID) {
+		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
+	}
+	for itemModelID, required := range requiredByModel {
+		if availableByModel[itemModelID]+physics.Epsilon < required {
+			return nil, false
+		}
+	}
+	return requiredByModel, true
+}
+
+func (world *World) constructorJobComponentsLocked(job *constructorProductionJob) ([]controlPanelItemSchemaComponent, error) {
+	if job.BlueprintID > 0 {
+		return world.objectBlueprintComponentsLocked(job.BlueprintID)
+	}
+	return world.itemSchemaComponentsLocked(job.SchemaID)
+}
+
 func (world *World) inputsByObjectID() map[int64]game.ShipInput {
 	accountIDs := make([]int64, 0, len(world.accountObjectIDs))
 	for accountID := range world.accountObjectIDs {
@@ -1125,7 +1350,7 @@ func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeco
 			}
 		}
 
-		group.Active = equipmentIsActive(*cosmicObject, *model)
+		group.Active = equipmentIsActive(*cosmicObject, *model) || world.constructorEquipmentIsWorkingLocked(group.ID)
 		if !group.Active {
 			continue
 		}
@@ -1479,7 +1704,9 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 			ConstructorEquipmentGroupID: job.ConstructorEquipmentGroupID,
 			QueueType:                   job.QueueType,
 			SchemaID:                    job.SchemaID,
+			BlueprintID:                 job.BlueprintID,
 			ProductItemModelID:          job.ProductItemModelID,
+			ProductCosmicObjectModelID:  job.ProductCosmicObjectModelID,
 			ProductCount:                job.ProductCount,
 			RemainingCount:              float64(job.RemainingBatches) * job.ProductCount,
 			TotalCount:                  float64(job.TotalBatches) * job.ProductCount,

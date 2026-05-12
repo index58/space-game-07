@@ -1,5 +1,5 @@
 {
-  "MaxID": 10,
+  "MaxID": 11,
   "Items": {
     "1": {
       "ID": 1,
@@ -13,9 +13,9 @@
       "MaxArmor": 6527,
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
-      "X": -182.64227412890855,
-      "Y": 177.08177999646134,
-      "Rotation": -5.971259769589425,
+      "X": 29.226619280869677,
+      "Y": 582.6843173728178,
+      "Rotation": -5.977861822328751,
       "Armor": 6527,
       "MaxAlongForce": 5400000,
       "MaxAcrossForce": 5400000,
@@ -31,12 +31,12 @@
       "Complexity": 66902,
       "OccupiedVolume": 549,
       "MaxFuel": 20400,
-      "Fuel": 20165.20833333311,
+      "Fuel": 19214.104166663,
       "Speed": 0,
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -5.971259769589425
+      "TargetRotation": -5.977861822328751
     },
     "2": {
       "ID": 2,
@@ -370,6 +370,43 @@
       "VelocityY": 0,
       "AngularSpeed": 0,
       "TargetRotation": 9.129253500795638
+    },
+    "11": {
+      "ID": 11,
+      "Title": "Стрела",
+      "CosmicObjectModelID": 16,
+      "OwnerCharacterID": 1,
+      "OwnerNpcClanID": 0,
+      "CreatorCharacterID": 1,
+      "Mass": 8110,
+      "Capacity": 65,
+      "MaxArmor": 596,
+      "MaxSpeed": 495,
+      "MaxAngularSpeed": 3,
+      "X": 82.47548591101456,
+      "Y": 908.9249469541064,
+      "Rotation": -5.151547467745515,
+      "Armor": 596,
+      "MaxAlongForce": 200000,
+      "MaxAcrossForce": 200000,
+      "MaxTorque": 10000000,
+      "GeneratingPower": 120000,
+      "ConsumingPower": 0,
+      "AlongForce": 0,
+      "AcrossForce": 0,
+      "Torque": 0,
+      "Enabled": true,
+      "LastReceivedDamageTime": 0,
+      "Anchored": false,
+      "Complexity": 2790,
+      "OccupiedVolume": 42,
+      "MaxFuel": 1200,
+      "Fuel": 1200,
+      "Speed": 0,
+      "VelocityX": 0,
+      "VelocityY": 0,
+      "AngularSpeed": 0,
+      "TargetRotation": -5.84343501847992
     }
   }
 }

@@ -1145,13 +1145,14 @@ export class GameScene extends Phaser.Scene {
 
   // Открывает окно выбора количества запусков изготовления по выбранной схеме.
   private startControlPanelConstructorProduceItem(): void {
-    if (
-      this.selectedControlPanelConstructorTab !== "items" ||
-      !this.selectedControlPanelUsageRightEquipmentGroupId ||
-      !this.selectedControlPanelConstructorMaterialContainerGroupId ||
-      !this.selectedControlPanelUsageLeftContainerGroupId ||
-      !this.selectedControlPanelConstructorSchemaId
-    ) {
+    if (!this.selectedControlPanelUsageRightEquipmentGroupId || !this.selectedControlPanelConstructorMaterialContainerGroupId) {
+      return;
+    }
+    if (this.selectedControlPanelConstructorTab === "objects") {
+      this.sendControlPanelConstructorProduceItem(1);
+      return;
+    }
+    if (!this.selectedControlPanelUsageLeftContainerGroupId || !this.selectedControlPanelConstructorSchemaId) {
       return;
     }
     this.controlPanelConstructorProduceDialogOpen = true;
@@ -1234,12 +1235,24 @@ export class GameScene extends Phaser.Scene {
   // Отправляет изготовление одной партии предметов по выбранной схеме конструктора.
   private sendControlPanelConstructorProduceItem(amount: number): void {
     if (
-      this.selectedControlPanelConstructorTab !== "items" ||
       !this.selectedControlPanelUsageRightEquipmentGroupId ||
-      !this.selectedControlPanelConstructorMaterialContainerGroupId ||
-      !this.selectedControlPanelUsageLeftContainerGroupId ||
-      !this.selectedControlPanelConstructorSchemaId
+      !this.selectedControlPanelConstructorMaterialContainerGroupId
     ) {
+      return;
+    }
+    if (this.selectedControlPanelConstructorTab === "objects") {
+      if (!this.selectedControlPanelConstructorBlueprintId) {
+        return;
+      }
+      this.gameClient?.sendControlPanelConstructorProduceItem({
+        constructorEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+        materialContainerEquipmentGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
+        blueprintId: this.selectedControlPanelConstructorBlueprintId,
+        amount: 1,
+      });
+      return;
+    }
+    if (!this.selectedControlPanelUsageLeftContainerGroupId || !this.selectedControlPanelConstructorSchemaId) {
       return;
     }
     this.gameClient?.sendControlPanelConstructorProduceItem({

@@ -171,9 +171,11 @@ export type ControlPanelConstructorProduceItemMessage = {
   // Контейнер, из которого списываются компоненты.
   materialContainerEquipmentGroupId: number;
   // Контейнер, в который кладется готовая продукция.
-  productContainerEquipmentGroupId: number;
+  productContainerEquipmentGroupId?: number;
   // Схема предмета, выбранная для изготовления.
-  schemaId: number;
+  schemaId?: number;
+  // Чертёж объекта, выбранный для изготовления.
+  blueprintId?: number;
   // Количество запусков изготовления по выбранной схеме.
   amount: number;
 };
@@ -368,8 +370,12 @@ export type ConstructorProductionJob = {
   queueType: "main" | "auxiliary";
   // Схема, по которой изготавливается предмет.
   schemaId: number;
+  // Чертёж, по которому изготавливается объект.
+  blueprintId: number;
   // Модель предмета, который получится после завершения.
   productItemModelId: number;
+  // Модель объекта, который появится после завершения.
+  productCosmicObjectModelId: number;
   // Количество предметов, которое получится после завершения.
   productCount: number;
   // Количество предметов, которое еще осталось изготовить по строке.
