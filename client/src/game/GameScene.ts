@@ -824,6 +824,9 @@ export class GameScene extends Phaser.Scene {
       this.selectedControlPanelConstructorBlueprintId = Number(action.value);
       return true;
     }
+    if (action.controlId === "control-panel-constructor-make-button") {
+      return true;
+    }
     if (action.controlId.startsWith("control-panel-usage-left-container-content-") && typeof action.value === "string") {
       const selection = this.updateControlPanelUsageItemSelection(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageLeftItemGroupIds, this.selectedControlPanelUsageLeftAnchorItemGroupId, Number(action.value), action);
       this.selectedControlPanelUsageLeftItemGroupIds = selection.selectedIds;

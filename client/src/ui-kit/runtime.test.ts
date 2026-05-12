@@ -79,6 +79,23 @@ describe("GameUiRuntime", () => {
     expect(runtime.pointerUp(10, 10, 0)).toEqual({ type: "click", controlId: "ok", kind: "button", x: 10, y: 10, controlRect: { left: 0, top: 0, width: 100, height: 40 } });
   });
 
+  // Проверяет, что зажатая кнопка получает общий визуальный класс до отпускания мыши.
+  it("toggles pressed class for button while mouse is held", () => {
+    const runtime = new GameUiRuntime();
+    const element = document.createElement("div");
+    element.id = "ok";
+    element.className = "ui-kit-button";
+    document.body.append(element);
+
+    runtime.updateControls([control({ id: "ok" })]);
+
+    runtime.pointerDown(10, 10, 0);
+    expect(element.classList.contains("is-pressed")).toBe(true);
+
+    runtime.pointerUp(10, 10, 0);
+    expect(element.classList.contains("is-pressed")).toBe(false);
+  });
+
   // Проверяет, что слайдер внутри модального окна получает перетаскивание поверх фонового слоя.
   it("emits drag start for slider inside modal bounds", () => {
     const runtime = new GameUiRuntime();

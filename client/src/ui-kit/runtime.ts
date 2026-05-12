@@ -25,6 +25,10 @@ export class GameUiRuntime {
     if (this.hoveredControlId && !visibleIds.has(this.hoveredControlId)) {
       this.hoveredControlId = null;
     }
+    if (this.pressedControlId && !visibleIds.has(this.pressedControlId)) {
+      setElementPressed(this.pressedControlId, false);
+      this.pressedControlId = null;
+    }
   }
 
   // Возвращает верхний доступный контрол под координатой игрового курсора.
@@ -57,12 +61,19 @@ export class GameUiRuntime {
     }
     const target = this.hitTest(x, y);
     if (!target) {
+      if (this.pressedControlId) {
+        setElementPressed(this.pressedControlId, false);
+      }
       this.pressedControlId = null;
       this.focusedControlId = null;
       return outsideAction(x, y);
     }
 
+    if (this.pressedControlId && this.pressedControlId !== target.id) {
+      setElementPressed(this.pressedControlId, false);
+    }
     this.pressedControlId = target.id;
+    setElementPressed(target.id, true);
     if (target.focusable) {
       this.focusedControlId = target.id;
     }
@@ -81,12 +92,18 @@ export class GameUiRuntime {
     if (this.activeCaptureControlId) {
       const captured = this.controlById(this.activeCaptureControlId);
       this.activeCaptureControlId = null;
+      if (this.pressedControlId) {
+        setElementPressed(this.pressedControlId, false);
+      }
       this.pressedControlId = null;
       return captured ? action("dragEnd", captured, x, y, modifiers) : null;
     }
 
     const pressed = this.pressedControlId ? this.controlById(this.pressedControlId) : null;
     const released = this.hitTest(x, y);
+    if (this.pressedControlId) {
+      setElementPressed(this.pressedControlId, false);
+    }
     this.pressedControlId = null;
     if (pressed && released?.id === pressed.id) {
       return action("click", pressed, x, y, modifiers);
@@ -125,6 +142,15 @@ const contains = (control: GameUiControlState, x: number, y: number): boolean =>
   y >= control.rect.top &&
   y <= control.rect.top + control.rect.height
 );
+
+// Переключает общий визуальный признак зажатой кнопки для DOM, которым управляет Phaser-курсор.
+const setElementPressed = (id: string, pressed: boolean): void => {
+  const element = document.getElementById(id);
+  if (!element?.classList.contains("ui-kit-button")) {
+    return;
+  }
+  element.classList.toggle("is-pressed", pressed);
+};
 
 type GameUiActionModifiers = Pick<GameUiAction, "ctrlKey" | "metaKey" | "shiftKey">;
 

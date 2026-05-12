@@ -838,6 +838,9 @@ const ControlPanelConstructorWorkbench = (props: { state: Accessor<GameUiState> 
           />
         </Show>
       </div>
+      <div class="control-panel-constructor-workbench__make">
+        <Button id="control-panel-constructor-make-button" label="Изготовить" />
+      </div>
       <div class="control-panel-constructor-workbench__bottom">
         <ControlPanelConstructorQueueList id="control-panel-constructor-main-queue" />
         <ControlPanelConstructorQueueList id="control-panel-constructor-required-queue" />

@@ -126,6 +126,7 @@ describe("HUD styles", () => {
     const tab = readCssBlock(".ui-kit-tab");
     const selectedTab = readCssBlock(".ui-kit-tab.is-selected");
     const disabledButton = readCssBlock(".ui-kit-button.is-disabled");
+    const pressedButton = readCssBlock(".ui-kit-button.is-pressed");
 
     expect(button).toContain("width: max-content;");
     expect(button).toContain("white-space: nowrap;");
@@ -133,6 +134,9 @@ describe("HUD styles", () => {
     expect(button).toContain("background: rgba(126, 212, 255, 0.16);");
     expect(disabledButton).toContain("color: rgba(216, 243, 255, 0.42);");
     expect(disabledButton).toContain("background: rgba(126, 212, 255, 0.07);");
+    expect(pressedButton).toContain("background: rgba(126, 212, 255, 0.34);");
+    expect(pressedButton).toContain("transform: translateY(0.14vh);");
+    expect(pressedButton).toContain("box-shadow: inset 0 0.18vh 0.35vh rgba(0, 0, 0, 0.42);");
     expect(button).not.toMatch(/\bborder(?:-color)?\s*:/);
     expect(tabs).toContain("background: var(--hud-tab-panel-bg);");
     expect(tabs).toContain("padding: var(--hud-tab-panel-padding);");

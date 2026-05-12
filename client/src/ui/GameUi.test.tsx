@@ -721,6 +721,7 @@ describe("GameUi", () => {
     expect(root.querySelector(".control-panel-constructor-workbench")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.textContent).toBe("Пластина");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 30 с, Феррогель: 5");
+    expect(root.querySelector("#control-panel-constructor-make-button")?.textContent).toBe("Изготовить");
     expect(root.querySelector("#control-panel-usage-right-container-content-1")?.textContent).toBe("Феррогель15");
   });
 
