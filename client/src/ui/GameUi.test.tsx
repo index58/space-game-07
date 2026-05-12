@@ -160,6 +160,7 @@ const state = (): GameUiState => ({
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
+  listScroll: {},
   controlPanelObjectEnabled: true,
   controlPanelObjectTitleText: "Ship",
   controlPanelObjectTitleSelectionStart: 4,

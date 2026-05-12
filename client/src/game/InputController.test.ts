@@ -863,6 +863,35 @@ describe("InputController", () => {
     expect(controller.consumeGameUiAction()).toMatchObject({ type: "click", controlId: "demo-list-1", ctrlKey: true, shiftKey: true });
   });
 
+  // Проверяет, что колесо над строкой списка передаёт сцене прокрутку корневого списка.
+  it("queues game UI wheel action for hovered list root", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    const list = document.createElement("div");
+    const row = document.createElement("div");
+    list.id = "demo-list";
+    list.className = "ui-kit-list";
+    row.id = "demo-list-1";
+    list.append(row);
+    document.body.append(list);
+    setPointerLockElement(canvas);
+    controller.updateGameUiControls([{
+      id: "demo-list-1",
+      kind: "list",
+      rect: { left: 500, top: 370, width: 60, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: "1",
+    }]);
+
+    pressKey("F9", "F9");
+    wheel(80, false);
+
+    expect(controller.consumeGameUiWheelAction()).toEqual({ controlId: "demo-list", deltaY: 80 });
+  });
+
   it("closes modal window from shared close button", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);

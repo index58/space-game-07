@@ -388,7 +388,7 @@ describe("HUD styles", () => {
     const viewport = readCssBlock(".ui-kit-dropdown__menu[id^=\"settings-input-select-\"] .ui-kit-dropdown__menu-viewport");
     const label = readCssBlock(".game-form-row-label");
     const action = readCssBlock(".settings-input-row__action");
-    const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar,\n.ui-kit-scrollbar.control-panel-equipment-list-scrollbar");
+    const sharedScrollbars = readCssBlock(".ui-kit-scrollbar.ui-kit-dropdown-scrollbar,\n.ui-kit-scrollbar.settings-input-scrollbar,\n.ui-kit-scrollbar.control-panel-equipment-list-scrollbar,\n.ui-kit-scrollbar.ui-kit-list-scrollbar");
 
     expect(layer).toContain("position: absolute;");
     expect(layer).toContain("transform: translate(-50%, -50%);");

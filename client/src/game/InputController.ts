@@ -46,6 +46,13 @@ export type ChatScrollState = {
   dragging: boolean;
 };
 
+export type GameUiWheelAction = {
+  // Список или его полоса, над которыми игрок прокрутил колесо.
+  controlId: string;
+  // Вертикальный сдвиг колеса из браузерного события.
+  deltaY: number;
+};
+
 type ChatInputDraft = {
   // Текст, набранный игроком в конкретной вкладке чата.
   text: string;
@@ -133,6 +140,8 @@ export class InputController {
   private readonly uiRuntime = new GameUiRuntime();
   // Очередь действий общего игрового UI.
   private uiActions: GameUiAction[] = [];
+  // Очередь прокрутки списков общего игрового UI.
+  private uiWheelActions: GameUiWheelAction[] = [];
   // Показывает отладочное окно с примерами всех контролов.
   private uiKitShowcaseVisible = false;
   // Показывает окно настроек игрока.
@@ -274,6 +283,7 @@ export class InputController {
           return;
         }
         if (this.isGameCursorVisible()) {
+          this.enqueueGameUiWheelAction(event.deltaY);
           event.preventDefault();
           return;
         }
@@ -569,6 +579,11 @@ export class InputController {
   // Возвращает очередное действие общего UI, если оно было создано игровым курсором.
   consumeGameUiAction(): GameUiAction | null {
     return this.uiActions.shift() ?? null;
+  }
+
+  // Возвращает очередную прокрутку списка общего UI, если она была создана игровым колесом.
+  consumeGameUiWheelAction(): GameUiWheelAction | null {
+    return this.uiWheelActions.shift() ?? null;
   }
 
   // Возвращает видимость отладочной панели UI Kit.
@@ -872,6 +887,15 @@ export class InputController {
         return;
       }
       this.uiActions.push(action);
+    }
+  }
+
+  // Сохраняет прокрутку только для списков, чтобы колесо не мешало управлению кораблем.
+  private enqueueGameUiWheelAction(deltaY: number): void {
+    const target = this.uiRuntime.hitTest(this.cursorX, this.cursorY);
+    const controlId = target ? scrollableListIdFromControl(target) : null;
+    if (controlId) {
+      this.uiWheelActions.push({ controlId, deltaY });
     }
   }
 
@@ -1421,6 +1445,19 @@ const formatFuelDrainAmount = (value: number): string => {
     return "0";
   }
   return String(Math.max(0, value));
+};
+
+// Возвращает ID списка по корню, строке или общей полосе прокрутки ListBox.
+const scrollableListIdFromControl = (control: GameUiControlState): string | null => {
+  if (control.kind === "scrollbar" && control.id.endsWith("-scrollbar")) {
+    return control.id.slice(0, -"-scrollbar".length);
+  }
+  if (control.kind !== "list") {
+    return null;
+  }
+  const element = document.getElementById(control.id);
+  const listRoot = element?.closest<HTMLElement>(".ui-kit-list");
+  return listRoot?.id ?? control.id;
 };
 
 // Возвращает клавиши-модификаторы для действия игрового UI.

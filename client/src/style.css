@@ -472,6 +472,7 @@ body {
 }
 
 .ui-kit-list {
+  position: relative;
   display: grid;
   gap: 0;
   padding: var(--hud-list-padding);
@@ -485,6 +486,10 @@ body {
   gap: 0;
   align-content: start;
   min-height: 0;
+}
+
+.ui-kit-list.is-scrollable .ui-kit-list__content {
+  padding-right: 1.5vh;
 }
 
 .ui-kit-dropdown::after {
@@ -747,7 +752,8 @@ body {
 
 .ui-kit-scrollbar.ui-kit-dropdown-scrollbar,
 .ui-kit-scrollbar.settings-input-scrollbar,
-.ui-kit-scrollbar.control-panel-equipment-list-scrollbar {
+.ui-kit-scrollbar.control-panel-equipment-list-scrollbar,
+.ui-kit-scrollbar.ui-kit-list-scrollbar {
   position: absolute;
   right: 0.25vh;
   top: 0.35vh;

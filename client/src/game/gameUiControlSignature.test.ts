@@ -60,6 +60,7 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
   controlPanelEquipmentListScroll: scrollState,
+  listScroll: {},
   controlPanelObjectEnabled: true,
   controlPanelObjectTitleText: "Ship",
   controlPanelObjectTitleSelectionStart: 4,

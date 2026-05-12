@@ -105,6 +105,19 @@ type ListBoxProps = {
   items: UiKitOption[];
   // Вертикальный сдвиг содержимого для списков с внешней полосой прокрутки.
   scrollOffsetPx?: number;
+  // Состояние встроенной полосы прокрутки.
+  scroll?: {
+    // Показывает, что список не помещается в видимую область.
+    visible: boolean;
+    // Верх ползунка в процентах высоты полосы.
+    thumbTopPercent: number;
+    // Высота ползунка в процентах высоты полосы.
+    thumbHeightPercent: number;
+    // Вертикальный сдвиг содержимого списка.
+    contentOffsetPx: number;
+    // Показывает активное перетаскивание ползунка.
+    dragging: boolean;
+  };
 };
 
 type TreeViewProps = {
@@ -335,8 +348,8 @@ export const Dropdown = (props: DropdownProps) => {
 };
 
 export const ListBox = (props: ListBoxProps) => (
-  <div id={props.id} data-ui-kind="list" class="ui-kit-control ui-kit-list">
-    <div class="ui-kit-list__content" style={{ transform: `translateY(-${props.scrollOffsetPx ?? 0}px)` }}>
+  <div id={props.id} data-ui-kind="list" class={`ui-kit-control ui-kit-list ${props.scroll?.visible ? "is-scrollable" : ""}`}>
+    <div class="ui-kit-list__content" style={{ transform: `translateY(-${props.scroll?.contentOffsetPx ?? props.scrollOffsetPx ?? 0}px)` }}>
       <For each={props.items}>
         {(item) => (
           <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} title={item.title} class={`ui-kit-control ui-kit-list__item ${isListBoxItemSelected(props, item.value) ? "is-selected" : ""}`}>
@@ -348,6 +361,15 @@ export const ListBox = (props: ListBoxProps) => (
         )}
       </For>
     </div>
+    <Show when={props.scroll?.visible}>
+      <Scrollbar
+        id={`${props.id}-scrollbar`}
+        className="ui-kit-list-scrollbar"
+        thumbTopPercent={props.scroll?.thumbTopPercent ?? 0}
+        thumbHeightPercent={props.scroll?.thumbHeightPercent ?? 100}
+        dragging={props.scroll?.dragging ?? false}
+      />
+    </Show>
   </div>
 );
 

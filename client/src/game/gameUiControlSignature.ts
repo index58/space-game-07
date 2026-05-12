@@ -73,6 +73,7 @@ export const getGameUiControlLayoutSignature = (
     schemas: Object.values(state.referenceData?.Schema.Items ?? {}).sort((left, right) => left.ID - right.ID).map((schema) => `${schema.ID}:${schema.ItemModelID}`).join(","),
     blueprints: Object.values(state.referenceData?.Blueprint.Items ?? {}).sort((left, right) => left.ID - right.ID).map((blueprint) => `${blueprint.ID}:${blueprint.CosmicObjectModelID}`).join(","),
     equipmentListScroll: scrollSignature(state.controlPanelEquipmentListScroll),
+    listScroll: Object.entries(state.listScroll).sort(([left], [right]) => left.localeCompare(right)).map(([id, scroll]) => `${id}:${scrollSignatureText(scroll)}`).join("|"),
     hasSelfObject: state.selfObject !== null,
     objectId: state.selfObject?.ID ?? null,
   },
@@ -85,3 +86,7 @@ const scrollSignature = (scroll: GameUiState["inputSettingsScroll"]) => ({
   contentOffsetPx: scroll.contentOffsetPx,
   dragging: scroll.dragging,
 });
+
+// Возвращает компактную строку состояния прокрутки для признака раскладки.
+const scrollSignatureText = (scroll: GameUiState["inputSettingsScroll"]): string =>
+  `${Number(scroll.visible)}:${Math.round(scroll.thumbTopPercent)}:${Math.round(scroll.thumbHeightPercent)}:${Math.round(scroll.contentOffsetPx)}:${Number(scroll.dragging)}`;

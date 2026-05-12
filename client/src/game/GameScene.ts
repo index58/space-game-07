@@ -145,6 +145,10 @@ export class GameScene extends Phaser.Scene {
   private controlPanelEquipmentListScrollOffsetPx = 0;
   // Захват ползунка списка групп оборудования.
   private controlPanelEquipmentListScrollbarDrag: ScrollbarDragState | null = null;
+  // Вертикальные сдвиги обычных списков панели управления по ID списка.
+  private readonly listScrollOffsets = new Map<string, number>();
+  // Захваты ползунков обычных списков панели управления по ID списка.
+  private readonly listScrollbarDrags = new Map<string, ScrollbarDragState>();
   // Предыдущее состояние видимости окна настроек для запроса свежих данных при открытии.
   private previousSettingsVisible = false;
   // Вертикальный сдвиг списка действий в окне настроек.
@@ -230,6 +234,7 @@ export class GameScene extends Phaser.Scene {
       this.gameClient?.selectChat(chatSelectAction.chatId);
     }
     this.consumeGameUiActions();
+    this.consumeGameUiWheelActions();
     this.consumeSettingsWheel();
     const inputSettingsScroll = this.getSettingsInputScrollState();
     const inputSettingsDropdownScroll = this.getSettingsDropdownScrollState();
@@ -301,6 +306,7 @@ export class GameScene extends Phaser.Scene {
         controlPanelEquipmentEnabledDrafts: {},
         controlPanelEquipmentEnabledCountDrafts: {},
         controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
+        listScroll: this.getListScrollStates(),
         controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(false),
         controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
         controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
@@ -377,6 +383,7 @@ export class GameScene extends Phaser.Scene {
       controlPanelEquipmentEnabledDrafts: {},
       controlPanelEquipmentEnabledCountDrafts: {},
       controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
+      listScroll: this.getListScrollStates(),
       controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(selfObject.Enabled),
       controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
       controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
@@ -589,7 +596,7 @@ export class GameScene extends Phaser.Scene {
         if (rect.width <= 0 || rect.height <= 0) {
           return null;
         }
-        const clippingViewport = element.closest(".ui-kit-dropdown__menu-viewport, .settings-input-table, .control-panel-equipment-list .ui-kit-list");
+        const clippingViewport = element.closest(".ui-kit-dropdown__menu-viewport, .settings-input-table, .ui-kit-list");
         if (clippingViewport) {
           const viewportRect = clippingViewport.getBoundingClientRect();
           if (rect.bottom < viewportRect.top || rect.top > viewportRect.bottom || rect.right < viewportRect.left || rect.left > viewportRect.right) {
@@ -715,8 +722,24 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // Применяет колесо мыши к обычным спискам общего UI.
+  private consumeGameUiWheelActions(): void {
+    let action = this.inputController.consumeGameUiWheelAction();
+    while (action) {
+      const maxOffsetPx = this.listMaxScrollOffset(action.controlId);
+      if (maxOffsetPx > 0) {
+        const currentOffsetPx = this.listScrollOffsets.get(action.controlId) ?? 0;
+        this.listScrollOffsets.set(action.controlId, clamp(currentOffsetPx + action.deltaY, 0, maxOffsetPx));
+      }
+      action = this.inputController.consumeGameUiWheelAction();
+    }
+  }
+
   // Применяет действия панели управления и не пропускает их в отладочную витрину.
   private consumeControlPanelUiAction(action: GameUiAction): boolean {
+    if (action.kind === "scrollbar" && action.controlId.endsWith("-scrollbar") && this.consumeListScrollbarAction(action)) {
+      return true;
+    }
     if (action.kind === "scrollbar" && action.controlId === "control-panel-equipment-list-scrollbar") {
       return this.consumeControlPanelEquipmentListScrollbarAction(action);
     }
@@ -933,6 +956,48 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     return action.controlId.startsWith("control-panel-");
+  }
+
+  // Обрабатывает полосу прокрутки любого обычного списка панели управления.
+  private consumeListScrollbarAction(action: GameUiAction): boolean {
+    if (!action.controlRect) {
+      return false;
+    }
+    const listId = listIdFromScrollbarId(action.controlId);
+    if (!listId || !this.isScrollableListId(listId)) {
+      return false;
+    }
+    const scrollState = this.getListScrollState(listId);
+    if (action.type === "dragStart") {
+      this.listScrollbarDrags.set(listId, startScrollbarDrag({
+        top: action.controlRect.top,
+        height: action.controlRect.height,
+        thumbTopPercent: scrollState.thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+      }, action.y));
+      return true;
+    }
+    if (action.type === "dragEnd") {
+      this.listScrollbarDrags.delete(listId);
+      return true;
+    }
+    const drag = this.listScrollbarDrags.get(listId);
+    if (action.type === "dragMove" && drag) {
+      const thumbTopPercent = getScrollbarThumbTopPercentFromCursor({
+        top: action.controlRect.top,
+        height: action.controlRect.height,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        drag,
+      }, action.y);
+      this.listScrollOffsets.set(listId, getScrollOffsetFromThumbTopPercent({
+        thumbTopPercent,
+        thumbHeightPercent: scrollState.thumbHeightPercent,
+        maxOffsetPx: this.listMaxScrollOffset(listId),
+        reverse: false,
+      }));
+      return true;
+    }
+    return true;
   }
 
   // Обрабатывает полосу прокрутки списка оборудования через общий механизм UI Kit.
@@ -1387,6 +1452,33 @@ export class GameScene extends Phaser.Scene {
     );
   }
 
+  // Возвращает состояния прокрутки для всех видимых обычных списков.
+  private getListScrollStates(): Record<string, ChatScrollState> {
+    const scrollStates: Record<string, ChatScrollState> = {};
+    for (const listId of scrollableListIds) {
+      if (this.isScrollableListId(listId)) {
+        scrollStates[listId] = this.getListScrollState(listId);
+      }
+    }
+    return scrollStates;
+  }
+
+  // Возвращает состояние прокрутки одного обычного списка.
+  private getListScrollState(listId: string): ChatScrollState {
+    const maxOffsetPx = this.listMaxScrollOffset(listId);
+    const offsetPx = clamp(this.listScrollOffsets.get(listId) ?? 0, 0, maxOffsetPx);
+    this.listScrollOffsets.set(listId, offsetPx);
+    if (listId === "control-panel-equipment-list") {
+      this.controlPanelEquipmentListScrollOffsetPx = offsetPx;
+    }
+    return this.getScrollState(
+      offsetPx,
+      this.listViewportHeightPx(listId),
+      this.listContentHeightPx(listId),
+      this.listScrollbarDrags.has(listId),
+    );
+  }
+
   // Формирует универсальное состояние скролла для UI Kit полосы.
   private getScrollState(offsetPx: number, viewportHeightPx: number, contentHeightPx: number, dragging: boolean): ChatScrollState {
     const maxOffsetPx = Math.max(0, contentHeightPx - viewportHeightPx);
@@ -1412,6 +1504,11 @@ export class GameScene extends Phaser.Scene {
   // Возвращает максимальный сдвиг списка групп оборудования.
   private controlPanelEquipmentListMaxScrollOffset(): number {
     return Math.max(0, this.controlPanelEquipmentListContentHeightPx() - this.controlPanelEquipmentListViewportHeightPx());
+  }
+
+  // Возвращает максимальный сдвиг обычного списка.
+  private listMaxScrollOffset(listId: string): number {
+    return Math.max(0, this.listContentHeightPx(listId) - this.listViewportHeightPx(listId));
   }
 
   // Измеряет видимую высоту списка действий.
@@ -1446,6 +1543,53 @@ export class GameScene extends Phaser.Scene {
     const rowCount = this.getControlPanelEquipmentGroups().length;
     return (rowCount * CONTROL_PANEL_EQUIPMENT_LIST_ITEM_HEIGHT_VH + SETTINGS_DROPDOWN_CONTENT_PADDING_VH) * window.innerHeight / 100;
   }
+
+  // Проверяет, что ID относится к обычному списку с общей прокруткой.
+  private isScrollableListId(listId: string): boolean {
+    return scrollableListIds.has(listId);
+  }
+
+  // Измеряет видимую высоту обычного списка.
+  private listViewportHeightPx(listId: string): number {
+    if (listId === "control-panel-equipment-list") {
+      return this.controlPanelEquipmentListViewportHeightPx();
+    }
+    return document.getElementById(listId)?.getBoundingClientRect().height ?? window.innerHeight * 0.2;
+  }
+
+  // Возвращает расчетную полную высоту содержимого обычного списка.
+  private listContentHeightPx(listId: string): number {
+    if (listId === "control-panel-equipment-list") {
+      return this.controlPanelEquipmentListContentHeightPx();
+    }
+    const rowCount = this.listRowCount(listId);
+    return (rowCount * CONTROL_PANEL_EQUIPMENT_LIST_ITEM_HEIGHT_VH + SETTINGS_DROPDOWN_CONTENT_PADDING_VH) * window.innerHeight / 100;
+  }
+
+  // Возвращает количество строк в обычном списке по его назначению.
+  private listRowCount(listId: string): number {
+    if (listId === "control-panel-usage-left-container-content") {
+      return this.getControlPanelContainerItemGroupCount(this.selectedControlPanelUsageLeftContainerGroupId);
+    }
+    if (listId === "control-panel-usage-right-container-content") {
+      return this.getControlPanelContainerItemGroupCount(this.getControlPanelUsageRightContentContainerGroupId());
+    }
+    if (listId === "control-panel-constructor-schema-list") {
+      return Object.keys(this.referenceData?.Schema.Items ?? {}).length;
+    }
+    if (listId === "control-panel-constructor-blueprint-list") {
+      return Object.keys(this.referenceData?.Blueprint.Items ?? {}).length;
+    }
+    return 0;
+  }
+
+  // Возвращает количество групп предметов в выбранном контейнере.
+  private getControlPanelContainerItemGroupCount(containerGroupId: number | null): number {
+    if (!containerGroupId) {
+      return 0;
+    }
+    return this.gameUi.state().itemGroups.filter((group) => group.ContainerEquipmentGroupID === containerGroupId).length;
+  }
 }
 
 const uiKind = (value: string | undefined): GameUiControlKind => {
@@ -1470,6 +1614,20 @@ const isControlPanelConstructorTabValue = (value: unknown): value is ControlPane
   value === "objects";
 
 // Возвращает текущую группу, если она ещё доступна, иначе первую доступную.
+const scrollableListIds = new Set([
+  "control-panel-equipment-list",
+  "control-panel-usage-left-container-content",
+  "control-panel-usage-right-container-content",
+  "control-panel-constructor-schema-list",
+  "control-panel-constructor-blueprint-list",
+  "control-panel-constructor-main-queue",
+  "control-panel-constructor-required-queue",
+]);
+
+// Возвращает ID списка по ID встроенной полосы прокрутки.
+const listIdFromScrollbarId = (scrollbarId: string): string | null =>
+  scrollbarId.endsWith("-scrollbar") ? scrollbarId.slice(0, -"-scrollbar".length) : null;
+
 const normalizeSelectedControlPanelGroupId = (groups: EquipmentGroup[], selectedGroupId: number | null): number | null =>
   groups.some((group) => group.ID === selectedGroupId) ? selectedGroupId : groups[0]?.ID ?? null;
 

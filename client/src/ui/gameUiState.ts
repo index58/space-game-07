@@ -109,6 +109,8 @@ export type GameUiState = {
   controlPanelEquipmentEnabledCountDrafts: Record<number, number>;
   // Состояние прокрутки списка групп оборудования.
   controlPanelEquipmentListScroll: ChatScrollState;
+  // Состояния прокрутки обычных списков по ID списка.
+  listScroll: Record<string, ChatScrollState>;
   // Черновик признака включения объекта для интерактивного переключателя панели управления.
   controlPanelObjectEnabled: boolean;
   // Черновик пользовательского названия объекта для интерактивного поля панели управления.
@@ -198,6 +200,7 @@ const initialGameUiState: GameUiState = {
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
+  listScroll: {},
   controlPanelObjectEnabled: false,
   controlPanelObjectTitleText: "",
   controlPanelObjectTitleSelectionStart: 0,

@@ -640,17 +640,8 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                             id="control-panel-equipment-list"
                             selectedValue={selectedEquipment() ? String(selectedEquipment()?.group.ID) : ""}
                             items={equipmentGroups().map((equipment) => ({ value: String(equipment.group.ID), label: equipment.modelTitle }))}
-                            scrollOffsetPx={props.state().controlPanelEquipmentListScroll.contentOffsetPx}
+                            scroll={props.state().listScroll["control-panel-equipment-list"] ?? props.state().controlPanelEquipmentListScroll}
                           />
-                          <Show when={props.state().controlPanelEquipmentListScroll.visible}>
-                            <Scrollbar
-                              id="control-panel-equipment-list-scrollbar"
-                              className="control-panel-equipment-list-scrollbar"
-                              thumbTopPercent={props.state().controlPanelEquipmentListScroll.thumbTopPercent}
-                              thumbHeightPercent={props.state().controlPanelEquipmentListScroll.thumbHeightPercent}
-                              dragging={props.state().controlPanelEquipmentListScroll.dragging}
-                            />
-                          </Show>
                         </div>
                         <div class="control-panel-equipment-info">
                           <Show when={selectedEquipment()} fallback={<div class="control-panel-empty-page" />}>
@@ -714,6 +705,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                       listId="control-panel-usage-left-container-content"
                                       rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
                                       selectedIds={props.state().selectedControlPanelUsageLeftItemGroupIds}
+                                      scroll={props.state().listScroll["control-panel-usage-left-container-content"]}
                                     />
                                   )}
                                 </Show>
@@ -734,6 +726,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                       listId="control-panel-usage-right-container-content"
                                       rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
                                       selectedIds={props.state().selectedControlPanelUsageRightItemGroupIds}
+                                      scroll={props.state().listScroll["control-panel-usage-right-container-content"]}
                                     />
                                   )}
                                 </Show>
@@ -751,6 +744,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                       listId="control-panel-usage-left-container-content"
                                       rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
                                       selectedIds={props.state().selectedControlPanelUsageLeftItemGroupIds}
+                                      scroll={props.state().listScroll["control-panel-usage-left-container-content"]}
                                     />
                                   )}
                                 </Show>
@@ -791,6 +785,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                   listId="control-panel-usage-right-container-content"
                                   rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, equipment().group.ID)}
                                   selectedIds={props.state().selectedControlPanelUsageRightItemGroupIds}
+                                  scroll={props.state().listScroll["control-panel-usage-right-container-content"]}
                                 />
                               </div>
                             )}
@@ -864,13 +859,14 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
 };
 
 // Показывает содержимое выбранного контейнера как обычный список с двумя колонками.
-const ControlPanelContainerContent = (props: { listId: string; rows: ControlPanelContainerContentRow[]; selectedIds: number[] }) => (
+const ControlPanelContainerContent = (props: { listId: string; rows: ControlPanelContainerContentRow[]; selectedIds: number[]; scroll?: GameUiState["chatScroll"] }) => (
   <div class="control-panel-container-content">
     <ListBox
       id={props.listId}
       selectedValue=""
       selectedValues={props.selectedIds.map(String)}
       items={props.rows.map((row) => ({ value: String(row.id), label: row.title, secondaryLabel: row.count }))}
+      scroll={props.scroll}
     />
   </div>
 );
@@ -894,6 +890,7 @@ const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState
             id="control-panel-constructor-blueprint-list"
             rows={blueprintRows()}
             selectedId={props.state().selectedControlPanelConstructorBlueprintId}
+            scroll={props.state().listScroll["control-panel-constructor-blueprint-list"]}
           />
         )}
       >
@@ -901,6 +898,7 @@ const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState
           id="control-panel-constructor-schema-list"
           rows={schemaRows()}
           selectedId={props.state().selectedControlPanelConstructorSchemaId}
+          scroll={props.state().listScroll["control-panel-constructor-schema-list"]}
         />
       </Show>
       <div class="control-panel-constructor-recipes__make">
@@ -923,11 +921,12 @@ const ControlPanelConstructorQueuePanel = () => (
 );
 
 // Показывает один из списков схем или чертежей конструктора.
-const ControlPanelConstructorRecipeList = (props: { id: string; rows: ControlPanelConstructorRecipeRow[]; selectedId: number | null }) => (
+const ControlPanelConstructorRecipeList = (props: { id: string; rows: ControlPanelConstructorRecipeRow[]; selectedId: number | null; scroll?: GameUiState["chatScroll"] }) => (
   <ListBox
     id={props.id}
     selectedValue={props.selectedId ? String(props.selectedId) : ""}
     items={props.rows.map((row) => ({ value: String(row.id), label: row.title, title: row.description }))}
+    scroll={props.scroll}
   />
 );
 
