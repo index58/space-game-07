@@ -142,6 +142,10 @@ const state = (): GameUiState => ({
   openControlPanelUsageSelect: null,
   selectedControlPanelUsageLeftItemGroupIds: [],
   selectedControlPanelUsageRightItemGroupIds: [],
+  selectedControlPanelConstructorMaterialContainerGroupId: null,
+  selectedControlPanelConstructorTab: "items",
+  selectedControlPanelConstructorSchemaId: null,
+  selectedControlPanelConstructorBlueprintId: null,
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,
@@ -631,6 +635,93 @@ describe("GameUi", () => {
     expect(Array.from(root.querySelectorAll(".control-panel-container-content .ui-kit-list__item.is-selected")).map((row) => row.textContent)).toEqual(["Руда7", "Руда3"]);
     expect(root.querySelector("#control-panel-container-transfer-to-right")?.getAttribute("aria-label")).toBe("Переместить выбранные предметы в правый контейнер");
     expect(root.querySelector("#control-panel-container-transfer-to-left")?.getAttribute("aria-label")).toBe("Переместить выбранные предметы в левый контейнер");
+  });
+
+  // Проверяет, что выбранный конструктор показывает схемы, чертежи и отдельный контейнер материалов.
+  it("renders control panel equipment usage constructor UI", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const equipmentReferenceData = {
+      ...referenceData,
+      Itemtype: {
+        MaxID: 3,
+        Items: {
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "Constructor", IsPilotInstrument: true, IsInternalUsable: true },
+          "3": { ID: 3, Acronym: "Resource", IsPilotInstrument: false, IsInternalUsable: false },
+        },
+      },
+      ItemModel: {
+        MaxID: 4,
+        Items: {
+          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Контейнер" },
+          "2": { ID: 2, ItemtypeID: 2, Acronym: "Constructor", TitleRu: "Конструктор" },
+          "3": { ID: 3, ItemtypeID: 3, Acronym: "Ferrogel", TitleRu: "Феррогель" },
+          "4": { ID: 4, ItemtypeID: 3, Acronym: "Plate", TitleRu: "Пластина" },
+        },
+      },
+      CosmicObjectModel: {
+        ...referenceData.CosmicObjectModel,
+        Items: {
+          ...referenceData.CosmicObjectModel.Items,
+          "12": { ID: 12, CosmicObjectTypeID: 1, TitleRu: "Катер", TextureWidth: 40, TextureHeight: 40, TextureBodyOriginX: 20, TextureBodyOriginY: 20, TextureScale: 1, BodyWidth: 20, BodyLength: 20 },
+        },
+      },
+      Schema: {
+        MaxID: 1,
+        Items: {
+          "1": { ID: 1, TitleRu: "Схема: Пластина", TitleEn: "Schema: Plate", ItemModelID: 4, Count: 2, ProductionBaseTime: 30 },
+        },
+      },
+      SchemaComponent: {
+        MaxID: 1,
+        Items: {
+          "1": { ID: 1, SchemaID: 1, ComponentItemModelID: 3, Count: 5 },
+        },
+      },
+      Blueprint: {
+        MaxID: 1,
+        Items: {
+          "1": { ID: 1, TitleRu: "Чертёж: Катер", TitleEn: "Blueprint: Boat", CosmicObjectModelID: 12, ProductionBaseTime: 90 },
+        },
+      },
+      BlueprintComponent: {
+        MaxID: 1,
+        Items: {
+          "1": { ID: 1, BlueprintID: 1, ComponentItemModelID: 4, Count: 6 },
+        },
+      },
+    } as unknown as ReferenceDataMessage;
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageLeftContainerGroupId: 10,
+      selectedControlPanelUsageRightEquipmentGroupId: 11,
+      selectedControlPanelConstructorMaterialContainerGroupId: 12,
+      selectedControlPanelConstructorSchemaId: 1,
+      referenceData: equipmentReferenceData,
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 1, Title: "Продукция", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 11, CosmicObjectID: 1, Title: "Сборщик", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 12, CosmicObjectID: 1, Title: "Материалы", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+      itemGroups: [
+        { ID: 1, ContainerEquipmentGroupID: 12, ContentItemModelID: 3, Count: 15 },
+        { ID: 2, ContainerEquipmentGroupID: 10, ContentItemModelID: 4, Count: 2 },
+      ],
+    })} />, root);
+
+    expect(root.querySelector(".control-panel-equipment-usage--constructor")).not.toBeNull();
+    expect(root.querySelector("#control-panel-usage-left-container-select .ui-kit-dropdown__value")?.textContent).toBe("Продукция");
+    expect(root.querySelector("#control-panel-constructor-material-select .ui-kit-dropdown__value")?.textContent).toBe("Материалы");
+    expect(root.querySelector("#control-panel-usage-left-container-content-2")?.textContent).toBe("Пластина2");
+    expect(root.querySelector(".control-panel-constructor-workbench")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
+    expect(root.querySelector("#control-panel-constructor-schema-list-1")?.textContent).toBe("Пластина");
+    expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 30 с, Феррогель: 5");
+    expect(root.querySelector("#control-panel-usage-right-container-content-1")?.textContent).toBe("Феррогель15");
   });
 
   // Проверяет, что выбранный топливный бак в правой панели использования показывает шкалу общего топлива объекта.

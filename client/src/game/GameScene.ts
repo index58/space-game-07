@@ -16,7 +16,7 @@ import type {
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
-import type { ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
+import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
 import { getInputBindingMap, getInputSettingsLeftColumnRowCount, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
@@ -102,7 +102,7 @@ export class GameScene extends Phaser.Scene {
   // ID оборудования в правой панели использования оборудования.
   private selectedControlPanelUsageRightEquipmentGroupId: number | null = null;
   // Открытый выпадающий список использования оборудования.
-  private openControlPanelUsageSelect: "left" | "right" | null = null;
+  private openControlPanelUsageSelect: "left" | "right" | "constructorMaterials" | null = null;
   // Выбранные строки содержимого левого контейнера.
   private selectedControlPanelUsageLeftItemGroupIds: number[] = [];
   // Опорная строка левого контейнера для выбора диапазона через Shift.
@@ -111,6 +111,14 @@ export class GameScene extends Phaser.Scene {
   private selectedControlPanelUsageRightItemGroupIds: number[] = [];
   // Опорная строка правого контейнера для выбора диапазона через Shift.
   private selectedControlPanelUsageRightAnchorItemGroupId: number | null = null;
+  // ID контейнера, из которого конструктор берёт материалы.
+  private selectedControlPanelConstructorMaterialContainerGroupId: number | null = null;
+  // Активная вкладка списка заданий конструктора.
+  private selectedControlPanelConstructorTab: ControlPanelConstructorTabValue = "items";
+  // ID схемы, выбранной в списке конструктора.
+  private selectedControlPanelConstructorSchemaId: number | null = null;
+  // ID чертежа, выбранного в списке конструктора.
+  private selectedControlPanelConstructorBlueprintId: number | null = null;
   // Показывает окно подтверждения слива топлива из бака.
   private controlPanelFuelDrainDialogOpen = false;
   // Показывает окно подтверждения залива топлива в бак.
@@ -275,6 +283,10 @@ export class GameScene extends Phaser.Scene {
         openControlPanelUsageSelect: this.openControlPanelUsageSelect,
         selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
         selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
+        selectedControlPanelConstructorMaterialContainerGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
+        selectedControlPanelConstructorTab: this.selectedControlPanelConstructorTab,
+        selectedControlPanelConstructorSchemaId: this.selectedControlPanelConstructorSchemaId,
+        selectedControlPanelConstructorBlueprintId: this.selectedControlPanelConstructorBlueprintId,
         controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
         controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
         controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
@@ -346,6 +358,10 @@ export class GameScene extends Phaser.Scene {
       openControlPanelUsageSelect: this.openControlPanelUsageSelect,
       selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
       selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
+      selectedControlPanelConstructorMaterialContainerGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
+      selectedControlPanelConstructorTab: this.selectedControlPanelConstructorTab,
+      selectedControlPanelConstructorSchemaId: this.selectedControlPanelConstructorSchemaId,
+      selectedControlPanelConstructorBlueprintId: this.selectedControlPanelConstructorBlueprintId,
       controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
       controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
       controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
@@ -644,6 +660,10 @@ export class GameScene extends Phaser.Scene {
 
     this.selectedControlPanelUsageLeftContainerGroupId = selection.leftContainerGroupId;
     this.selectedControlPanelUsageRightEquipmentGroupId = selection.rightEquipmentGroupId;
+    this.selectedControlPanelConstructorMaterialContainerGroupId = normalizeSelectedControlPanelGroupId(
+      equipmentGroups.filter((group) => group.CosmicObjectID === objectId && this.isEquipmentGroupItemtype(group, "Container")),
+      this.selectedControlPanelConstructorMaterialContainerGroupId,
+    );
   }
 
   // Возвращает количество топлива, доступное для залива из текущего выбора в левом контейнере.
@@ -762,6 +782,10 @@ export class GameScene extends Phaser.Scene {
       this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "right" ? null : "right";
       return true;
     }
+    if (action.controlId === "control-panel-constructor-material-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "constructorMaterials" ? null : "constructorMaterials";
+      return true;
+    }
     if (action.controlId.startsWith("control-panel-usage-left-container-select-") && typeof action.value === "string") {
       const groupId = Number(action.value);
       if (this.getControlPanelEquipmentGroup(groupId)) {
@@ -778,6 +802,28 @@ export class GameScene extends Phaser.Scene {
       this.openControlPanelUsageSelect = null;
       return true;
     }
+    if (action.controlId.startsWith("control-panel-constructor-material-select-") && typeof action.value === "string") {
+      const groupId = Number(action.value);
+      if (this.getControlPanelEquipmentGroup(groupId)) {
+        this.selectedControlPanelConstructorMaterialContainerGroupId = groupId;
+      }
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-constructor-tab-")) {
+      if (isControlPanelConstructorTabValue(action.value)) {
+        this.selectedControlPanelConstructorTab = action.value;
+      }
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-constructor-schema-list-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorSchemaId = Number(action.value);
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-constructor-blueprint-list-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorBlueprintId = Number(action.value);
+      return true;
+    }
     if (action.controlId.startsWith("control-panel-usage-left-container-content-") && typeof action.value === "string") {
       const selection = this.updateControlPanelUsageItemSelection(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageLeftItemGroupIds, this.selectedControlPanelUsageLeftAnchorItemGroupId, Number(action.value), action);
       this.selectedControlPanelUsageLeftItemGroupIds = selection.selectedIds;
@@ -785,7 +831,7 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId.startsWith("control-panel-usage-right-container-content-") && typeof action.value === "string") {
-      const selection = this.updateControlPanelUsageItemSelection(this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageRightItemGroupIds, this.selectedControlPanelUsageRightAnchorItemGroupId, Number(action.value), action);
+      const selection = this.updateControlPanelUsageItemSelection(this.getControlPanelUsageRightContentContainerGroupId(), this.selectedControlPanelUsageRightItemGroupIds, this.selectedControlPanelUsageRightAnchorItemGroupId, Number(action.value), action);
       this.selectedControlPanelUsageRightItemGroupIds = selection.selectedIds;
       this.selectedControlPanelUsageRightAnchorItemGroupId = selection.anchorId;
       return true;
@@ -1001,6 +1047,15 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // Возвращает контейнер, содержимое которого сейчас показано в правой части использования.
+  private getControlPanelUsageRightContentContainerGroupId(): number | null {
+    const rightGroup = this.selectedControlPanelUsageRightEquipmentGroupId ? this.getControlPanelEquipmentGroup(this.selectedControlPanelUsageRightEquipmentGroupId) : null;
+    if (rightGroup && this.isEquipmentGroupItemtype(rightGroup, "Constructor")) {
+      return this.selectedControlPanelConstructorMaterialContainerGroupId;
+    }
+    return this.selectedControlPanelUsageRightEquipmentGroupId;
+  }
+
   // Отправляет изменение оборудования и кладет его поверх снимков до серверного подтверждения.
   private sendControlPanelEquipmentMutation(groupId: number, update: { enabled?: boolean; enabledCount?: number }): void {
     const mutation = this.gameClient?.sendControlPanelEquipmentUpdate({ equipmentGroupId: groupId, ...update });
@@ -1068,6 +1123,13 @@ export class GameScene extends Phaser.Scene {
     return state.equipmentGroups
       .filter((group) => group.CosmicObjectID === objectId)
       .sort((left, right) => left.ID - right.ID);
+  }
+
+  // Проверяет тип модели оборудования по стабильному акрониму.
+  private isEquipmentGroupItemtype(group: EquipmentGroup, itemtypeAcronym: string): boolean {
+    const itemModel = this.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
+    const itemtype = this.referenceData?.Itemtype.Items[String(itemModel?.ItemtypeID)];
+    return itemtype?.Acronym === itemtypeAcronym;
   }
 
   // Возвращает effective-признак включения группы оборудования из снимка с учетом pending.
@@ -1377,5 +1439,13 @@ const isControlPanelTabValue = (value: unknown): value is ControlPanelTabValue =
 const isControlPanelEquipmentSubTabValue = (value: unknown): value is ControlPanelEquipmentSubTabValue =>
   value === "setup" ||
   value === "usage";
+
+const isControlPanelConstructorTabValue = (value: unknown): value is ControlPanelConstructorTabValue =>
+  value === "items" ||
+  value === "objects";
+
+// Возвращает текущую группу, если она ещё доступна, иначе первую доступную.
+const normalizeSelectedControlPanelGroupId = (groups: EquipmentGroup[], selectedGroupId: number | null): number | null =>
+  groups.some((group) => group.ID === selectedGroupId) ? selectedGroupId : groups[0]?.ID ?? null;
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));

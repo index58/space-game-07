@@ -459,6 +459,56 @@ export type DefaultActionInputSettingReference = Record<string, unknown> & {
   InputEventTypeID: number;
 };
 
+export type BlueprintReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Русское название чертежа.
+  TitleRu: string;
+  // Английское название чертежа.
+  TitleEn: string;
+  // Модель космического объекта, получаемого по чертежу.
+  CosmicObjectModelID: number;
+  // Базовое время изготовления объекта в секундах.
+  ProductionBaseTime: number;
+};
+
+export type BlueprintComponentReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Чертёж, которому принадлежит компонент.
+  BlueprintID: number;
+  // Модель предмета, необходимого для изготовления.
+  ComponentItemModelID: number;
+  // Количество предметов этой модели для изготовления.
+  Count: number;
+};
+
+export type SchemaReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Русское название схемы.
+  TitleRu: string;
+  // Английское название схемы.
+  TitleEn: string;
+  // Модель предмета, получаемого по схеме.
+  ItemModelID: number;
+  // Количество предметов, получаемых за одно изготовление.
+  Count: number;
+  // Базовое время изготовления предметов в секундах.
+  ProductionBaseTime: number;
+};
+
+export type SchemaComponentReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Схема, которой принадлежит компонент.
+  SchemaID: number;
+  // Модель предмета, необходимого для изготовления.
+  ComponentItemModelID: number;
+  // Количество предметов этой модели для изготовления.
+  Count: number;
+};
+
 // Является полным пакетом справочников, загружаемым перед подключением к миру.
 export type ReferenceDataMessage = {
   // Вид сообщения, по которому клиент проверяет назначение ответа.
@@ -474,13 +524,13 @@ export type ReferenceDataMessage = {
   // Справочник моделей предметов.
   ItemModel: ReferenceTable<ItemModelReference>;
   // Справочник чертежей объектов.
-  Blueprint: ReferenceTable;
+  Blueprint: ReferenceTable<BlueprintReference>;
   // Справочник компонентов чертежей.
-  BlueprintComponent: ReferenceTable;
+  BlueprintComponent: ReferenceTable<BlueprintComponentReference>;
   // Справочник схем предметов.
-  Schema: ReferenceTable;
+  Schema: ReferenceTable<SchemaReference>;
   // Справочник компонентов схем.
-  SchemaComponent: ReferenceTable;
+  SchemaComponent: ReferenceTable<SchemaComponentReference>;
   // Справочник игровых действий.
   ActionType: ReferenceTable<ActionTypeReference>;
   // Справочник событий ввода.

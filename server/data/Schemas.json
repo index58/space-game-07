@@ -1,0 +1,101 @@
+{
+  "MaxID": 12,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "TitleRu": "Схема: Простой толкатель",
+      "TitleEn": "Schema: Simple Thruster",
+      "ItemModelID": 1,
+      "Count": 1,
+      "ProductionBaseTime": 150
+    },
+    "2": {
+      "ID": 2,
+      "TitleRu": "Схема: Простой вращатель",
+      "TitleEn": "Schema: Simple Torquer",
+      "ItemModelID": 2,
+      "Count": 1,
+      "ProductionBaseTime": 150
+    },
+    "3": {
+      "ID": 3,
+      "TitleRu": "Схема: Лёгкая пушка 120 мм",
+      "TitleEn": "Schema: Light 120 mm Cannon",
+      "ItemModelID": 3,
+      "Count": 1,
+      "ProductionBaseTime": 450
+    },
+    "4": {
+      "ID": 4,
+      "TitleRu": "Схема: Компактный генератор",
+      "TitleEn": "Schema: Compact Generator",
+      "ItemModelID": 4,
+      "Count": 1,
+      "ProductionBaseTime": 330
+    },
+    "5": {
+      "ID": 5,
+      "TitleRu": "Схема: Малый бак мелита",
+      "TitleEn": "Schema: Small Melit Fuel Tank",
+      "ItemModelID": 5,
+      "Count": 1,
+      "ProductionBaseTime": 180
+    },
+    "6": {
+      "ID": 6,
+      "TitleRu": "Схема: Малый грузовой контейнер",
+      "TitleEn": "Schema: Small Cargo Container",
+      "ItemModelID": 6,
+      "Count": 1,
+      "ProductionBaseTime": 135
+    },
+    "7": {
+      "ID": 7,
+      "TitleRu": "Схема: Снаряд 120 мм",
+      "TitleEn": "Schema: 120 mm Shell",
+      "ItemModelID": 7,
+      "Count": 20,
+      "ProductionBaseTime": 32
+    },
+    "8": {
+      "ID": 8,
+      "TitleRu": "Схема: Мелит",
+      "TitleEn": "Schema: Melit",
+      "ItemModelID": 8,
+      "Count": 1,
+      "ProductionBaseTime": 15
+    },
+    "9": {
+      "ID": 9,
+      "TitleRu": "Схема: Феррогель",
+      "TitleEn": "Schema: Ferrogel",
+      "ItemModelID": 9,
+      "Count": 1,
+      "ProductionBaseTime": 18
+    },
+    "10": {
+      "ID": 10,
+      "TitleRu": "Схема: Кремниевая пластина",
+      "TitleEn": "Schema: Silicon Plate",
+      "ItemModelID": 10,
+      "Count": 1,
+      "ProductionBaseTime": 27
+    },
+    "11": {
+      "ID": 11,
+      "TitleRu": "Схема: Астрокерамика",
+      "TitleEn": "Schema: Astroceramic",
+      "ItemModelID": 11,
+      "Count": 1,
+      "ProductionBaseTime": 33
+    },
+    "12": {
+      "ID": 12,
+      "TitleRu": "Схема: Квантовое волокно",
+      "TitleEn": "Schema: Quantum Fiber",
+      "ItemModelID": 12,
+      "Count": 1,
+      "ProductionBaseTime": 45
+    }
+  }
+}

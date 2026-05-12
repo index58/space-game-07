@@ -6,6 +6,8 @@ export type UiKitOption = {
   value: string;
   // Видимый текст пункта.
   label: string;
+  // Текст подсказки, показываемой браузером при наведении.
+  title?: string;
   // Дополнительный текст справа для двухколоночных списков.
   secondaryLabel?: string;
 };
@@ -337,7 +339,7 @@ export const ListBox = (props: ListBoxProps) => (
     <div class="ui-kit-list__content" style={{ transform: `translateY(-${props.scrollOffsetPx ?? 0}px)` }}>
       <For each={props.items}>
         {(item) => (
-          <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} class={`ui-kit-control ui-kit-list__item ${isListBoxItemSelected(props, item.value) ? "is-selected" : ""}`}>
+          <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} title={item.title} class={`ui-kit-control ui-kit-list__item ${isListBoxItemSelected(props, item.value) ? "is-selected" : ""}`}>
             <span class="ui-kit-list__item-label">{item.label}</span>
             <Show when={item.secondaryLabel !== undefined}>
               <span class="ui-kit-list__item-secondary">{item.secondaryLabel}</span>

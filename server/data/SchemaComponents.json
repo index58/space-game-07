@@ -1,0 +1,185 @@
+{
+  "MaxID": 30,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "SchemaID": 1,
+      "ComponentItemModelID": 8,
+      "Count": 40
+    },
+    "2": {
+      "ID": 2,
+      "SchemaID": 1,
+      "ComponentItemModelID": 9,
+      "Count": 20
+    },
+    "3": {
+      "ID": 3,
+      "SchemaID": 1,
+      "ComponentItemModelID": 10,
+      "Count": 8
+    },
+    "4": {
+      "ID": 4,
+      "SchemaID": 2,
+      "ComponentItemModelID": 8,
+      "Count": 30
+    },
+    "5": {
+      "ID": 5,
+      "SchemaID": 2,
+      "ComponentItemModelID": 9,
+      "Count": 16
+    },
+    "6": {
+      "ID": 6,
+      "SchemaID": 2,
+      "ComponentItemModelID": 12,
+      "Count": 3
+    },
+    "7": {
+      "ID": 7,
+      "SchemaID": 3,
+      "ComponentItemModelID": 9,
+      "Count": 120
+    },
+    "8": {
+      "ID": 8,
+      "SchemaID": 3,
+      "ComponentItemModelID": 10,
+      "Count": 40
+    },
+    "9": {
+      "ID": 9,
+      "SchemaID": 3,
+      "ComponentItemModelID": 11,
+      "Count": 30
+    },
+    "10": {
+      "ID": 10,
+      "SchemaID": 4,
+      "ComponentItemModelID": 8,
+      "Count": 80
+    },
+    "11": {
+      "ID": 11,
+      "SchemaID": 4,
+      "ComponentItemModelID": 10,
+      "Count": 25
+    },
+    "12": {
+      "ID": 12,
+      "SchemaID": 4,
+      "ComponentItemModelID": 12,
+      "Count": 8
+    },
+    "13": {
+      "ID": 13,
+      "SchemaID": 5,
+      "ComponentItemModelID": 9,
+      "Count": 60
+    },
+    "14": {
+      "ID": 14,
+      "SchemaID": 5,
+      "ComponentItemModelID": 10,
+      "Count": 20
+    },
+    "15": {
+      "ID": 15,
+      "SchemaID": 5,
+      "ComponentItemModelID": 11,
+      "Count": 20
+    },
+    "16": {
+      "ID": 16,
+      "SchemaID": 6,
+      "ComponentItemModelID": 9,
+      "Count": 80
+    },
+    "17": {
+      "ID": 17,
+      "SchemaID": 6,
+      "ComponentItemModelID": 11,
+      "Count": 50
+    },
+    "18": {
+      "ID": 18,
+      "SchemaID": 6,
+      "ComponentItemModelID": 12,
+      "Count": 8
+    },
+    "19": {
+      "ID": 19,
+      "SchemaID": 7,
+      "ComponentItemModelID": 9,
+      "Count": 3
+    },
+    "20": {
+      "ID": 20,
+      "SchemaID": 7,
+      "ComponentItemModelID": 11,
+      "Count": 1
+    },
+    "21": {
+      "ID": 21,
+      "SchemaID": 8,
+      "ComponentItemModelID": 9,
+      "Count": 1
+    },
+    "22": {
+      "ID": 22,
+      "SchemaID": 8,
+      "ComponentItemModelID": 10,
+      "Count": 0.2
+    },
+    "23": {
+      "ID": 23,
+      "SchemaID": 9,
+      "ComponentItemModelID": 8,
+      "Count": 2
+    },
+    "24": {
+      "ID": 24,
+      "SchemaID": 9,
+      "ComponentItemModelID": 11,
+      "Count": 0.5
+    },
+    "25": {
+      "ID": 25,
+      "SchemaID": 10,
+      "ComponentItemModelID": 8,
+      "Count": 1
+    },
+    "26": {
+      "ID": 26,
+      "SchemaID": 10,
+      "ComponentItemModelID": 12,
+      "Count": 0.2
+    },
+    "27": {
+      "ID": 27,
+      "SchemaID": 11,
+      "ComponentItemModelID": 8,
+      "Count": 2
+    },
+    "28": {
+      "ID": 28,
+      "SchemaID": 11,
+      "ComponentItemModelID": 9,
+      "Count": 1
+    },
+    "29": {
+      "ID": 29,
+      "SchemaID": 12,
+      "ComponentItemModelID": 8,
+      "Count": 1
+    },
+    "30": {
+      "ID": 30,
+      "SchemaID": 12,
+      "ComponentItemModelID": 10,
+      "Count": 0.5
+    }
+  }
+}

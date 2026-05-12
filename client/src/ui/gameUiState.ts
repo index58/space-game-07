@@ -8,6 +8,7 @@ import type { GameUiControlState } from "../ui-kit/types";
 export type SettingsTabValue = "video" | "audio" | "input";
 export type ControlPanelTabValue = "object" | "equipment" | "pilotTools" | "schemas" | "blueprints" | "map";
 export type ControlPanelEquipmentSubTabValue = "setup" | "usage";
+export type ControlPanelConstructorTabValue = "items" | "objects";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
@@ -67,11 +68,19 @@ export type GameUiState = {
   // ID оборудования в правой панели подвкладки использования.
   selectedControlPanelUsageRightEquipmentGroupId: number | null;
   // Открытый выпадающий список подвкладки использования.
-  openControlPanelUsageSelect: "left" | "right" | null;
+  openControlPanelUsageSelect: "left" | "right" | "constructorMaterials" | null;
   // ID выбранных строк содержимого левого контейнера.
   selectedControlPanelUsageLeftItemGroupIds: number[];
   // ID выбранных строк содержимого правого контейнера.
   selectedControlPanelUsageRightItemGroupIds: number[];
+  // ID контейнера материалов в использовании конструктора.
+  selectedControlPanelConstructorMaterialContainerGroupId: number | null;
+  // Активная вкладка верхней части конструктора.
+  selectedControlPanelConstructorTab: ControlPanelConstructorTabValue;
+  // ID выбранной схемы предмета в конструкторе.
+  selectedControlPanelConstructorSchemaId: number | null;
+  // ID выбранного чертежа объекта в конструкторе.
+  selectedControlPanelConstructorBlueprintId: number | null;
   // Черновики признака включения групп оборудования по ID группы.
   // Показывает окно подтверждения слива топлива из бака.
   controlPanelFuelDrainDialogOpen: boolean;
@@ -169,6 +178,10 @@ const initialGameUiState: GameUiState = {
   openControlPanelUsageSelect: null,
   selectedControlPanelUsageLeftItemGroupIds: [],
   selectedControlPanelUsageRightItemGroupIds: [],
+  selectedControlPanelConstructorMaterialContainerGroupId: null,
+  selectedControlPanelConstructorTab: "items",
+  selectedControlPanelConstructorSchemaId: null,
+  selectedControlPanelConstructorBlueprintId: null,
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,

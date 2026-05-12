@@ -1,0 +1,155 @@
+{
+  "MaxID": 25,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "BlueprintID": 1,
+      "ComponentItemModelID": 9,
+      "Count": 220
+    },
+    "2": {
+      "ID": 2,
+      "BlueprintID": 1,
+      "ComponentItemModelID": 10,
+      "Count": 120
+    },
+    "3": {
+      "ID": 3,
+      "BlueprintID": 1,
+      "ComponentItemModelID": 11,
+      "Count": 160
+    },
+    "4": {
+      "ID": 4,
+      "BlueprintID": 1,
+      "ComponentItemModelID": 12,
+      "Count": 40
+    },
+    "5": {
+      "ID": 5,
+      "BlueprintID": 1,
+      "ComponentItemModelID": 6,
+      "Count": 2
+    },
+    "6": {
+      "ID": 6,
+      "BlueprintID": 2,
+      "ComponentItemModelID": 9,
+      "Count": 220
+    },
+    "7": {
+      "ID": 7,
+      "BlueprintID": 2,
+      "ComponentItemModelID": 10,
+      "Count": 120
+    },
+    "8": {
+      "ID": 8,
+      "BlueprintID": 2,
+      "ComponentItemModelID": 11,
+      "Count": 160
+    },
+    "9": {
+      "ID": 9,
+      "BlueprintID": 2,
+      "ComponentItemModelID": 12,
+      "Count": 40
+    },
+    "10": {
+      "ID": 10,
+      "BlueprintID": 2,
+      "ComponentItemModelID": 6,
+      "Count": 2
+    },
+    "11": {
+      "ID": 11,
+      "BlueprintID": 3,
+      "ComponentItemModelID": 9,
+      "Count": 220
+    },
+    "12": {
+      "ID": 12,
+      "BlueprintID": 3,
+      "ComponentItemModelID": 10,
+      "Count": 120
+    },
+    "13": {
+      "ID": 13,
+      "BlueprintID": 3,
+      "ComponentItemModelID": 11,
+      "Count": 160
+    },
+    "14": {
+      "ID": 14,
+      "BlueprintID": 3,
+      "ComponentItemModelID": 12,
+      "Count": 40
+    },
+    "15": {
+      "ID": 15,
+      "BlueprintID": 3,
+      "ComponentItemModelID": 6,
+      "Count": 2
+    },
+    "16": {
+      "ID": 16,
+      "BlueprintID": 4,
+      "ComponentItemModelID": 9,
+      "Count": 900
+    },
+    "17": {
+      "ID": 17,
+      "BlueprintID": 4,
+      "ComponentItemModelID": 10,
+      "Count": 400
+    },
+    "18": {
+      "ID": 18,
+      "BlueprintID": 4,
+      "ComponentItemModelID": 11,
+      "Count": 700
+    },
+    "19": {
+      "ID": 19,
+      "BlueprintID": 4,
+      "ComponentItemModelID": 12,
+      "Count": 120
+    },
+    "20": {
+      "ID": 20,
+      "BlueprintID": 4,
+      "ComponentItemModelID": 6,
+      "Count": 8
+    },
+    "21": {
+      "ID": 21,
+      "BlueprintID": 5,
+      "ComponentItemModelID": 9,
+      "Count": 900
+    },
+    "22": {
+      "ID": 22,
+      "BlueprintID": 5,
+      "ComponentItemModelID": 10,
+      "Count": 400
+    },
+    "23": {
+      "ID": 23,
+      "BlueprintID": 5,
+      "ComponentItemModelID": 11,
+      "Count": 700
+    },
+    "24": {
+      "ID": 24,
+      "BlueprintID": 5,
+      "ComponentItemModelID": 12,
+      "Count": 120
+    },
+    "25": {
+      "ID": 25,
+      "BlueprintID": 5,
+      "ComponentItemModelID": 6,
+      "Count": 8
+    }
+  }
+}

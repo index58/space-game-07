@@ -1,0 +1,40 @@
+{
+  "MaxID": 5,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "TitleRu": "Чертёж: Стрела",
+      "TitleEn": "Blueprint: Arrow",
+      "CosmicObjectModelID": 16,
+      "ProductionBaseTime": 120
+    },
+    "2": {
+      "ID": 2,
+      "TitleRu": "Чертёж: Крест",
+      "TitleEn": "Blueprint: Cross",
+      "CosmicObjectModelID": 17,
+      "ProductionBaseTime": 120
+    },
+    "3": {
+      "ID": 3,
+      "TitleRu": "Чертёж: Ястреб",
+      "TitleEn": "Blueprint: Hawk",
+      "CosmicObjectModelID": 18,
+      "ProductionBaseTime": 120
+    },
+    "4": {
+      "ID": 4,
+      "TitleRu": "Чертёж: Анклав",
+      "TitleEn": "Blueprint: Enclave",
+      "CosmicObjectModelID": 480,
+      "ProductionBaseTime": 3580
+    },
+    "5": {
+      "ID": 5,
+      "TitleRu": "Чертёж: Центрифуга",
+      "TitleEn": "Blueprint: Centrifuge",
+      "CosmicObjectModelID": 481,
+      "ProductionBaseTime": 3546
+    }
+  }
+}
