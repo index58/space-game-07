@@ -1128,6 +1128,10 @@ body {
   overflow: hidden;
 }
 
+.control-panel-equipment-usage--constructor .control-panel-equipment-usage__panel--left {
+  grid-template-rows: minmax(0, 1fr);
+}
+
 .control-panel-equipment-usage-container {
   display: grid;
   grid-template-columns: minmax(3.2vh, 0.12fr) minmax(0, 1fr);
@@ -1158,7 +1162,15 @@ body {
   min-height: 0;
 }
 
-.control-panel-constructor-materials {
+.control-panel-constructor-storage {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.8vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.control-panel-constructor-storage__section {
   display: grid;
   grid-template-rows: var(--hud-dropdown-min-height) minmax(0, 1fr);
   gap: 0.8vh;
@@ -1174,42 +1186,68 @@ body {
   overflow: hidden;
 }
 
-.control-panel-constructor-workbench {
+.control-panel-constructor-recipes {
   display: grid;
-  grid-template-rows: minmax(0, 1.25fr) var(--hud-dropdown-min-height) minmax(0, 0.65fr);
+  grid-template-rows: var(--hud-dropdown-min-height) minmax(0, 1fr) var(--hud-dropdown-min-height);
   gap: 0.8vh;
   min-height: 0;
   overflow: hidden;
 }
 
-.control-panel-constructor-workbench__top {
-  display: grid;
-  grid-template-rows: var(--hud-dropdown-min-height) minmax(0, 1fr);
-  gap: 0.8vh;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.control-panel-constructor-workbench__bottom {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.8vh;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.control-panel-constructor-workbench__make {
+.control-panel-constructor-recipes__make {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 0;
 }
 
-.control-panel-constructor-workbench .ui-kit-list,
-.control-panel-constructor-materials .ui-kit-list {
+.control-panel-constructor-queues {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.8vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.control-panel-constructor-recipes .ui-kit-list,
+.control-panel-constructor-queues .ui-kit-list,
+.control-panel-constructor-storage .ui-kit-list {
   width: 100%;
   height: 100%;
   min-height: 0;
+}
+
+.control-panel-constructor-recipe-tooltip {
+  position: fixed;
+  z-index: 1800;
+  max-width: min(42vh, 34vw);
+  padding: 0.9vh 1vh;
+  background: rgb(18, 22, 28);
+  box-shadow: 0 0.8vh 2vh rgba(0, 0, 0, 0.45);
+  color: rgb(216, 243, 255);
+  font-family: var(--hud-control-font-family);
+  font-size: var(--hud-control-font-size);
+  pointer-events: none;
+}
+
+.control-panel-constructor-recipe-tooltip__title {
+  margin-bottom: 0.55vh;
+  color: rgb(238, 250, 255);
+}
+
+.control-panel-constructor-recipe-tooltip__line {
+  margin-top: 0.3vh;
+  white-space: normal;
+}
+
+.control-panel-constructor-recipe-tooltip__component {
+  margin-top: 0.25vh;
+  color: rgb(145, 224, 172);
+  white-space: normal;
+}
+
+.control-panel-constructor-recipe-tooltip__component-gap {
+  height: 0.55vh;
 }
 
 .control-panel-fuel-tank {

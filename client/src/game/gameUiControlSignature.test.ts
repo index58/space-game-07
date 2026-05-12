@@ -29,6 +29,7 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   chatErrorSeq: 0,
   chatContextMenu: null,
   gameCursor: { visible: true, x: 100, y: 100 },
+  hoveredGameUiControlId: null,
   chatScroll: scrollState,
   uiKitShowcaseVisible: false,
   settingsVisible: true,

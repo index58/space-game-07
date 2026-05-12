@@ -129,6 +129,7 @@ const state = (): GameUiState => ({
   chatErrorSeq: 0,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
+  hoveredGameUiControlId: null,
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
   settingsVisible: false,
@@ -610,6 +611,8 @@ describe("GameUi", () => {
       controlPanelVisible: true,
       selectedControlPanelTab: "equipment",
       selectedControlPanelEquipmentTab: "usage",
+      gameCursor: { visible: true, x: 240, y: 180 },
+      hoveredGameUiControlId: "control-panel-constructor-schema-list-1",
       selectedControlPanelUsageLeftContainerGroupId: 10,
       selectedControlPanelUsageRightEquipmentGroupId: 12,
       openControlPanelUsageSelect: null,
@@ -638,7 +641,7 @@ describe("GameUi", () => {
   });
 
   // Проверяет, что выбранный конструктор показывает схемы, чертежи и отдельный контейнер материалов.
-  it("renders control panel equipment usage constructor UI", () => {
+  it("renders control panel equipment usage constructor UI", async () => {
     const root = document.createElement("div");
     document.body.append(root);
     const equipmentReferenceData = {
@@ -698,6 +701,8 @@ describe("GameUi", () => {
       controlPanelVisible: true,
       selectedControlPanelTab: "equipment",
       selectedControlPanelEquipmentTab: "usage",
+      gameCursor: { visible: true, x: 240, y: 180 },
+      hoveredGameUiControlId: "control-panel-constructor-schema-list-1",
       selectedControlPanelUsageLeftContainerGroupId: 10,
       selectedControlPanelUsageRightEquipmentGroupId: 11,
       selectedControlPanelConstructorMaterialContainerGroupId: 12,
@@ -718,11 +723,18 @@ describe("GameUi", () => {
     expect(root.querySelector("#control-panel-usage-left-container-select .ui-kit-dropdown__value")?.textContent).toBe("Продукция");
     expect(root.querySelector("#control-panel-constructor-material-select .ui-kit-dropdown__value")?.textContent).toBe("Материалы");
     expect(root.querySelector("#control-panel-usage-left-container-content-2")?.textContent).toBe("Пластина2");
-    expect(root.querySelector(".control-panel-constructor-workbench")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
+    expect(root.querySelector(".control-panel-constructor-storage")?.closest(".control-panel-equipment-usage__panel--left")).not.toBeNull();
+    expect(root.querySelector(".control-panel-constructor-recipes")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
+    expect(root.querySelector(".control-panel-constructor-queues")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
+    expect(root.querySelector(".control-panel-constructor-usage")?.children[0]?.classList.contains("control-panel-constructor-recipes")).toBe(true);
+    expect(root.querySelector(".control-panel-constructor-usage")?.children[1]?.classList.contains("control-panel-constructor-queues")).toBe(true);
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.textContent).toBe("Пластина");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 30 с, Феррогель: 5");
     expect(root.querySelector("#control-panel-constructor-make-button")?.textContent).toBe("Изготовить");
     expect(root.querySelector("#control-panel-usage-right-container-content-1")?.textContent).toBe("Феррогель15");
+    await Promise.resolve();
+    expect(document.querySelector(".control-panel-constructor-recipe-tooltip")?.textContent).toBe("ПластинаФеррогель: 5Получается: 2Время: 30 с");
+    expect(document.querySelector(".control-panel-constructor-recipe-tooltip__component")?.textContent).toBe("Феррогель: 5");
   });
 
   // Проверяет, что выбранный топливный бак в правой панели использования показывает шкалу общего топлива объекта.

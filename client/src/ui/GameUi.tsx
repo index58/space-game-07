@@ -48,6 +48,7 @@ export const GameUi = (props: GameUiProps) => (
     <UiKitShowcase state={props.state} />
     <SettingsModal state={props.state} />
     <ControlPanelModal state={props.state} />
+    <ControlPanelConstructorRecipeTooltip state={props.state} />
     <GameCursor state={props.state} />
   </>
 );
@@ -155,6 +156,19 @@ const getChatTabMarker = (communityTypeAcronym: string): string | undefined =>
 type GameCursorProps = {
   // Реактивное состояние всего игрового UI.
   state: Accessor<GameUiState>;
+};
+
+type ControlPanelConstructorRecipeTooltipView = {
+  // Заголовок подсказки с названием результата.
+  title: string;
+  // Строки подробностей производства.
+  lines: string[];
+  // Строки компонентов, показанные отдельным цветом.
+  components: string[];
+  // Горизонтальная позиция окна у игрового указателя.
+  x: number;
+  // Вертикальная позиция окна у игрового указателя.
+  y: number;
 };
 
 type UiKitShowcaseProps = {
@@ -419,6 +433,31 @@ const GameCursor = (props: GameCursorProps) => (
   </Show>
 );
 
+// Показывает описание схемы или чертежа рядом с игровым указателем.
+const ControlPanelConstructorRecipeTooltip = (props: { state: Accessor<GameUiState> }) => {
+  const tooltip = createMemo(() => getControlPanelConstructorRecipeTooltip(props.state()));
+  return (
+    <Show when={tooltip()}>
+      {(view) => (
+        <Portal>
+          <div class="control-panel-constructor-recipe-tooltip" style={{ left: `${view().x}px`, top: `${view().y}px` }}>
+            <div class="control-panel-constructor-recipe-tooltip__title">{view().title}</div>
+            <Show when={view().components.length > 0}>
+              <For each={view().components}>
+                {(line) => <div class="control-panel-constructor-recipe-tooltip__component">{line}</div>}
+              </For>
+            </Show>
+            <div class="control-panel-constructor-recipe-tooltip__component-gap" />
+            <For each={view().lines}>
+              {(line) => <div class="control-panel-constructor-recipe-tooltip__line">{line}</div>}
+            </For>
+          </div>
+        </Portal>
+      )}
+    </Show>
+  );
+};
+
 // Показывает отладочную витрину всех базовых контролов UI Kit.
 const UiKitShowcase = (props: UiKitShowcaseProps) => (
   <Show when={props.state().uiKitShowcaseVisible}>
@@ -659,33 +698,30 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                     <Match when={props.state().selectedControlPanelEquipmentTab === "usage"}>
                       <div class={`control-panel-equipment-usage ${isConstructorEquipment(usageRightEquipment(), props.state()) ? "control-panel-equipment-usage--constructor" : ""}`}>
                         <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--left">
-                          <Dropdown
-                            id="control-panel-usage-left-container-select"
-                            open={props.state().openControlPanelUsageSelect === "left"}
-                            selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
-                            options={usageContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                          />
-                          <Show when={usageLeftContainer()} fallback={<div class="control-panel-empty-page" />}>
-                            {(container) => (
-                              <ControlPanelContainerContent
-                                listId="control-panel-usage-left-container-content"
-                                rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
-                                selectedIds={props.state().selectedControlPanelUsageLeftItemGroupIds}
-                              />
+                          <Show
+                            when={isConstructorEquipment(usageRightEquipment(), props.state())}
+                            fallback={(
+                              <>
+                                <Dropdown
+                                  id="control-panel-usage-left-container-select"
+                                  open={props.state().openControlPanelUsageSelect === "left"}
+                                  selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
+                                  options={usageContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                />
+                                <Show when={usageLeftContainer()} fallback={<div class="control-panel-empty-page" />}>
+                                  {(container) => (
+                                    <ControlPanelContainerContent
+                                      listId="control-panel-usage-left-container-content"
+                                      rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
+                                      selectedIds={props.state().selectedControlPanelUsageLeftItemGroupIds}
+                                    />
+                                  )}
+                                </Show>
+                              </>
                             )}
-                          </Show>
-                        </div>
-                        <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--right">
-                          <Dropdown
-                            id="control-panel-usage-right-equipment-select"
-                            open={props.state().openControlPanelUsageSelect === "right"}
-                            selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
-                            options={usageInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                          />
-                          <Show when={isConstructorEquipment(usageRightEquipment(), props.state())}>
-                            <div class="control-panel-constructor-usage">
-                              <ControlPanelConstructorWorkbench state={props.state} />
-                              <div class="control-panel-constructor-materials">
+                          >
+                            <div class="control-panel-constructor-storage">
+                              <div class="control-panel-constructor-storage__section">
                                 <Dropdown
                                   id="control-panel-constructor-material-select"
                                   open={props.state().openControlPanelUsageSelect === "constructorMaterials"}
@@ -702,6 +738,37 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                   )}
                                 </Show>
                               </div>
+                              <div class="control-panel-constructor-storage__section">
+                                <Dropdown
+                                  id="control-panel-usage-left-container-select"
+                                  open={props.state().openControlPanelUsageSelect === "left"}
+                                  selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
+                                  options={usageContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                />
+                                <Show when={usageLeftContainer()} fallback={<div class="control-panel-empty-page" />}>
+                                  {(container) => (
+                                    <ControlPanelContainerContent
+                                      listId="control-panel-usage-left-container-content"
+                                      rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
+                                      selectedIds={props.state().selectedControlPanelUsageLeftItemGroupIds}
+                                    />
+                                  )}
+                                </Show>
+                              </div>
+                            </div>
+                          </Show>
+                        </div>
+                        <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--right">
+                          <Dropdown
+                            id="control-panel-usage-right-equipment-select"
+                            open={props.state().openControlPanelUsageSelect === "right"}
+                            selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
+                            options={usageInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                          />
+                          <Show when={isConstructorEquipment(usageRightEquipment(), props.state())}>
+                            <div class="control-panel-constructor-usage">
+                              <ControlPanelConstructorRecipePanel state={props.state} />
+                              <ControlPanelConstructorQueuePanel />
                             </div>
                           </Show>
                           <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && isFuelTankEquipment(usageRightEquipment(), props.state())}>
@@ -808,46 +875,48 @@ const ControlPanelContainerContent = (props: { listId: string; rows: ControlPane
   </div>
 );
 
-// Показывает списки схем, чертежей и очередей выбранного конструктора.
-const ControlPanelConstructorWorkbench = (props: { state: Accessor<GameUiState> }) => {
+// Показывает список схем или чертежей и кнопку запуска производства.
+const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState> }) => {
   const schemaRows = createMemo(() => getControlPanelSchemaRows(props.state()));
   const blueprintRows = createMemo(() => getControlPanelBlueprintRows(props.state()));
   return (
-    <div class="control-panel-constructor-workbench">
-      <div class="control-panel-constructor-workbench__top">
-        <Tabs
-          id="control-panel-constructor-tabs"
-          itemIdPrefix="control-panel-constructor-tab"
-          selectedValue={props.state().selectedControlPanelConstructorTab}
-          tabs={controlPanelConstructorTabs}
-        />
-        <Show
-          when={props.state().selectedControlPanelConstructorTab === "items"}
-          fallback={(
-            <ControlPanelConstructorRecipeList
-              id="control-panel-constructor-blueprint-list"
-              rows={blueprintRows()}
-              selectedId={props.state().selectedControlPanelConstructorBlueprintId}
-            />
-          )}
-        >
+    <div class="control-panel-constructor-recipes">
+      <Tabs
+        id="control-panel-constructor-tabs"
+        itemIdPrefix="control-panel-constructor-tab"
+        selectedValue={props.state().selectedControlPanelConstructorTab}
+        tabs={controlPanelConstructorTabs}
+      />
+      <Show
+        when={props.state().selectedControlPanelConstructorTab === "items"}
+        fallback={(
           <ControlPanelConstructorRecipeList
-            id="control-panel-constructor-schema-list"
-            rows={schemaRows()}
-            selectedId={props.state().selectedControlPanelConstructorSchemaId}
+            id="control-panel-constructor-blueprint-list"
+            rows={blueprintRows()}
+            selectedId={props.state().selectedControlPanelConstructorBlueprintId}
           />
-        </Show>
-      </div>
-      <div class="control-panel-constructor-workbench__make">
+        )}
+      >
+        <ControlPanelConstructorRecipeList
+          id="control-panel-constructor-schema-list"
+          rows={schemaRows()}
+          selectedId={props.state().selectedControlPanelConstructorSchemaId}
+        />
+      </Show>
+      <div class="control-panel-constructor-recipes__make">
         <Button id="control-panel-constructor-make-button" label="Изготовить" />
-      </div>
-      <div class="control-panel-constructor-workbench__bottom">
-        <ControlPanelConstructorQueueList id="control-panel-constructor-main-queue" />
-        <ControlPanelConstructorQueueList id="control-panel-constructor-required-queue" />
       </div>
     </div>
   );
 };
+
+// Показывает основную и вспомогательную очереди конструктора по вертикали.
+const ControlPanelConstructorQueuePanel = () => (
+  <div class="control-panel-constructor-queues">
+    <ControlPanelConstructorQueueList id="control-panel-constructor-main-queue" />
+    <ControlPanelConstructorQueueList id="control-panel-constructor-required-queue" />
+  </div>
+);
 
 // Показывает один из списков схем или чертежей конструктора.
 const ControlPanelConstructorRecipeList = (props: { id: string; rows: ControlPanelConstructorRecipeRow[]; selectedId: number | null }) => (
@@ -1019,6 +1088,50 @@ const getControlPanelBlueprintRows = (state: GameUiState): ControlPanelConstruct
       description: `${formatMetric(blueprint.ProductionBaseTime)} с, ${formatControlPanelBlueprintComponents(state, blueprint)}`,
     }));
 
+const getControlPanelConstructorRecipeTooltip = (state: GameUiState): ControlPanelConstructorRecipeTooltipView | null => {
+  if (!state.gameCursor.visible || !state.hoveredGameUiControlId) {
+    return null;
+  }
+  const schemaId = getControlPanelConstructorListItemId(state.hoveredGameUiControlId, "control-panel-constructor-schema-list-");
+  if (schemaId !== null) {
+    const schema = state.referenceData?.Schema.Items[String(schemaId)];
+    const itemModel = schema ? state.referenceData?.ItemModel.Items[String(schema.ItemModelID)] : undefined;
+    return schema ? {
+      title: getReferenceTitle(itemModel) ?? getReferenceTitle(schema) ?? emptyValue(),
+      lines: [
+        `Получается: ${formatMetric(schema.Count)}`,
+        `Время: ${formatMetric(schema.ProductionBaseTime)} с`,
+      ],
+      components: getControlPanelSchemaComponentLines(state, schema),
+      x: state.gameCursor.x + 16,
+      y: state.gameCursor.y + 16,
+    } : null;
+  }
+  const blueprintId = getControlPanelConstructorListItemId(state.hoveredGameUiControlId, "control-panel-constructor-blueprint-list-");
+  if (blueprintId !== null) {
+    const blueprint = state.referenceData?.Blueprint.Items[String(blueprintId)];
+    const objectModel = blueprint ? state.referenceData?.CosmicObjectModel.Items[String(blueprint.CosmicObjectModelID)] : undefined;
+    return blueprint ? {
+      title: getReferenceTitle(objectModel) ?? getReferenceTitle(blueprint) ?? emptyValue(),
+      lines: [
+        `Время: ${formatMetric(blueprint.ProductionBaseTime)} с`,
+      ],
+      components: getControlPanelBlueprintComponentLines(state, blueprint),
+      x: state.gameCursor.x + 16,
+      y: state.gameCursor.y + 16,
+    } : null;
+  }
+  return null;
+};
+
+const getControlPanelConstructorListItemId = (controlId: string, prefix: string): number | null => {
+  if (!controlId.startsWith(prefix)) {
+    return null;
+  }
+  const id = Number(controlId.slice(prefix.length));
+  return Number.isFinite(id) ? id : null;
+};
+
 const formatControlPanelSchemaComponents = (state: GameUiState, schema: SchemaReference): string => {
   const components = Object.values(state.referenceData?.SchemaComponent.Items ?? {})
     .filter((component) => component.SchemaID === schema.ID)
@@ -1033,6 +1146,20 @@ const formatControlPanelBlueprintComponents = (state: GameUiState, blueprint: Bl
   return formatControlPanelRecipeComponents(state, components);
 };
 
+const getControlPanelSchemaComponentLines = (state: GameUiState, schema: SchemaReference): string[] => {
+  const components = Object.values(state.referenceData?.SchemaComponent.Items ?? {})
+    .filter((component) => component.SchemaID === schema.ID)
+    .sort((left, right) => left.ID - right.ID);
+  return getControlPanelRecipeComponentLines(state, components);
+};
+
+const getControlPanelBlueprintComponentLines = (state: GameUiState, blueprint: BlueprintReference): string[] => {
+  const components = Object.values(state.referenceData?.BlueprintComponent.Items ?? {})
+    .filter((component) => component.BlueprintID === blueprint.ID)
+    .sort((left, right) => left.ID - right.ID);
+  return getControlPanelRecipeComponentLines(state, components);
+};
+
 const formatControlPanelRecipeComponents = (state: GameUiState, components: Array<{ ComponentItemModelID: number; Count: number }>): string => {
   if (components.length === 0) {
     return "без компонентов";
@@ -1041,6 +1168,11 @@ const formatControlPanelRecipeComponents = (state: GameUiState, components: Arra
     .map((component) => `${getReferenceTitle(state.referenceData?.ItemModel.Items[String(component.ComponentItemModelID)]) ?? emptyValue()}: ${formatMetric(component.Count)}`)
     .join("; ");
 };
+
+const getControlPanelRecipeComponentLines = (state: GameUiState, components: Array<{ ComponentItemModelID: number; Count: number }>): string[] =>
+  components.length === 0
+    ? ["без компонентов"]
+    : components.map((component) => `${getReferenceTitle(state.referenceData?.ItemModel.Items[String(component.ComponentItemModelID)]) ?? emptyValue()}: ${formatMetric(component.Count)}`);
 
 const getControlPanelEquipmentInfoRows = (equipment: ControlPanelEquipmentView | null): ControlPanelEquipmentInfoRow[] => {
   if (!equipment) {

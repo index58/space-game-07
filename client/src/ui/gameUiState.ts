@@ -47,6 +47,8 @@ export type GameUiState = {
   chatContextMenu: ChatContextMenuState | null;
   // Положение и видимость игрового указателя мыши.
   gameCursor: GameCursorState;
+  // ID контрола HUD, на который сейчас наведён игровой указатель.
+  hoveredGameUiControlId: string | null;
   // Состояние полосы прокрутки выбранного чата.
   chatScroll: ChatScrollState;
   // Показывает отладочную панель примеров единого UI Kit.
@@ -165,6 +167,7 @@ const initialGameUiState: GameUiState = {
   chatErrorSeq: 0,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
+  hoveredGameUiControlId: null,
   chatScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   uiKitShowcaseVisible: false,
   settingsVisible: false,

@@ -561,6 +561,11 @@ export class InputController {
     this.uiRuntime.updateControls(controls);
   }
 
+  // Возвращает контрол HUD, на который сейчас наведён игровой указатель.
+  getHoveredGameUiControlId(): string | null {
+    return this.uiRuntime.snapshot().hoveredControlId;
+  }
+
   // Возвращает очередное действие общего UI, если оно было создано игровым курсором.
   consumeGameUiAction(): GameUiAction | null {
     return this.uiActions.shift() ?? null;
