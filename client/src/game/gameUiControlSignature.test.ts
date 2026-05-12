@@ -51,8 +51,10 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,
+  controlPanelConstructorProduceDialogOpen: false,
   controlPanelContainerTransferMaxAmount: 0,
   controlPanelFuelFillMaxAmount: 0,
+  controlPanelConstructorProduceMaxAmount: 100,
   controlPanelFuelDrainAmount: 0,
   controlPanelFuelDrainAmountText: "0",
   controlPanelFuelDrainAmountSelectionStart: 1,
@@ -205,7 +207,7 @@ describe("getGameUiControlLayoutSignature", () => {
       selectedControlPanelEquipmentTab: "usage",
       selectedControlPanelUsageRightEquipmentGroupId: 10,
       constructorProductionJobs: [
-        { id: 1, constructorEquipmentGroupId: 10, queueType: "main", schemaId: 2, productItemModelId: 3, productCount: 1, remainingTime: 5, totalTime: 10, running: true },
+        { id: 1, constructorEquipmentGroupId: 10, queueType: "main", schemaId: 2, productItemModelId: 3, productCount: 1, remainingCount: 1, totalCount: 2, remainingTime: 5, totalTime: 10, running: true, parentJobId: 0 },
       ],
     }), viewport);
 

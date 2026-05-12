@@ -1223,6 +1223,29 @@ body {
   min-height: 0;
 }
 
+.control-panel-constructor-queue__item {
+  position: relative;
+  background:
+    linear-gradient(to right, rgba(47, 140, 208, 0.34) var(--constructor-queue-total-progress, 0%), transparent var(--constructor-queue-total-progress, 0%)),
+    rgb(0, 0, 0);
+}
+
+.control-panel-constructor-queue__item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: var(--constructor-queue-unit-progress, 0%);
+  height: 0.32vh;
+  background: rgb(89, 202, 255);
+  pointer-events: none;
+}
+
+.control-panel-constructor-queue__item > * {
+  position: relative;
+  z-index: 1;
+}
+
 .control-panel-constructor-recipe-tooltip {
   position: fixed;
   z-index: 1800;

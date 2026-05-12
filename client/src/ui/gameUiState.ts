@@ -92,10 +92,14 @@ export type GameUiState = {
   controlPanelFuelFillDialogOpen: boolean;
   // Показывает окно подтверждения частичного переноса предметов между контейнерами.
   controlPanelContainerTransferDialogOpen: boolean;
+  // Показывает окно выбора количества запусков изготовления.
+  controlPanelConstructorProduceDialogOpen: boolean;
   // Максимальное количество предметов для частичного переноса между контейнерами.
   controlPanelContainerTransferMaxAmount: number;
   // Максимальное количество топлива, доступное для залива в бак.
   controlPanelFuelFillMaxAmount: number;
+  // Максимальное количество запусков изготовления, доступное в окне выбора.
+  controlPanelConstructorProduceMaxAmount: number;
   // Количество топлива, выбранное для слива из бака.
   controlPanelFuelDrainAmount: number;
   // Текст количества топлива в поле слива из бака.
@@ -193,8 +197,10 @@ const initialGameUiState: GameUiState = {
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,
+  controlPanelConstructorProduceDialogOpen: false,
   controlPanelContainerTransferMaxAmount: 0,
   controlPanelFuelFillMaxAmount: 0,
+  controlPanelConstructorProduceMaxAmount: 100,
   controlPanelFuelDrainAmount: 0,
   controlPanelFuelDrainAmountText: "0",
   controlPanelFuelDrainAmountSelectionStart: 1,

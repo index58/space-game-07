@@ -165,7 +165,8 @@ func TestDecodeControlPanelConstructorProduceItemMessageUsesAgreedJSONFields(t *
 		"constructorEquipmentGroupId": 13,
 		"materialContainerEquipmentGroupId": 11,
 		"productContainerEquipmentGroupId": 12,
-		"schemaId": 21
+		"schemaId": 21,
+		"amount": 4
 	}`))
 
 	if !ok {
@@ -174,7 +175,7 @@ func TestDecodeControlPanelConstructorProduceItemMessageUsesAgreedJSONFields(t *
 	if message.ClientSessionID != "session-1" || message.MutationSeq != 7 {
 		t.Fatalf("mutation fields were decoded incorrectly: %+v", message)
 	}
-	if message.ConstructorEquipmentGroupID != 13 || message.MaterialContainerEquipmentGroupID != 11 || message.ProductContainerEquipmentGroupID != 12 || message.SchemaID != 21 {
+	if message.ConstructorEquipmentGroupID != 13 || message.MaterialContainerEquipmentGroupID != 11 || message.ProductContainerEquipmentGroupID != 12 || message.SchemaID != 21 || message.Amount != 4 {
 		t.Fatalf("constructor production fields were decoded incorrectly: %+v", message)
 	}
 }
@@ -311,9 +312,12 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 				SchemaID:                    9,
 				ProductItemModelID:          302,
 				ProductCount:                2,
+				RemainingCount:              4,
+				TotalCount:                  6,
 				RemainingTime:               7,
 				TotalTime:                   10,
 				Running:                     true,
+				ParentJobID:                 1,
 			},
 		},
 		ClientMutationAck: &game.ClientMutationAck{
@@ -346,7 +350,10 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		`"queueType":"main"`,
 		`"schemaId":9`,
 		`"productItemModelId":302`,
+		`"remainingCount":4`,
+		`"totalCount":6`,
 		`"remainingTime":7`,
+		`"parentJobId":1`,
 		`"clientMutationAck":{"sessionId":"session-1","lastAppliedSeq":8}`,
 	} {
 		if !strings.Contains(jsonText, field) {

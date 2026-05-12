@@ -52,6 +52,28 @@ const object = (partial: Partial<CosmicObject> = {}): CosmicObject => ({
   TargetRotation: 0,
   ...partial,
 });
+  // Проверяет, что окно количества изготовления использует общий шаблон выбора числа.
+  it("renders control panel constructor amount dialog", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      controlPanelConstructorProduceDialogOpen: true,
+      controlPanelConstructorProduceMaxAmount: 100,
+      controlPanelFuelDrainAmount: 5,
+      controlPanelFuelDrainAmountText: "5",
+      controlPanelFuelDrainAmountSelectionStart: 1,
+      controlPanelFuelDrainAmountSelectionEnd: 1,
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-constructor-produce-dialog .control-panel-fuel-drain-dialog__title")?.textContent).toBe("Изготовление");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-input .ui-kit-text-input__text")?.textContent).toBe("5");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-slider .ui-kit-slider__fill")).not.toBeNull();
+    expect(root.querySelector("#control-panel-constructor-produce-ok")?.textContent).toBe("ОК");
+    expect(root.querySelector("#control-panel-constructor-produce-cancel")?.textContent).toBe("Отмена");
+  });
 
 const visibleControlText = (element: Element | null): string | null =>
   element?.querySelector(".ui-kit-text-input__text")?.textContent ?? element?.textContent ?? null;
@@ -151,8 +173,10 @@ const state = (): GameUiState => ({
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,
+  controlPanelConstructorProduceDialogOpen: false,
   controlPanelContainerTransferMaxAmount: 0,
   controlPanelFuelFillMaxAmount: 0,
+  controlPanelConstructorProduceMaxAmount: 100,
   controlPanelFuelDrainAmount: 0,
   controlPanelFuelDrainAmountText: "0",
   controlPanelFuelDrainAmountSelectionStart: 1,
@@ -720,8 +744,10 @@ describe("GameUi", () => {
         { ID: 2, ContainerEquipmentGroupID: 10, ContentItemModelID: 4, Count: 2 },
       ],
       constructorProductionJobs: [
-        { id: 1, constructorEquipmentGroupId: 11, queueType: "main", schemaId: 1, productItemModelId: 4, productCount: 2, remainingTime: 12, totalTime: 30, running: true },
-        { id: 2, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingTime: 20, totalTime: 30, running: false },
+        { id: 1, constructorEquipmentGroupId: 11, queueType: "main", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 6, totalCount: 8, remainingTime: 12, totalTime: 30, running: true, parentJobId: 0 },
+        { id: 2, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 4, totalCount: 8, remainingTime: 20, totalTime: 30, running: false, parentJobId: 1 },
+        { id: 3, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 2, totalCount: 4, remainingTime: 10, totalTime: 30, running: true, parentJobId: 1 },
+        { id: 4, constructorEquipmentGroupId: 11, queueType: "auxiliary", schemaId: 1, productItemModelId: 4, productCount: 2, remainingCount: 3, totalCount: 3, remainingTime: 30, totalTime: 30, running: false, parentJobId: 99 },
       ],
     })} />, root);
 
@@ -734,8 +760,10 @@ describe("GameUi", () => {
     expect(root.querySelector(".control-panel-constructor-queues")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
     expect(root.querySelector(".control-panel-constructor-usage")?.children[0]?.classList.contains("control-panel-constructor-recipes")).toBe(true);
     expect(root.querySelector(".control-panel-constructor-usage")?.children[1]?.classList.contains("control-panel-constructor-queues")).toBe(true);
-    expect(root.querySelector("#control-panel-constructor-main-queue-1")?.textContent).toBe("Пластина12 / 30 с");
-    expect(root.querySelector("#control-panel-constructor-required-queue-2")?.textContent).toBe("Пластина20 / 30 с");
+    expect(root.querySelector("#control-panel-constructor-main-queue-1")?.textContent).toBe("Пластина2 / 8");
+    expect(root.querySelector("#control-panel-constructor-required-queue-2")?.textContent).toBe("Пластина6 / 12");
+    expect(root.querySelector("#control-panel-constructor-required-queue-4")?.textContent).toBe("Пластина0 / 3");
+    expect(root.querySelector("#control-panel-constructor-required-queue-2")?.getAttribute("style")).toContain("--constructor-queue-total-progress");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.textContent).toBe("Пластина");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 30 с, Феррогель: 5");
     expect(root.querySelector("#control-panel-constructor-make-button")?.textContent).toBe("Изготовить");

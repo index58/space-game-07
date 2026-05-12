@@ -248,8 +248,12 @@ type ControlPanelConstructorQueueRow = {
   id: number;
   // Видимое название изготавливаемого предмета.
   title: string;
-  // Оставшееся и полное время изготовления.
-  time: string;
+  // Изготовленное и полное количество предметов.
+  count: string;
+  // Заполнение полосы текущего запуска в процентах.
+  unitProgressPercent: number;
+  // Заполнение полосы общего количества в процентах.
+  totalProgressPercent: number;
 };
 
 type GameFormRowLabelProps = {
@@ -860,6 +864,20 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                 focused={props.state().controlPanelFuelDrainAmountFocused}
               />
             </Show>
+            <Show when={props.state().controlPanelConstructorProduceDialogOpen}>
+              <ControlPanelFuelAmountDialog
+                id="control-panel-constructor-produce-dialog"
+                title="Изготовление"
+                okId="control-panel-constructor-produce-ok"
+                cancelId="control-panel-constructor-produce-cancel"
+                amount={props.state().controlPanelFuelDrainAmount}
+                maxAmount={props.state().controlPanelConstructorProduceMaxAmount}
+                text={props.state().controlPanelFuelDrainAmountText}
+                selectionStart={props.state().controlPanelFuelDrainAmountSelectionStart}
+                selectionEnd={props.state().controlPanelFuelDrainAmountSelectionEnd}
+                focused={props.state().controlPanelFuelDrainAmountFocused}
+              />
+            </Show>
           </div>
         </Modal>
       </GameWindowLayer>
@@ -956,7 +974,16 @@ const ControlPanelConstructorQueueList = (props: { id: string; rows: ControlPane
   <ListBox
     id={props.id}
     selectedValue=""
-    items={props.rows.map((row) => ({ value: String(row.id), label: row.title, secondaryLabel: row.time }))}
+    items={props.rows.map((row) => ({
+      value: String(row.id),
+      label: row.title,
+      secondaryLabel: row.count,
+      className: "control-panel-constructor-queue__item",
+      style: {
+        "--constructor-queue-unit-progress": `${row.unitProgressPercent}%`,
+        "--constructor-queue-total-progress": `${row.totalProgressPercent}%`,
+      },
+    }))}
     scroll={props.scroll}
   />
 );
@@ -1100,13 +1127,33 @@ const getControlPanelContainerContentRows = (itemGroups: ItemGroup[], itemModels
     }));
 
 const getControlPanelConstructorQueueRows = (state: GameUiState, queueType: ConstructorProductionJob["queueType"]): ControlPanelConstructorQueueRow[] =>
-  state.constructorProductionJobs
-    .filter((job) => job.constructorEquipmentGroupId === state.selectedControlPanelUsageRightEquipmentGroupId && job.queueType === queueType)
-    .map((job) => ({
-      id: job.id,
-      title: getReferenceTitle(state.referenceData?.ItemModel.Items[String(job.productItemModelId)]) ?? emptyValue(),
-      time: `${formatMetric(job.remainingTime)} / ${formatMetric(job.totalTime)} с`,
-    }));
+  groupControlPanelConstructorQueueJobs(state.constructorProductionJobs
+    .filter((job) => job.constructorEquipmentGroupId === state.selectedControlPanelUsageRightEquipmentGroupId && job.queueType === queueType))
+    .map((jobs) => {
+      const first = jobs[0];
+      const remaining = jobs.reduce((sum, job) => sum + job.remainingCount, 0);
+      const total = jobs.reduce((sum, job) => sum + job.totalCount, 0);
+      const completed = Math.max(0, total - remaining);
+      const running = jobs.find((job) => job.running);
+      const unitProgress = running && running.totalTime > 0 ? clampNumber((1 - running.remainingTime / running.totalTime) * 100, 0, 100) : 0;
+      const totalProgress = total > 0 ? clampNumber((1 - remaining / total) * 100, 0, 100) : 0;
+      return {
+        id: first.id,
+        title: getReferenceTitle(state.referenceData?.ItemModel.Items[String(first.productItemModelId)]) ?? emptyValue(),
+        count: `${formatMetric(completed)} / ${formatMetric(total)}`,
+        unitProgressPercent: unitProgress,
+        totalProgressPercent: totalProgress,
+      };
+    });
+
+const groupControlPanelConstructorQueueJobs = (jobs: ConstructorProductionJob[]): ConstructorProductionJob[][] => {
+  const groups = new Map<string, ConstructorProductionJob[]>();
+  for (const job of jobs) {
+    const groupKey = job.queueType === "auxiliary" ? `${job.productItemModelId}:${job.parentJobId}` : String(job.id);
+    groups.set(groupKey, [...(groups.get(groupKey) ?? []), job]);
+  }
+  return [...groups.values()];
+};
 
 const getControlPanelSchemaRows = (state: GameUiState): ControlPanelConstructorRecipeRow[] =>
   Object.values(state.referenceData?.Schema.Items ?? {})

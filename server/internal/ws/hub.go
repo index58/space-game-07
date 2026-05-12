@@ -220,6 +220,7 @@ func (hub *Hub) handleControlPanelConstructorProduceItem(client *Client, message
 		MaterialContainerEquipmentGroupID: message.MaterialContainerEquipmentGroupID,
 		ProductContainerEquipmentGroupID:  message.ProductContainerEquipmentGroupID,
 		SchemaID:                          message.SchemaID,
+		Amount:                            message.Amount,
 	})
 	if err != nil {
 		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())

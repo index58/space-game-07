@@ -72,9 +72,12 @@ type constructorProductionJob struct {
 	SchemaID                          int64   // Схема, по которой изготавливается предмет.
 	ProductItemModelID                int64   // Модель предмета, который получится после завершения.
 	ProductCount                      float64 // Количество предметов, которое получится после завершения.
+	RemainingBatches                  int64   // ���������� ��������, ������� ��� �������� ��������� �� ������.
+	TotalBatches                      int64   // ����� ���������� ��������, ��������������� �� ������.
 	RemainingTime                     float64 // Оставшееся время изготовления в секундах.
 	TotalTime                         float64 // Полное время изготовления в секундах.
 	Running                           bool    // Показывает, что задание сейчас выполняется.
+	ParentJobID                       int64   // ������������ ������, ��� ���������� ������� ����� ��� ��������������� ������.
 }
 
 // ControlPanelObjectUpdate описывает частичное изменение управляемого объекта.
@@ -113,6 +116,7 @@ type ControlPanelConstructorProduceItem struct {
 	MaterialContainerEquipmentGroupID int64 // Контейнер, из которого списываются компоненты схемы.
 	ProductContainerEquipmentGroupID  int64 // Контейнер, в который кладется готовая продукция.
 	SchemaID                          int64 // Схема предмета, выбранная игроком для изготовления.
+	Amount                            int64 // Количество запусков изготовления по выбранной схеме.
 }
 
 // controlPanelItemSchema хранит нужные серверу поля одной сырой записи схемы.
@@ -536,20 +540,25 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
 		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
 	}
+	amount := production.Amount
+	if amount <= 0 {
+		amount = 1
+	}
+	mainJob := world.newConstructorProductionJobLocked(production.ConstructorEquipmentGroupID, materialContainer.ID, productContainer.ID, "main", schema, amount, 0)
 	plannedJobs := make([]constructorProductionJob, 0)
 	for itemModelID, required := range requiredByModel {
-		if err := world.planMissingConstructorComponentsLocked(&plannedJobs, production.ConstructorEquipmentGroupID, materialContainer.ID, availableByModel, itemModelID, required, map[int64]bool{}); err != nil {
+		if err := world.planMissingConstructorComponentsLocked(&plannedJobs, production.ConstructorEquipmentGroupID, materialContainer.ID, availableByModel, itemModelID, required*float64(amount), mainJob.ID, map[int64]bool{}); err != nil {
 			return err
 		}
 	}
-	plannedJobs = append(plannedJobs, world.newConstructorProductionJobLocked(production.ConstructorEquipmentGroupID, materialContainer.ID, productContainer.ID, "main", schema))
+	plannedJobs = append(plannedJobs, mainJob)
 	world.constructorProductionJobs = append(world.constructorProductionJobs, plannedJobs...)
 	world.ackMutationLocked(accountID, sessionID, mutationSeq)
 	return nil
 }
 
 // planMissingConstructorComponentsLocked добавляет во вспомогательную очередь только недостающее количество компонентов.
-func (world *World) planMissingConstructorComponentsLocked(plannedJobs *[]constructorProductionJob, constructorID int64, materialContainerID int64, availableByModel map[int64]float64, itemModelID int64, required float64, visiting map[int64]bool) error {
+func (world *World) planMissingConstructorComponentsLocked(plannedJobs *[]constructorProductionJob, constructorID int64, materialContainerID int64, availableByModel map[int64]float64, itemModelID int64, required float64, parentJobID int64, visiting map[int64]bool) error {
 	shortage := required - availableByModel[itemModelID]
 	if shortage <= physics.Epsilon {
 		availableByModel[itemModelID] -= required
@@ -568,34 +577,36 @@ func (world *World) planMissingConstructorComponentsLocked(plannedJobs *[]constr
 	availableByModel[itemModelID] = 0
 	batchCount := int64(math.Ceil(shortage / schema.Count))
 	visiting[schema.ID] = true
-	for batch := int64(0); batch < batchCount; batch++ {
-		components, err := world.itemSchemaComponentsLocked(schema.ID)
-		if err != nil {
+	job := world.newConstructorProductionJobLocked(constructorID, materialContainerID, materialContainerID, "auxiliary", schema, batchCount, parentJobID)
+	components, err := world.itemSchemaComponentsLocked(schema.ID)
+	if err != nil {
+		return err
+	}
+	if len(components) == 0 {
+		return errors.New("schema components not found")
+	}
+	for _, component := range components {
+		if component.Count <= 0 {
+			return errors.New("schema component count is invalid")
+		}
+		if err := world.planMissingConstructorComponentsLocked(plannedJobs, constructorID, materialContainerID, availableByModel, component.ComponentItemModelID, component.Count*float64(batchCount), job.ID, visiting); err != nil {
 			return err
 		}
-		if len(components) == 0 {
-			return errors.New("schema components not found")
-		}
-		for _, component := range components {
-			if component.Count <= 0 {
-				return errors.New("schema component count is invalid")
-			}
-			if err := world.planMissingConstructorComponentsLocked(plannedJobs, constructorID, materialContainerID, availableByModel, component.ComponentItemModelID, component.Count, visiting); err != nil {
-				return err
-			}
-		}
-		*plannedJobs = append(*plannedJobs, world.newConstructorProductionJobLocked(constructorID, materialContainerID, materialContainerID, "auxiliary", schema))
-		availableByModel[itemModelID] += schema.Count
 	}
+	*plannedJobs = append(*plannedJobs, job)
+	availableByModel[itemModelID] += schema.Count * float64(batchCount)
 	delete(visiting, schema.ID)
 	availableByModel[itemModelID] -= shortage
 	return nil
 }
 
 // newConstructorProductionJobLocked создает строку очереди по схеме; вызывается только под mutex.
-func (world *World) newConstructorProductionJobLocked(constructorID int64, materialContainerID int64, productContainerID int64, queueType string, schema controlPanelItemSchema) constructorProductionJob {
+func (world *World) newConstructorProductionJobLocked(constructorID int64, materialContainerID int64, productContainerID int64, queueType string, schema controlPanelItemSchema, batches int64, parentJobID int64) constructorProductionJob {
 	world.nextConstructorProductionJobID++
 	totalTime := math.Max(0, schema.ProductionBaseTime)
+	if batches <= 0 {
+		batches = 1
+	}
 	return constructorProductionJob{
 		ID:                                world.nextConstructorProductionJobID,
 		ConstructorEquipmentGroupID:       constructorID,
@@ -605,8 +616,11 @@ func (world *World) newConstructorProductionJobLocked(constructorID int64, mater
 		SchemaID:                          schema.ID,
 		ProductItemModelID:                schema.ItemModelID,
 		ProductCount:                      schema.Count,
+		RemainingBatches:                  batches,
+		TotalBatches:                      batches,
 		RemainingTime:                     totalTime,
 		TotalTime:                         totalTime,
+		ParentJobID:                       parentJobID,
 	}
 }
 
@@ -865,6 +879,13 @@ func (world *World) stepConstructorProductionJobsLocked(dtSeconds float64) {
 		if err := world.addItemModelToContainerLocked(job.ProductContainerEquipmentGroupID, job.ProductItemModelID, job.ProductCount); err != nil {
 			continue
 		}
+		job.RemainingBatches--
+		if job.RemainingBatches > 0 {
+			job.Running = false
+			job.RemainingTime = job.TotalTime
+			_ = world.data.ItemGroups.RebuildIndexes()
+			continue
+		}
 		world.constructorProductionJobs = append(world.constructorProductionJobs[:jobIndex], world.constructorProductionJobs[jobIndex+1:]...)
 		_ = world.data.ItemGroups.RebuildIndexes()
 	}
@@ -930,6 +951,7 @@ func (world *World) startConstructorProductionJobLocked(job *constructorProducti
 		world.consumeItemModelFromContainerLocked(job.MaterialContainerEquipmentGroupID, itemModelID, required)
 	}
 	job.Running = true
+	job.RemainingTime = job.TotalTime
 	_ = world.data.ItemGroups.RebuildIndexes()
 	return true
 }
@@ -1459,9 +1481,12 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 			SchemaID:                    job.SchemaID,
 			ProductItemModelID:          job.ProductItemModelID,
 			ProductCount:                job.ProductCount,
+			RemainingCount:              float64(job.RemainingBatches) * job.ProductCount,
+			TotalCount:                  float64(job.TotalBatches) * job.ProductCount,
 			RemainingTime:               job.RemainingTime,
 			TotalTime:                   job.TotalTime,
 			Running:                     job.Running,
+			ParentJobID:                 job.ParentJobID,
 		})
 	}
 

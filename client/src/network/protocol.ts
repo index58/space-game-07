@@ -174,6 +174,8 @@ export type ControlPanelConstructorProduceItemMessage = {
   productContainerEquipmentGroupId: number;
   // Схема предмета, выбранная для изготовления.
   schemaId: number;
+  // Количество запусков изготовления по выбранной схеме.
+  amount: number;
 };
 
 export type ControlPanelErrorMessage = {
@@ -370,12 +372,18 @@ export type ConstructorProductionJob = {
   productItemModelId: number;
   // Количество предметов, которое получится после завершения.
   productCount: number;
+  // Количество предметов, которое еще осталось изготовить по строке.
+  remainingCount: number;
+  // Общее количество предметов, запланированное по строке.
+  totalCount: number;
   // Оставшееся время изготовления в секундах.
   remainingTime: number;
   // Полное время изготовления в секундах.
   totalTime: number;
   // Показывает, что задание сейчас выполняется.
   running: boolean;
+  // Родительская строка, для компонента которой нужна эта вспомогательная строка.
+  parentJobId: number;
 };
 
 // Является полным состоянием мира, которое сервер регулярно отправляет клиенту.

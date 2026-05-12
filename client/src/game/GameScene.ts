@@ -125,6 +125,8 @@ export class GameScene extends Phaser.Scene {
   private controlPanelFuelFillDialogOpen = false;
   // Показывает окно подтверждения частичного переноса предметов между контейнерами.
   private controlPanelContainerTransferDialogOpen = false;
+  // Показывает окно выбора количества запусков изготовления.
+  private controlPanelConstructorProduceDialogOpen = false;
   // Максимальное количество предметов для частичного переноса между контейнерами.
   private controlPanelContainerTransferMaxAmount = 0;
   // Источник ожидающего подтверждения переноса между контейнерами.
@@ -135,6 +137,8 @@ export class GameScene extends Phaser.Scene {
   private controlPanelContainerTransferItemGroupIds: number[] = [];
   // Максимальное количество топлива, доступное для залива в бак.
   private controlPanelFuelFillMaxAmount = 0;
+  // Максимальное количество запусков изготовления в окне конструктора.
+  private controlPanelConstructorProduceMaxAmount = 100;
   // Количество топлива, выбранное для слива из бака.
   private controlPanelFuelDrainAmount = 0;
   // Ожидающие подтверждения сервером изменения панели управления.
@@ -244,8 +248,8 @@ export class GameScene extends Phaser.Scene {
     this.syncControlPanelUsageSelection(selfObject?.ID ?? null, effectiveEquipmentGroups);
     this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(selfObject, effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
     this.inputController.syncControlPanelObject(selfObject);
-    if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen) {
-      const maxAmount = this.controlPanelContainerTransferDialogOpen ? this.controlPanelContainerTransferMaxAmount : this.controlPanelFuelFillDialogOpen ? this.controlPanelFuelFillMaxAmount : Math.max(0, selfObject?.Fuel ?? 0);
+    if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen || this.controlPanelConstructorProduceDialogOpen) {
+      const maxAmount = this.currentControlPanelAmountMax(selfObject);
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, maxAmount);
     }
     const controlPanelObjectTitleEditState = this.inputController.getControlPanelObjectTitleEditState(selfObject?.Title ?? "");
@@ -297,8 +301,10 @@ export class GameScene extends Phaser.Scene {
         controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
         controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
         controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
+        controlPanelConstructorProduceDialogOpen: this.controlPanelConstructorProduceDialogOpen,
         controlPanelContainerTransferMaxAmount: this.controlPanelContainerTransferMaxAmount,
         controlPanelFuelFillMaxAmount: this.controlPanelFuelFillMaxAmount,
+        controlPanelConstructorProduceMaxAmount: this.controlPanelConstructorProduceMaxAmount,
         controlPanelFuelDrainAmount: this.controlPanelFuelDrainAmount,
         controlPanelFuelDrainAmountText: controlPanelFuelDrainAmountEditState.text,
         controlPanelFuelDrainAmountSelectionStart: controlPanelFuelDrainAmountEditState.selectionStart,
@@ -375,8 +381,10 @@ export class GameScene extends Phaser.Scene {
       controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
       controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
       controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
+      controlPanelConstructorProduceDialogOpen: this.controlPanelConstructorProduceDialogOpen,
       controlPanelContainerTransferMaxAmount: this.controlPanelContainerTransferMaxAmount,
       controlPanelFuelFillMaxAmount: this.controlPanelFuelFillMaxAmount,
+      controlPanelConstructorProduceMaxAmount: this.controlPanelConstructorProduceMaxAmount,
       controlPanelFuelDrainAmount: this.controlPanelFuelDrainAmount,
       controlPanelFuelDrainAmountText: controlPanelFuelDrainAmountEditState.text,
       controlPanelFuelDrainAmountSelectionStart: controlPanelFuelDrainAmountEditState.selectionStart,
@@ -852,7 +860,19 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId === "control-panel-constructor-make-button") {
-      this.sendControlPanelConstructorProduceItem();
+      this.startControlPanelConstructorProduceItem();
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-produce-cancel") {
+      this.controlPanelConstructorProduceDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-produce-ok") {
+      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 1, this.controlPanelConstructorProduceMaxAmount);
+      this.sendControlPanelConstructorProduceItem(this.controlPanelFuelDrainAmount);
+      this.controlPanelConstructorProduceDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
     if (action.controlId.startsWith("control-panel-usage-left-container-content-") && typeof action.value === "string") {
@@ -893,6 +913,7 @@ export class GameScene extends Phaser.Scene {
         this.controlPanelFuelFillDialogOpen = true;
         this.controlPanelFuelDrainDialogOpen = false;
         this.controlPanelContainerTransferDialogOpen = false;
+        this.controlPanelConstructorProduceDialogOpen = false;
         this.controlPanelFuelDrainAmount = this.controlPanelFuelFillMaxAmount;
         this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
       }
@@ -914,6 +935,7 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelDrainDialogOpen = true;
       this.controlPanelFuelFillDialogOpen = false;
       this.controlPanelContainerTransferDialogOpen = false;
+      this.controlPanelConstructorProduceDialogOpen = false;
       this.controlPanelFuelDrainAmount = Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0);
       this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
       return true;
@@ -1069,7 +1091,7 @@ export class GameScene extends Phaser.Scene {
 
   // Меняет количество топлива для слива в пределах текущего запаса.
   private changeControlPanelFuelDrainAmount(delta: number): void {
-    const maxFuel = this.controlPanelContainerTransferDialogOpen ? this.controlPanelContainerTransferMaxAmount : this.controlPanelFuelFillDialogOpen ? this.controlPanelFuelFillMaxAmount : Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0);
+    const maxFuel = this.currentControlPanelAmountMax(this.gameUi.state().selfObject);
     this.controlPanelFuelDrainAmount = clamp(this.controlPanelFuelDrainAmount + delta, 0, maxFuel);
     this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
   }
@@ -1079,10 +1101,24 @@ export class GameScene extends Phaser.Scene {
     if (!action.controlRect || (action.type !== "dragStart" && action.type !== "dragMove")) {
       return;
     }
-    const maxFuel = this.controlPanelContainerTransferDialogOpen ? this.controlPanelContainerTransferMaxAmount : this.controlPanelFuelFillDialogOpen ? this.controlPanelFuelFillMaxAmount : Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0);
+    const maxFuel = this.currentControlPanelAmountMax(this.gameUi.state().selfObject);
     const position = clamp((action.x - action.controlRect.left) / Math.max(1, action.controlRect.width), 0, 1);
     this.controlPanelFuelDrainAmount = Math.round(maxFuel * position);
     this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+  }
+
+  // Возвращает верхнюю границу текущего окна выбора количества.
+  private currentControlPanelAmountMax(selfObject: GameUiState["selfObject"]): number {
+    if (this.controlPanelContainerTransferDialogOpen) {
+      return this.controlPanelContainerTransferMaxAmount;
+    }
+    if (this.controlPanelFuelFillDialogOpen) {
+      return this.controlPanelFuelFillMaxAmount;
+    }
+    if (this.controlPanelConstructorProduceDialogOpen) {
+      return this.controlPanelConstructorProduceMaxAmount;
+    }
+    return Math.max(0, selfObject?.Fuel ?? 0);
   }
 
   // Запускает перенос между контейнерами сразу или через окно количества для одной строки.
@@ -1103,6 +1139,26 @@ export class GameScene extends Phaser.Scene {
     this.controlPanelContainerTransferDialogOpen = true;
     this.controlPanelFuelDrainDialogOpen = false;
     this.controlPanelFuelFillDialogOpen = false;
+    this.controlPanelConstructorProduceDialogOpen = false;
+    this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+  }
+
+  // Открывает окно выбора количества запусков изготовления по выбранной схеме.
+  private startControlPanelConstructorProduceItem(): void {
+    if (
+      this.selectedControlPanelConstructorTab !== "items" ||
+      !this.selectedControlPanelUsageRightEquipmentGroupId ||
+      !this.selectedControlPanelConstructorMaterialContainerGroupId ||
+      !this.selectedControlPanelUsageLeftContainerGroupId ||
+      !this.selectedControlPanelConstructorSchemaId
+    ) {
+      return;
+    }
+    this.controlPanelConstructorProduceDialogOpen = true;
+    this.controlPanelFuelDrainDialogOpen = false;
+    this.controlPanelFuelFillDialogOpen = false;
+    this.controlPanelContainerTransferDialogOpen = false;
+    this.controlPanelFuelDrainAmount = 1;
     this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
   }
 
@@ -1176,7 +1232,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Отправляет изготовление одной партии предметов по выбранной схеме конструктора.
-  private sendControlPanelConstructorProduceItem(): void {
+  private sendControlPanelConstructorProduceItem(amount: number): void {
     if (
       this.selectedControlPanelConstructorTab !== "items" ||
       !this.selectedControlPanelUsageRightEquipmentGroupId ||
@@ -1191,6 +1247,7 @@ export class GameScene extends Phaser.Scene {
       materialContainerEquipmentGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
       productContainerEquipmentGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
       schemaId: this.selectedControlPanelConstructorSchemaId,
+      amount,
     });
   }
 

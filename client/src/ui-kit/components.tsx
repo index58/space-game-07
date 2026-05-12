@@ -10,6 +10,10 @@ export type UiKitOption = {
   title?: string;
   // Дополнительный текст справа для двухколоночных списков.
   secondaryLabel?: string;
+  // Дополнительный CSS-класс для особого отображения строки.
+  className?: string;
+  // Встроенные стили строки, например CSS-переменные прогресса.
+  style?: JSX.CSSProperties;
 };
 
 type TreeNode = UiKitOption & {
@@ -352,7 +356,7 @@ export const ListBox = (props: ListBoxProps) => (
     <div class="ui-kit-list__content" style={{ transform: `translateY(-${props.scroll?.contentOffsetPx ?? props.scrollOffsetPx ?? 0}px)` }}>
       <For each={props.items}>
         {(item) => (
-          <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} title={item.title} class={`ui-kit-control ui-kit-list__item ${isListBoxItemSelected(props, item.value) ? "is-selected" : ""}`}>
+          <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} title={item.title} style={item.style} class={`ui-kit-control ui-kit-list__item ${item.className ?? ""} ${isListBoxItemSelected(props, item.value) ? "is-selected" : ""}`}>
             <span class="ui-kit-list__item-label">{item.label}</span>
             <Show when={item.secondaryLabel !== undefined}>
               <span class="ui-kit-list__item-secondary">{item.secondaryLabel}</span>

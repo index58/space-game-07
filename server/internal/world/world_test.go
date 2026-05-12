@@ -1463,10 +1463,10 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 10}); err != nil {
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 12}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 403, Count: 5}); err != nil {
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 403, Count: 6}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1475,6 +1475,7 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 		MaterialContainerEquipmentGroupID: materialContainer.ID,
 		ProductContainerEquipmentGroupID:  productContainer.ID,
 		SchemaID:                          1,
+		Amount:                            3,
 	}); err != nil {
 		t.Fatalf("constructor production returned error: %v", err)
 	}
@@ -1487,28 +1488,30 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 		t.Fatalf("product was created before production time passed: %+v", productCounts)
 	}
 	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
-	if len(queued) != 1 || queued[0].QueueType != "main" || queued[0].RemainingTime != 10 {
+	if len(queued) != 1 || queued[0].QueueType != "main" || queued[0].RemainingTime != 10 || queued[0].RemainingCount != 3 || queued[0].TotalCount != 3 {
 		t.Fatalf("main production was not queued correctly: %+v", queued)
 	}
 
-	gameWorld.Tick(9)
-	if items := serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID); len(items) != 0 {
-		t.Fatalf("product was created too early: %+v", items)
+	gameWorld.Tick(10)
+	queued = gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
+	if len(queued) != 1 || queued[0].RemainingCount != 2 || queued[0].TotalCount != 3 {
+		t.Fatalf("main production did not keep remaining and total counts: %+v", queued)
 	}
-	gameWorld.Tick(1)
+	gameWorld.Tick(10)
+	gameWorld.Tick(10)
 
 	materialCounts := map[int64]float64{}
 	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
 		materialCounts[item.ContentItemModelID] = item.Count
 	}
-	if materialCounts[303] != 6 || materialCounts[403] != 3 {
+	if materialCounts[303] != 0 || materialCounts[403] != 0 {
 		t.Fatalf("materials were not consumed correctly: %+v", materialCounts)
 	}
 	productCounts = map[int64]float64{}
 	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID) {
 		productCounts[item.ContentItemModelID] = item.Count
 	}
-	if productCounts[302] != 1 {
+	if productCounts[302] != 3 {
 		t.Fatalf("product was not created after production time: %+v", productCounts)
 	}
 	if queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs; len(queued) != 0 {
@@ -1561,7 +1564,7 @@ func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryCompon
 	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 4}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 403, Count: 2}); err != nil {
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 403, Count: 4}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1570,29 +1573,32 @@ func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryCompon
 		MaterialContainerEquipmentGroupID: materialContainer.ID,
 		ProductContainerEquipmentGroupID:  productContainer.ID,
 		SchemaID:                          1,
+		Amount:                            2,
 	}); err != nil {
 		t.Fatalf("constructor production returned error: %v", err)
 	}
 
 	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
-	if len(queued) != 2 || queued[0].QueueType != "auxiliary" || queued[0].SchemaID != 2 || queued[1].QueueType != "main" {
+	if len(queued) != 2 || queued[0].QueueType != "auxiliary" || queued[0].SchemaID != 2 || queued[0].RemainingCount != 6 || queued[0].TotalCount != 6 || queued[0].ParentJobID != queued[1].ID || queued[1].QueueType != "main" || queued[1].RemainingCount != 2 || queued[1].TotalCount != 2 {
 		t.Fatalf("auxiliary and main queues were not planned correctly: %+v", queued)
 	}
 	gameWorld.Tick(4)
+	gameWorld.Tick(4)
+	gameWorld.Tick(10)
 	gameWorld.Tick(10)
 
 	materialCounts := map[int64]float64{}
 	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
 		materialCounts[item.ContentItemModelID] = item.Count
 	}
-	if materialCounts[303] != 2 || materialCounts[403] != 0 {
+	if materialCounts[303] != 0 || materialCounts[403] != 0 {
 		t.Fatalf("auxiliary production did not leave expected material remainder: %+v", materialCounts)
 	}
 	productCounts := map[int64]float64{}
 	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID) {
 		productCounts[item.ContentItemModelID] = item.Count
 	}
-	if productCounts[302] != 1 {
+	if productCounts[302] != 2 {
 		t.Fatalf("main production did not complete after auxiliary production: %+v", productCounts)
 	}
 }
