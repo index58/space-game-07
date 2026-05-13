@@ -254,8 +254,6 @@ type ControlPanelConstructorQueueRow = {
   count: string;
   // Заполнение полосы текущего запуска в процентах.
   unitProgressPercent: number;
-  // Заполнение полосы общего количества в процентах.
-  totalProgressPercent: number;
 };
 
 type GameFormRowLabelProps = {
@@ -957,11 +955,19 @@ const ControlPanelConstructorQueuePanel = (props: { state: Accessor<GameUiState>
       <ControlPanelConstructorQueueList
         id="control-panel-constructor-main-queue"
         rows={mainRows()}
+        selectedId={props.state().selectedControlPanelConstructorMainJobId}
         scroll={props.state().listScroll["control-panel-constructor-main-queue"]}
       />
+      <div class="control-panel-constructor-queue-actions">
+        <Button id="control-panel-constructor-skip-next" label="Не делать следующие" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+        <Button id="control-panel-constructor-skip-all-next" label="Не делать все следующие" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+        <Button id="control-panel-constructor-cancel" label="Отменить" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+        <Button id="control-panel-constructor-cancel-all" label="Отменить все" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+      </div>
       <ControlPanelConstructorQueueList
         id="control-panel-constructor-required-queue"
         rows={auxiliaryRows()}
+        selectedId={null}
         scroll={props.state().listScroll["control-panel-constructor-required-queue"]}
       />
     </div>
@@ -979,10 +985,10 @@ const ControlPanelConstructorRecipeList = (props: { id: string; rows: ControlPan
 );
 
 // Показывает одну очередь заданий конструктора.
-const ControlPanelConstructorQueueList = (props: { id: string; rows: ControlPanelConstructorQueueRow[]; scroll?: GameUiState["chatScroll"] }) => (
+const ControlPanelConstructorQueueList = (props: { id: string; rows: ControlPanelConstructorQueueRow[]; selectedId: number | null; scroll?: GameUiState["chatScroll"] }) => (
   <ListBox
     id={props.id}
-    selectedValue=""
+    selectedValue={props.selectedId ? String(props.selectedId) : ""}
     items={props.rows.map((row) => ({
       value: String(row.id),
       label: row.title,
@@ -990,7 +996,6 @@ const ControlPanelConstructorQueueList = (props: { id: string; rows: ControlPane
       className: "control-panel-constructor-queue__item",
       style: {
         "--constructor-queue-unit-progress": `${row.unitProgressPercent}%`,
-        "--constructor-queue-total-progress": `${row.totalProgressPercent}%`,
       },
     }))}
     scroll={props.scroll}
@@ -1145,13 +1150,11 @@ const getControlPanelConstructorQueueRows = (state: GameUiState, queueType: Cons
       const completed = Math.max(0, total - remaining);
       const running = jobs.find((job) => job.running);
       const unitProgress = running && running.totalTime > 0 ? clampNumber((1 - running.remainingTime / running.totalTime) * 100, 0, 100) : 0;
-      const totalProgress = total > 0 ? clampNumber((1 - remaining / total) * 100, 0, 100) : 0;
       return {
         id: first.id,
         title: getConstructorProductionTitle(state, first),
         count: `${formatMetric(completed)} / ${formatMetric(total)}`,
         unitProgressPercent: unitProgress,
-        totalProgressPercent: totalProgress,
       };
     });
 

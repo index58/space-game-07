@@ -151,6 +151,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeControlPanelConstructorProduceItemMessage(payload); ok {
 				hub.handleControlPanelConstructorProduceItem(client, message)
 			}
+			if message, ok := DecodeControlPanelConstructorQueueCommandMessage(payload); ok {
+				hub.handleControlPanelConstructorQueueCommand(client, message)
+			}
 			continue
 		}
 
@@ -222,6 +225,19 @@ func (hub *Hub) handleControlPanelConstructorProduceItem(client *Client, message
 		SchemaID:                          message.SchemaID,
 		BlueprintID:                       message.BlueprintID,
 		Amount:                            message.Amount,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
+// handleControlPanelConstructorQueueCommand применяет изменение очереди конструктора или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelConstructorQueueCommand(client *Client, message ControlPanelConstructorQueueCommandMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelConstructorQueueCommand(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelConstructorQueueCommand{
+		ConstructorEquipmentGroupID: message.ConstructorEquipmentGroupID,
+		JobID:                       message.JobID,
+		Command:                     message.Command,
 	})
 	if err != nil {
 		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())

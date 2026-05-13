@@ -48,6 +48,7 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   selectedControlPanelConstructorTab: "items",
   selectedControlPanelConstructorSchemaId: null,
   selectedControlPanelConstructorBlueprintId: null,
+  selectedControlPanelConstructorMainJobId: null,
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,

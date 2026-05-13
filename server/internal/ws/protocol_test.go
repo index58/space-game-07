@@ -200,6 +200,25 @@ func TestDecodeControlPanelConstructorProduceItemMessageAcceptsBlueprintID(t *te
 	}
 }
 
+// Проверяет, что команда изменения очереди конструктора читает выбранную строку и действие.
+func TestDecodeControlPanelConstructorQueueCommandMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeControlPanelConstructorQueueCommandMessage([]byte(`{
+		"type": "controlPanelConstructorQueueCommand",
+		"clientSessionId": "session-1",
+		"mutationSeq": 9,
+		"constructorEquipmentGroupId": 13,
+		"jobId": 31,
+		"command": "cancelAll"
+	}`))
+
+	if !ok {
+		t.Fatalf("constructor queue command message was not decoded")
+	}
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 9 || message.ConstructorEquipmentGroupID != 13 || message.JobID != 31 || message.Command != "cancelAll" {
+		t.Fatalf("constructor queue command fields were decoded incorrectly: %+v", message)
+	}
+}
+
 func TestDecodeChatSendMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeChatSendMessage([]byte(`{
 		"type": "chatSend",

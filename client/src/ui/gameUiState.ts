@@ -85,6 +85,8 @@ export type GameUiState = {
   selectedControlPanelConstructorSchemaId: number | null;
   // ID выбранного чертежа объекта в конструкторе.
   selectedControlPanelConstructorBlueprintId: number | null;
+  // ID выбранной строки основной очереди конструктора.
+  selectedControlPanelConstructorMainJobId: number | null;
   // Черновики признака включения групп оборудования по ID группы.
   // Показывает окно подтверждения слива топлива из бака.
   controlPanelFuelDrainDialogOpen: boolean;
@@ -194,6 +196,7 @@ const initialGameUiState: GameUiState = {
   selectedControlPanelConstructorTab: "items",
   selectedControlPanelConstructorSchemaId: null,
   selectedControlPanelConstructorBlueprintId: null,
+  selectedControlPanelConstructorMainJobId: null,
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,

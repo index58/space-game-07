@@ -125,6 +125,12 @@ type ControlPanelConstructorProduceItem struct {
 }
 
 // controlPanelItemSchema хранит нужные серверу поля одной сырой записи схемы.
+type ControlPanelConstructorQueueCommand struct {
+	ConstructorEquipmentGroupID int64  // Группа конструкторов, очередь которой меняется.
+	JobID                       int64  // Строка основной очереди, выбранная игроком.
+	Command                     string // Действие над выбранной строкой и следующими строками.
+}
+
 type controlPanelItemSchema struct {
 	ID                 int64   `json:"ID"`                 // Уникальный числовой идентификатор схемы.
 	ItemModelID        int64   `json:"ItemModelID"`        // Модель предмета, получаемого по схеме.
@@ -552,6 +558,39 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 	}
 	plannedJobs = append(plannedJobs, mainJob)
 	world.constructorProductionJobs = append(world.constructorProductionJobs, plannedJobs...)
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
+}
+
+// ApplyControlPanelConstructorQueueCommand меняет основную очередь конструктора по выбранной строке.
+func (world *World) ApplyControlPanelConstructorQueueCommand(accountID int64, sessionID string, mutationSeq int64, command ControlPanelConstructorQueueCommand) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	if _, err := world.controlledEquipmentItemtypeLocked(objectID, command.ConstructorEquipmentGroupID, "Constructor"); err != nil {
+		return err
+	}
+	jobIndex := world.constructorMainJobIndexLocked(command.ConstructorEquipmentGroupID, command.JobID)
+	if jobIndex < 0 {
+		return errors.New("constructor main job not found")
+	}
+	switch command.Command {
+	case "skipNext":
+		world.skipConstructorMainJobNextLocked(jobIndex)
+	case "skipAllNext":
+		world.removeConstructorMainJobsAfterLocked(command.ConstructorEquipmentGroupID, command.JobID)
+		world.skipConstructorMainJobNextLocked(jobIndex)
+	case "cancel":
+		world.removeConstructorMainJobAtLocked(jobIndex)
+	case "cancelAll":
+		world.removeConstructorMainJobsFromLocked(command.ConstructorEquipmentGroupID, command.JobID)
+	default:
+		return errors.New("constructor queue command is invalid")
+	}
 	world.ackMutationLocked(accountID, sessionID, mutationSeq)
 	return nil
 }
@@ -1097,6 +1136,78 @@ func (world *World) constructorIDsWithProductionJobsLocked() []int64 {
 		return constructorIDs[left] < constructorIDs[right]
 	})
 	return constructorIDs
+}
+
+// constructorMainJobIndexLocked ищет выбранную строку основной очереди конструктора.
+func (world *World) constructorMainJobIndexLocked(constructorID int64, jobID int64) int {
+	for index, job := range world.constructorProductionJobs {
+		if job.ID == jobID && job.ConstructorEquipmentGroupID == constructorID && job.QueueType == "main" {
+			return index
+		}
+	}
+	return -1
+}
+
+// skipConstructorMainJobNextLocked оставляет только начатую единицу или убирает не начатую строку.
+func (world *World) skipConstructorMainJobNextLocked(jobIndex int) {
+	if jobIndex < 0 || jobIndex >= len(world.constructorProductionJobs) {
+		return
+	}
+	job := &world.constructorProductionJobs[jobIndex]
+	if !job.Running {
+		world.removeConstructorMainJobAtLocked(jobIndex)
+		return
+	}
+	job.RemainingBatches = 1
+	job.TotalBatches = 1
+}
+
+// removeConstructorMainJobsAfterLocked убирает основные строки, следующие за выбранной.
+func (world *World) removeConstructorMainJobsAfterLocked(constructorID int64, jobID int64) {
+	seenSelected := false
+	for index := 0; index < len(world.constructorProductionJobs); {
+		job := world.constructorProductionJobs[index]
+		if job.ConstructorEquipmentGroupID == constructorID && job.QueueType == "main" {
+			if seenSelected {
+				world.removeConstructorMainJobAtLocked(index)
+				continue
+			}
+			if job.ID == jobID {
+				seenSelected = true
+			}
+		}
+		index++
+	}
+}
+
+// removeConstructorMainJobsFromLocked убирает выбранную основную строку и все следующие основные строки.
+func (world *World) removeConstructorMainJobsFromLocked(constructorID int64, jobID int64) {
+	seenSelected := false
+	for index := 0; index < len(world.constructorProductionJobs); {
+		job := world.constructorProductionJobs[index]
+		if job.ConstructorEquipmentGroupID == constructorID && job.QueueType == "main" && (seenSelected || job.ID == jobID) {
+			seenSelected = true
+			world.removeConstructorMainJobAtLocked(index)
+			continue
+		}
+		index++
+	}
+}
+
+// removeConstructorMainJobAtLocked убирает основную строку и ее вспомогательные строки.
+func (world *World) removeConstructorMainJobAtLocked(jobIndex int) {
+	if jobIndex < 0 || jobIndex >= len(world.constructorProductionJobs) {
+		return
+	}
+	jobID := world.constructorProductionJobs[jobIndex].ID
+	world.constructorProductionJobs = append(world.constructorProductionJobs[:jobIndex], world.constructorProductionJobs[jobIndex+1:]...)
+	for index := 0; index < len(world.constructorProductionJobs); {
+		if world.constructorProductionJobs[index].ParentJobID == jobID {
+			world.constructorProductionJobs = append(world.constructorProductionJobs[:index], world.constructorProductionJobs[index+1:]...)
+			continue
+		}
+		index++
+	}
 }
 
 // activeConstructorProductionJobIndexLocked выбирает текущее задание конструктора с приоритетом вспомогательной очереди.

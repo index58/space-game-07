@@ -180,6 +180,23 @@ export type ControlPanelConstructorProduceItemMessage = {
   amount: number;
 };
 
+export type ControlPanelConstructorQueueCommand = "skipNext" | "skipAllNext" | "cancel" | "cancelAll";
+
+export type ControlPanelConstructorQueueCommandMessage = {
+  // Вид команды изменения очереди конструктора.
+  type: "controlPanelConstructorQueueCommand";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Группа конструкторов, очередь которой меняется.
+  constructorEquipmentGroupId: number;
+  // Строка основной очереди, выбранная игроком.
+  jobId: number;
+  // Действие над выбранной строкой и следующими строками.
+  command: ControlPanelConstructorQueueCommand;
+};
+
 export type ControlPanelErrorMessage = {
   // Вид сообщения с отказом команды панели управления.
   type: "controlPanelError";

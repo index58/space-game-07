@@ -128,7 +128,13 @@ describe("HUD styles", () => {
     const disabledButton = readCssBlock(".ui-kit-button.is-disabled");
     const pressedButton = readCssBlock(".ui-kit-button.is-pressed");
 
+    expect(button).toContain("flex: 0 0 auto;");
+    expect(button).toContain("align-self: center;");
+    expect(button).toContain("height: var(--hud-button-height);");
+    expect(button).toContain("min-height: var(--hud-button-height);");
+    expect(button).toContain("max-height: var(--hud-button-height);");
     expect(button).toContain("width: max-content;");
+    expect(button).toContain("min-width: max-content;");
     expect(button).toContain("white-space: nowrap;");
     expect(button).toContain("padding: 0 1.05vh;");
     expect(button).toContain("background: rgba(126, 212, 255, 0.16);");

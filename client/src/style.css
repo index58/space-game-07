@@ -19,6 +19,7 @@ body {
   --hud-control-font-family: Consolas, monospace;
   --hud-control-font-size: 1.05vh;
   --hud-control-padding-x: 0.9vh;
+  --hud-button-height: 2.8vh;
   --hud-dropdown-min-height: 2.35vh;
   --hud-dropdown-padding-y: 0.35vh;
   --hud-list-padding: 0.35vh;
@@ -397,14 +398,21 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.8vh;
+  min-height: var(--hud-button-height);
   padding: 0 0.8vh;
   gap: 0.55vh;
 }
 
 .ui-kit-button {
+  flex: 0 0 auto;
+  align-self: center;
+  height: var(--hud-button-height);
+  min-height: var(--hud-button-height);
+  max-height: var(--hud-button-height);
   width: max-content;
+  min-width: max-content;
   white-space: nowrap;
+  line-height: 1;
   padding: 0 1.05vh;
   background: rgba(126, 212, 255, 0.16);
 }
@@ -1194,7 +1202,7 @@ body {
 
 .control-panel-constructor-recipes {
   display: grid;
-  grid-template-rows: var(--hud-dropdown-min-height) minmax(0, 1fr) var(--hud-dropdown-min-height);
+  grid-template-rows: var(--hud-dropdown-min-height) minmax(0, 1fr) var(--hud-button-height);
   gap: 0.8vh;
   min-height: 0;
   overflow: hidden;
@@ -1209,7 +1217,7 @@ body {
 
 .control-panel-constructor-queues {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 0.8vh;
   min-height: 0;
   overflow: hidden;
@@ -1225,9 +1233,15 @@ body {
 
 .control-panel-constructor-queue__item {
   position: relative;
-  background:
-    linear-gradient(to right, rgba(47, 140, 208, 0.34) var(--constructor-queue-total-progress, 0%), transparent var(--constructor-queue-total-progress, 0%)),
-    rgb(0, 0, 0);
+  background: rgb(0, 0, 0);
+}
+
+.control-panel-constructor-queue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6vh;
 }
 
 .control-panel-constructor-queue__item::after {

@@ -117,6 +117,14 @@ type ControlPanelConstructorProduceItemMessage struct {
 	Amount                            int64 `json:"amount"`                            // Количество запусков изготовления по выбранной схеме.
 }
 
+type ControlPanelConstructorQueueCommandMessage struct {
+	Type string `json:"type"` // Вид команды изменения очереди конструктора.
+	ControlPanelMutationMessage
+	ConstructorEquipmentGroupID int64  `json:"constructorEquipmentGroupId"` // Группа конструкторов, очередь которой меняется.
+	JobID                       int64  `json:"jobId"`                       // Строка основной очереди, выбранная игроком.
+	Command                     string `json:"command"`                     // Действие над выбранной строкой и следующими строками.
+}
+
 type ControlPanelErrorMessage struct {
 	Type            string `json:"type"`            // ??? ?????? ??? ??????????? ??????????????.
 	ClientSessionID string `json:"clientSessionId"` // ??????, ??????? ??????? ???? ?????????.
@@ -278,6 +286,23 @@ func DecodeControlPanelConstructorProduceItemMessage(payload []byte) (ControlPan
 	}
 
 	return message, true
+}
+
+// DecodeControlPanelConstructorQueueCommandMessage проверяет JSON команды изменения очереди конструктора.
+func DecodeControlPanelConstructorQueueCommandMessage(payload []byte) (ControlPanelConstructorQueueCommandMessage, bool) {
+	var message ControlPanelConstructorQueueCommandMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelConstructorQueueCommandMessage{}, false
+	}
+	if message.Type != "controlPanelConstructorQueueCommand" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.ConstructorEquipmentGroupID <= 0 || message.JobID <= 0 {
+		return ControlPanelConstructorQueueCommandMessage{}, false
+	}
+	switch message.Command {
+	case "skipNext", "skipAllNext", "cancel", "cancelAll":
+		return message, true
+	default:
+		return ControlPanelConstructorQueueCommandMessage{}, false
+	}
 }
 
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {

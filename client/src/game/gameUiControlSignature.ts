@@ -59,6 +59,7 @@ export const getGameUiControlLayoutSignature = (
     selectedConstructorTab: state.selectedControlPanelConstructorTab,
     selectedConstructorSchemaId: state.selectedControlPanelConstructorSchemaId,
     selectedConstructorBlueprintId: state.selectedControlPanelConstructorBlueprintId,
+    selectedConstructorMainJobId: state.selectedControlPanelConstructorMainJobId,
     fuelDrainDialogOpen: state.controlPanelFuelDrainDialogOpen,
     fuelFillDialogOpen: state.controlPanelFuelFillDialogOpen,
     containerTransferDialogOpen: state.controlPanelContainerTransferDialogOpen,

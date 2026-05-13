@@ -54,15 +54,15 @@
       "ID": 8,
       "CharacterID": 1,
       "ChatID": 1,
-      "LastReadMessageID": 60,
-      "ReadTime": "2026-05-12T21:49:06.7158861+03:00"
+      "LastReadMessageID": 63,
+      "ReadTime": "2026-05-13T19:22:01.952659+03:00"
     },
     "9": {
       "ID": 9,
       "CharacterID": 1,
       "ChatID": 3,
       "LastReadMessageID": 62,
-      "ReadTime": "2026-05-12T17:48:21.1550653+03:00"
+      "ReadTime": "2026-05-13T01:03:27.5291736+03:00"
     }
   }
 }

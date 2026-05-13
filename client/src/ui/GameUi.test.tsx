@@ -170,6 +170,7 @@ const state = (): GameUiState => ({
   selectedControlPanelConstructorTab: "items",
   selectedControlPanelConstructorSchemaId: null,
   selectedControlPanelConstructorBlueprintId: null,
+  selectedControlPanelConstructorMainJobId: null,
   controlPanelFuelDrainDialogOpen: false,
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,
@@ -766,6 +767,7 @@ describe("GameUi", () => {
       selectedControlPanelUsageRightEquipmentGroupId: 11,
       selectedControlPanelConstructorMaterialContainerGroupId: 12,
       selectedControlPanelConstructorSchemaId: 1,
+      selectedControlPanelConstructorMainJobId: 1,
       referenceData: equipmentReferenceData,
       equipmentGroups: [
         { ID: 10, CosmicObjectID: 1, Title: "Продукция", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
@@ -796,7 +798,12 @@ describe("GameUi", () => {
     expect(root.querySelector("#control-panel-constructor-main-queue-1")?.textContent).toBe("Пластина2 / 8");
     expect(root.querySelector("#control-panel-constructor-required-queue-2")?.textContent).toBe("Пластина6 / 12");
     expect(root.querySelector("#control-panel-constructor-required-queue-4")?.textContent).toBe("Пластина0 / 3");
-    expect(root.querySelector("#control-panel-constructor-required-queue-2")?.getAttribute("style")).toContain("--constructor-queue-total-progress");
+    expect(root.querySelector("#control-panel-constructor-main-queue-1")?.classList.contains("is-selected")).toBe(true);
+    expect(root.querySelector("#control-panel-constructor-required-queue-2")?.getAttribute("style")).not.toContain("--constructor-queue-total-progress");
+    expect(root.querySelector("#control-panel-constructor-skip-next")?.textContent).toBe("Не делать следующие");
+    expect(root.querySelector("#control-panel-constructor-skip-all-next")?.textContent).toBe("Не делать все следующие");
+    expect(root.querySelector("#control-panel-constructor-cancel")?.textContent).toBe("Отменить");
+    expect(root.querySelector("#control-panel-constructor-cancel-all")?.textContent).toBe("Отменить все");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.textContent).toBe("Пластина");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 30 с, Феррогель: 5");
     expect(root.querySelector("#control-panel-constructor-make-button")?.textContent).toBe("Изготовить");

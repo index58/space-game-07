@@ -1585,6 +1585,158 @@ func TestTickActivatesConstructorEquipmentWhileProductionRuns(t *testing.T) {
 	}
 }
 
+// Проверяет, что команда не делать следующие оставляет только начатую единицу выбранной строки.
+func TestApplyControlPanelConstructorQueueCommandSkipsNotStartedBatches(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Schemas = storage.NewRawReferenceTable()
+	serverData.SchemaComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 4})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	productContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Product Container", EquipmentItemModelID: 301, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Constructor", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 12}); err != nil {
+		t.Fatal(err)
+	}
+	if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", 16, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       constructor.ID,
+		MaterialContainerEquipmentGroupID: materialContainer.ID,
+		ProductContainerEquipmentGroupID:  productContainer.ID,
+		SchemaID:                          1,
+		Amount:                            3,
+	}); err != nil {
+		t.Fatalf("constructor production returned error: %v", err)
+	}
+	gameWorld.Tick(1)
+	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
+	if len(queued) != 1 {
+		t.Fatalf("production was not queued: %+v", queued)
+	}
+
+	if err := gameWorld.ApplyControlPanelConstructorQueueCommand(1, "session-1", 17, world.ControlPanelConstructorQueueCommand{
+		ConstructorEquipmentGroupID: constructor.ID,
+		JobID:                       queued[0].ID,
+		Command:                     "skipNext",
+	}); err != nil {
+		t.Fatalf("constructor queue command returned error: %v", err)
+	}
+
+	queued = gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
+	if len(queued) != 1 || queued[0].RemainingCount != 1 || queued[0].TotalCount != 1 {
+		t.Fatalf("not started batches were not removed: %+v", queued)
+	}
+	gameWorld.Tick(9)
+	if queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs; len(queued) != 0 {
+		t.Fatalf("finished kept batch stayed in queue: %+v", queued)
+	}
+	productCounts := map[int64]float64{}
+	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(productContainer.ID) {
+		productCounts[item.ContentItemModelID] = item.Count
+	}
+	if productCounts[302] != 1 {
+		t.Fatalf("unexpected product count after skip next: %+v", productCounts)
+	}
+}
+
+// Проверяет, что команда отменить все убирает выбранную основную строку и следующие основные строки.
+func TestApplyControlPanelConstructorQueueCommandCancelsSelectedAndFollowingMainJobs(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Schemas = storage.NewRawReferenceTable()
+	serverData.SchemaComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 1})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	productContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Product Container", EquipmentItemModelID: 301, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: objectID, Title: "Constructor", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 4}); err != nil {
+		t.Fatal(err)
+	}
+	for mutationSeq := int64(18); mutationSeq <= 19; mutationSeq++ {
+		if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", mutationSeq, world.ControlPanelConstructorProduceItem{
+			ConstructorEquipmentGroupID:       constructor.ID,
+			MaterialContainerEquipmentGroupID: materialContainer.ID,
+			ProductContainerEquipmentGroupID:  productContainer.ID,
+			SchemaID:                          1,
+			Amount:                            1,
+		}); err != nil {
+			t.Fatalf("constructor production returned error: %v", err)
+		}
+	}
+	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
+	if len(queued) != 2 {
+		t.Fatalf("productions were not queued: %+v", queued)
+	}
+
+	if err := gameWorld.ApplyControlPanelConstructorQueueCommand(1, "session-1", 20, world.ControlPanelConstructorQueueCommand{
+		ConstructorEquipmentGroupID: constructor.ID,
+		JobID:                       queued[0].ID,
+		Command:                     "cancelAll",
+	}); err != nil {
+		t.Fatalf("constructor queue command returned error: %v", err)
+	}
+	if queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs; len(queued) != 0 {
+		t.Fatalf("selected and following main jobs stayed in queue: %+v", queued)
+	}
+}
+
 func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryComponents(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}

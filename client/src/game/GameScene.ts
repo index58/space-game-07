@@ -10,6 +10,7 @@ import {
 import { GameClient } from "../network/GameClient";
 import type {
   ConnectionStatus,
+  ConstructorProductionJob,
   CosmicObject,
   CosmicObjectModelReference,
   EquipmentGroup,
@@ -119,6 +120,8 @@ export class GameScene extends Phaser.Scene {
   private selectedControlPanelConstructorSchemaId: number | null = null;
   // ID чертежа, выбранного в списке конструктора.
   private selectedControlPanelConstructorBlueprintId: number | null = null;
+  // ID выбранной строки основной очереди конструктора.
+  private selectedControlPanelConstructorMainJobId: number | null = null;
   // Показывает окно подтверждения слива топлива из бака.
   private controlPanelFuelDrainDialogOpen = false;
   // Показывает окно подтверждения залива топлива в бак.
@@ -246,6 +249,7 @@ export class GameScene extends Phaser.Scene {
     const effectiveEquipmentGroups = snapshot ? applyControlPanelPendingToEquipmentGroups(snapshot.equipmentGroups ?? [], this.controlPanelPending) : [];
     const selfObject = applyControlPanelPendingToObject(serverSelfObject, this.controlPanelPending);
     this.syncControlPanelUsageSelection(selfObject?.ID ?? null, effectiveEquipmentGroups);
+    this.syncControlPanelConstructorMainJobSelection(snapshot?.constructorProductionJobs ?? []);
     this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(selfObject, effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
     this.inputController.syncControlPanelObject(selfObject);
     if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen || this.controlPanelConstructorProduceDialogOpen) {
@@ -298,6 +302,7 @@ export class GameScene extends Phaser.Scene {
         selectedControlPanelConstructorTab: this.selectedControlPanelConstructorTab,
         selectedControlPanelConstructorSchemaId: this.selectedControlPanelConstructorSchemaId,
         selectedControlPanelConstructorBlueprintId: this.selectedControlPanelConstructorBlueprintId,
+        selectedControlPanelConstructorMainJobId: this.selectedControlPanelConstructorMainJobId,
         controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
         controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
         controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
@@ -378,6 +383,7 @@ export class GameScene extends Phaser.Scene {
       selectedControlPanelConstructorTab: this.selectedControlPanelConstructorTab,
       selectedControlPanelConstructorSchemaId: this.selectedControlPanelConstructorSchemaId,
       selectedControlPanelConstructorBlueprintId: this.selectedControlPanelConstructorBlueprintId,
+      selectedControlPanelConstructorMainJobId: this.selectedControlPanelConstructorMainJobId,
       controlPanelFuelDrainDialogOpen: this.controlPanelFuelDrainDialogOpen,
       controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
       controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
@@ -863,6 +869,26 @@ export class GameScene extends Phaser.Scene {
       this.startControlPanelConstructorProduceItem();
       return true;
     }
+    if (action.controlId.startsWith("control-panel-constructor-main-queue-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorMainJobId = Number(action.value);
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-skip-next") {
+      this.sendControlPanelConstructorQueueCommand("skipNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-skip-all-next") {
+      this.sendControlPanelConstructorQueueCommand("skipAllNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-cancel") {
+      this.sendControlPanelConstructorQueueCommand("cancel");
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-cancel-all") {
+      this.sendControlPanelConstructorQueueCommand("cancelAll");
+      return true;
+    }
     if (action.controlId === "control-panel-constructor-produce-cancel") {
       this.controlPanelConstructorProduceDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
@@ -1265,6 +1291,33 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Возвращает серверную группу оборудования по ID из последнего UI-снимка.
+  // Отправляет команду изменения основной очереди выбранного конструктора.
+  private sendControlPanelConstructorQueueCommand(command: "skipNext" | "skipAllNext" | "cancel" | "cancelAll"): void {
+    if (!this.selectedControlPanelUsageRightEquipmentGroupId || !this.selectedControlPanelConstructorMainJobId) {
+      return;
+    }
+    this.gameClient?.sendControlPanelConstructorQueueCommand({
+      constructorEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+      jobId: this.selectedControlPanelConstructorMainJobId,
+      command,
+    });
+  }
+
+  // Сбрасывает выбор строки основной очереди, если сервер больше не присылает эту строку.
+  private syncControlPanelConstructorMainJobSelection(jobs: ConstructorProductionJob[]): void {
+    if (!this.selectedControlPanelConstructorMainJobId) {
+      return;
+    }
+    const selectedExists = jobs.some((job) =>
+      job.id === this.selectedControlPanelConstructorMainJobId &&
+      job.queueType === "main" &&
+      job.constructorEquipmentGroupId === this.selectedControlPanelUsageRightEquipmentGroupId,
+    );
+    if (!selectedExists) {
+      this.selectedControlPanelConstructorMainJobId = null;
+    }
+  }
+
   private getControlPanelEquipmentGroup(groupId: number): EquipmentGroup | null {
     return this.getControlPanelEquipmentGroups().find((group) => group.ID === groupId) ?? null;
   }

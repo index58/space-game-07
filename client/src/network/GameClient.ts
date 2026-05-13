@@ -7,6 +7,7 @@
   ClientInputMessage,
   ClientInputState,
   ConnectionStatus,
+  ControlPanelConstructorQueueCommandMessage,
   ControlPanelConstructorProduceItemMessage,
   ControlPanelEquipmentUpdateMessage,
   ControlPanelContainerTransferMessage,
@@ -486,6 +487,26 @@ export class GameClient {
       clientSessionId: this.clientSessionId,
       mutationSeq: mutation.seq,
       ...production,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
+  }
+
+  // Отправляет изменение основной очереди конструктора панели управления.
+  sendControlPanelConstructorQueueCommand(
+    command: Omit<ControlPanelConstructorQueueCommandMessage, "type" | "clientSessionId" | "mutationSeq">,
+  ): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelConstructorQueueCommandMessage = {
+      type: "controlPanelConstructorQueueCommand",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...command,
     };
 
     this.socket.send(JSON.stringify(payload));
