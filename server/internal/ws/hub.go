@@ -142,6 +142,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeControlPanelEquipmentUpdateMessage(payload); ok {
 				hub.handleControlPanelEquipmentUpdate(client, message)
 			}
+			if message, ok := DecodeControlPanelEquipmentGroupRelationUpdateMessage(payload); ok {
+				hub.handleControlPanelEquipmentGroupRelationUpdate(client, message)
+			}
 			if message, ok := DecodeControlPanelContainerTransferMessage(payload); ok {
 				hub.handleControlPanelContainerTransfer(client, message)
 			}
@@ -187,6 +190,19 @@ func (hub *Hub) handleControlPanelEquipmentUpdate(client *Client, message Contro
 }
 
 // handleControlPanelContainerTransfer применяет перенос между контейнерами или возвращает отказ с номером мутации.
+// handleControlPanelEquipmentGroupRelationUpdate применяет сохранение связи групп оборудования или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelEquipmentGroupRelationUpdate(client *Client, message ControlPanelEquipmentGroupRelationUpdateMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelEquipmentGroupRelationUpdate(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelEquipmentGroupRelationUpdate{
+		EquipmentGroupID:        message.EquipmentGroupID,
+		RelationTypeAcronym:     message.RelationTypeAcronym,
+		RelatedEquipmentGroupID: message.RelatedEquipmentGroupID,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
 func (hub *Hub) handleControlPanelContainerTransfer(client *Client, message ControlPanelContainerTransferMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
 	err := hub.world.ApplyControlPanelContainerTransfer(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelContainerTransfer{

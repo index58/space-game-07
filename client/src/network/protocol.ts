@@ -125,6 +125,21 @@ export type ControlPanelEquipmentUpdateMessage = {
   enabledCount?: number;
 };
 
+export type ControlPanelEquipmentGroupRelationUpdateMessage = {
+  // Вид команды сохранения связи групп оборудования.
+  type: "controlPanelEquipmentGroupRelationUpdate";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Группа оборудования, для которой сохраняется выбор.
+  equipmentGroupId: number;
+  // Вид связи по неизменяемому строковому идентификатору.
+  relationTypeAcronym: "Source" | "Destination" | "Opposite";
+  // Группа оборудования, выбранная игроком в связанной панели.
+  relatedEquipmentGroupId: number;
+};
+
 export type ControlPanelContainerTransferMessage = {
   // Вид команды переноса содержимого между контейнерами.
   type: "controlPanelContainerTransfer";
@@ -378,6 +393,17 @@ export type ItemGroup = {
   Count: number;
 };
 
+export type EquipmentGroupRelation = {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Группа оборудования, для которой сохранена связь.
+  EquipmentGroupID: number;
+  // Вид связи между группами оборудования.
+  RelationTypeID: number;
+  // Группа оборудования, выбранная для указанного вида связи.
+  RelatedEquipmentGroupID: number;
+};
+
 export type ConstructorProductionJob = {
   // Уникальный числовой идентификатор задания.
   id: number;
@@ -421,6 +447,8 @@ export type SnapshotMessage = {
   objects: CosmicObject[];
   // Группы оборудования, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
+  // Сохранённые связи выбора групп оборудования.
+  equipmentGroupRelations: EquipmentGroupRelation[];
   // Группы предметов внутри контейнерного оборудования.
   itemGroups: ItemGroup[];
   // Задания изготовления в очередях конструкторов.
@@ -471,6 +499,13 @@ export type ItemtypeReference = Record<string, unknown> & {
   IsPilotInstrument: boolean;
   // Разрешает внутреннее использование предметов этого типа из панели управления.
   IsInternalUsable: boolean;
+};
+
+export type RelationTypeReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Неизменяемый строковый идентификатор вида связи.
+  Acronym: string;
 };
 
 // Описывает поля модели предмета, нужные клиентскому UI.
@@ -590,6 +625,8 @@ export type ReferenceDataMessage = {
   CosmicObjectType: ReferenceTable;
   // Справочник типов предметов.
   Itemtype: ReferenceTable<ItemtypeReference>;
+  // Справочник видов связей групп оборудования.
+  RelationType?: ReferenceTable<RelationTypeReference>;
   // Справочник моделей космических объектов.
   CosmicObjectModel: ReferenceTable<CosmicObjectModelReference>;
   // Справочник моделей предметов.

@@ -85,6 +85,15 @@ type ControlPanelEquipmentUpdateMessage struct {
 }
 
 // ControlPanelContainerTransferMessage РїРµСЂРµРґР°РµС‚ РїРµСЂРµРЅРѕСЃ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ РјРµР¶РґСѓ РєРѕРЅС‚РµР№РЅРµСЂР°РјРё РѕР±СЉРµРєС‚Р°.
+// ControlPanelEquipmentGroupRelationUpdateMessage сохраняет выбранную связанную группу оборудования.
+type ControlPanelEquipmentGroupRelationUpdateMessage struct {
+	Type string `json:"type"` // Вид команды сохранения связи группы оборудования.
+	ControlPanelMutationMessage
+	EquipmentGroupID        int64  `json:"equipmentGroupId"`        // Группа оборудования, для которой сохраняется выбор.
+	RelationTypeAcronym     string `json:"relationTypeAcronym"`     // Вид связи по неизменяемому строковому идентификатору.
+	RelatedEquipmentGroupID int64  `json:"relatedEquipmentGroupId"` // Группа оборудования, выбранная игроком в связанной панели.
+}
+
 type ControlPanelContainerTransferMessage struct {
 	Type string `json:"type"` // ??? ??????? ??? ????????????? ???????? ???????????.
 	ControlPanelMutationMessage
@@ -231,6 +240,20 @@ func DecodeControlPanelEquipmentUpdateMessage(payload []byte) (ControlPanelEquip
 
 	if message.Type != "controlPanelEquipmentUpdate" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.EquipmentGroupID <= 0 || (message.Enabled == nil && message.EnabledCount == nil) {
 		return ControlPanelEquipmentUpdateMessage{}, false
+	}
+
+	return message, true
+}
+
+// DecodeControlPanelEquipmentGroupRelationUpdateMessage проверяет JSON команды сохранения связи групп оборудования.
+func DecodeControlPanelEquipmentGroupRelationUpdateMessage(payload []byte) (ControlPanelEquipmentGroupRelationUpdateMessage, bool) {
+	var message ControlPanelEquipmentGroupRelationUpdateMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelEquipmentGroupRelationUpdateMessage{}, false
+	}
+
+	if message.Type != "controlPanelEquipmentGroupRelationUpdate" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.EquipmentGroupID <= 0 || message.RelationTypeAcronym == "" || message.RelatedEquipmentGroupID <= 0 {
+		return ControlPanelEquipmentGroupRelationUpdateMessage{}, false
 	}
 
 	return message, true

@@ -1,0 +1,41 @@
+{
+  "MaxID": 6,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "EquipmentGroupID": 1207,
+      "RelationTypeID": 3,
+      "RelatedEquipmentGroupID": 1206
+    },
+    "2": {
+      "ID": 2,
+      "EquipmentGroupID": 1210,
+      "RelationTypeID": 2,
+      "RelatedEquipmentGroupID": 1208
+    },
+    "3": {
+      "ID": 3,
+      "EquipmentGroupID": 1205,
+      "RelationTypeID": 3,
+      "RelatedEquipmentGroupID": 1206
+    },
+    "4": {
+      "ID": 4,
+      "EquipmentGroupID": 1209,
+      "RelationTypeID": 2,
+      "RelatedEquipmentGroupID": 1206
+    },
+    "5": {
+      "ID": 5,
+      "EquipmentGroupID": 1209,
+      "RelationTypeID": 1,
+      "RelatedEquipmentGroupID": 1206
+    },
+    "6": {
+      "ID": 6,
+      "EquipmentGroupID": 1206,
+      "RelationTypeID": 3,
+      "RelatedEquipmentGroupID": 1206
+    }
+  }
+}

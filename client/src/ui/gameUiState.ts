@@ -1,7 +1,7 @@
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
-import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, EquipmentGroup, ItemGroup, ReferenceDataMessage } from "../network/protocol";
+import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, EquipmentGroup, EquipmentGroupRelation, ItemGroup, ReferenceDataMessage } from "../network/protocol";
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiControlState } from "../ui-kit/types";
 
@@ -20,6 +20,8 @@ export type GameUiState = {
   // Группы оборудования последнего серверного снимка, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
   // Группы предметов последнего серверного снимка, лежащие внутри контейнеров.
+  equipmentGroupRelations?: EquipmentGroupRelation[];
+  // Р“СЂСѓРїРїС‹ РїСЂРµРґРјРµС‚РѕРІ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРµСЂРІРµСЂРЅРѕРіРѕ СЃРЅРёРјРєР°, Р»РµР¶Р°С‰РёРµ РІРЅСѓС‚СЂРё РєРѕРЅС‚РµР№РЅРµСЂРѕРІ.
   itemGroups: ItemGroup[];
   // Задания изготовления в очередях конструкторов.
   constructorProductionJobs: ConstructorProductionJob[];
@@ -163,6 +165,7 @@ const initialGameUiState: GameUiState = {
   selfObject: null,
   objects: [],
   equipmentGroups: [],
+  equipmentGroupRelations: [],
   itemGroups: [],
   constructorProductionJobs: [],
   selectedPilotToolIndex: 0,

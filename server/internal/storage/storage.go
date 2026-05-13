@@ -15,7 +15,9 @@ const cosmicObjectsFileName = "CosmicObjects.json"
 const cosmicObjectTypesFileName = "CosmicObjectTypes.json"
 const cosmicObjectModelsFileName = "CosmicObjectModels.json"
 const itemtypesFileName = "Itemtypes.json"
+const relationTypesFileName = "RelationTypes.json"
 const equipmentGroupFileName = "EquipmentGroups.json"
+const equipmentGroupRelationFileName = "EquipmentGroupRelations.json"
 const itemGroupFileName = "ItemGroups.json"
 const npcClanFileName = "NpcClans.json"
 const itemModelFileName = "ItemModels.json"
@@ -58,7 +60,9 @@ type ServerData struct {
 	CosmicObjectTypes          *data.CosmicObjectTypes          // Загруженный справочник типов космических объектов.
 	CosmicObjectModels         *data.CosmicObjectModels         // Загруженный справочник моделей космических объектов.
 	Itemtypes                  *data.Itemtypes                  // Загруженный справочник типов предметов.
+	RelationTypes              *data.RelationTypes              // Загруженный справочник видов связей групп оборудования.
 	EquipmentGroups            *data.EquipmentGroups            // Загруженные группы оборудования космических объектов.
+	EquipmentGroupRelations    *data.EquipmentGroupRelations    // Загруженные сохранённые связи групп оборудования.
 	ItemGroups                 *data.ItemGroups                 // Загруженные группы предметов внутри контейнеров.
 	Assemblies                 *data.Assemblies                 // Загруженный справочник сборок космических объектов.
 	AssemblyEquipmentGroups    *data.AssemblyEquipmentGroups    // Загруженный справочник оборудования сборок.
@@ -115,7 +119,17 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		return nil, err
 	}
 
+	relationTypes, err := loadOptionalRelationTypes(filepath.Join(dataDirectory, relationTypesFileName))
+	if err != nil {
+		return nil, err
+	}
+
 	equipmentGroups, err := loadOptionalEquipmentGroups(filepath.Join(dataDirectory, equipmentGroupFileName))
+	if err != nil {
+		return nil, err
+	}
+
+	equipmentGroupRelations, err := loadOptionalEquipmentGroupRelations(filepath.Join(dataDirectory, equipmentGroupRelationFileName))
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +225,9 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 		CosmicObjectTypes:          cosmicObjectTypes,
 		CosmicObjectModels:         cosmicObjectModels,
 		Itemtypes:                  itemtypes,
+		RelationTypes:              relationTypes,
 		EquipmentGroups:            equipmentGroups,
+		EquipmentGroupRelations:    equipmentGroupRelations,
 		ItemGroups:                 itemGroups,
 		Assemblies:                 assemblies,
 		AssemblyEquipmentGroups:    assemblyEquipmentGroups,
@@ -265,6 +281,30 @@ func loadOptionalEquipmentGroups(path string) (*data.EquipmentGroups, error) {
 		return nil, err
 	}
 	return groups, nil
+}
+
+// Загружает необязательный справочник видов связей или возвращает пустой контейнер до появления файла.
+func loadOptionalRelationTypes(path string) (*data.RelationTypes, error) {
+	types := data.NewRelationTypes()
+	if err := types.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewRelationTypes(), nil
+		}
+		return nil, err
+	}
+	return types, nil
+}
+
+// Загружает необязательную таблицу связей групп оборудования или возвращает пустой контейнер до появления файла.
+func loadOptionalEquipmentGroupRelations(path string) (*data.EquipmentGroupRelations, error) {
+	relations := data.NewEquipmentGroupRelations()
+	if err := relations.LoadFromFile(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return data.NewEquipmentGroupRelations(), nil
+		}
+		return nil, err
+	}
+	return relations, nil
 }
 
 // Загружает необязательную таблицу групп предметов или возвращает пустой контейнер до появления файла.

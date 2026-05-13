@@ -14,6 +14,7 @@ import type {
   CosmicObject,
   CosmicObjectModelReference,
   EquipmentGroup,
+  EquipmentGroupRelation,
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
@@ -86,6 +87,8 @@ export class GameScene extends Phaser.Scene {
   private openInputSettingsActionId: number | null = null;
   // Последний примененный номер ошибки сохранения настроек.
   private inputSettingsErrorSeq = -1;
+  // Локальные выбранные связи групп оборудования, ещё не пришедшие в серверном снимке.
+  private controlPanelEquipmentGroupRelationDrafts: Record<string, number> = {};
   // Текст ошибки сохранения настроек.
   private inputSettingsError: string | null = null;
   // Показывает ожидание ответа сервера после нажатия кнопки сохранения.
@@ -248,7 +251,7 @@ export class GameScene extends Phaser.Scene {
     const serverSelfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
     const effectiveEquipmentGroups = snapshot ? applyControlPanelPendingToEquipmentGroups(snapshot.equipmentGroups ?? [], this.controlPanelPending) : [];
     const selfObject = applyControlPanelPendingToObject(serverSelfObject, this.controlPanelPending);
-    this.syncControlPanelUsageSelection(selfObject?.ID ?? null, effectiveEquipmentGroups);
+    this.syncControlPanelUsageSelection(selfObject?.ID ?? null, effectiveEquipmentGroups, snapshot?.equipmentGroupRelations ?? []);
     this.syncControlPanelConstructorMainJobSelection(snapshot?.constructorProductionJobs ?? []);
     this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(selfObject, effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
     this.inputController.syncControlPanelObject(selfObject);
@@ -269,6 +272,7 @@ export class GameScene extends Phaser.Scene {
         selfObject: null,
         objects: snapshot?.objects ?? [],
         equipmentGroups: effectiveEquipmentGroups,
+        equipmentGroupRelations: snapshot?.equipmentGroupRelations ?? [],
         itemGroups: snapshot?.itemGroups ?? [],
         constructorProductionJobs: snapshot?.constructorProductionJobs ?? [],
         selectedPilotToolIndex: this.selectedPilotToolIndex,
@@ -350,6 +354,7 @@ export class GameScene extends Phaser.Scene {
       selfObject,
       objects: snapshot.objects,
       equipmentGroups: effectiveEquipmentGroups,
+      equipmentGroupRelations: snapshot.equipmentGroupRelations ?? [],
       itemGroups: snapshot.itemGroups ?? [],
       constructorProductionJobs: snapshot.constructorProductionJobs ?? [],
       selectedPilotToolIndex: this.selectedPilotToolIndex,
@@ -672,7 +677,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Синхронизирует реальный выбор использования с первым доступным значением, которое показывает UI.
-  private syncControlPanelUsageSelection(objectId: number | null, equipmentGroups: EquipmentGroup[]): void {
+  private syncControlPanelUsageSelection(objectId: number | null, equipmentGroups: EquipmentGroup[], equipmentGroupRelations: EquipmentGroupRelation[]): void {
     const selection = normalizeControlPanelUsageSelection({
       objectId,
       equipmentGroups,
@@ -685,6 +690,18 @@ export class GameScene extends Phaser.Scene {
 
     this.selectedControlPanelUsageLeftContainerGroupId = selection.leftContainerGroupId;
     this.selectedControlPanelUsageRightEquipmentGroupId = selection.rightEquipmentGroupId;
+    const relatedLeftContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, this.selectedControlPanelUsageRightEquipmentGroupId, "Opposite");
+    const relatedSourceContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, this.selectedControlPanelUsageRightEquipmentGroupId, "Source");
+    const relatedDestinationContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, this.selectedControlPanelUsageRightEquipmentGroupId, "Destination");
+    if (relatedLeftContainerGroupId !== null && this.getControlPanelEquipmentGroup(relatedLeftContainerGroupId)) {
+      this.selectedControlPanelUsageLeftContainerGroupId = relatedLeftContainerGroupId;
+    }
+    if (relatedSourceContainerGroupId !== null && this.getControlPanelEquipmentGroup(relatedSourceContainerGroupId)) {
+      this.selectedControlPanelConstructorMaterialContainerGroupId = relatedSourceContainerGroupId;
+    }
+    if (relatedDestinationContainerGroupId !== null && this.getControlPanelEquipmentGroup(relatedDestinationContainerGroupId)) {
+      this.selectedControlPanelUsageLeftContainerGroupId = relatedDestinationContainerGroupId;
+    }
     this.selectedControlPanelConstructorMaterialContainerGroupId = normalizeSelectedControlPanelGroupId(
       equipmentGroups.filter((group) => group.CosmicObjectID === objectId && this.isEquipmentGroupItemtype(group, "Container")),
       this.selectedControlPanelConstructorMaterialContainerGroupId,
@@ -703,6 +720,46 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Отправляет завершенное редактирование названия объекта, если текст отличается от серверного снимка.
+  // Возвращает связанную группу оборудования по сохранённому виду связи.
+  private relatedEquipmentGroupId(equipmentGroupRelations: EquipmentGroupRelation[], equipmentGroupId: number | null, relationTypeAcronym: "Source" | "Destination" | "Opposite"): number | null {
+    if (!equipmentGroupId || !this.referenceData?.RelationType) {
+      return null;
+    }
+    const relationType = Object.values(this.referenceData.RelationType.Items).find((item) => item.Acronym === relationTypeAcronym);
+    if (!relationType) {
+      return null;
+    }
+    const draft = this.controlPanelEquipmentGroupRelationDrafts[this.equipmentGroupRelationDraftKey(equipmentGroupId, relationTypeAcronym)];
+    if (draft) {
+      return draft;
+    }
+    return equipmentGroupRelations.find((relation) => relation.EquipmentGroupID === equipmentGroupId && relation.RelationTypeID === relationType.ID)?.RelatedEquipmentGroupID ?? null;
+  }
+
+  // Определяет вид связи для нижнего левого контейнера текущего использования.
+  private usageLeftRelationTypeAcronym(): "Destination" | "Opposite" {
+    const rightGroup = this.selectedControlPanelUsageRightEquipmentGroupId ? this.getControlPanelEquipmentGroup(this.selectedControlPanelUsageRightEquipmentGroupId) : null;
+    return rightGroup && (this.isEquipmentGroupItemtype(rightGroup, "Constructor") || this.isEquipmentGroupItemtype(rightGroup, "Deconstructor")) ? "Destination" : "Opposite";
+  }
+
+  // Сохраняет выбор контейнера для текущей правой группы оборудования.
+  private saveControlPanelUsageRelatedContainer(relatedEquipmentGroupId: number, relationTypeAcronym: "Source" | "Destination" | "Opposite"): void {
+    if (!this.selectedControlPanelUsageRightEquipmentGroupId) {
+      return;
+    }
+    this.controlPanelEquipmentGroupRelationDrafts[this.equipmentGroupRelationDraftKey(this.selectedControlPanelUsageRightEquipmentGroupId, relationTypeAcronym)] = relatedEquipmentGroupId;
+    this.gameClient?.sendControlPanelEquipmentGroupRelationUpdate({
+      equipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+      relationTypeAcronym,
+      relatedEquipmentGroupId,
+    });
+  }
+
+  // Собирает ключ черновика связи из группы и вида связи.
+  private equipmentGroupRelationDraftKey(equipmentGroupId: number, relationTypeAcronym: "Source" | "Destination" | "Opposite"): string {
+    return `${equipmentGroupId}:${relationTypeAcronym}`;
+  }
+
   private commitControlPanelObjectTitleIfNeeded(serverSelfObject: CosmicObject | null): void {
     const title = this.inputController.consumeControlPanelObjectTitleCommit();
     if (title === null || !serverSelfObject || title === serverSelfObject.Title) {
@@ -831,6 +888,7 @@ export class GameScene extends Phaser.Scene {
       const groupId = Number(action.value);
       if (this.getControlPanelEquipmentGroup(groupId)) {
         this.selectedControlPanelUsageLeftContainerGroupId = groupId;
+        this.saveControlPanelUsageRelatedContainer(groupId, this.usageLeftRelationTypeAcronym());
       }
       this.openControlPanelUsageSelect = null;
       return true;
@@ -847,6 +905,7 @@ export class GameScene extends Phaser.Scene {
       const groupId = Number(action.value);
       if (this.getControlPanelEquipmentGroup(groupId)) {
         this.selectedControlPanelConstructorMaterialContainerGroupId = groupId;
+        this.saveControlPanelUsageRelatedContainer(groupId, "Source");
       }
       this.openControlPanelUsageSelect = null;
       return true;

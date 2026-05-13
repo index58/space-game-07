@@ -9,6 +9,7 @@
   ConnectionStatus,
   ControlPanelConstructorQueueCommandMessage,
   ControlPanelConstructorProduceItemMessage,
+  ControlPanelEquipmentGroupRelationUpdateMessage,
   ControlPanelEquipmentUpdateMessage,
   ControlPanelContainerTransferMessage,
   ControlPanelErrorMessage,
@@ -507,6 +508,26 @@ export class GameClient {
       clientSessionId: this.clientSessionId,
       mutationSeq: mutation.seq,
       ...command,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
+  }
+
+  // Отправляет сохранение связанной группы оборудования панели управления.
+  sendControlPanelEquipmentGroupRelationUpdate(
+    update: Omit<ControlPanelEquipmentGroupRelationUpdateMessage, "type" | "clientSessionId" | "mutationSeq">,
+  ): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelEquipmentGroupRelationUpdateMessage = {
+      type: "controlPanelEquipmentGroupRelationUpdate",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...update,
     };
 
     this.socket.send(JSON.stringify(payload));

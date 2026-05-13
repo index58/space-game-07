@@ -1,0 +1,23 @@
+{
+  "MaxID": 3,
+  "Items": {
+    "1": {
+      "ID": 1,
+      "TitleRu": "Источник",
+      "TitleEn": "Source",
+      "Acronym": "Source"
+    },
+    "2": {
+      "ID": 2,
+      "TitleRu": "Приёмник",
+      "TitleEn": "Destination",
+      "Acronym": "Destination"
+    },
+    "3": {
+      "ID": 3,
+      "TitleRu": "Противоположный",
+      "TitleEn": "Opposite",
+      "Acronym": "Opposite"
+    }
+  }
+}

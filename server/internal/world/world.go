@@ -24,6 +24,8 @@ const (
 
 // Собирает справочники и игровые сущности, нужные симуляции мира.
 type Data struct {
+	RelationTypes              *data.RelationTypes              // Справочник видов связей групп оборудования.
+	EquipmentGroupRelations    *data.EquipmentGroupRelations    // Сохранённые связи выбранных групп оборудования.
 	Accounts                   *data.Accounts                   // Учетные записи, доступные игровой симуляции.
 	Characters                 *data.Characters                 // Персонажи, доступные игровой симуляции.
 	CosmicObjects              *data.CosmicObjects              // Экземпляры объектов, участвующие в мире.
@@ -98,6 +100,13 @@ type ControlPanelEquipmentUpdate struct {
 }
 
 // ControlPanelContainerTransfer описывает перенос предметов между контейнерами текущего объекта.
+// ControlPanelEquipmentGroupRelationUpdate описывает сохранение выбранной связанной группы оборудования.
+type ControlPanelEquipmentGroupRelationUpdate struct {
+	EquipmentGroupID        int64  // Группа оборудования, для которой сохраняется выбор.
+	RelationTypeAcronym     string // Вид связи, выбранный по неизменяемому строковому идентификатору.
+	RelatedEquipmentGroupID int64  // Группа оборудования, выбранная игроком в связанной панели.
+}
+
 type ControlPanelContainerTransfer struct {
 	SourceContainerEquipmentGroupID int64   // Группа контейнеров, из которой переносятся все предметы.
 	TargetContainerEquipmentGroupID int64   // Группа контейнеров, в которую переносятся все предметы.
@@ -401,6 +410,43 @@ func (world *World) ApplyControlPanelEquipmentUpdate(accountID int64, sessionID 
 }
 
 // ApplyControlPanelContainerTransfer переносит всё содержимое из одного контейнера текущего объекта в другой.
+// ApplyControlPanelEquipmentGroupRelationUpdate сохраняет выбранную связанную группу оборудования для текущего объекта.
+func (world *World) ApplyControlPanelEquipmentGroupRelationUpdate(accountID int64, sessionID string, mutationSeq int64, update ControlPanelEquipmentGroupRelationUpdate) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	if world.data.EquipmentGroups == nil || world.data.RelationTypes == nil || world.data.EquipmentGroupRelations == nil {
+		return errors.New("equipment relation data is not loaded")
+	}
+	group, ok := world.data.EquipmentGroups.Get(update.EquipmentGroupID)
+	if !ok {
+		return errors.New("equipment group not found")
+	}
+	if group.CosmicObjectID != objectID {
+		return errors.New("equipment group does not belong to controlled object")
+	}
+	if _, err := world.controlledContainerEquipmentLocked(objectID, update.RelatedEquipmentGroupID); err != nil {
+		return err
+	}
+	relationType, ok := world.data.RelationTypes.GetByAcronym(update.RelationTypeAcronym)
+	if !ok {
+		return errors.New("relation type not found")
+	}
+	if _, err := world.data.EquipmentGroupRelations.Upsert(&data.EquipmentGroupRelation{
+		EquipmentGroupID:        update.EquipmentGroupID,
+		RelationTypeID:          relationType.ID,
+		RelatedEquipmentGroupID: update.RelatedEquipmentGroupID,
+	}); err != nil {
+		return err
+	}
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
+}
+
 func (world *World) ApplyControlPanelContainerTransfer(accountID int64, sessionID string, mutationSeq int64, transfer ControlPanelContainerTransfer) error {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -524,7 +570,7 @@ func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, ses
 	if _, err := world.controlledEquipmentItemtypeLocked(objectID, production.ConstructorEquipmentGroupID, "Constructor"); err != nil {
 		return err
 	}
-	materialContainer, err := world.controlledContainerEquipmentLocked(objectID, production.MaterialContainerEquipmentGroupID)
+	materialContainer, err := world.constructorRelatedContainerOrFallbackLocked(objectID, production.ConstructorEquipmentGroupID, "Source", production.MaterialContainerEquipmentGroupID)
 	if err != nil {
 		return err
 	}
@@ -603,7 +649,7 @@ func (world *World) newMainConstructorProductionJobLocked(objectID int64, produc
 		amount = 1
 	}
 	if production.SchemaID > 0 {
-		productContainer, err := world.controlledContainerEquipmentLocked(objectID, production.ProductContainerEquipmentGroupID)
+		productContainer, err := world.constructorRelatedContainerOrFallbackLocked(objectID, production.ConstructorEquipmentGroupID, "Destination", production.ProductContainerEquipmentGroupID)
 		if err != nil {
 			return constructorProductionJob{}, nil, 0, err
 		}
@@ -753,6 +799,34 @@ func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID i
 }
 
 // controlledEquipmentItemtypeLocked возвращает оборудование текущего объекта с ожидаемым типом предмета; вызывается только под mutex.
+// relatedContainerEquipmentLocked возвращает сохранённый контейнер для указанной группы и вида связи.
+func (world *World) relatedContainerEquipmentLocked(objectID int64, equipmentGroupID int64, relationTypeAcronym string) (*data.EquipmentGroup, error) {
+	if world.data.RelationTypes == nil || world.data.EquipmentGroupRelations == nil {
+		return nil, errors.New("equipment relation data is not loaded")
+	}
+	relationType, ok := world.data.RelationTypes.GetByAcronym(relationTypeAcronym)
+	if !ok {
+		return nil, errors.New("relation type not found")
+	}
+	relation, ok := world.data.EquipmentGroupRelations.GetByEquipmentGroupAndType(equipmentGroupID, relationType.ID)
+	if !ok {
+		return nil, errors.New("equipment group relation not found")
+	}
+	return world.controlledContainerEquipmentLocked(objectID, relation.RelatedEquipmentGroupID)
+}
+
+// constructorRelatedContainerOrFallbackLocked возвращает сохранённый контейнер или старое значение команды для совместимости.
+func (world *World) constructorRelatedContainerOrFallbackLocked(objectID int64, constructorID int64, relationTypeAcronym string, fallbackContainerID int64) (*data.EquipmentGroup, error) {
+	container, err := world.relatedContainerEquipmentLocked(objectID, constructorID, relationTypeAcronym)
+	if err == nil {
+		return container, nil
+	}
+	if fallbackContainerID <= 0 {
+		return nil, err
+	}
+	return world.controlledContainerEquipmentLocked(objectID, fallbackContainerID)
+}
+
 func (world *World) controlledEquipmentItemtypeLocked(objectID int64, groupID int64, itemtypeAcronym string) (*data.EquipmentGroup, error) {
 	group, ok := world.data.EquipmentGroups.Get(groupID)
 	if !ok {
@@ -1048,7 +1122,11 @@ func (world *World) completeConstructorProductionJobLocked(job *constructorProdu
 	if job.ProductCosmicObjectModelID > 0 {
 		return world.createConstructedCosmicObjectLocked(job)
 	}
-	return world.addItemModelToContainerLocked(job.ProductContainerEquipmentGroupID, job.ProductItemModelID, job.ProductCount)
+	productContainer, err := world.currentConstructorJobContainerLocked(job, "Destination", job.ProductContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	return world.addItemModelToContainerLocked(productContainer.ID, job.ProductItemModelID, job.ProductCount)
 }
 
 // constructorIDsWithProductionJobsLocked возвращает конструкторы с очередями в стабильном порядке.
@@ -1236,8 +1314,12 @@ func (world *World) startConstructorProductionJobLocked(job *constructorProducti
 	if !ok {
 		return false
 	}
+	materialContainer, err := world.currentConstructorJobContainerLocked(job, "Source", job.MaterialContainerEquipmentGroupID)
+	if err != nil {
+		return false
+	}
 	for itemModelID, required := range requiredByModel {
-		world.consumeItemModelFromContainerLocked(job.MaterialContainerEquipmentGroupID, itemModelID, required)
+		world.consumeItemModelFromContainerLocked(materialContainer.ID, itemModelID, required)
 	}
 	job.Running = true
 	job.RemainingTime = job.TotalTime
@@ -1275,7 +1357,11 @@ func (world *World) constructorProductionRequirementsLocked(job *constructorProd
 		requiredByModel[component.ComponentItemModelID] += component.Count
 	}
 	availableByModel := map[int64]float64{}
-	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(job.MaterialContainerEquipmentGroupID) {
+	materialContainer, err := world.currentConstructorJobContainerLocked(job, "Source", job.MaterialContainerEquipmentGroupID)
+	if err != nil {
+		return nil, false
+	}
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(materialContainer.ID) {
 		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
 	}
 	for itemModelID, required := range requiredByModel {
@@ -1291,6 +1377,15 @@ func (world *World) constructorJobComponentsLocked(job *constructorProductionJob
 		return world.objectBlueprintComponentsLocked(job.BlueprintID)
 	}
 	return world.itemSchemaComponentsLocked(job.SchemaID)
+}
+
+// currentConstructorJobContainerLocked находит актуальный контейнер задания по текущим сохранённым связям конструктора.
+func (world *World) currentConstructorJobContainerLocked(job *constructorProductionJob, relationTypeAcronym string, fallbackContainerID int64) (*data.EquipmentGroup, error) {
+	constructor, ok := world.data.EquipmentGroups.Get(job.ConstructorEquipmentGroupID)
+	if !ok {
+		return nil, errors.New("constructor equipment group not found")
+	}
+	return world.constructorRelatedContainerOrFallbackLocked(constructor.CosmicObjectID, job.ConstructorEquipmentGroupID, relationTypeAcronym, fallbackContainerID)
 }
 
 func (world *World) inputsByObjectID() map[int64]game.ShipInput {
@@ -1695,6 +1790,16 @@ func (world *World) SaveData(workingDirectory string) error {
 			return err
 		}
 	}
+	if world.data.RelationTypes != nil {
+		if err := world.data.RelationTypes.SaveToFile(filepath.Join(dataDirectory, "RelationTypes.json")); err != nil {
+			return err
+		}
+	}
+	if world.data.EquipmentGroupRelations != nil {
+		if err := world.data.EquipmentGroupRelations.SaveToFile(filepath.Join(dataDirectory, "EquipmentGroupRelations.json")); err != nil {
+			return err
+		}
+	}
 	if world.data.Chats != nil {
 		if err := world.data.Chats.SaveToFile(filepath.Join(dataDirectory, "Chats.json")); err != nil {
 			return err
@@ -1808,6 +1913,24 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		}
 	}
 
+	equipmentGroupRelations := make([]data.EquipmentGroupRelation, 0)
+	if world.data.EquipmentGroupRelations != nil {
+		relationIDs := make([]int64, 0, len(world.data.EquipmentGroupRelations.Items))
+		for relationID := range world.data.EquipmentGroupRelations.Items {
+			relationIDs = append(relationIDs, relationID)
+		}
+		sort.Slice(relationIDs, func(left int, right int) bool {
+			return relationIDs[left] < relationIDs[right]
+		})
+		for _, relationID := range relationIDs {
+			relation := world.data.EquipmentGroupRelations.Items[relationID]
+			if relation == nil {
+				continue
+			}
+			equipmentGroupRelations = append(equipmentGroupRelations, *relation)
+		}
+	}
+
 	constructorProductionJobs := make([]game.ConstructorProductionJob, 0, len(world.constructorProductionJobs))
 	for _, job := range world.constructorProductionJobs {
 		constructorProductionJobs = append(constructorProductionJobs, game.ConstructorProductionJob{
@@ -1834,6 +1957,7 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		SelfObjectID:              selfObjectID,
 		Objects:                   objects,
 		EquipmentGroups:           equipmentGroups,
+		EquipmentGroupRelations:   equipmentGroupRelations,
 		ItemGroups:                itemGroups,
 		ConstructorProductionJobs: constructorProductionJobs,
 	}

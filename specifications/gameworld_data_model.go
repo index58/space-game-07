@@ -252,7 +252,7 @@ type EquipmentGroup struct {
 }
 
 // Отношение группы оборудования. Какая группа оборудования с какой группой оборудования какого типа отношение имеет
-// Уникальные наборы свойств: (EquipmentGroupID, RelationTypeID, RelatedEquipmentGroupID)
+// Уникальные наборы свойств: (EquipmentGroupID, RelationTypeID)
 type EquipmentGroupRelation struct {
 	ID                      int64 // ID
 	EquipmentGroupID        int64 // Группа оборудования. ID группы оборудования, к которой указанная относящаяся группа оборудования относится с указанным типом отношения
