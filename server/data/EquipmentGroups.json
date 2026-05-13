@@ -609,7 +609,7 @@
     "1204": {
       "ID": 1204,
       "CosmicObjectID": 1,
-      "Title": "CompactGenerator",
+      "Title": "SimpleThruster",
       "EquipmentItemModelID": 4,
       "Count": 35,
       "EnabledCount": 35,
@@ -620,7 +620,7 @@
     "1205": {
       "ID": 1205,
       "CosmicObjectID": 1,
-      "Title": "SmallMelitFuelTank",
+      "Title": "Бак",
       "EquipmentItemModelID": 5,
       "Count": 125,
       "EnabledCount": 125,
@@ -631,7 +631,7 @@
     "1206": {
       "ID": 1206,
       "CosmicObjectID": 1,
-      "Title": "SmallCargoContainer",
+      "Title": "Контейнер 1",
       "EquipmentItemModelID": 6,
       "Count": 9,
       "EnabledCount": 9,
@@ -642,7 +642,7 @@
     "1207": {
       "ID": 1207,
       "CosmicObjectID": 1,
-      "Title": "ReserveCargoContainer",
+      "Title": "Контейнер 2",
       "EquipmentItemModelID": 6,
       "Count": 1,
       "EnabledCount": 1,
@@ -653,7 +653,7 @@
     "1208": {
       "ID": 1208,
       "CosmicObjectID": 1,
-      "Title": "AuxiliaryCargoContainer",
+      "Title": "Контейнер 3",
       "EquipmentItemModelID": 6,
       "Count": 1,
       "EnabledCount": 1,
@@ -664,7 +664,7 @@
     "1209": {
       "ID": 1209,
       "CosmicObjectID": 1,
-      "Title": "SmallConstructor",
+      "Title": "Конструктор",
       "EquipmentItemModelID": 13,
       "Count": 1,
       "EnabledCount": 1,
@@ -675,7 +675,7 @@
     "1210": {
       "ID": 1210,
       "CosmicObjectID": 1,
-      "Title": "SmallDeconstructor",
+      "Title": "Деконструктор",
       "EquipmentItemModelID": 14,
       "Count": 1,
       "EnabledCount": 1,

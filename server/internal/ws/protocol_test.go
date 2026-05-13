@@ -92,6 +92,7 @@ func TestDecodeControlPanelEquipmentUpdateMessageUsesAgreedJSONFields(t *testing
 		"clientSessionId": "session-1",
 		"mutationSeq": 8,
 		"equipmentGroupId": 12,
+		"title": "Renamed equipment",
 		"enabled": true,
 		"enabledCount": 3
 	}`))
@@ -99,7 +100,7 @@ func TestDecodeControlPanelEquipmentUpdateMessageUsesAgreedJSONFields(t *testing
 	if !ok {
 		t.Fatalf("control panel equipment update was not accepted")
 	}
-	if message.ClientSessionID != "session-1" || message.MutationSeq != 8 || message.EquipmentGroupID != 12 || message.Enabled == nil || !*message.Enabled || message.EnabledCount == nil || *message.EnabledCount != 3 {
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 8 || message.EquipmentGroupID != 12 || message.Title == nil || *message.Title != "Renamed equipment" || message.Enabled == nil || !*message.Enabled || message.EnabledCount == nil || *message.EnabledCount != 3 {
 		t.Fatalf("decoded equipment update mismatch: %+v", message)
 	}
 }

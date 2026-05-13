@@ -189,12 +189,13 @@ func TestApplyControlPanelEquipmentUpdateChangesOwnedGroupOnly(t *testing.T) {
 		EquipmentGroupID: ownedGroup.ID,
 		Enabled:          boolPointer(false),
 		EnabledCount:     int64Pointer(1),
+		Title:            stringPointer("Renamed equipment"),
 	})
 
 	if err != nil {
 		t.Fatalf("apply equipment update: %v", err)
 	}
-	if ownedGroup.Enabled || ownedGroup.EnabledCount != 1 {
+	if ownedGroup.Enabled || ownedGroup.EnabledCount != 1 || ownedGroup.Title != "Renamed equipment" {
 		t.Fatalf("owned group was not updated: %+v", ownedGroup)
 	}
 	if err := gameWorld.ApplyControlPanelEquipmentUpdate(1, "session-1", 6, world.ControlPanelEquipmentUpdate{EquipmentGroupID: foreignGroup.ID, Enabled: boolPointer(false)}); err == nil {
@@ -202,7 +203,7 @@ func TestApplyControlPanelEquipmentUpdateChangesOwnedGroupOnly(t *testing.T) {
 	}
 	snapshot := gameWorld.SnapshotForAccount(1)
 	group, ok := findEquipmentGroupInSnapshot(snapshot, ownedGroup.ID)
-	if !ok || group.Enabled || group.EnabledCount != 1 {
+	if !ok || group.Enabled || group.EnabledCount != 1 || group.Title != "Renamed equipment" {
 		t.Fatalf("snapshot group mismatch: %+v", group)
 	}
 }

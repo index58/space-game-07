@@ -19,6 +19,8 @@ export type ControlPanelPendingState = {
     enabled?: PendingValue<boolean>;
     // Ожидающее изменение количества включенных единиц.
     enabledCount?: PendingValue<number>;
+    // Ожидающее изменение пользовательского названия группы.
+    title?: PendingValue<string>;
   }>;
 };
 
@@ -52,6 +54,7 @@ export const applyControlPanelPendingToEquipmentGroups = (groups: EquipmentGroup
       ...group,
       Enabled: groupPending.enabled?.value ?? group.Enabled,
       EnabledCount: groupPending.enabledCount?.value ?? group.EnabledCount,
+      Title: groupPending.title?.value ?? group.Title,
     };
   });
 };
@@ -72,8 +75,9 @@ export const pruneControlPanelPending = (pending: ControlPanelPendingState, ack:
         .map(([groupId, groupPending]) => [groupId, {
           enabled: keepPendingValue(groupPending.enabled, ack),
           enabledCount: keepPendingValue(groupPending.enabledCount, ack),
+          title: keepPendingValue(groupPending.title, ack),
         }] as const)
-        .filter(([, groupPending]) => groupPending.enabled || groupPending.enabledCount),
+        .filter(([, groupPending]) => groupPending.enabled || groupPending.enabledCount || groupPending.title),
     ),
   };
 };
@@ -90,8 +94,9 @@ export const rejectControlPanelPending = (pending: ControlPanelPendingState, rej
         .map(([groupId, groupPending]) => [groupId, {
           enabled: rejectPendingValue(groupPending.enabled, rejected),
           enabledCount: rejectPendingValue(groupPending.enabledCount, rejected),
+          title: rejectPendingValue(groupPending.title, rejected),
         }] as const)
-        .filter(([, groupPending]) => groupPending.enabled || groupPending.enabledCount),
+        .filter(([, groupPending]) => groupPending.enabled || groupPending.enabledCount || groupPending.title),
     ),
   };
 };

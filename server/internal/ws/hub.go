@@ -183,6 +183,7 @@ func (hub *Hub) handleControlPanelEquipmentUpdate(client *Client, message Contro
 		EquipmentGroupID: message.EquipmentGroupID,
 		Enabled:          message.Enabled,
 		EnabledCount:     message.EnabledCount,
+		Title:            message.Title,
 	})
 	if err != nil {
 		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())

@@ -664,6 +664,18 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                   <GameFormRowLabel className="control-panel-object-row__label">Название модели оборудования</GameFormRowLabel>
                                   <div class="control-panel-object-row__value control-panel-object-row__value--readonly">{equipment().modelTitle}</div>
                                 </div>
+                                <div class="control-panel-equipment-title-row">
+                                  <GameFormRowLabel className="control-panel-object-row__label">Название группы оборудования</GameFormRowLabel>
+                                  <div class="control-panel-object-row__value control-panel-object-row__value--control">
+                                    <TextInput
+                                      id="control-panel-equipment-title-input"
+                                      text={props.state().controlPanelEquipmentTitleText}
+                                      selectionStart={props.state().controlPanelEquipmentTitleSelectionStart}
+                                      selectionEnd={props.state().controlPanelEquipmentTitleSelectionEnd}
+                                      focused={props.state().controlPanelEquipmentTitleFocused}
+                                    />
+                                  </div>
+                                </div>
                                 <div class="control-panel-object-row">
                                   <GameFormRowLabel className="control-panel-object-row__label">Включено</GameFormRowLabel>
                                   <div class="control-panel-object-row__value control-panel-object-row__value--control">

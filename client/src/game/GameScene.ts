@@ -260,8 +260,12 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, maxAmount);
     }
     const controlPanelObjectTitleEditState = this.inputController.getControlPanelObjectTitleEditState(selfObject?.Title ?? "");
+    const selectedControlPanelEquipmentGroup = this.getSelectedControlPanelEquipmentGroupFromList(effectiveEquipmentGroups, selfObject?.ID ?? null);
+    this.inputController.syncControlPanelEquipmentTitle(selectedControlPanelEquipmentGroup?.ID ?? null, selectedControlPanelEquipmentGroup?.Title ?? "");
+    const controlPanelEquipmentTitleEditState = this.inputController.getControlPanelEquipmentTitleEditState(selectedControlPanelEquipmentGroup?.Title ?? "");
     const controlPanelFuelDrainAmountEditState = this.inputController.getControlPanelFuelDrainAmountEditState();
     this.commitControlPanelObjectTitleIfNeeded(serverSelfObject);
+    this.commitControlPanelEquipmentTitleIfNeeded(selectedControlPanelEquipmentGroup);
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
 
@@ -324,6 +328,10 @@ export class GameScene extends Phaser.Scene {
         controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
         listScroll: this.getListScrollStates(),
         controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(false),
+        controlPanelEquipmentTitleText: controlPanelEquipmentTitleEditState.text,
+        controlPanelEquipmentTitleSelectionStart: controlPanelEquipmentTitleEditState.selectionStart,
+        controlPanelEquipmentTitleSelectionEnd: controlPanelEquipmentTitleEditState.selectionEnd,
+        controlPanelEquipmentTitleFocused: controlPanelEquipmentTitleEditState.focused,
         controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
         controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
         controlPanelObjectTitleSelectionEnd: controlPanelObjectTitleEditState.selectionEnd,
@@ -406,6 +414,10 @@ export class GameScene extends Phaser.Scene {
       controlPanelEquipmentListScroll: this.getControlPanelEquipmentListScrollState(),
       listScroll: this.getListScrollStates(),
       controlPanelObjectEnabled: this.inputController.getControlPanelObjectEnabled(selfObject.Enabled),
+      controlPanelEquipmentTitleText: controlPanelEquipmentTitleEditState.text,
+      controlPanelEquipmentTitleSelectionStart: controlPanelEquipmentTitleEditState.selectionStart,
+      controlPanelEquipmentTitleSelectionEnd: controlPanelEquipmentTitleEditState.selectionEnd,
+      controlPanelEquipmentTitleFocused: controlPanelEquipmentTitleEditState.focused,
       controlPanelObjectTitleText: controlPanelObjectTitleEditState.text,
       controlPanelObjectTitleSelectionStart: controlPanelObjectTitleEditState.selectionStart,
       controlPanelObjectTitleSelectionEnd: controlPanelObjectTitleEditState.selectionEnd,
@@ -776,6 +788,15 @@ export class GameScene extends Phaser.Scene {
         title: { ...mutation, value: title },
       },
     };
+  }
+
+  // Отправляет завершенное редактирование названия группы, если оно отличается от показанного снимка.
+  private commitControlPanelEquipmentTitleIfNeeded(group: EquipmentGroup | null): void {
+    const title = this.inputController.consumeControlPanelEquipmentTitleCommit();
+    if (title === null || !group || title === group.Title) {
+      return;
+    }
+    this.sendControlPanelEquipmentMutation(group.ID, { title });
   }
 
   // Применяет накопленные действия общего UI к локальной витрине контролов.
@@ -1272,7 +1293,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Отправляет изменение оборудования и кладет его поверх снимков до серверного подтверждения.
-  private sendControlPanelEquipmentMutation(groupId: number, update: { enabled?: boolean; enabledCount?: number }): void {
+  private sendControlPanelEquipmentMutation(groupId: number, update: { enabled?: boolean; enabledCount?: number; title?: string }): void {
     const mutation = this.gameClient?.sendControlPanelEquipmentUpdate({ equipmentGroupId: groupId, ...update });
     if (!mutation) {
       return;
@@ -1286,6 +1307,7 @@ export class GameScene extends Phaser.Scene {
           ...current,
           enabled: update.enabled === undefined ? current.enabled : { ...mutation, value: update.enabled },
           enabledCount: update.enabledCount === undefined ? current.enabledCount : { ...mutation, value: update.enabledCount },
+          title: update.title === undefined ? current.title : { ...mutation, value: update.title },
         },
       },
     };
@@ -1385,6 +1407,14 @@ export class GameScene extends Phaser.Scene {
   private getSelectedControlPanelEquipmentGroup(): EquipmentGroup | null {
     const groups = this.getControlPanelEquipmentGroups();
     return groups.find((group) => group.ID === this.selectedControlPanelEquipmentGroupId) ?? groups[0] ?? null;
+  }
+
+  // Выбирает группу из переданного снимка, чтобы поле названия не зависело от предыдущего UI-кадра.
+  private getSelectedControlPanelEquipmentGroupFromList(groups: EquipmentGroup[], objectId: number | null): EquipmentGroup | null {
+    const objectGroups = groups
+      .filter((group) => group.CosmicObjectID === objectId)
+      .sort((left, right) => left.ID - right.ID);
+    return objectGroups.find((group) => group.ID === this.selectedControlPanelEquipmentGroupId) ?? objectGroups[0] ?? null;
   }
 
   // Возвращает группы оборудования текущего объекта из последнего UI-снимка.

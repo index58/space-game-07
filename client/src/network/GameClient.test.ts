@@ -420,7 +420,7 @@ describe("GameClient", () => {
 
     socket.onopen?.();
     const objectMutation = client.sendControlPanelObjectUpdate({ enabled: false });
-    const equipmentMutation = client.sendControlPanelEquipmentUpdate({ equipmentGroupId: 12, enabledCount: 3 });
+    const equipmentMutation = client.sendControlPanelEquipmentUpdate({ equipmentGroupId: 12, enabledCount: 3, title: "Renamed equipment" });
     const containerMutation = client.sendControlPanelContainerTransfer({ sourceContainerEquipmentGroupId: 21, targetContainerEquipmentGroupId: 22, itemGroupIds: [31], amount: 4 });
     const fuelMutation = client.sendControlPanelFuelTransfer({ containerEquipmentGroupId: 21, fuelTankEquipmentGroupId: 23, itemGroupIds: [32], amount: 12 });
     const constructorMutation = client.sendControlPanelConstructorProduceItem({ constructorEquipmentGroupId: 24, materialContainerEquipmentGroupId: 21, productContainerEquipmentGroupId: 22, schemaId: 41, amount: 3 });
@@ -446,6 +446,7 @@ describe("GameClient", () => {
       mutationSeq: 2,
       equipmentGroupId: 12,
       enabledCount: 3,
+      title: "Renamed equipment",
     });
     expect(JSON.parse(socket.sent[2])).toEqual({
       type: "controlPanelContainerTransfer",

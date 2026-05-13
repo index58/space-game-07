@@ -123,6 +123,8 @@ export type ControlPanelEquipmentUpdateMessage = {
   enabled?: boolean;
   // Новое количество включенных единиц.
   enabledCount?: number;
+  // Новое пользовательское название группы.
+  title?: string;
 };
 
 export type ControlPanelEquipmentGroupRelationUpdateMessage = {

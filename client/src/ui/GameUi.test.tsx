@@ -188,6 +188,10 @@ const state = (): GameUiState => ({
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   listScroll: {},
   controlPanelObjectEnabled: true,
+  controlPanelEquipmentTitleText: "",
+  controlPanelEquipmentTitleSelectionStart: 0,
+  controlPanelEquipmentTitleSelectionEnd: 0,
+  controlPanelEquipmentTitleFocused: false,
   controlPanelObjectTitleText: "Ship",
   controlPanelObjectTitleSelectionStart: 4,
   controlPanelObjectTitleSelectionEnd: 4,
@@ -587,6 +591,10 @@ describe("GameUi", () => {
       selectedControlPanelEquipmentGroupId: 11,
       controlPanelEquipmentEnabledDrafts: { 11: true },
       controlPanelEquipmentEnabledCountDrafts: { 11: 1 },
+      controlPanelEquipmentTitleText: "Р“РµРЅРµСЂР°С‚РѕСЂ",
+      controlPanelEquipmentTitleSelectionStart: 9,
+      controlPanelEquipmentTitleSelectionEnd: 9,
+      controlPanelEquipmentTitleFocused: false,
       controlPanelEquipmentListScroll: { visible: true, thumbTopPercent: 20, thumbHeightPercent: 55, contentOffsetPx: 17, dragging: true },
       referenceData: equipmentReferenceData,
       equipmentGroups: [
@@ -607,12 +615,14 @@ describe("GameUi", () => {
     expect(root.querySelector("#control-panel-equipment-enabled-count")).toBeNull();
     expect(root.querySelector<HTMLElement>("#control-panel-equipment-enabled-slider .ui-kit-slider__fill")?.style.width).toBe("50%");
     expect(root.querySelector("#control-panel-equipment-enabled-slider .ui-kit-slider__label")?.textContent).toBe("1 / 2");
+    expect(root.querySelector("#control-panel-equipment-title-input")?.classList.contains("ui-kit-text-input")).toBe(true);
+    expect(root.querySelector("#control-panel-equipment-title-input .ui-kit-text-input__text")?.textContent).toBe("Р“РµРЅРµСЂР°С‚РѕСЂ");
     expect(root.querySelector("#control-panel-equipment-usage-button")?.textContent).toBe("Использовать");
     expect(root.querySelector("#control-panel-equipment-usage-button")?.classList.contains("is-disabled")).toBe(true);
     expect(root.querySelector(".control-panel-equipment-action #control-panel-equipment-usage-button")?.textContent).toBe("Использовать");
     expect(root.querySelector(".control-panel-equipment-info > .control-panel-equipment-action #control-panel-equipment-usage-button")?.textContent).toBe("Использовать");
     expect(root.querySelector(".control-panel-equipment-layout > .control-panel-equipment-action")).toBeNull();
-    expect(Array.from(root.querySelectorAll(".control-panel-equipment-info .control-panel-object-row__label")).map((row) => row.textContent)).toEqual([
+    expect(Array.from(root.querySelectorAll(".control-panel-equipment-info .control-panel-object-row .control-panel-object-row__label")).map((row) => row.textContent)).toEqual([
       "Название модели оборудования",
       "Включено",
       "Количество включенных единиц",
@@ -626,7 +636,7 @@ describe("GameUi", () => {
       "Крутящий момент (Н·м)",
       "Сложность",
     ]);
-    expect(Array.from(root.querySelectorAll(".control-panel-equipment-info .control-panel-object-row__value")).map(visibleControlText)).toEqual([
+    expect(Array.from(root.querySelectorAll(".control-panel-equipment-info .control-panel-object-row .control-panel-object-row__value")).map(visibleControlText)).toEqual([
       "Компактный генератор",
       "",
       "1 / 2",

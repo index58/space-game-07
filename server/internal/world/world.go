@@ -94,9 +94,10 @@ type ControlPanelObjectUpdate struct {
 
 // ControlPanelEquipmentUpdate описывает частичное изменение группы оборудования.
 type ControlPanelEquipmentUpdate struct {
-	EquipmentGroupID int64  // Группа оборудования, которую нужно изменить.
-	Enabled          *bool  // Новое состояние включения группы, если оно меняется.
-	EnabledCount     *int64 // Новое количество включенных единиц, если оно меняется.
+	Title            *string // Новое пользовательское название группы, если оно меняется.
+	EquipmentGroupID int64   // Группа оборудования, которую нужно изменить.
+	Enabled          *bool   // Новое состояние включения группы, если оно меняется.
+	EnabledCount     *int64  // Новое количество включенных единиц, если оно меняется.
 }
 
 // ControlPanelContainerTransfer описывает перенос предметов между контейнерами текущего объекта.
@@ -404,6 +405,9 @@ func (world *World) ApplyControlPanelEquipmentUpdate(accountID int64, sessionID 
 	}
 	if update.Enabled != nil {
 		group.Enabled = *update.Enabled
+	}
+	if update.Title != nil {
+		group.Title = *update.Title
 	}
 	world.ackMutationLocked(accountID, sessionID, mutationSeq)
 	return nil

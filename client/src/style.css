@@ -1374,6 +1374,15 @@ body {
   min-width: 0;
 }
 
+.control-panel-equipment-title-row {
+  display: grid;
+  grid-template-columns: minmax(18vh, 0.92fr) minmax(0, 1fr);
+  column-gap: 0.8vh;
+  align-items: start;
+  height: var(--control-panel-object-row-height);
+  min-width: 0;
+}
+
 .control-panel-object-row__value {
   display: flex;
   align-items: center;

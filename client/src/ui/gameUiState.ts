@@ -117,6 +117,14 @@ export type GameUiState = {
   controlPanelEquipmentEnabledDrafts: Record<number, boolean>;
   // Черновики количества включенных единиц оборудования по ID группы.
   controlPanelEquipmentEnabledCountDrafts: Record<number, number>;
+  // Черновик пользовательского названия выбранной группы оборудования.
+  controlPanelEquipmentTitleText: string;
+  // Начало выделения в поле названия группы оборудования.
+  controlPanelEquipmentTitleSelectionStart: number;
+  // Конец выделения в поле названия группы оборудования.
+  controlPanelEquipmentTitleSelectionEnd: number;
+  // Признак активного фокуса поля названия группы оборудования.
+  controlPanelEquipmentTitleFocused: boolean;
   // Состояние прокрутки списка групп оборудования.
   controlPanelEquipmentListScroll: ChatScrollState;
   // Состояния прокрутки обычных списков по ID списка.
@@ -214,6 +222,10 @@ const initialGameUiState: GameUiState = {
   controlPanelFuelDrainAmountFocused: false,
   controlPanelEquipmentEnabledDrafts: {},
   controlPanelEquipmentEnabledCountDrafts: {},
+  controlPanelEquipmentTitleText: "",
+  controlPanelEquipmentTitleSelectionStart: 0,
+  controlPanelEquipmentTitleSelectionEnd: 0,
+  controlPanelEquipmentTitleFocused: false,
   controlPanelEquipmentListScroll: { visible: false, thumbTopPercent: 0, thumbHeightPercent: 100, contentOffsetPx: 0, dragging: false },
   listScroll: {},
   controlPanelObjectEnabled: false,

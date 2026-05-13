@@ -1011,6 +1011,75 @@ describe("InputController", () => {
 
   // Проверяет, что клик по полю названия объекта ставит каретку в позицию под игровым курсором.
   // Проверяет, что поле количества слива топлива получает native-фокус и отдаёт введённое число.
+  // Проверяет, что поле названия группы оборудования получает native-фокус и сохраняет введенный текст в черновик.
+  it("edits control panel equipment title through hidden native textarea", async () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelEquipmentTitle(11, "Generator");
+    controller.updateGameUiControls([{
+      id: "control-panel-equipment-title-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+    const textarea = document.querySelector<HTMLTextAreaElement>("[data-ui-kit-edit-id='control-panel-equipment-title-input']");
+    if (!textarea) {
+      throw new Error("Нативное поле названия оборудования не создано.");
+    }
+
+    textarea.value = "Renamed";
+    textarea.setSelectionRange(7, 7);
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    await waitForNativeEditSync();
+
+    expect(controller.getControlPanelEquipmentTitle("Generator")).toBe("Renamed");
+    expect(controller.getControlPanelEquipmentTitleEditState().focused).toBe(true);
+    expect(controller.getControlPanelEquipmentTitleEditState().selectionStart).toBe(7);
+  });
+
+  // Проверяет, что завершение редактирования названия группы оборудования отдает сцене текст для серверной команды.
+  it("commits control panel equipment title after edit completion", async () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.syncControlPanelEquipmentTitle(11, "Generator");
+    controller.updateGameUiControls([{
+      id: "control-panel-equipment-title-input",
+      kind: "edit",
+      rect: { left: 500, top: 370, width: 120, height: 40 },
+      zIndex: 1,
+      disabled: false,
+      visible: true,
+      focusable: true,
+      value: null,
+    }]);
+
+    pressKey("KeyI", "i");
+    window.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+    window.dispatchEvent(new MouseEvent("mouseup", { button: 0 }));
+    const textarea = document.querySelector<HTMLTextAreaElement>("[data-ui-kit-edit-id='control-panel-equipment-title-input']");
+    if (!textarea) {
+      throw new Error("Нативное поле названия оборудования не создано.");
+    }
+
+    textarea.value = "Renamed";
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    await waitForNativeEditSync();
+    pressInputKey(textarea, "Enter", "Enter");
+
+    expect(controller.consumeControlPanelEquipmentTitleCommit()).toBe("Renamed");
+    expect(controller.consumeControlPanelEquipmentTitleCommit()).toBeNull();
+  });
+
   it("edits control panel fuel drain amount through hidden native textarea", async () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);

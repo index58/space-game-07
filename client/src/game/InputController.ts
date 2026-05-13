@@ -156,6 +156,8 @@ export class InputController {
   private readonly chatEdit = new TextEditController({ id: "chat-input", mode: "singleLine" });
   // Нативный движок редактирования названия объекта в панели управления.
   private readonly controlPanelObjectTitleEdit = new TextEditController({ id: "control-panel-object-title-input", mode: "singleLine" });
+  // Нативный движок редактирования названия группы оборудования.
+  private readonly controlPanelEquipmentTitleEdit = new TextEditController({ id: "control-panel-equipment-title-input", mode: "singleLine" });
   // Нативный движок редактирования количества сливаемого топлива.
   private readonly controlPanelFuelDrainAmountEdit = new TextEditController({ id: "control-panel-fuel-drain-amount-input", mode: "singleLine" });
   // Объект, для которого сейчас хранится черновик панели управления.
@@ -166,16 +168,28 @@ export class InputController {
   private controlPanelObjectTitleDraft: string | null = null;
   // Текст, который нужно отправить на сервер после завершения редактирования названия.
   private controlPanelObjectTitleCommit: string | null = null;
+  // Группа оборудования, для которой сейчас хранится черновик названия.
+  private controlPanelEquipmentTitleGroupId: number | null = null;
+  // Черновик названия группы оборудования в панели управления.
+  private controlPanelEquipmentTitleDraft: string | null = null;
+  // Текст, который нужно отправить на сервер после завершения редактирования названия группы.
+  private controlPanelEquipmentTitleCommit: string | null = null;
   // Показывает, что игровой курсор сейчас выделяет текст чата мышью.
   private chatEditDragActive = false;
   // Позиция начала выделения текстового поля игровым курсором.
   private chatEditDragAnchorIndex = 0;
   // Показывает, что игровой курсор сейчас выделяет название объекта мышью.
   private controlPanelObjectTitleEditDragActive = false;
+  // Показывает, что игровой курсор сейчас выделяет название группы оборудования мышью.
+  private controlPanelEquipmentTitleEditDragActive = false;
   // Позиция начала выделения названия объекта игровым курсором.
   private controlPanelObjectTitleEditDragAnchorIndex = 0;
+  // Позиция начала выделения названия группы оборудования игровым курсором.
+  private controlPanelEquipmentTitleEditDragAnchorIndex = 0;
   // Блокирует click после перетаскивания, чтобы выделение не схлопывалось на отпускании.
   private controlPanelObjectTitleSuppressClick = false;
+  // Блокирует click после перетаскивания, чтобы выделение не схлопывалось на отпускании.
+  private controlPanelEquipmentTitleSuppressClick = false;
   // Черновой текст количества сливаемого топлива.
   private controlPanelFuelDrainAmountText = "0";
 
@@ -192,6 +206,7 @@ export class InputController {
         this.chatContextMenu = null;
         this.chatEdit.blur();
         this.controlPanelObjectTitleEdit.blur();
+        this.controlPanelEquipmentTitleEdit.blur();
         this.controlPanelFuelDrainAmountEdit.blur();
         this.keys[event.code] = true;
         return;
@@ -212,6 +227,9 @@ export class InputController {
         return;
       }
       if (this.handleControlPanelObjectTitleKeyDown(event)) {
+        return;
+      }
+      if (this.handleControlPanelEquipmentTitleKeyDown(event)) {
         return;
       }
       if (this.handleControlPanelFuelDrainAmountKeyDown(event)) {
@@ -258,6 +276,9 @@ export class InputController {
         }
         if (this.controlPanelObjectTitleEditDragActive) {
           this.updateControlPanelObjectTitleEditSelectionFromCursor();
+        }
+        if (this.controlPanelEquipmentTitleEditDragActive) {
+          this.updateControlPanelEquipmentTitleEditSelectionFromCursor();
         }
         if (this.chatScrollbarDragActive) {
           this.updateChatScrollFromCursor();
@@ -324,6 +345,10 @@ export class InputController {
         event.preventDefault();
         return;
       }
+      if (this.startControlPanelEquipmentTitleEditPointerSelection(event.detail)) {
+        event.preventDefault();
+        return;
+      }
       if (this.closeChatContextMenuItem(this.cursorX, this.cursorY) || this.closeChatContextMenuItem(event.clientX, event.clientY)) {
         event.preventDefault();
         return;
@@ -348,7 +373,9 @@ export class InputController {
         this.enqueueUiAction(this.uiRuntime.pointerUp(this.cursorX, this.cursorY, event.button, uiActionModifiers(event)));
         this.chatEditDragActive = false;
         this.controlPanelObjectTitleEditDragActive = false;
+        this.controlPanelEquipmentTitleEditDragActive = false;
         this.controlPanelObjectTitleSuppressClick = false;
+        this.controlPanelEquipmentTitleSuppressClick = false;
         this.chatScrollbarDragActive = false;
         this.chatScrollbarDrag = null;
       }
@@ -379,6 +406,10 @@ export class InputController {
     this.controlPanelObjectTitleEdit.element().addEventListener("select", () => this.syncControlPanelObjectTitleFromNativeEdit());
     this.controlPanelObjectTitleEdit.element().addEventListener("keyup", () => this.syncControlPanelObjectTitleFromNativeEdit());
     this.controlPanelObjectTitleEdit.element().addEventListener("keydown", (event) => this.handleControlPanelObjectTitleKeyDown(event));
+    this.controlPanelEquipmentTitleEdit.element().addEventListener("input", () => this.syncControlPanelEquipmentTitleFromNativeEdit());
+    this.controlPanelEquipmentTitleEdit.element().addEventListener("select", () => this.syncControlPanelEquipmentTitleFromNativeEdit());
+    this.controlPanelEquipmentTitleEdit.element().addEventListener("keyup", () => this.syncControlPanelEquipmentTitleFromNativeEdit());
+    this.controlPanelEquipmentTitleEdit.element().addEventListener("keydown", (event) => this.handleControlPanelEquipmentTitleKeyDown(event));
     this.controlPanelFuelDrainAmountEdit.element().addEventListener("input", () => this.syncControlPanelFuelDrainAmountFromNativeEdit());
     this.controlPanelFuelDrainAmountEdit.element().addEventListener("select", () => this.syncControlPanelFuelDrainAmountFromNativeEdit());
     this.controlPanelFuelDrainAmountEdit.element().addEventListener("keyup", () => this.syncControlPanelFuelDrainAmountFromNativeEdit());
@@ -531,6 +562,48 @@ export class InputController {
     };
   }
 
+  // Синхронизирует черновик названия выбранной группы оборудования без перезаписи активного ввода.
+  syncControlPanelEquipmentTitle(groupId: number | null, title: string): void {
+    if (!groupId) {
+      this.controlPanelEquipmentTitleGroupId = null;
+      this.controlPanelEquipmentTitleDraft = null;
+      this.controlPanelEquipmentTitleEdit.blur();
+      return;
+    }
+    if (this.controlPanelEquipmentTitleGroupId !== groupId) {
+      this.controlPanelEquipmentTitleGroupId = groupId;
+      this.controlPanelEquipmentTitleDraft = title;
+      this.controlPanelEquipmentTitleEdit.blur();
+      return;
+    }
+    if (!this.controlPanelEquipmentTitleEdit.snapshot().focused) {
+      this.controlPanelEquipmentTitleDraft = title;
+    }
+  }
+
+  // Возвращает черновик названия группы оборудования или серверное значение до синхронизации.
+  getControlPanelEquipmentTitle(fallback: string): string {
+    return this.controlPanelEquipmentTitleDraft ?? fallback;
+  }
+
+  // Возвращает состояние редактирования названия группы оборудования для отрисовки UI Kit поля.
+  getControlPanelEquipmentTitleEditState(fallback = ""): TextEditState {
+    const snapshot = this.controlPanelEquipmentTitleEdit.snapshot();
+    if (snapshot.focused) {
+      return snapshot;
+    }
+    const text = this.getControlPanelEquipmentTitle(fallback);
+    return {
+      text,
+      selectionStart: text.length,
+      selectionEnd: text.length,
+      selectionDirection: "none",
+      scrollX: 0,
+      scrollY: 0,
+      focused: false,
+    };
+  }
+
   // Задает количество слива топлива из внешнего состояния панели.
   setControlPanelFuelDrainAmount(value: number): void {
     this.controlPanelFuelDrainAmountText = formatFuelDrainAmount(value);
@@ -659,6 +732,13 @@ export class InputController {
     return title;
   }
 
+  // Возвращает завершенное редактирование названия группы оборудования и сразу очищает событие.
+  consumeControlPanelEquipmentTitleCommit(): string | null {
+    const title = this.controlPanelEquipmentTitleCommit;
+    this.controlPanelEquipmentTitleCommit = null;
+    return title;
+  }
+
   // Отдает ввод за текущий кадр и сбрасывает накопленное движение мыши.
   consumeShipInput(): ClientInputState {
     // Захват указателя отдает относительное движение мыши; после кадра накопление сбрасывается.
@@ -667,6 +747,7 @@ export class InputController {
       this.chatInputFocused = false;
       this.chatEdit.blur();
       this.controlPanelObjectTitleEdit.blur();
+      this.controlPanelEquipmentTitleEdit.blur();
       this.controlPanelFuelDrainAmountEdit.blur();
       this.chatContextMenu = null;
       this.chatScrollbarDragActive = false;
@@ -791,6 +872,25 @@ export class InputController {
     return true;
   }
 
+  // Отдает клавиатуру native-полю названия группы оборудования, пока оно находится в фокусе.
+  private handleControlPanelEquipmentTitleKeyDown(event: KeyboardEvent): boolean {
+    if (!this.controlPanelEquipmentTitleEdit.snapshot().focused) {
+      return false;
+    }
+    if (event.target !== this.controlPanelEquipmentTitleEdit.element()) {
+      return false;
+    }
+    if (event.code === "Escape" || event.code === "Enter") {
+      this.syncControlPanelEquipmentTitleFromNativeEdit();
+      this.commitAndBlurControlPanelEquipmentTitle();
+      event.preventDefault();
+      return true;
+    }
+
+    window.setTimeout(() => this.syncControlPanelEquipmentTitleFromNativeEdit(), 0);
+    return true;
+  }
+
   // Отдает клавиатуру native-полю количества слива топлива, пока оно находится в фокусе.
   private handleControlPanelFuelDrainAmountKeyDown(event: KeyboardEvent): boolean {
     if (!this.controlPanelFuelDrainAmountEdit.snapshot().focused) {
@@ -877,6 +977,7 @@ export class InputController {
     this.uiKitShowcaseVisible = false;
     this.controlPanelVisible = false;
     this.controlPanelObjectTitleEdit.blur();
+    this.controlPanelEquipmentTitleEdit.blur();
     this.controlPanelFuelDrainAmountEdit.blur();
   }
 
@@ -907,6 +1008,7 @@ export class InputController {
     }
     if (action.type === "click" && action.controlId === "control-panel-object-enabled") {
       this.commitAndBlurControlPanelObjectTitle();
+      this.commitAndBlurControlPanelEquipmentTitle();
       return false;
     }
     if (action.type === "click" && action.controlId === "control-panel-object-title-input") {
@@ -919,6 +1021,16 @@ export class InputController {
       this.syncControlPanelObjectTitleFromNativeEdit();
       return true;
     }
+    if (action.type === "click" && action.controlId === "control-panel-equipment-title-input") {
+      if (this.controlPanelEquipmentTitleSuppressClick) {
+        return true;
+      }
+      const text = this.getControlPanelEquipmentTitle("");
+      const index = this.textInputIndexAtCursor("control-panel-equipment-title-input", text);
+      this.controlPanelEquipmentTitleEdit.focus(text, index, index);
+      this.syncControlPanelEquipmentTitleFromNativeEdit();
+      return true;
+    }
     if (action.type === "click" && action.controlId === "control-panel-fuel-drain-amount-input") {
       this.controlPanelFuelDrainAmountEdit.focus(this.controlPanelFuelDrainAmountText, 0, this.controlPanelFuelDrainAmountText.length);
       this.syncControlPanelFuelDrainAmountFromNativeEdit();
@@ -926,6 +1038,7 @@ export class InputController {
     }
     if (action.type === "click" && action.controlId.startsWith("control-panel-")) {
       this.commitAndBlurControlPanelObjectTitle();
+      this.commitAndBlurControlPanelEquipmentTitle();
     }
     return false;
   }
@@ -933,6 +1046,11 @@ export class InputController {
   // Переносит данные native-поля в черновик панели управления.
   private syncControlPanelObjectTitleFromNativeEdit(): void {
     this.controlPanelObjectTitleDraft = this.controlPanelObjectTitleEdit.snapshot().text;
+  }
+
+  // Переносит данные native-поля названия группы оборудования в черновик панели управления.
+  private syncControlPanelEquipmentTitleFromNativeEdit(): void {
+    this.controlPanelEquipmentTitleDraft = this.controlPanelEquipmentTitleEdit.snapshot().text;
   }
 
   // Переносит данные native-поля количества слива в черновик панели.
@@ -948,6 +1066,16 @@ export class InputController {
       this.controlPanelObjectTitleCommit = snapshot.text;
     }
     this.controlPanelObjectTitleEdit.blur();
+  }
+
+  // Завершает native-редактирование названия группы оборудования и запоминает изменение для сцены.
+  private commitAndBlurControlPanelEquipmentTitle(): void {
+    const snapshot = this.controlPanelEquipmentTitleEdit.snapshot();
+    if (snapshot.focused) {
+      this.controlPanelEquipmentTitleDraft = snapshot.text;
+      this.controlPanelEquipmentTitleCommit = snapshot.text;
+    }
+    this.controlPanelEquipmentTitleEdit.blur();
   }
 
   // Узнает слой, который должен только закрыть раскрытый список и не запускать нижний UI.
@@ -1043,6 +1171,7 @@ export class InputController {
     this.settingsVisible = false;
     this.controlPanelVisible = false;
     this.controlPanelObjectTitleEdit.blur();
+    this.controlPanelEquipmentTitleEdit.blur();
     return true;
   }
 
@@ -1098,6 +1227,30 @@ export class InputController {
     return true;
   }
 
+  // Начинает постановку каретки или выделение названия группы оборудования игровым курсором.
+  private startControlPanelEquipmentTitleEditPointerSelection(clickCount: number): boolean {
+    if (!this.isGameCursorVisible() || !this.isCursorOverTextInput("control-panel-equipment-title-input")) {
+      return false;
+    }
+
+    const text = this.getControlPanelEquipmentTitle("");
+    const index = this.textInputIndexAtCursor("control-panel-equipment-title-input", text);
+    if (clickCount >= 2) {
+      this.controlPanelEquipmentTitleEdit.focus(text, index, index);
+      this.controlPanelEquipmentTitleEdit.selectWordAt(index);
+      this.syncControlPanelEquipmentTitleFromNativeEdit();
+      this.controlPanelEquipmentTitleSuppressClick = true;
+      return true;
+    }
+
+    this.controlPanelEquipmentTitleEditDragActive = true;
+    this.controlPanelEquipmentTitleEditDragAnchorIndex = index;
+    this.controlPanelEquipmentTitleSuppressClick = false;
+    this.controlPanelEquipmentTitleEdit.focus(text, index, index);
+    this.syncControlPanelEquipmentTitleFromNativeEdit();
+    return true;
+  }
+
   // Обновляет выделение названия объекта при перетаскивании по общему полю ввода.
   private updateControlPanelObjectTitleEditSelectionFromCursor(): void {
     const text = this.getControlPanelObjectTitle("");
@@ -1105,6 +1258,15 @@ export class InputController {
     this.controlPanelObjectTitleSuppressClick = this.controlPanelObjectTitleEditDragAnchorIndex !== index;
     this.controlPanelObjectTitleEdit.focus(text, this.controlPanelObjectTitleEditDragAnchorIndex, index);
     this.syncControlPanelObjectTitleFromNativeEdit();
+  }
+
+  // Обновляет выделение названия группы оборудования при перетаскивании по общему полю ввода.
+  private updateControlPanelEquipmentTitleEditSelectionFromCursor(): void {
+    const text = this.getControlPanelEquipmentTitle("");
+    const index = this.textInputIndexAtCursor("control-panel-equipment-title-input", text);
+    this.controlPanelEquipmentTitleSuppressClick = this.controlPanelEquipmentTitleEditDragAnchorIndex !== index;
+    this.controlPanelEquipmentTitleEdit.focus(text, this.controlPanelEquipmentTitleEditDragAnchorIndex, index);
+    this.syncControlPanelEquipmentTitleFromNativeEdit();
   }
 
   // Проверяет попадание игрового курсора в визуальную строку ввода.
