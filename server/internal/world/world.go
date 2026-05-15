@@ -425,15 +425,15 @@ func (world *World) UndockControlledObject(accountID int64) error {
 	}
 	notificationObjectIDs := world.clusterObjectIDsLocked(mainID)
 	if mainID == cosmicObject.ID {
-		for _, clusterObject := range world.data.CosmicObjects.Items {
-			if clusterObject != nil && clusterObject.ClusterMainCosmicObjectID == mainID {
-				clusterObject.ClusterMainCosmicObjectID = 0
-			}
-		}
+		world.disbandClusterLocked(mainID)
 		world.addDockingNotificationLocked(notificationObjectIDs, "Объект отстыкован")
 		return nil
 	}
 	cosmicObject.ClusterMainCosmicObjectID = 0
+	cosmicObject.Anchored = false
+	if len(world.clusterObjectIDsLocked(mainID)) <= 1 {
+		world.disbandClusterLocked(mainID)
+	}
 	world.addDockingNotificationLocked(notificationObjectIDs, "Объект отстыкован")
 	return nil
 }
@@ -687,6 +687,16 @@ func (world *World) clusterObjectIDsLocked(mainID int64) []int64 {
 		return objectIDs[left] < objectIDs[right]
 	})
 	return objectIDs
+}
+
+// Снимает с объектов состояние единого кластера и его обязательную неподвижность.
+func (world *World) disbandClusterLocked(mainID int64) {
+	for _, clusterObject := range world.data.CosmicObjects.Items {
+		if clusterObject != nil && clusterObject.ClusterMainCosmicObjectID == mainID {
+			clusterObject.ClusterMainCosmicObjectID = 0
+			clusterObject.Anchored = false
+		}
+	}
 }
 
 // ApplyControlPanelObjectUpdate применяет подтвержденное изменение панели к объекту текущего аккаунта.

@@ -540,6 +540,31 @@ func TestUndockMainObjectDisbandsWholeCluster(t *testing.T) {
 	}
 }
 
+// Проверяет распускание пары кораблей, когда из нее выходит второстепенный объект.
+func TestUndockSecondaryObjectDisbandsTwoObjectCluster(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 3
+	serverData.CosmicObjects.Items[3].CosmicObjectModelID = 1
+	serverData.CosmicObjects.Items[3].Anchored = true
+	serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID = 3
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	if err := gameWorld.UndockControlledObject(1); err != nil {
+		t.Fatalf("undock secondary object: %v", err)
+	}
+
+	if serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID != 0 || serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID != 0 {
+		t.Fatalf("two-object cluster was not disbanded: secondary=%d main=%d", serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID, serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID)
+	}
+	if serverData.CosmicObjects.Items[3].Anchored {
+		t.Fatal("single remaining object stayed forcibly anchored")
+	}
+}
+
 // Проверяет, что объект кластера нельзя снять с якоря ручным переключением.
 func TestSetInputDoesNotDisableAnchorForClusterObject(t *testing.T) {
 	serverData := testWorldData(t)
