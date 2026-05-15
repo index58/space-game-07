@@ -18,6 +18,10 @@ const pressKey = (code: string, key = "") => {
   window.dispatchEvent(new KeyboardEvent("keydown", { code, key }));
 };
 
+const pressModifiedKey = (code: string, modifiers: KeyboardEventInit) => {
+  window.dispatchEvent(new KeyboardEvent("keydown", { code, ...modifiers }));
+};
+
 const releaseKey = (code: string) => {
   window.dispatchEvent(new KeyboardEvent("keyup", { code }));
 };
@@ -308,6 +312,20 @@ describe("InputController", () => {
 
     expect(controller.consumeShipInput().toggleAnchor).toBe(true);
     expect(controller.consumeShipInput().toggleAnchor).toBe(false);
+  });
+
+  // Проверяет, что команда стыковки может прийти из переназначенной настройки ввода.
+  it("uses input settings for docking actions", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.updateInputBindings({
+      DockingRequest: "KeyboardEvent.altKey&&KeyboardEvent.code:KeyR",
+    });
+
+    pressModifiedKey("KeyR", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("request");
   });
 
   it("focuses chat with Enter, types text and sends it with second Enter", () => {

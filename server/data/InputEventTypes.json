@@ -1,5 +1,5 @@
 {
-  "MaxID": 182,
+  "MaxID": 186,
   "Items": {
     "1": {
       "ID": 1,
@@ -1638,6 +1638,42 @@
       "SystemStringValue": "MouseEvent.movementY\u003e0",
       "SystemIntegerValue": 0,
       "Description": "Относительное движение мыши вниз при захваченном указателе."
+    },
+    "183": {
+      "ID": 183,
+      "TitleRu": "Alt Shift +",
+      "TitleEn": "Alt Shift +",
+      "Acronym": "KeyboardAltShiftEqual",
+      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.shiftKey\u0026\u0026KeyboardEvent.code:Equal",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши + при удержанных Alt и Shift."
+    },
+    "184": {
+      "ID": 184,
+      "TitleRu": "Alt +",
+      "TitleEn": "Alt +",
+      "Acronym": "KeyboardAltEqual",
+      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.code:Equal",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши + при удержанном Alt."
+    },
+    "185": {
+      "ID": 185,
+      "TitleRu": "Alt -",
+      "TitleEn": "Alt -",
+      "Acronym": "KeyboardAltMinus",
+      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.code:Minus",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши - при удержанном Alt."
+    },
+    "186": {
+      "ID": 186,
+      "TitleRu": "Alt Shift -",
+      "TitleEn": "Alt Shift -",
+      "Acronym": "KeyboardAltShiftMinus",
+      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.shiftKey\u0026\u0026KeyboardEvent.code:Minus",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши - при удержанных Alt и Shift."
     }
   }
 }

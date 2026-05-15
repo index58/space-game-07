@@ -1,5 +1,5 @@
 {
-  "MaxID": 26,
+  "MaxID": 30,
   "Items": {
     "1": {
       "ID": 1,
@@ -130,6 +130,26 @@
       "ID": 26,
       "ActionTypeID": 26,
       "InputEventTypeID": 134
+    },
+    "27": {
+      "ID": 27,
+      "ActionTypeID": 27,
+      "InputEventTypeID": 183
+    },
+    "28": {
+      "ID": 28,
+      "ActionTypeID": 28,
+      "InputEventTypeID": 184
+    },
+    "29": {
+      "ID": 29,
+      "ActionTypeID": 29,
+      "InputEventTypeID": 185
+    },
+    "30": {
+      "ID": 30,
+      "ActionTypeID": 30,
+      "InputEventTypeID": 186
     }
   }
 }

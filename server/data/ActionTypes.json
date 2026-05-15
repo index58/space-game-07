@@ -1,5 +1,5 @@
 {
-  "MaxID": 26,
+  "MaxID": 30,
   "Items": {
     "1": {
       "ID": 1,
@@ -182,6 +182,34 @@
       "TitleEn": "Toggle settings window",
       "Acronym": "ToggleSettingsWindow",
       "Description": "Показывает или скрывает модальное окно настроек аккаунта."
+    },
+    "27": {
+      "ID": 27,
+      "TitleRu": "Отправить запрос на стыковку",
+      "TitleEn": "Send docking request",
+      "Acronym": "DockingRequest",
+      "Description": "Отправляет одноразовую команду запроса на стыковку от управляемого корабля."
+    },
+    "28": {
+      "ID": 28,
+      "TitleRu": "Одобрить запрос на стыковку",
+      "TitleEn": "Approve docking request",
+      "Acronym": "DockingApprove",
+      "Description": "Отправляет одноразовую команду одобрения входящего запроса на стыковку."
+    },
+    "29": {
+      "ID": 29,
+      "TitleRu": "Отказать запросу на стыковку",
+      "TitleEn": "Reject docking request",
+      "Acronym": "DockingReject",
+      "Description": "Отправляет одноразовую команду отказа на входящий запрос стыковки."
+    },
+    "30": {
+      "ID": 30,
+      "TitleRu": "Отстыковаться",
+      "TitleEn": "Undock",
+      "Acronym": "DockingUndock",
+      "Description": "Отправляет одноразовую команду отстыковки управляемого объекта от кластера."
     }
   }
 }

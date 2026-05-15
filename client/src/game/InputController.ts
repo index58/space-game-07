@@ -4,7 +4,7 @@ import { GameUiRuntime } from "../ui-kit/runtime";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
 import { TextEditController } from "../ui-kit/textEdit";
 import type { GameUiAction, GameUiControlState, TextEditState } from "../ui-kit/types";
-import { isFreshKeyboardBinding, isFreshKeyDown, toShipInput, type InputBindingMap } from "./inputState";
+import { isFreshKeyboardBinding, isFreshKeyboardEventBinding, isFreshKeyDown, toShipInput, type InputBindingMap } from "./inputState";
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
 
@@ -250,7 +250,7 @@ export class InputController {
         event.preventDefault();
         return;
       }
-      const dockingAction = getDockingActionFromKey(event, Boolean(this.keys[event.code]));
+      const dockingAction = this.getDockingActionFromKey(event, Boolean(this.keys[event.code]));
       if (dockingAction) {
         this.dockingActions.push(dockingAction);
         this.keys[event.code] = true;
@@ -673,6 +673,23 @@ export class InputController {
   // Возвращает очередную команду стыковки для отправки отдельным сетевым сообщением.
   consumeDockingAction(): DockingAction | null {
     return this.dockingActions.shift() ?? null;
+  }
+
+  // Преобразует настроенные или базовые сочетания клавиш в команды стыковки.
+  private getDockingActionFromKey(event: KeyboardEvent, wasPressed: boolean): DockingAction | null {
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingRequest)) {
+      return "request";
+    }
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingApprove)) {
+      return "approve";
+    }
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingReject)) {
+      return "reject";
+    }
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingUndock)) {
+      return "undock";
+    }
+    return getDefaultDockingActionFromKey(event, wasPressed);
   }
 
   // Возвращает видимость отладочной панели UI Kit.
@@ -1638,8 +1655,8 @@ const scrollableListIdFromControl = (control: GameUiControlState): string | null
   return listRoot?.id ?? control.id;
 };
 
-// Преобразует согласованные сочетания Alt с плюсами и минусами в команды стыковки.
-const getDockingActionFromKey = (event: KeyboardEvent, wasPressed: boolean): DockingAction | null => {
+// Преобразует базовые сочетания Alt с плюсами и минусами в команды стыковки.
+const getDefaultDockingActionFromKey = (event: KeyboardEvent, wasPressed: boolean): DockingAction | null => {
   if (!event.altKey || wasPressed) {
     return null;
   }

@@ -1,5 +1,5 @@
 ﻿import { describe, expect, it } from "vitest";
-import { MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL, isFreshKeyDown, toShipInput } from "./inputState";
+import { MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL, isFreshKeyboardEventBinding, isFreshKeyDown, toShipInput } from "./inputState";
 
 // Эти тесты фиксируют границу между заблокированным системным курсором и игровым вводом.
 describe("toShipInput", () => {
@@ -49,5 +49,16 @@ describe("isFreshKeyDown", () => {
     expect(isFreshKeyDown("KeyO", false, "KeyO")).toBe(true);
     expect(isFreshKeyDown("KeyO", true, "KeyO")).toBe(false);
     expect(isFreshKeyDown("KeyP", false, "KeyO")).toBe(false);
+  });
+});
+
+describe("isFreshKeyboardEventBinding", () => {
+  // Проверяет, что переназначаемые сочетания клавиш учитывают Alt и Shift.
+  it("matches keyboard bindings with modifiers", () => {
+    const event = new KeyboardEvent("keydown", { code: "Equal", altKey: true, shiftKey: true });
+
+    expect(isFreshKeyboardEventBinding(event, false, "KeyboardEvent.altKey&&KeyboardEvent.shiftKey&&KeyboardEvent.code:Equal")).toBe(true);
+    expect(isFreshKeyboardEventBinding(event, false, "KeyboardEvent.altKey&&KeyboardEvent.code:Equal")).toBe(false);
+    expect(isFreshKeyboardEventBinding(event, true, "KeyboardEvent.altKey&&KeyboardEvent.shiftKey&&KeyboardEvent.code:Equal")).toBe(false);
   });
 });

@@ -73,6 +73,25 @@ export const isFreshKeyboardBinding = (
   return keyCode ? isFreshKeyDown(eventCode, wasAlreadyPressed, keyCode) : false;
 };
 
+// Проверяет первое нажатие клавиши с обязательными модификаторами из системной строки.
+export const isFreshKeyboardEventBinding = (
+  event: KeyboardEvent,
+  wasAlreadyPressed: boolean,
+  systemStringValue: string | undefined,
+): boolean => {
+  if (wasAlreadyPressed) {
+    return false;
+  }
+  const binding = keyboardEventBindingFromSystemString(systemStringValue);
+  if (!binding || event.code !== binding.code) {
+    return false;
+  }
+  return event.altKey === binding.altKey &&
+    event.ctrlKey === binding.ctrlKey &&
+    event.metaKey === binding.metaKey &&
+    event.shiftKey === binding.shiftKey;
+};
+
 // Вычисляет поворот из мыши или клавиш, если игрок переназначил вращение.
 const rotationDeltaFromBindings = (keys: KeyState, mouseDeltaX: number, bindings: InputBindingMap): number => {
   let delta = 0;
@@ -92,4 +111,34 @@ const rotationDeltaFromBindings = (keys: KeyState, mouseDeltaX: number, bindings
 const keyboardCodeFromSystemString = (systemStringValue: string | undefined): string | null => {
   const match = systemStringValue?.match(/^KeyboardEvent\.code:(.+)$/);
   return match?.[1] ?? null;
+};
+
+type KeyboardEventBinding = {
+  // DOM-код клавиши.
+  code: string;
+  // Требование удерживать Alt.
+  altKey: boolean;
+  // Требование удерживать Ctrl.
+  ctrlKey: boolean;
+  // Требование удерживать Meta.
+  metaKey: boolean;
+  // Требование удерживать Shift.
+  shiftKey: boolean;
+};
+
+// Разбирает системную строку клавиатуры с необязательными модификаторами.
+const keyboardEventBindingFromSystemString = (systemStringValue: string | undefined): KeyboardEventBinding | null => {
+  const parts = systemStringValue?.split("&&") ?? [];
+  const codePart = parts.find((part) => part.startsWith("KeyboardEvent.code:"));
+  const code = codePart?.slice("KeyboardEvent.code:".length);
+  if (!code) {
+    return null;
+  }
+  return {
+    code,
+    altKey: parts.includes("KeyboardEvent.altKey"),
+    ctrlKey: parts.includes("KeyboardEvent.ctrlKey"),
+    metaKey: parts.includes("KeyboardEvent.metaKey"),
+    shiftKey: parts.includes("KeyboardEvent.shiftKey"),
+  };
 };
