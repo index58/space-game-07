@@ -20,6 +20,8 @@ const (
 	defaultAccountEmailDomain = "auto.local"
 	defaultAccountPassword    = "auto"
 	defaultStarterShipAcronym = "ship_bat"
+	dockingDurationSeconds    = 10
+	dockingProbeDistance      = 10
 )
 
 // Собирает справочники и игровые сущности, нужные симуляции мира.
@@ -65,6 +67,9 @@ type World struct {
 	random                         *rand.Rand                 // Источник случайности для воспроизводимых команд.
 	nextConstructorProductionJobID int64                      // Следующий идентификатор задания изготовления.
 	constructorProductionJobs      []constructorProductionJob // Задания изготовления, ожидающие или выполняющиеся в конструкторах.
+	dockingRequests                []dockingRequest           // Активные запросы стыковки, ожидающие ответа.
+	dockingProcesses               []dockingProcess           // Активные автоматические стыковки, хранящиеся только в памяти.
+	dockingEvents                  []game.DockingEvent        // Накопленные клиентские события стыковки до ближайшей рассылки.
 }
 
 type constructorProductionJob struct {
@@ -84,6 +89,18 @@ type constructorProductionJob struct {
 	TotalTime                         float64 // Полное время изготовления в секундах.
 	Running                           bool    // Показывает, что задание сейчас выполняется.
 	ParentJobID                       int64   // ������������ ������, ��� ���������� ������� ����� ��� ��������������� ������.
+}
+
+type dockingProcess struct {
+	SenderCosmicObjectID   int64   // Объект, который станет второстепенным после завершения.
+	ReceiverCosmicObjectID int64   // Объект, который станет главным или уже является главным.
+	RemainingSeconds       float64 // Оставшееся время автоматической стыковки.
+}
+
+type dockingRequest struct {
+	SenderCosmicObjectID   int64   // Объект, который отправил запрос.
+	ReceiverCosmicObjectID int64   // Объект, который должен принять решение.
+	RemainingSeconds       float64 // Оставшееся время ожидания ответа.
 }
 
 // ControlPanelObjectUpdate описывает частичное изменение управляемого объекта.
@@ -289,13 +306,136 @@ func (world *World) SetInput(accountID int64, input game.ShipInput) {
 
 	if input.ToggleAnchor {
 		if cosmicObject, ok := world.data.CosmicObjects.Get(objectID); ok {
-			if cosmicObject.Anchored || cosmicObjectIsFullyStopped(*cosmicObject) {
+			if cosmicObject.ClusterMainCosmicObjectID == 0 && (cosmicObject.Anchored || cosmicObjectIsFullyStopped(*cosmicObject)) {
 				cosmicObject.Anchored = !cosmicObject.Anchored
 			}
 		}
 		input.ToggleAnchor = false
 	}
 	world.inputs[accountID] = input
+}
+
+// SendDockingRequest запускает запрос стыковки текущего корабля к объекту перед носом.
+func (world *World) SendDockingRequest(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	sender, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	if err := world.validateDockingSenderLocked(sender); err != nil {
+		return err
+	}
+	receiver, err := world.findDockingReceiverLocked(sender)
+	if err != nil {
+		return err
+	}
+	if err := world.validateDockingReceiverLocked(receiver); err != nil {
+		return err
+	}
+	if world.dockingObjectIsBusyLocked(sender.ID) || world.dockingObjectIsBusyLocked(receiver.ID) {
+		return errors.New("object already participates in docking")
+	}
+	if receiver.OwnerCharacterID == sender.OwnerCharacterID {
+		world.startDockingProcessLocked(sender.ID, receiver.ID)
+		return nil
+	}
+	if !world.dockingReceiverHasDecisionMakerLocked(receiver.ID) {
+		world.addDockingNotificationLocked([]int64{sender.ID}, "В Получателе нет персонажа для принятия решения")
+		return nil
+	}
+	world.dockingRequests = append(world.dockingRequests, dockingRequest{
+		SenderCosmicObjectID:   sender.ID,
+		ReceiverCosmicObjectID: receiver.ID,
+		RemainingSeconds:       dockingDurationSeconds,
+	})
+	world.addDockingWindowEventsLocked("dockingRequestStarted", sender.ID, receiver.ID, dockingDurationSeconds)
+	return nil
+}
+
+// ApproveDockingRequest одобряет единственный входящий запрос текущего объекта.
+func (world *World) ApproveDockingRequest(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	receiver, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	requestIndex := world.dockingRequestIndexByReceiverLocked(receiver.ID)
+	if requestIndex < 0 {
+		return errors.New("docking request not found")
+	}
+	request := world.dockingRequests[requestIndex]
+	sender, ok := world.data.CosmicObjects.Get(request.SenderCosmicObjectID)
+	if !ok {
+		world.removeDockingRequestLocked(requestIndex)
+		return errors.New("sender object not found")
+	}
+	if err := world.validateDockingSenderLocked(sender); err != nil {
+		world.removeDockingRequestLocked(requestIndex)
+		world.closeDockingRequestWindowLocked(request)
+		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Условия стыковки больше не выполняются")
+		return err
+	}
+	if err := world.validateDockingReceiverLocked(receiver); err != nil {
+		world.removeDockingRequestLocked(requestIndex)
+		world.closeDockingRequestWindowLocked(request)
+		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Условия стыковки больше не выполняются")
+		return err
+	}
+	world.removeDockingRequestLocked(requestIndex)
+	world.startDockingProcessLocked(sender.ID, receiver.ID)
+	return nil
+}
+
+// RejectDockingRequest отклоняет единственный входящий запрос текущего объекта.
+func (world *World) RejectDockingRequest(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	receiver, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	requestIndex := world.dockingRequestIndexByReceiverLocked(receiver.ID)
+	if requestIndex < 0 {
+		return errors.New("docking request not found")
+	}
+	request := world.dockingRequests[requestIndex]
+	world.removeDockingRequestLocked(requestIndex)
+	world.closeDockingRequestWindowLocked(request)
+	world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Отказ на запрос стыковки")
+	return nil
+}
+
+// UndockControlledObject выводит текущий объект из кластера или распускает кластер целиком.
+func (world *World) UndockControlledObject(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	cosmicObject, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	mainID := cosmicObject.ClusterMainCosmicObjectID
+	if mainID <= 0 {
+		return errors.New("object is not docked")
+	}
+	notificationObjectIDs := world.clusterObjectIDsLocked(mainID)
+	if mainID == cosmicObject.ID {
+		for _, clusterObject := range world.data.CosmicObjects.Items {
+			if clusterObject != nil && clusterObject.ClusterMainCosmicObjectID == mainID {
+				clusterObject.ClusterMainCosmicObjectID = 0
+			}
+		}
+		world.addDockingNotificationLocked(notificationObjectIDs, "Объект отстыкован")
+		return nil
+	}
+	cosmicObject.ClusterMainCosmicObjectID = 0
+	world.addDockingNotificationLocked(notificationObjectIDs, "Объект отстыкован")
+	return nil
 }
 
 // Меняет управляемый объект на другую случайную модель корабля из справочника.
@@ -351,6 +491,202 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	world.fillShipSupplies(cosmicObject)
 
 	return world.data.CosmicObjects.RebuildIndexes() == nil
+}
+
+// controlledCosmicObjectLocked возвращает объект текущего персонажа под уже взятым mutex.
+func (world *World) controlledCosmicObjectLocked(accountID int64) (*data.CosmicObject, error) {
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return nil, errors.New("account is not connected")
+	}
+	cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+	if !ok {
+		return nil, errors.New("controlled object not found")
+	}
+	return cosmicObject, nil
+}
+
+// validateDockingSenderLocked проверяет условия для объекта, отправляющего запрос.
+func (world *World) validateDockingSenderLocked(sender *data.CosmicObject) error {
+	if sender == nil {
+		return errors.New("sender object not found")
+	}
+	if !world.cosmicObjectHasTypeLocked(sender, "Ship") {
+		return errors.New("sender must be a ship")
+	}
+	if sender.ClusterMainCosmicObjectID > 0 {
+		return errors.New("sender is already docked")
+	}
+	if !cosmicObjectIsFullyStopped(*sender) {
+		return errors.New("sender is not stopped")
+	}
+	return nil
+}
+
+// validateDockingReceiverLocked проверяет условия для объекта, принимающего запрос.
+func (world *World) validateDockingReceiverLocked(receiver *data.CosmicObject) error {
+	if receiver == nil {
+		return errors.New("receiver object not found")
+	}
+	if !world.cosmicObjectHasTypeLocked(receiver, "Ship") && !world.cosmicObjectHasTypeLocked(receiver, "Station") {
+		return errors.New("receiver must be a ship or station")
+	}
+	if receiver.ClusterMainCosmicObjectID > 0 && receiver.ClusterMainCosmicObjectID != receiver.ID {
+		return errors.New("receiver is secondary object")
+	}
+	return nil
+}
+
+// cosmicObjectHasTypeLocked проверяет тип объекта через его модель.
+func (world *World) cosmicObjectHasTypeLocked(cosmicObject *data.CosmicObject, acronym string) bool {
+	if cosmicObject == nil {
+		return false
+	}
+	model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
+	if !ok {
+		return false
+	}
+	objectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
+	return ok && objectType.Acronym == acronym
+}
+
+// findDockingReceiverLocked ищет ближайший объект, пересеченный лучом от носа отправителя.
+func (world *World) findDockingReceiverLocked(sender *data.CosmicObject) (*data.CosmicObject, error) {
+	senderModel, ok := world.data.CosmicObjectModels.Get(sender.CosmicObjectModelID)
+	if !ok {
+		return nil, errors.New("sender model not found")
+	}
+	startX := sender.X + math.Sin(sender.Rotation)*senderModel.BodyLength/2
+	startY := sender.Y + math.Cos(sender.Rotation)*senderModel.BodyLength/2
+	endX := startX + math.Sin(sender.Rotation)*dockingProbeDistance
+	endY := startY + math.Cos(sender.Rotation)*dockingProbeDistance
+
+	var selected *data.CosmicObject
+	selectedDistance := math.Inf(1)
+	for _, candidate := range world.data.CosmicObjects.Items {
+		if candidate == nil || candidate.ID == sender.ID {
+			continue
+		}
+		candidateModel, ok := world.data.CosmicObjectModels.Get(candidate.CosmicObjectModelID)
+		if !ok {
+			continue
+		}
+		distance, ok := raySegmentPolygonDistance(startX, startY, endX, endY, *candidate, *candidateModel)
+		if !ok || distance >= selectedDistance {
+			continue
+		}
+		selected = candidate
+		selectedDistance = distance
+	}
+	if selected == nil {
+		return nil, errors.New("docking receiver not found")
+	}
+	return selected, nil
+}
+
+// startDockingProcessLocked ставит объекты на якорь и запускает таймер стыковки.
+func (world *World) startDockingProcessLocked(senderID int64, receiverID int64) {
+	if sender, ok := world.data.CosmicObjects.Get(senderID); ok {
+		sender.Anchored = true
+	}
+	if receiver, ok := world.data.CosmicObjects.Get(receiverID); ok {
+		receiver.Anchored = true
+	}
+	world.dockingProcesses = append(world.dockingProcesses, dockingProcess{
+		SenderCosmicObjectID:   senderID,
+		ReceiverCosmicObjectID: receiverID,
+		RemainingSeconds:       dockingDurationSeconds,
+	})
+	world.addDockingWindowEventsLocked("dockingProcessStarted", senderID, receiverID, dockingDurationSeconds)
+}
+
+// dockingObjectIsBusyLocked проверяет участие объекта в автоматической стыковке.
+func (world *World) dockingObjectIsBusyLocked(objectID int64) bool {
+	for _, request := range world.dockingRequests {
+		if request.SenderCosmicObjectID == objectID || request.ReceiverCosmicObjectID == objectID {
+			return true
+		}
+	}
+	for _, process := range world.dockingProcesses {
+		if process.SenderCosmicObjectID == objectID || process.ReceiverCosmicObjectID == objectID {
+			return true
+		}
+	}
+	return false
+}
+
+// dockingRequestIndexByReceiverLocked ищет активный входящий запрос для объекта.
+func (world *World) dockingRequestIndexByReceiverLocked(receiverID int64) int {
+	for index, request := range world.dockingRequests {
+		if request.ReceiverCosmicObjectID == receiverID {
+			return index
+		}
+	}
+	return -1
+}
+
+// removeDockingRequestLocked удаляет запрос без сохранения порядка.
+func (world *World) removeDockingRequestLocked(index int) {
+	world.dockingRequests = append(world.dockingRequests[:index], world.dockingRequests[index+1:]...)
+}
+
+// closeDockingRequestWindowLocked добавляет событие закрытия окна ожидания ответа.
+func (world *World) closeDockingRequestWindowLocked(request dockingRequest) {
+	world.addDockingWindowEventsLocked("dockingFinished", request.SenderCosmicObjectID, request.ReceiverCosmicObjectID, 0)
+}
+
+// dockingReceiverHasDecisionMakerLocked проверяет, что Получателем сейчас кто-то управляет.
+func (world *World) dockingReceiverHasDecisionMakerLocked(receiverID int64) bool {
+	for _, objectID := range world.accountObjectIDs {
+		if objectID == receiverID {
+			return true
+		}
+	}
+	return false
+}
+
+// addDockingWindowEventsLocked добавляет парные события окна для Отправителя и Получателя.
+func (world *World) addDockingWindowEventsLocked(kind string, senderID int64, receiverID int64, duration float64) {
+	world.dockingEvents = append(world.dockingEvents,
+		game.DockingEvent{Type: "dockingEvent", Kind: kind, Role: "sender", Duration: duration, ObjectIDs: []int64{senderID}},
+		game.DockingEvent{Type: "dockingEvent", Kind: kind, Role: "receiver", Duration: duration, ObjectIDs: []int64{receiverID}},
+	)
+}
+
+// addDockingNotificationLocked добавляет уведомление указанным объектам без дублирования ID.
+func (world *World) addDockingNotificationLocked(objectIDs []int64, message string) {
+	seen := map[int64]bool{}
+	recipients := make([]int64, 0, len(objectIDs))
+	for _, objectID := range objectIDs {
+		if objectID <= 0 || seen[objectID] {
+			continue
+		}
+		seen[objectID] = true
+		recipients = append(recipients, objectID)
+	}
+	if len(recipients) == 0 {
+		return
+	}
+	world.dockingEvents = append(world.dockingEvents, game.DockingEvent{
+		Type:      "dockingEvent",
+		Kind:      "dockingNotification",
+		Message:   message,
+		ObjectIDs: recipients,
+	})
+}
+
+// clusterObjectIDsLocked возвращает состав кластера в стабильном порядке.
+func (world *World) clusterObjectIDsLocked(mainID int64) []int64 {
+	objectIDs := make([]int64, 0)
+	for _, cosmicObject := range world.data.CosmicObjects.Items {
+		if cosmicObject != nil && cosmicObject.ClusterMainCosmicObjectID == mainID {
+			objectIDs = append(objectIDs, cosmicObject.ID)
+		}
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+	return objectIDs
 }
 
 // ApplyControlPanelObjectUpdate применяет подтвержденное изменение панели к объекту текущего аккаунта.
@@ -1080,9 +1416,68 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	world.stepMovableObjects(dtSeconds, world.inputsByObjectID())
 	world.resolveAllCollisions()
 	world.stepConstructorProductionJobsLocked(dtSeconds)
+	world.stepDockingRequestsLocked(dtSeconds)
+	world.stepDockingProcessesLocked(dtSeconds)
 
 	world.tick++
 	return world.snapshotLocked(0)
+}
+
+// stepDockingRequestsLocked убирает запросы, по которым истекло время ожидания ответа.
+func (world *World) stepDockingRequestsLocked(dtSeconds float64) {
+	if dtSeconds <= 0 || len(world.dockingRequests) == 0 {
+		return
+	}
+	remaining := world.dockingRequests[:0]
+	for _, request := range world.dockingRequests {
+		request.RemainingSeconds -= dtSeconds
+		if request.RemainingSeconds > physics.Epsilon {
+			remaining = append(remaining, request)
+			continue
+		}
+		world.closeDockingRequestWindowLocked(request)
+		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Истекло время ожидания ответа на запрос стыковки")
+	}
+	world.dockingRequests = remaining
+}
+
+// stepDockingProcessesLocked завершает автоматические стыковки по таймеру.
+func (world *World) stepDockingProcessesLocked(dtSeconds float64) {
+	if dtSeconds <= 0 || len(world.dockingProcesses) == 0 {
+		return
+	}
+	remaining := world.dockingProcesses[:0]
+	for _, process := range world.dockingProcesses {
+		process.RemainingSeconds -= dtSeconds
+		if process.RemainingSeconds > physics.Epsilon {
+			remaining = append(remaining, process)
+			continue
+		}
+		world.completeDockingProcessLocked(process)
+	}
+	world.dockingProcesses = remaining
+}
+
+// completeDockingProcessLocked записывает связь кластера после завершения таймера.
+func (world *World) completeDockingProcessLocked(process dockingProcess) {
+	sender, senderOK := world.data.CosmicObjects.Get(process.SenderCosmicObjectID)
+	receiver, receiverOK := world.data.CosmicObjects.Get(process.ReceiverCosmicObjectID)
+	if !senderOK || !receiverOK {
+		return
+	}
+	mainID := receiver.ID
+	if receiver.ClusterMainCosmicObjectID == receiver.ID {
+		mainID = receiver.ClusterMainCosmicObjectID
+	}
+	receiver.ClusterMainCosmicObjectID = mainID
+	sender.ClusterMainCosmicObjectID = mainID
+	for _, cosmicObject := range world.data.CosmicObjects.Items {
+		if cosmicObject != nil && cosmicObject.ClusterMainCosmicObjectID == mainID {
+			cosmicObject.Anchored = true
+		}
+	}
+	world.addDockingWindowEventsLocked("dockingFinished", sender.ID, receiver.ID, 0)
+	world.addDockingNotificationLocked(world.clusterObjectIDsLocked(mainID), "Объект пристыкован")
 }
 
 // stepConstructorProductionJobsLocked продвигает по одному заданию на каждый конструктор за текущий шаг мира.
@@ -1726,6 +2121,16 @@ func (world *World) ObjectIDForAccount(accountID int64) (int64, bool) {
 	return objectID, ok
 }
 
+// DrainDockingEvents забирает накопленные события стыковки для сетевой рассылки.
+func (world *World) DrainDockingEvents() []game.DockingEvent {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	events := append([]game.DockingEvent(nil), world.dockingEvents...)
+	world.dockingEvents = nil
+	return events
+}
+
 // ClientMutationAck возвращает последний обработанный номер команды панели для клиентской сессии.
 func (world *World) ClientMutationAck(accountID int64, sessionID string) game.ClientMutationAck {
 	world.mu.Lock()
@@ -2179,4 +2584,101 @@ func (world *World) resourceItemModelIDs() []int64 {
 		return result[left] < result[right]
 	})
 	return result
+}
+
+// raySegmentPolygonDistance возвращает расстояние от начала луча до первого пересечения с телом объекта.
+func raySegmentPolygonDistance(startX float64, startY float64, endX float64, endY float64, object data.CosmicObject, model data.CosmicObjectModel) (float64, bool) {
+	points := transformedBodyPolygon(object, model)
+	if len(points) < 3 {
+		return 0, false
+	}
+	if pointInsidePolygon(startX, startY, points) {
+		return 0, true
+	}
+	best := math.Inf(1)
+	for index := range points {
+		nextIndex := (index + 1) % len(points)
+		distance, ok := segmentIntersectionDistance(startX, startY, endX, endY, points[index].X, points[index].Y, points[nextIndex].X, points[nextIndex].Y)
+		if ok && distance < best {
+			best = distance
+		}
+	}
+	if math.IsInf(best, 1) {
+		return 0, false
+	}
+	return best, true
+}
+
+// transformedBodyPolygon переводит локальное тело модели в мировые координаты объекта.
+func transformedBodyPolygon(object data.CosmicObject, model data.CosmicObjectModel) []data.BodyPoint {
+	points := model.BodyPolygon
+	if len(points) == 0 {
+		points = fallbackBodyPolygon(model)
+	}
+	result := make([]data.BodyPoint, 0, len(points))
+	cosRotation := math.Cos(object.Rotation)
+	sinRotation := math.Sin(object.Rotation)
+	for _, point := range points {
+		result = append(result, data.BodyPoint{
+			X: object.X + point.X*cosRotation + point.Y*sinRotation,
+			Y: object.Y - point.X*sinRotation + point.Y*cosRotation,
+		})
+	}
+	return result
+}
+
+// fallbackBodyPolygon строит прямоугольное тело, если справочник ещё не рассчитал многоугольник.
+func fallbackBodyPolygon(model data.CosmicObjectModel) []data.BodyPoint {
+	halfWidth := model.BodyWidth / 2
+	halfLength := model.BodyLength / 2
+	if halfWidth <= 0 && model.TextureScale > 0 {
+		halfWidth = float64(model.TextureBodyWidth) / model.TextureScale / 2
+	}
+	if halfLength <= 0 && model.TextureScale > 0 {
+		halfLength = float64(model.TextureBodyLength) / model.TextureScale / 2
+	}
+	return []data.BodyPoint{
+		{X: -halfWidth, Y: -halfLength},
+		{X: halfWidth, Y: -halfLength},
+		{X: halfWidth, Y: halfLength},
+		{X: -halfWidth, Y: halfLength},
+	}
+}
+
+// pointInsidePolygon проверяет попадание точки внутрь простого многоугольника.
+func pointInsidePolygon(x float64, y float64, points []data.BodyPoint) bool {
+	inside := false
+	for index, point := range points {
+		previous := points[(index+len(points)-1)%len(points)]
+		if ((point.Y > y) != (previous.Y > y)) &&
+			(x < (previous.X-point.X)*(y-point.Y)/(previous.Y-point.Y)+point.X) {
+			inside = !inside
+		}
+	}
+	return inside
+}
+
+// segmentIntersectionDistance возвращает расстояние до пересечения двух отрезков.
+func segmentIntersectionDistance(ax float64, ay float64, bx float64, by float64, cx float64, cy float64, dx float64, dy float64) (float64, bool) {
+	rx := bx - ax
+	ry := by - ay
+	sx := dx - cx
+	sy := dy - cy
+	denominator := cross2D(rx, ry, sx, sy)
+	if math.Abs(denominator) <= physics.Epsilon {
+		return 0, false
+	}
+	qpx := cx - ax
+	qpy := cy - ay
+	t := cross2D(qpx, qpy, sx, sy) / denominator
+	u := cross2D(qpx, qpy, rx, ry) / denominator
+	if t < -physics.Epsilon || t > 1+physics.Epsilon || u < -physics.Epsilon || u > 1+physics.Epsilon {
+		return 0, false
+	}
+	return math.Hypot(rx, ry) * math.Max(0, math.Min(1, t)), true
+}
+
+// cross2D считает псевдоскалярное произведение двух плоских векторов.
+func cross2D(ax float64, ay float64, bx float64, by float64) float64 {
+	return ax*by - ay*bx
 }

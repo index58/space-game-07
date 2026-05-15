@@ -1,5 +1,5 @@
 {
-  "MaxID": 11,
+  "MaxID": 13,
   "Items": {
     "1": {
       "ID": 1,
@@ -13,9 +13,9 @@
       "MaxArmor": 4195,
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
-      "X": 178.06113394677874,
-      "Y": 1062.754352840605,
-      "Rotation": -6.230939240143193,
+      "X": 611.3727063555924,
+      "Y": 1252.3424071321997,
+      "Rotation": -11.530791627686648,
       "Armor": 4195,
       "MaxAlongForce": 3700000,
       "MaxAcrossForce": 3700000,
@@ -31,12 +31,13 @@
       "Complexity": 44981,
       "OccupiedVolume": 339,
       "MaxFuel": 12900,
-      "Fuel": 12146.907291666414,
+      "Fuel": 9192.070486109575,
       "Speed": 0,
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -6.230939240143193
+      "TargetRotation": -11.530791627686648,
+      "ClusterMainCosmicObjectID": 13
     },
     "2": {
       "ID": 2,
@@ -73,7 +74,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": 0
+      "TargetRotation": 0,
+      "ClusterMainCosmicObjectID": 0
     },
     "3": {
       "ID": 3,
@@ -110,7 +112,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": 0
+      "TargetRotation": 0,
+      "ClusterMainCosmicObjectID": 0
     },
     "4": {
       "ID": 4,
@@ -147,7 +150,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -38.65057342517938
+      "TargetRotation": -38.65057342517938,
+      "ClusterMainCosmicObjectID": 0
     },
     "5": {
       "ID": 5,
@@ -184,7 +188,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -55.98204423753437
+      "TargetRotation": -55.98204423753437,
+      "ClusterMainCosmicObjectID": 0
     },
     "6": {
       "ID": 6,
@@ -221,7 +226,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": 8.225737389209167
+      "TargetRotation": 8.225737389209167,
+      "ClusterMainCosmicObjectID": 0
     },
     "7": {
       "ID": 7,
@@ -235,9 +241,9 @@
       "MaxArmor": 2104,
       "MaxSpeed": 484,
       "MaxAngularSpeed": 3,
-      "X": -360.8248079249467,
-      "Y": 600.6015144227908,
-      "Rotation": 0.4688001324228443,
+      "X": -364.31400464935945,
+      "Y": 600.2520053597958,
+      "Rotation": 0.4068695761965232,
       "Armor": 2104,
       "MaxAlongForce": 1800000,
       "MaxAcrossForce": 1800000,
@@ -258,7 +264,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": 0.46192209330673467
+      "TargetRotation": 0.3682848219416073,
+      "ClusterMainCosmicObjectID": 0
     },
     "8": {
       "ID": 8,
@@ -272,8 +279,8 @@
       "MaxArmor": 582,
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
-      "X": -3.7074027953028224,
-      "Y": -90.77176335817478,
+      "X": 142.47335911297222,
+      "Y": -90.61098633084539,
       "Rotation": -0.04985511668227753,
       "Armor": 582,
       "MaxAlongForce": 100000,
@@ -295,7 +302,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -0.0024497020565902743
+      "TargetRotation": -0.002314047717481961,
+      "ClusterMainCosmicObjectID": 0
     },
     "9": {
       "ID": 9,
@@ -309,9 +317,9 @@
       "MaxArmor": 582,
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
-      "X": -16.033402997440998,
-      "Y": -4.948614416990859,
-      "Rotation": -0.09407870682732243,
+      "X": -114.36960268054959,
+      "Y": -28.385447625331146,
+      "Rotation": -0.2390362598836509,
       "Armor": 582,
       "MaxAlongForce": 100000,
       "MaxAcrossForce": 100000,
@@ -332,7 +340,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": 0.00262423424562073
+      "TargetRotation": -0.004431260836572043,
+      "ClusterMainCosmicObjectID": 0
     },
     "10": {
       "ID": 10,
@@ -346,9 +355,9 @@
       "MaxArmor": 874,
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
-      "X": -278.58856815356734,
-      "Y": 661.3500436303672,
-      "Rotation": 9.129253500795638,
+      "X": -284.819226483158,
+      "Y": 649.9293406347741,
+      "Rotation": 9.13022844063925,
       "Armor": 874,
       "MaxAlongForce": 400000,
       "MaxAcrossForce": 400000,
@@ -369,7 +378,8 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": 9.129253500795638
+      "TargetRotation": 9.17392665372627,
+      "ClusterMainCosmicObjectID": 0
     },
     "11": {
       "ID": 11,
@@ -383,9 +393,9 @@
       "MaxArmor": 596,
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
-      "X": 32.19941508078148,
-      "Y": 1233.8146950373587,
-      "Rotation": -6.748742004020216,
+      "X": 29.50651251097988,
+      "Y": 1236.8105914949736,
+      "Rotation": -6.754166149470151,
       "Armor": 596,
       "MaxAlongForce": 200000,
       "MaxAcrossForce": 200000,
@@ -397,7 +407,7 @@
       "Torque": 0,
       "Enabled": true,
       "LastReceivedDamageTime": 0,
-      "Anchored": false,
+      "Anchored": true,
       "Complexity": 2790,
       "OccupiedVolume": 42,
       "MaxFuel": 1200,
@@ -406,7 +416,84 @@
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -6.0086701654315915
+      "TargetRotation": -6.009550830727131,
+      "ClusterMainCosmicObjectID": 11
+    },
+    "12": {
+      "ID": 12,
+      "Title": "Огнепуск",
+      "CosmicObjectModelID": 413,
+      "OwnerCharacterID": 9,
+      "OwnerNpcClanID": 0,
+      "CreatorCharacterID": 9,
+      "Mass": 135673,
+      "Capacity": 2559,
+      "MaxArmor": 7126,
+      "MaxSpeed": 471,
+      "MaxAngularSpeed": 3,
+      "X": 177.4804459182962,
+      "Y": 78.59444248912206,
+      "Rotation": -0.27843007776102036,
+      "Armor": 7126,
+      "MaxAlongForce": 6300000,
+      "MaxAcrossForce": 6300000,
+      "MaxTorque": 470000000,
+      "GeneratingPower": 2520000,
+      "ConsumingPower": 0,
+      "AlongForce": 0,
+      "AcrossForce": 0,
+      "Torque": 0,
+      "Enabled": true,
+      "LastReceivedDamageTime": 0,
+      "Anchored": true,
+      "Complexity": 77233,
+      "OccupiedVolume": 596,
+      "MaxFuel": 22500,
+      "Fuel": 22240.5576388887,
+      "Speed": 0,
+      "VelocityX": 0,
+      "VelocityY": 0,
+      "AngularSpeed": 0,
+      "TargetRotation": -0.27843007776102036,
+      "ClusterMainCosmicObjectID": 12
+    },
+    "13": {
+      "ID": 13,
+      "Title": "Носитель",
+      "CosmicObjectModelID": 350,
+      "OwnerCharacterID": 10,
+      "OwnerNpcClanID": 0,
+      "CreatorCharacterID": 10,
+      "Mass": 205515,
+      "Capacity": 3551,
+      "MaxArmor": 11116,
+      "MaxSpeed": 466,
+      "MaxAngularSpeed": 3,
+      "X": 856.4436886635173,
+      "Y": 1397.947061221517,
+      "Rotation": -2.094257629035977,
+      "Armor": 11116,
+      "MaxAlongForce": 9000000,
+      "MaxAcrossForce": 9000000,
+      "MaxTorque": 970000000,
+      "GeneratingPower": 3960000,
+      "ConsumingPower": 0,
+      "AlongForce": 0,
+      "AcrossForce": 0,
+      "Torque": 0,
+      "Enabled": true,
+      "LastReceivedDamageTime": 0,
+      "Anchored": true,
+      "Complexity": 113445,
+      "OccupiedVolume": 950,
+      "MaxFuel": 35400,
+      "Fuel": 33273.68784722162,
+      "Speed": 0,
+      "VelocityX": 0,
+      "VelocityY": 0,
+      "AngularSpeed": 0,
+      "TargetRotation": -2.094257629035977,
+      "ClusterMainCosmicObjectID": 13
     }
   }
 }

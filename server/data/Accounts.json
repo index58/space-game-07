@@ -1,5 +1,5 @@
 {
-  "MaxID": 8,
+  "MaxID": 10,
   "Items": {
     "1": {
       "ID": 1,
@@ -72,6 +72,24 @@
       "Token": "f17dd5569343eb59654629c9a6607a41daa2d09ce989f944a9cac85158232122",
       "RegistrationTime": "2026-05-07T23:33:27.9254391+03:00",
       "CurrentCharacterID": 8
+    },
+    "9": {
+      "ID": 9,
+      "Email": "auto9@auto.local",
+      "Nickname": "Pilot9",
+      "PasswordHash": "auto",
+      "Token": "f13e25b786dfc986140ff9efcf31a8b2a9745379a0bb875a6ea43e47121b7137",
+      "RegistrationTime": "2026-05-15T21:21:08.3950284+03:00",
+      "CurrentCharacterID": 9
+    },
+    "10": {
+      "ID": 10,
+      "Email": "auto10@auto.local",
+      "Nickname": "Pilot10",
+      "PasswordHash": "auto",
+      "Token": "34118c4ab77bfa8f6a722312ed7d00c9cffae31b698a13b7c66b0c3ffc4e4bfd",
+      "RegistrationTime": "2026-05-15T21:26:54.7277554+03:00",
+      "CurrentCharacterID": 10
     }
   }
 }

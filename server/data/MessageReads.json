@@ -1,5 +1,5 @@
 {
-  "MaxID": 9,
+  "MaxID": 11,
   "Items": {
     "1": {
       "ID": 1,
@@ -54,8 +54,8 @@
       "ID": 8,
       "CharacterID": 1,
       "ChatID": 1,
-      "LastReadMessageID": 63,
-      "ReadTime": "2026-05-15T18:41:36.8686526+03:00"
+      "LastReadMessageID": 66,
+      "ReadTime": "2026-05-16T00:47:46.1328266+03:00"
     },
     "9": {
       "ID": 9,
@@ -63,6 +63,20 @@
       "ChatID": 3,
       "LastReadMessageID": 62,
       "ReadTime": "2026-05-15T18:41:35.8895902+03:00"
+    },
+    "10": {
+      "ID": 10,
+      "CharacterID": 9,
+      "ChatID": 1,
+      "LastReadMessageID": 64,
+      "ReadTime": "2026-05-15T21:21:26.8767991+03:00"
+    },
+    "11": {
+      "ID": 11,
+      "CharacterID": 10,
+      "ChatID": 1,
+      "LastReadMessageID": 66,
+      "ReadTime": "2026-05-16T00:47:46.1328266+03:00"
     }
   }
 }

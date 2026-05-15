@@ -1,7 +1,7 @@
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
-import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, EquipmentGroup, EquipmentGroupRelation, ItemGroup, ReferenceDataMessage } from "../network/protocol";
+import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, DockingNotification, DockingWindowState, EquipmentGroup, EquipmentGroupRelation, ItemGroup, ReferenceDataMessage } from "../network/protocol";
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiControlState } from "../ui-kit/types";
 
@@ -47,6 +47,10 @@ export type GameUiState = {
   chatError: string | null;
   // Порядковый номер ошибки, чтобы одинаковый текст заново запускал анимацию.
   chatErrorSeq: number;
+  // Маленькое окно ожидания или выполнения стыковки.
+  dockingWindow?: DockingWindowState | null;
+  // Отдельные уведомления стыковки, видимые до автоматического скрытия.
+  dockingNotifications?: DockingNotification[];
   // Открытое игровое меню вкладки, если игрок вызвал его правым кликом.
   chatContextMenu: ChatContextMenuState | null;
   // Положение и видимость игрового указателя мыши.
@@ -187,6 +191,8 @@ const initialGameUiState: GameUiState = {
   chatInputFocused: false,
   chatError: null,
   chatErrorSeq: 0,
+  dockingWindow: null,
+  dockingNotifications: [],
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
   hoveredGameUiControlId: null,

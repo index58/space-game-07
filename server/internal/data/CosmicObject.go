@@ -10,41 +10,42 @@ import (
 
 // Хранит данные одного космического объекта игрового мира.
 type CosmicObject struct {
-	ID                     int64   `json:"ID"`                     // Уникальный числовой идентификатор записи.
-	Title                  string  `json:"Title"`                  // Пользовательское название объекта в игровом мире.
-	CosmicObjectModelID    int64   `json:"CosmicObjectModelID"`    // Модель, от которой взяты базовые характеристики и графика.
-	OwnerCharacterID       int64   `json:"OwnerCharacterID"`       // Персонаж-владелец, если объект принадлежит игроку.
-	OwnerNpcClanID         int64   `json:"OwnerNpcClanID"`         // NPC-клан-владелец, если объект не принадлежит персонажу.
-	CreatorCharacterID     int64   `json:"CreatorCharacterID"`     // Персонаж, создавший объект.
-	Mass                   float64 `json:"Mass"`                   // Текущая суммарная масса объекта и содержимого.
-	Capacity               float64 `json:"Capacity"`               // Максимальный объем оборудования или содержимого.
-	MaxArmor               float64 `json:"MaxArmor"`               // Верхняя граница прочности брони.
-	MaxSpeed               float64 `json:"MaxSpeed"`               // Максимальная линейная скорость в метрах за секунду.
-	MaxAngularSpeed        float64 `json:"MaxAngularSpeed"`        // Максимальная угловая скорость в радианах за секунду.
-	X                      float64 `json:"X"`                      // Горизонтальная координата положения в мире.
-	Y                      float64 `json:"Y"`                      // Вертикальная координата положения в мире.
-	Rotation               float64 `json:"Rotation"`               // Текущий угол поворота в радианах без нормализации.
-	Armor                  float64 `json:"Armor"`                  // Текущее количество единиц брони.
-	MaxAlongForce          float64 `json:"MaxAlongForce"`          // Доступная продольная сила тяги.
-	MaxAcrossForce         float64 `json:"MaxAcrossForce"`         // Доступная поперечная сила тяги.
-	MaxTorque              float64 `json:"MaxTorque"`              // Доступный крутящий момент.
-	GeneratingPower        float64 `json:"GeneratingPower"`        // Суммарная вырабатываемая мощность оборудования.
-	ConsumingPower         float64 `json:"ConsumingPower"`         // Суммарная потребляемая мощность оборудования.
-	AlongForce             float64 `json:"AlongForce"`             // Фактически примененная продольная тяга на текущем шаге.
-	AcrossForce            float64 `json:"AcrossForce"`            // Фактически примененная поперечная тяга на текущем шаге.
-	Torque                 float64 `json:"Torque"`                 // Фактически примененный крутящий момент на текущем шаге.
-	Enabled                bool    `json:"Enabled"`                // Разрешает объекту работать и участвовать в симуляции.
-	LastReceivedDamageTime int64   `json:"LastReceivedDamageTime"` // Время последнего получения урона для боевых и ремонтных правил.
-	Anchored               bool    `json:"Anchored"`               // Запрещает физическое перемещение объекта.
-	Complexity             float64 `json:"Complexity"`             // Сложность устройства для производства и оценки стоимости.
-	OccupiedVolume         float64 `json:"OccupiedVolume"`         // Объем, уже занятый содержимым или оборудованием.
-	MaxFuel                float64 `json:"MaxFuel"`                // Максимальный запас топлива.
-	Fuel                   float64 `json:"Fuel"`                   // Текущий запас топлива.
-	Speed                  float64 `json:"Speed"`                  // Текущая длина вектора скорости.
-	VelocityX              float64 `json:"VelocityX"`              // Горизонтальная компонента текущей скорости.
-	VelocityY              float64 `json:"VelocityY"`              // Вертикальная компонента текущей скорости.
-	AngularSpeed           float64 `json:"AngularSpeed"`           // Текущая угловая скорость в радианах за секунду.
-	TargetRotation         float64 `json:"TargetRotation"`         // Угол, к которому автоматика поворота ведет объект.
+	ID                        int64   `json:"ID"`                        // Уникальный числовой идентификатор записи.
+	Title                     string  `json:"Title"`                     // Пользовательское название объекта в игровом мире.
+	CosmicObjectModelID       int64   `json:"CosmicObjectModelID"`       // Модель, от которой взяты базовые характеристики и графика.
+	OwnerCharacterID          int64   `json:"OwnerCharacterID"`          // Персонаж-владелец, если объект принадлежит игроку.
+	OwnerNpcClanID            int64   `json:"OwnerNpcClanID"`            // NPC-клан-владелец, если объект не принадлежит персонажу.
+	CreatorCharacterID        int64   `json:"CreatorCharacterID"`        // Персонаж, создавший объект.
+	Mass                      float64 `json:"Mass"`                      // Текущая суммарная масса объекта и содержимого.
+	Capacity                  float64 `json:"Capacity"`                  // Максимальный объем оборудования или содержимого.
+	MaxArmor                  float64 `json:"MaxArmor"`                  // Верхняя граница прочности брони.
+	MaxSpeed                  float64 `json:"MaxSpeed"`                  // Максимальная линейная скорость в метрах за секунду.
+	MaxAngularSpeed           float64 `json:"MaxAngularSpeed"`           // Максимальная угловая скорость в радианах за секунду.
+	X                         float64 `json:"X"`                         // Горизонтальная координата положения в мире.
+	Y                         float64 `json:"Y"`                         // Вертикальная координата положения в мире.
+	Rotation                  float64 `json:"Rotation"`                  // Текущий угол поворота в радианах без нормализации.
+	Armor                     float64 `json:"Armor"`                     // Текущее количество единиц брони.
+	MaxAlongForce             float64 `json:"MaxAlongForce"`             // Доступная продольная сила тяги.
+	MaxAcrossForce            float64 `json:"MaxAcrossForce"`            // Доступная поперечная сила тяги.
+	MaxTorque                 float64 `json:"MaxTorque"`                 // Доступный крутящий момент.
+	GeneratingPower           float64 `json:"GeneratingPower"`           // Суммарная вырабатываемая мощность оборудования.
+	ConsumingPower            float64 `json:"ConsumingPower"`            // Суммарная потребляемая мощность оборудования.
+	AlongForce                float64 `json:"AlongForce"`                // Фактически примененная продольная тяга на текущем шаге.
+	AcrossForce               float64 `json:"AcrossForce"`               // Фактически примененная поперечная тяга на текущем шаге.
+	Torque                    float64 `json:"Torque"`                    // Фактически примененный крутящий момент на текущем шаге.
+	Enabled                   bool    `json:"Enabled"`                   // Разрешает объекту работать и участвовать в симуляции.
+	LastReceivedDamageTime    int64   `json:"LastReceivedDamageTime"`    // Время последнего получения урона для боевых и ремонтных правил.
+	Anchored                  bool    `json:"Anchored"`                  // Запрещает физическое перемещение объекта.
+	Complexity                float64 `json:"Complexity"`                // Сложность устройства для производства и оценки стоимости.
+	OccupiedVolume            float64 `json:"OccupiedVolume"`            // Объем, уже занятый содержимым или оборудованием.
+	MaxFuel                   float64 `json:"MaxFuel"`                   // Максимальный запас топлива.
+	Fuel                      float64 `json:"Fuel"`                      // Текущий запас топлива.
+	Speed                     float64 `json:"Speed"`                     // Текущая длина вектора скорости.
+	VelocityX                 float64 `json:"VelocityX"`                 // Горизонтальная компонента текущей скорости.
+	VelocityY                 float64 `json:"VelocityY"`                 // Вертикальная компонента текущей скорости.
+	AngularSpeed              float64 `json:"AngularSpeed"`              // Текущая угловая скорость в радианах за секунду.
+	TargetRotation            float64 `json:"TargetRotation"`            // Угол, к которому автоматика поворота ведет объект.
+	ClusterMainCosmicObjectID int64   `json:"ClusterMainCosmicObjectID"` // Главный объект кластера, если объект пристыкован.
 }
 
 // Хранит космические объекты и быстрые индексы по связанным объектам.

@@ -27,6 +27,26 @@ func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (data.Co
 }
 
 // Кладет запись в сырой справочник так же, как это делает загрузка JSON-файла.
+// Проверяет наличие сетевого события стыковки с указанным видом.
+func dockingEventsContainKind(events []game.DockingEvent, kind string) bool {
+	for _, event := range events {
+		if event.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+
+// Проверяет наличие уведомления стыковки с указанным текстом.
+func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
+	for _, event := range events {
+		if event.Message == message {
+			return true
+		}
+	}
+	return false
+}
+
 func addRawReferenceItem(t *testing.T, table *storage.RawReferenceTable, id int64, item any) {
 	t.Helper()
 	raw, err := json.Marshal(item)
@@ -349,6 +369,191 @@ func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 
 	if objectID != 1 {
 		t.Fatalf("got object ID %v, want 1", objectID)
+	}
+}
+
+// Проверяет, что собственный Получатель сразу начинает автоматическую стыковку и после таймера создаёт кластер.
+func TestDockingRequestAutoApprovesOwnedReceiverAndCompletesCluster(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[1].Speed = 0
+	serverData.CosmicObjects.Items[1].AngularSpeed = 0
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 1
+	serverData.CosmicObjects.Items[3].X = 0
+	serverData.CosmicObjects.Items[3].Y = 14
+	serverData.CosmicObjects.Items[3].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	if err := gameWorld.SendDockingRequest(1); err != nil {
+		t.Fatalf("send docking request: %v", err)
+	}
+	gameWorld.Tick(10)
+
+	sender := serverData.CosmicObjects.Items[1]
+	receiver := serverData.CosmicObjects.Items[3]
+	if sender.ClusterMainCosmicObjectID != receiver.ID {
+		t.Fatalf("sender cluster main = %d, want %d", sender.ClusterMainCosmicObjectID, receiver.ID)
+	}
+	if receiver.ClusterMainCosmicObjectID != receiver.ID {
+		t.Fatalf("receiver cluster main = %d, want %d", receiver.ClusterMainCosmicObjectID, receiver.ID)
+	}
+	if !sender.Anchored || !receiver.Anchored {
+		t.Fatalf("cluster objects must stay anchored: sender=%v receiver=%v", sender.Anchored, receiver.Anchored)
+	}
+}
+
+// Проверяет, что чужой Получатель ждёт одобрения управляющего персонажа.
+// Проверяет, что запрос стыковки не требует якоря у участвующих объектов.
+func TestDockingRequestDoesNotRequireAnchoredObjects(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Anchored = false
+	serverData.CosmicObjects.Items[1].Speed = 0
+	serverData.CosmicObjects.Items[1].AngularSpeed = 0
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 1
+	serverData.CosmicObjects.Items[3].X = 0
+	serverData.CosmicObjects.Items[3].Y = 14
+	serverData.CosmicObjects.Items[3].Anchored = false
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	if err := gameWorld.SendDockingRequest(1); err != nil {
+		t.Fatalf("send docking request without anchors: %v", err)
+	}
+}
+
+func TestApproveDockingRequestStartsProcessForForeignReceiver(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "receiver@email.net", Nickname: "receiver", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 3}
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
+	serverData.CosmicObjects.Items[3].X = 0
+	serverData.CosmicObjects.Items[3].Y = 14
+	serverData.CosmicObjects.Items[3].Anchored = true
+	if err := serverData.Accounts.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Characters.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("sender account was not connected")
+	}
+	if _, ok := gameWorld.ConnectAccount(2); !ok {
+		t.Fatal("receiver account was not connected")
+	}
+
+	if err := gameWorld.SendDockingRequest(1); err != nil {
+		t.Fatalf("send docking request: %v", err)
+	}
+	if err := gameWorld.ApproveDockingRequest(2); err != nil {
+		t.Fatalf("approve docking request: %v", err)
+	}
+	gameWorld.Tick(10)
+
+	if serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID != 3 || serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID != 3 {
+		t.Fatalf("cluster was not completed: sender=%d receiver=%d", serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID, serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID)
+	}
+}
+
+// Проверяет, что отстыковка Главного объекта распускает весь кластер.
+// Проверяет, что истечение ожидания закрывает окно запроса у обоих участников.
+func TestDockingRequestTimeoutClosesRequestWindow(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "receiver@email.net", Nickname: "receiver", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 3}
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
+	serverData.CosmicObjects.Items[3].X = 0
+	serverData.CosmicObjects.Items[3].Y = 14
+	if err := serverData.Accounts.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Characters.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("sender account was not connected")
+	}
+	if _, ok := gameWorld.ConnectAccount(2); !ok {
+		t.Fatal("receiver account was not connected")
+	}
+
+	if err := gameWorld.SendDockingRequest(1); err != nil {
+		t.Fatalf("send docking request: %v", err)
+	}
+	_ = gameWorld.DrainDockingEvents()
+	gameWorld.Tick(10)
+
+	if !dockingEventsContainKind(gameWorld.DrainDockingEvents(), "dockingFinished") {
+		t.Fatal("timeout did not close docking request window")
+	}
+}
+
+// Проверяет, что чужой корабль без пилота сразу отвечает отказом без окна ожидания.
+func TestDockingRequestRejectsForeignShipWithoutPilotImmediately(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
+	serverData.CosmicObjects.Items[3].X = 0
+	serverData.CosmicObjects.Items[3].Y = 14
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("sender account was not connected")
+	}
+
+	if err := gameWorld.SendDockingRequest(1); err != nil {
+		t.Fatalf("send docking request: %v", err)
+	}
+	events := gameWorld.DrainDockingEvents()
+
+	if dockingEventsContainKind(events, "dockingRequestStarted") {
+		t.Fatal("request window was shown for receiver without pilot")
+	}
+	if !dockingEventsContainMessage(events, "В Получателе нет персонажа для принятия решения") {
+		t.Fatalf("missing no-pilot notification: %+v", events)
+	}
+}
+
+func TestUndockMainObjectDisbandsWholeCluster(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 3
+	serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID = 3
+	serverData.Accounts.Items[1].CurrentCharacterID = 1
+	serverData.Characters.Items[1].LocationCosmicObjectID = 3
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	if err := gameWorld.UndockControlledObject(1); err != nil {
+		t.Fatalf("undock main object: %v", err)
+	}
+
+	if serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID != 0 || serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID != 0 {
+		t.Fatalf("cluster was not disbanded: sender=%d receiver=%d", serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID, serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID)
+	}
+}
+
+// Проверяет, что объект кластера нельзя снять с якоря ручным переключением.
+func TestSetInputDoesNotDisableAnchorForClusterObject(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 1
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{ToggleAnchor: true})
+
+	if !serverData.CosmicObjects.Items[1].Anchored {
+		t.Fatal("cluster object anchor was disabled")
 	}
 }
 

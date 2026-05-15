@@ -220,6 +220,24 @@ describe("GameClient", () => {
     client.destroy();
   });
 
+  it("keeps docking events in arrival order until scene consumes them", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "dockingEvent", kind: "dockingFinished" }) });
+    socket.onmessage?.({ data: JSON.stringify({ type: "dockingEvent", kind: "dockingNotification", message: "Объект пристыкован" }) });
+
+    expect(client.consumeDockingEvents().map((event) => event.kind)).toEqual(["dockingFinished", "dockingNotification"]);
+    expect(client.consumeDockingEvents()).toEqual([]);
+
+    client.destroy();
+  });
+
   it("accumulates target rotation delta between input sends", () => {
     vi.useFakeTimers();
     FakeWebSocket.instances = [];

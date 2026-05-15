@@ -60,6 +60,34 @@ func TestDecodeRandomShipMessageRejectsOtherTypes(t *testing.T) {
 	}
 }
 
+// Проверяет, что команда отправки запроса стыковки принимается отдельным WebSocket-сообщением.
+func TestDecodeDockingRequestMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeDockingRequestMessage([]byte(`{"type":"dockingRequest"}`)) {
+		t.Fatalf("docking request message was not accepted")
+	}
+}
+
+// Проверяет, что команда одобрения запроса стыковки принимается без идентификатора запроса.
+func TestDecodeDockingApproveMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeDockingApproveMessage([]byte(`{"type":"dockingApprove"}`)) {
+		t.Fatalf("docking approve message was not accepted")
+	}
+}
+
+// Проверяет, что команда отказа запроса стыковки принимается без идентификатора запроса.
+func TestDecodeDockingRejectMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeDockingRejectMessage([]byte(`{"type":"dockingReject"}`)) {
+		t.Fatalf("docking reject message was not accepted")
+	}
+}
+
+// Проверяет, что команда отстыковки применяется к текущему объекту без дополнительных параметров.
+func TestDecodeDockingUndockMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeDockingUndockMessage([]byte(`{"type":"dockingUndock"}`)) {
+		t.Fatalf("docking undock message was not accepted")
+	}
+}
+
 // Проверяет, что запрос свежих настроек ввода принимается по согласованному типу.
 func TestDecodeInputSettingsRequestMessageAcceptsAgreedType(t *testing.T) {
 	if !transport.DecodeInputSettingsRequestMessage([]byte(`{"type":"inputSettingsRequest"}`)) {

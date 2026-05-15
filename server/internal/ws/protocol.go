@@ -166,6 +166,42 @@ func DecodeRandomShipMessage(payload []byte) bool {
 	return message.Type == "randomShip"
 }
 
+// DecodeDockingRequestMessage проверяет команду отправки запроса на стыковку.
+func DecodeDockingRequestMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+	return message.Type == "dockingRequest"
+}
+
+// DecodeDockingApproveMessage проверяет команду одобрения входящего запроса на стыковку.
+func DecodeDockingApproveMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+	return message.Type == "dockingApprove"
+}
+
+// DecodeDockingRejectMessage проверяет команду отказа входящего запроса на стыковку.
+func DecodeDockingRejectMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+	return message.Type == "dockingReject"
+}
+
+// DecodeDockingUndockMessage проверяет команду отстыковки текущего объекта.
+func DecodeDockingUndockMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+	return message.Type == "dockingUndock"
+}
+
 // DecodeInputSettingsRequestMessage ?????????, ??? ?????? ???????? ?????? ????????? ?????.
 func DecodeInputSettingsRequestMessage(payload []byte) bool {
 	var message clientMessageType
@@ -331,6 +367,11 @@ func DecodeControlPanelConstructorQueueCommandMessage(payload []byte) (ControlPa
 
 func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
+}
+
+// EncodeDockingEventMessage кодирует событие стыковки для одного клиента.
+func EncodeDockingEventMessage(event game.DockingEvent) ([]byte, error) {
+	return json.Marshal(event)
 }
 
 // ??????????? ????????? ??????? ? ??????? ????.

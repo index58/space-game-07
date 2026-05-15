@@ -30,6 +30,46 @@ export type RandomShipMessage = {
   type: "randomShip";
 };
 
+export type DockingCommandMessage = {
+  // Вид отдельной команды стыковки для серверного маршрутизатора.
+  type: "dockingRequest" | "dockingApprove" | "dockingReject" | "dockingUndock";
+};
+
+export type DockingEventKind = "dockingRequestStarted" | "dockingProcessStarted" | "dockingFinished" | "dockingNotification";
+
+export type DockingEventMessage = {
+  // Вид сообщения, по которому клиент отличает события стыковки от снимков мира.
+  type: "dockingEvent";
+  // Событие, определяющее окно или уведомление.
+  kind: DockingEventKind;
+  // Роль текущего клиента в парном окне стыковки.
+  role?: "sender" | "receiver";
+  // Текст всплывающего уведомления.
+  message?: string;
+  // Длительность окна с прогрессом в секундах.
+  duration?: number;
+};
+
+export type DockingWindowState = {
+  // Фаза, от которой зависит текст маленького окна.
+  kind: "request" | "process";
+  // Роль текущего клиента в парном окне.
+  role: "sender" | "receiver";
+  // Время появления окна в миллисекундах игрового кадра.
+  startedAtMs: number;
+  // Длительность прогресса в миллисекундах.
+  durationMs: number;
+};
+
+export type DockingNotification = {
+  // Локальный идентификатор для стабильной отрисовки списка.
+  id: number;
+  // Текст отдельного всплывающего уведомления.
+  message: string;
+  // Время автоматического скрытия в миллисекундах игрового кадра.
+  expiresAtMs: number;
+};
+
 // Передает серверу текст для выбранной вкладки или адресного дуэта.
 export type ChatSendMessage = {
   // Вид команды, по которому сервер отличает чат от игрового ввода.
@@ -341,6 +381,8 @@ export type CosmicObject = {
   LastReceivedDamageTime: number;
   // Запрещает физическое перемещение объекта.
   Anchored: boolean;
+  // Главный объект кластера, если объект пристыкован.
+  ClusterMainCosmicObjectID?: number;
   // Сложность устройства для производства и оценки стоимости.
   Complexity: number;
   // Объем, уже занятый содержимым или оборудованием.

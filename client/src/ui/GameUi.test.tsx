@@ -250,6 +250,56 @@ describe("GameUi", () => {
     ]);
   });
 
+  it("renders docking process progress as increasing fill", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      dockingWindow: { kind: "process", role: "sender", startedAtMs: 0, durationMs: 10000 },
+    })} />, root);
+
+    expect(root.querySelector(".docking-window")).not.toBeNull();
+    expect(root.querySelector(".docking-window__fill")?.classList.contains("is-increasing")).toBe(true);
+  });
+
+  // Проверяет, что входящий запрос выделяет рамкой только сами клавиши.
+  it("shows only keys in boxes for receiver docking request hints", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      dockingWindow: { kind: "request", role: "receiver", startedAtMs: 0, durationMs: 10000 },
+    })} />, root);
+
+    expect(Array.from(root.querySelectorAll(".docking-window__hint")).map((hint) => hint.textContent)).toEqual([
+      "Одобрить — Alt + +",
+      "Отказать — Alt + -",
+    ]);
+    expect(root.querySelector(".docking-window__hint-action--approve")?.textContent).toBe("Одобрить");
+    expect(root.querySelector(".docking-window__hint-action--reject")?.textContent).toBe("Отказать");
+    expect(Array.from(root.querySelectorAll(".docking-window__hint-key")).map((key) => key.textContent)).toEqual([
+      "Alt",
+      "+",
+      "Alt",
+      "-",
+    ]);
+    expect(root.querySelector(".docking-window__hint")?.classList.contains("docking-window__hint-key")).toBe(false);
+  });
+
+  it("does not render docking window after docking finish clears state", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      dockingWindow: null,
+    })} />, root);
+
+    expect(root.querySelector(".docking-window")).toBeNull();
+  });
+
   // Проверяет, что при отсутствии подключения остаётся видимой только отладочная панель.
   it("hides panels and windows while server connection is missing", () => {
     const root = document.createElement("div");

@@ -107,6 +107,7 @@ func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 			hub.removeClient(client)
 		}
 	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
 // Принимает ввод от клиента и передает последний валидный пакет в мир.
@@ -136,6 +137,18 @@ func (hub *Hub) readLoop(client *Client) {
 			if DecodeInputSettingsRequestMessage(payload) {
 				hub.handleInputSettingsRequest(client)
 			}
+			if DecodeDockingRequestMessage(payload) {
+				hub.handleDockingRequest(client)
+			}
+			if DecodeDockingApproveMessage(payload) {
+				hub.handleDockingApprove(client)
+			}
+			if DecodeDockingRejectMessage(payload) {
+				hub.handleDockingReject(client)
+			}
+			if DecodeDockingUndockMessage(payload) {
+				hub.handleDockingUndock(client)
+			}
 			if message, ok := DecodeControlPanelObjectUpdateMessage(payload); ok {
 				hub.handleControlPanelObjectUpdate(client, message)
 			}
@@ -162,6 +175,41 @@ func (hub *Hub) readLoop(client *Client) {
 
 		hub.world.SetInput(client.accountID, input)
 	}
+}
+
+// handleDockingRequest запускает исходящий запрос или возвращает причину отказа текущему подключению.
+func (hub *Hub) handleDockingRequest(client *Client) {
+	if err := hub.world.SendDockingRequest(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+		return
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+}
+
+// handleDockingApprove принимает входящий запрос или возвращает причину отказа текущему подключению.
+func (hub *Hub) handleDockingApprove(client *Client) {
+	if err := hub.world.ApproveDockingRequest(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+}
+
+// handleDockingReject отклоняет входящий запрос или возвращает причину отказа текущему подключению.
+func (hub *Hub) handleDockingReject(client *Client) {
+	if err := hub.world.RejectDockingRequest(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+		return
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+}
+
+// handleDockingUndock выводит объект из кластера или возвращает причину отказа текущему подключению.
+func (hub *Hub) handleDockingUndock(client *Client) {
+	if err := hub.world.UndockControlledObject(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+		return
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
 // handleControlPanelObjectUpdate применяет изменение объекта или возвращает отказ с номером мутации.
@@ -271,6 +319,19 @@ func (hub *Hub) setClientMutationSession(client *Client, sessionID string) {
 // sendControlPanelError отправляет отказ команды панели управления текущему подключению.
 func (hub *Hub) sendControlPanelError(client *Client, sessionID string, mutationSeq int64, message string) {
 	payload, err := EncodeControlPanelErrorMessage(sessionID, mutationSeq, message)
+	if err != nil {
+		return
+	}
+	hub.sendToClient(client, payload)
+}
+
+// sendDockingError отправляет отказ команды стыковки только текущему подключению.
+func (hub *Hub) sendDockingError(client *Client, message string) {
+	payload, err := EncodeDockingEventMessage(game.DockingEvent{
+		Type:    "dockingEvent",
+		Kind:    "dockingNotification",
+		Message: message,
+	})
 	if err != nil {
 		return
 	}
@@ -388,10 +449,53 @@ func (hub *Hub) sendToAccount(accountID int64, payload []byte) {
 	}
 }
 
+// sendDockingEvents рассылает события игрокам, управляющим указанными объектами.
+func (hub *Hub) sendDockingEvents(events []game.DockingEvent) {
+	if len(events) == 0 {
+		return
+	}
+	hub.mu.Lock()
+	clients := make([]*Client, 0, len(hub.clients))
+	for client := range hub.clients {
+		clients = append(clients, client)
+	}
+	hub.mu.Unlock()
+
+	for _, event := range events {
+		recipients := make([]*Client, 0)
+		for _, client := range clients {
+			if containsObjectID(event.ObjectIDs, client.objectID) {
+				recipients = append(recipients, client)
+			}
+		}
+		if len(recipients) == 0 {
+			continue
+		}
+		event.ObjectIDs = nil
+		payload, err := EncodeDockingEventMessage(event)
+		if err != nil {
+			continue
+		}
+		for _, client := range recipients {
+			hub.sendToClient(client, payload)
+		}
+	}
+}
+
 // Проверяет, что список получателей содержит указанный аккаунт.
 func containsAccountID(accountIDs []int64, accountID int64) bool {
 	for _, candidateID := range accountIDs {
 		if candidateID == accountID {
+			return true
+		}
+	}
+	return false
+}
+
+// containsObjectID проверяет, что список получателей содержит указанный объект.
+func containsObjectID(objectIDs []int64, objectID int64) bool {
+	for _, candidateID := range objectIDs {
+		if candidateID == objectID {
 			return true
 		}
 	}

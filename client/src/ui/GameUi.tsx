@@ -49,6 +49,7 @@ export const GameUi = (props: GameUiProps) => (
       <SettingsModal state={props.state} />
       <ControlPanelModal state={props.state} />
       <ControlPanelConstructorRecipeTooltip state={props.state} />
+      <DockingOverlay state={props.state} />
       <GameCursor state={props.state} />
     </Show>
     <DebugOverlay state={props.state} />
@@ -65,6 +66,66 @@ const HudPanel = (props: HudPanelProps) => (
     {props.children}
   </section>
 );
+
+type DockingOverlayProps = {
+  // Реактивное состояние всего игрового UI.
+  state: Accessor<GameUiState>;
+};
+
+// Показывает маленькое окно процесса и отдельные уведомления стыковки.
+const DockingOverlay = (props: DockingOverlayProps) => (
+  <div class="docking-layer" aria-live="polite">
+    <Show when={props.state().dockingWindow}>
+      {(windowState) => (
+        <div class="docking-window">
+          <div class="docking-window__title">{getDockingWindowTitle(windowState())}</div>
+          <div class="docking-window__text">{getDockingWindowText(windowState())}</div>
+          <Show when={windowState().kind === "request" && windowState().role === "receiver"}>
+            <div class="docking-window__hints">
+              <div class="docking-window__hint">
+                <span class="docking-window__hint-action docking-window__hint-action--approve">Одобрить</span>
+                <span class="docking-window__hint-separator"> — </span>
+                <span class="docking-window__hint-key">Alt</span>
+                <span class="docking-window__hint-plus"> + </span>
+                <span class="docking-window__hint-key">+</span>
+              </div>
+              <div class="docking-window__hint">
+                <span class="docking-window__hint-action docking-window__hint-action--reject">Отказать</span>
+                <span class="docking-window__hint-separator"> — </span>
+                <span class="docking-window__hint-key">Alt</span>
+                <span class="docking-window__hint-plus"> + </span>
+                <span class="docking-window__hint-key">-</span>
+              </div>
+            </div>
+          </Show>
+          <div class="docking-window__bar">
+            <div
+              class={`docking-window__fill ${windowState().kind === "process" ? "is-increasing" : "is-decreasing"}`}
+              style={{ "animation-duration": `${Math.max(0.1, windowState().durationMs / 1000)}s` }}
+            />
+          </div>
+        </div>
+      )}
+    </Show>
+    <div class="docking-notifications">
+      <For each={props.state().dockingNotifications ?? []}>
+        {(notification) => <div class="docking-notification">{notification.message}</div>}
+      </For>
+    </div>
+  </div>
+);
+
+// Возвращает заголовок маленького окна по фазе стыковки.
+const getDockingWindowTitle = (state: NonNullable<GameUiState["dockingWindow"]>): string =>
+  state.kind === "request" ? "Запрос стыковки" : "Стыковка";
+
+// Возвращает текст маленького окна по роли текущего клиента.
+const getDockingWindowText = (state: NonNullable<GameUiState["dockingWindow"]>): string => {
+  if (state.kind === "process") {
+    return "Автоматическая стыковка";
+  }
+  return state.role === "sender" ? "Ожидание ответа" : "Входящий запрос";
+};
 
 type ObjectIndicatorsPanelProps = {
   // Посещаемый объект игрока, если он уже получен.
@@ -1408,6 +1469,16 @@ const AnchorIcon = () => (
   </svg>
 );
 
+// Рисует состояние кластера рядом с якорем мини-карты.
+const ClusterIcon = () => (
+  <svg class="minimap-status__cluster-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="8" cy="12" r="3.2" />
+    <circle cx="16" cy="8" r="3.2" />
+    <circle cx="16" cy="16" r="3.2" />
+    <path d="M10.8 10.8l2.4-1.6M10.8 13.2l2.4 1.6" />
+  </svg>
+);
+
 // Возвращает готовые данные для мини-карты только после получения объекта и справочников.
 const getMinimapReadyState = (state: GameUiState): MinimapReadyState | null => {
   if (!state.selfObject || !state.referenceData) {
@@ -1448,6 +1519,9 @@ const MinimapPanel = (props: MinimapPanelProps) => (
               </div>
               <div class={`minimap-status__item minimap-status__anchor ${minimap().isAnchored ? "is-active" : ""}`} title="Якорь">
                 <AnchorIcon />
+              </div>
+              <div class={`minimap-status__item minimap-status__cluster is-${minimap().clusterStatus}`} title="Кластер">
+                <ClusterIcon />
               </div>
             </div>
             <div class="minimap-map">

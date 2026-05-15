@@ -13,6 +13,9 @@ import type {
   ConstructorProductionJob,
   CosmicObject,
   CosmicObjectModelReference,
+  DockingEventMessage,
+  DockingNotification,
+  DockingWindowState,
   EquipmentGroup,
   EquipmentGroupRelation,
   ReferenceDataMessage,
@@ -46,6 +49,8 @@ const SETTINGS_DROPDOWN_CONTENT_PADDING_VH = 0.7;
 const SETTINGS_DROPDOWN_VIEWPORT_HEIGHT_VH = 22;
 // Базовая высота пункта списка оборудования в единицах высоты экрана.
 const CONTROL_PANEL_EQUIPMENT_LIST_ITEM_HEIGHT_VH = 2.35;
+// Время показа маленького уведомления стыковки.
+const DOCKING_NOTIFICATION_DURATION_MS = 5000;
 
 // Связывает Phaser-отрисовку, сетевой клиент, ввод и SolidJS UI-слой.
 export class GameScene extends Phaser.Scene {
@@ -173,6 +178,12 @@ export class GameScene extends Phaser.Scene {
   private lastGameUiControlLayoutSignature = "";
   // Количество ближайших кадров, в которых нужно перечитать DOM после изменения раскладки.
   private gameUiControlRefreshFrames = 0;
+  // Текущее маленькое окно ожидания или процесса.
+  private dockingWindow: DockingWindowState | null = null;
+  // Отдельные всплывающие уведомления стыковки.
+  private dockingNotifications: DockingNotification[] = [];
+  // Следующий локальный идентификатор уведомления.
+  private nextDockingNotificationID = 1;
 
   constructor(
     // Мост передачи состояния из Phaser в SolidJS UI.
@@ -217,6 +228,9 @@ export class GameScene extends Phaser.Scene {
     if (this.inputController.consumeRandomShipChangeRequest()) {
       this.gameClient?.requestRandomShipChange();
     }
+    this.consumeDockingActions();
+    this.syncDockingEventFromServer(time);
+    this.dockingNotifications = this.dockingNotifications.filter((notification) => notification.expiresAtMs > time);
     if (this.inputController.consumeBodyPolygonDebugToggleRequest()) {
       this.bodyPolygonDebugVisible = !this.bodyPolygonDebugVisible;
       if (!this.bodyPolygonDebugVisible) {
@@ -290,6 +304,8 @@ export class GameScene extends Phaser.Scene {
         chatInputFocused: false,
         chatError: null,
         chatErrorSeq: 0,
+        dockingWindow: this.dockingWindow,
+        dockingNotifications: this.dockingNotifications,
         chatContextMenu: null,
         gameCursor: this.inputController.getGameCursor(),
         hoveredGameUiControlId: this.inputController.getHoveredGameUiControlId(),
@@ -376,6 +392,8 @@ export class GameScene extends Phaser.Scene {
       chatInputFocused: this.inputController.isChatInputFocused(),
       chatError: this.gameClient?.getLatestChatError() ?? null,
       chatErrorSeq: this.gameClient?.getLatestChatErrorSeq() ?? 0,
+      dockingWindow: this.dockingWindow,
+      dockingNotifications: this.dockingNotifications,
       chatContextMenu: this.inputController.getChatContextMenu(),
       gameCursor: this.inputController.getGameCursor(),
       hoveredGameUiControlId: this.inputController.getHoveredGameUiControlId(),
@@ -814,6 +832,56 @@ export class GameScene extends Phaser.Scene {
       this.uiKitDemoState = applyUiKitDemoAction(this.uiKitDemoState, action);
       action = this.inputController.consumeGameUiAction();
     }
+  }
+
+  // Отправляет накопленные клавиатурные команды стыковки отдельными сетевыми пакетами.
+  private consumeDockingActions(): void {
+    let action = this.inputController.consumeDockingAction();
+    while (action) {
+      if (action === "request") {
+        this.gameClient?.sendDockingRequest();
+      } else if (action === "approve") {
+        this.gameClient?.sendDockingApprove();
+      } else if (action === "reject") {
+        this.gameClient?.sendDockingReject();
+      } else {
+        this.gameClient?.sendDockingUndock();
+      }
+      action = this.inputController.consumeDockingAction();
+    }
+  }
+
+  // Обновляет окно и уведомления по последнему событию сервера.
+  private syncDockingEventFromServer(nowMs: number): void {
+    for (const event of this.gameClient?.consumeDockingEvents() ?? []) {
+      this.applyDockingEvent(event, nowMs);
+    }
+  }
+
+  // Применяет одно событие стыковки к локальному HUD-состоянию.
+  private applyDockingEvent(event: DockingEventMessage, nowMs: number): void {
+    if (event.kind === "dockingNotification") {
+      if (event.message) {
+        this.dockingNotifications = [
+          ...this.dockingNotifications,
+          { id: this.nextDockingNotificationID++, message: event.message, expiresAtMs: nowMs + DOCKING_NOTIFICATION_DURATION_MS },
+        ];
+      }
+      return;
+    }
+    if (event.kind === "dockingFinished") {
+      this.dockingWindow = null;
+      return;
+    }
+    if (!event.role) {
+      return;
+    }
+    this.dockingWindow = {
+      kind: event.kind === "dockingRequestStarted" ? "request" : "process",
+      role: event.role,
+      startedAtMs: nowMs,
+      durationMs: Math.max(0, (event.duration ?? 0) * 1000),
+    };
   }
 
   // Применяет колесо мыши к обычным спискам общего UI.

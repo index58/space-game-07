@@ -8,6 +8,8 @@ import { isFreshKeyboardBinding, isFreshKeyDown, toShipInput, type InputBindingM
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
 
+export type DockingAction = "request" | "approve" | "reject" | "undock";
+
 export type ChatSelectAction = {
   // Чат, который игрок выбрал игровым указателем.
   chatId: number;
@@ -142,6 +144,8 @@ export class InputController {
   private uiActions: GameUiAction[] = [];
   // Очередь прокрутки списков общего игрового UI.
   private uiWheelActions: GameUiWheelAction[] = [];
+  // Очередь одноразовых команд стыковки.
+  private dockingActions: DockingAction[] = [];
   // Показывает отладочное окно с примерами всех контролов.
   private uiKitShowcaseVisible = false;
   // Показывает окно настроек игрока.
@@ -242,6 +246,13 @@ export class InputController {
         return;
       }
       if (this.isGameCursorVisible()) {
+        this.keys[event.code] = true;
+        event.preventDefault();
+        return;
+      }
+      const dockingAction = getDockingActionFromKey(event, Boolean(this.keys[event.code]));
+      if (dockingAction) {
+        this.dockingActions.push(dockingAction);
         this.keys[event.code] = true;
         event.preventDefault();
         return;
@@ -657,6 +668,11 @@ export class InputController {
   // Возвращает очередную прокрутку списка общего UI, если она была создана игровым колесом.
   consumeGameUiWheelAction(): GameUiWheelAction | null {
     return this.uiWheelActions.shift() ?? null;
+  }
+
+  // Возвращает очередную команду стыковки для отправки отдельным сетевым сообщением.
+  consumeDockingAction(): DockingAction | null {
+    return this.dockingActions.shift() ?? null;
   }
 
   // Возвращает видимость отладочной панели UI Kit.
@@ -1620,6 +1636,20 @@ const scrollableListIdFromControl = (control: GameUiControlState): string | null
   const element = document.getElementById(control.id);
   const listRoot = element?.closest<HTMLElement>(".ui-kit-list");
   return listRoot?.id ?? control.id;
+};
+
+// Преобразует согласованные сочетания Alt с плюсами и минусами в команды стыковки.
+const getDockingActionFromKey = (event: KeyboardEvent, wasPressed: boolean): DockingAction | null => {
+  if (!event.altKey || wasPressed) {
+    return null;
+  }
+  if (event.code === "Equal" || event.code === "NumpadAdd") {
+    return event.shiftKey ? "request" : "approve";
+  }
+  if (event.code === "Minus" || event.code === "NumpadSubtract") {
+    return event.shiftKey ? "undock" : "reject";
+  }
+  return null;
 };
 
 // Возвращает клавиши-модификаторы для действия игрового UI.

@@ -15,6 +15,8 @@
   ControlPanelErrorMessage,
   ControlPanelFuelTransferMessage,
   ControlPanelMutationRef,
+  DockingCommandMessage,
+  DockingEventMessage,
   ControlPanelObjectUpdateMessage,
   InputSettingsErrorMessage,
   InputSettingsMessage,
@@ -209,6 +211,21 @@ const isControlPanelErrorMessage = (message: unknown): message is ControlPanelEr
     typeof error.message === "string";
 };
 
+// Проверяет пакет стыковки перед передачей в игровой HUD.
+const isDockingEventMessage = (message: unknown): message is DockingEventMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const event = message as DockingEventMessage;
+
+  return event.type === "dockingEvent" &&
+    typeof event.kind === "string" &&
+    (event.role === undefined || event.role === "sender" || event.role === "receiver") &&
+    (event.message === undefined || typeof event.message === "string") &&
+    (event.duration === undefined || typeof event.duration === "number");
+};
+
 // Сохраняет секрет, если окружение предоставляет браузерное хранилище.
 const storeAccountToken = (token: string): void => {
   if (typeof localStorage === "undefined") {
@@ -254,6 +271,12 @@ export class GameClient {
   private latestControlPanelError: ControlPanelErrorMessage | null = null;
   // Порядковый номер ошибки панели для повторной обработки одинакового текста.
   private latestControlPanelErrorSeq = 0;
+  // Последнее событие стыковки для игрового HUD.
+  private latestDockingEvent: DockingEventMessage | null = null;
+  // Порядковый номер события стыковки для обработки одинаковых сообщений.
+  private latestDockingEventSeq = 0;
+  // Очередь событий стыковки, чтобы быстрые события не затирали друг друга.
+  private dockingEvents: DockingEventMessage[] = [];
   // Последнее состояние управления, готовое к отправке.
   private latestInput: ClientInputState = emptyInput();
   // Последний выданный порядковый номер пакета ввода.
@@ -336,6 +359,23 @@ export class GameClient {
     return this.latestControlPanelErrorSeq;
   }
 
+  // Возвращает последнее событие стыковки от сервера.
+  getLatestDockingEvent(): DockingEventMessage | null {
+    return this.latestDockingEvent;
+  }
+
+  // Возвращает счетчик событий стыковки.
+  getLatestDockingEventSeq(): number {
+    return this.latestDockingEventSeq;
+  }
+
+  // Возвращает накопленные события стыковки в порядке прихода.
+  consumeDockingEvents(): DockingEventMessage[] {
+    const events = this.dockingEvents;
+    this.dockingEvents = [];
+    return events;
+  }
+
   // Обновляет состояние клавиш и накапливает относительный поворот мыши до отправки.
   setInput(input: ClientInputState): void {
     this.latestInput = {
@@ -358,6 +398,26 @@ export class GameClient {
     };
 
     this.socket.send(JSON.stringify(message));
+  }
+
+  // Отправляет запрос стыковки отдельной WebSocket-командой.
+  sendDockingRequest(): void {
+    this.sendDockingCommand("dockingRequest");
+  }
+
+  // Отправляет принятие входящего запроса отдельной WebSocket-командой.
+  sendDockingApprove(): void {
+    this.sendDockingCommand("dockingApprove");
+  }
+
+  // Отправляет отказ входящего запроса отдельной WebSocket-командой.
+  sendDockingReject(): void {
+    this.sendDockingCommand("dockingReject");
+  }
+
+  // Отправляет отстыковку текущего объекта отдельной WebSocket-командой.
+  sendDockingUndock(): void {
+    this.sendDockingCommand("dockingUndock");
   }
 
   // Отправляет текстовую команду отдельно от потокового управления кораблем.
@@ -638,7 +698,24 @@ export class GameClient {
     if (isControlPanelErrorMessage(parsed)) {
       this.latestControlPanelError = parsed;
       this.latestControlPanelErrorSeq++;
+      return;
     }
+
+    if (isDockingEventMessage(parsed)) {
+      this.latestDockingEvent = parsed;
+      this.latestDockingEventSeq++;
+      this.dockingEvents.push(parsed);
+    }
+  }
+
+  // Сериализует одноразовую команду стыковки, если соединение открыто.
+  private sendDockingCommand(type: DockingCommandMessage["type"]): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
+    const payload: DockingCommandMessage = { type };
+    this.socket.send(JSON.stringify(payload));
   }
 
   // Выдает следующий номер команды панели в общей последовательности клиента.

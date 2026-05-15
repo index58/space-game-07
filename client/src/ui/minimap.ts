@@ -33,6 +33,8 @@ export type MinimapView = {
   isPveZone: boolean;
   // Признак активного якоря посещаемого объекта.
   isAnchored: boolean;
+  // Состояние посещаемого объекта внутри кластера.
+  clusterStatus: "none" | "main" | "secondary";
   // Деления горизонтальной шкалы компаса.
   compassMarks: MinimapCompassMarkView[];
 };
@@ -53,8 +55,18 @@ export const getMinimapView = (input: MinimapInput): MinimapView => ({
     .filter((point): point is MinimapPointView => point !== null),
   isPveZone: isPveZone(input.selfObject),
   isAnchored: input.selfObject.Anchored,
+  clusterStatus: getClusterStatus(input.selfObject),
   compassMarks: getCompassMarks(input.selfObject.Rotation),
 });
+
+// Определяет цветовой режим значка кластера для посещаемого объекта.
+const getClusterStatus = (object: CosmicObject): MinimapView["clusterStatus"] => {
+  const mainID = object.ClusterMainCosmicObjectID ?? 0;
+  if (mainID <= 0) {
+    return "none";
+  }
+  return mainID === object.ID ? "main" : "secondary";
+};
 
 // Преобразует объект мира в точку мини-карты.
 const getMinimapPoint = (
