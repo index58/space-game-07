@@ -328,6 +328,18 @@ describe("InputController", () => {
     expect(controller.consumeDockingAction()).toBe("request");
   });
 
+  // Проверяет тестовую команду присвоения объекта по сочетанию Alt и обратной косой черты.
+  it("returns test owner claim request once from Alt Backslash", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("Backslash", { altKey: true });
+
+    expect(controller.consumeFocusedObjectOwnerClaimRequest()).toBe(true);
+    expect(controller.consumeFocusedObjectOwnerClaimRequest()).toBe(false);
+  });
+
   it("focuses chat with Enter, types text and sends it with second Enter", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);

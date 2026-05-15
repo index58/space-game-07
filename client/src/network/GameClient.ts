@@ -25,6 +25,7 @@
   InputSettingPayload,
   RandomShipMessage,
   SnapshotMessage,
+  TestClaimFocusedObjectOwnerMessage,
 } from "./protocol";
 
 // Позволяет тестам подменять браузерный WebSocket простой заглушкой.
@@ -395,6 +396,19 @@ export class GameClient {
 
     const message: RandomShipMessage = {
       type: "randomShip",
+    };
+
+    this.socket.send(JSON.stringify(message));
+  }
+
+  // Отправляет тестовую команду присвоения объекта в фокусе информационной панели.
+  requestFocusedObjectOwnerClaim(): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
+    const message: TestClaimFocusedObjectOwnerMessage = {
+      type: "testClaimFocusedObjectOwner",
     };
 
     this.socket.send(JSON.stringify(message));

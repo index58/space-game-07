@@ -187,9 +187,9 @@ const getInformationRows = (object: CosmicObject, referenceData: ReferenceDataMe
     rows.push({ label: "Модель", value: modelTitle });
   }
 
-  const ownerNickname = getOptionalString(object, "OwnerAccountNickname");
-  if (ownerNickname) {
-    rows.push({ label: "Владелец", value: ownerNickname });
+  const ownerName = getOptionalString(object, "OwnerName") || getOptionalString(object, "OwnerAccountNickname");
+  if (ownerName) {
+    rows.push({ label: "Владелец", value: ownerName });
   }
 
   if (object.OwnerNpcClanID > 0) {

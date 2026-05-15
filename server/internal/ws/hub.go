@@ -125,6 +125,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if DecodeRandomShipMessage(payload) {
 				hub.world.ChangeControlledShipToRandomModel(client.accountID)
 			}
+			if DecodeTestClaimFocusedObjectOwnerMessage(payload) {
+				_ = hub.world.ClaimFocusedObjectOwnerForTesting(client.accountID)
+			}
 			if message, ok := DecodeChatSendMessage(payload); ok {
 				hub.handleChatSend(client, message)
 			}

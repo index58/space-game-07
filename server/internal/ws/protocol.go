@@ -166,6 +166,16 @@ func DecodeRandomShipMessage(payload []byte) bool {
 	return message.Type == "randomShip"
 }
 
+// DecodeTestClaimFocusedObjectOwnerMessage проверяет тестовую команду присвоения объекта в фокусе.
+func DecodeTestClaimFocusedObjectOwnerMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+
+	return message.Type == "testClaimFocusedObjectOwner"
+}
+
 // DecodeDockingRequestMessage проверяет команду отправки запроса на стыковку.
 func DecodeDockingRequestMessage(payload []byte) bool {
 	var message clientMessageType

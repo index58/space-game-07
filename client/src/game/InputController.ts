@@ -92,6 +92,8 @@ export class InputController {
   private zoom = INITIAL_ZOOM;
   // Одноразовый запрос на смену модели корабля.
   private randomShipChangeRequested = false;
+  // Одноразовый тестовый запрос на присвоение объекта в фокусе.
+  private focusedObjectOwnerClaimRequested = false;
   // Одноразовый запрос на переключение отладочной отрисовки тел.
   private bodyPolygonDebugToggleRequested = false;
   // Накопленное переключение выбранного инструмента пилота.
@@ -253,6 +255,12 @@ export class InputController {
       const dockingAction = this.getDockingActionFromKey(event, Boolean(this.keys[event.code]));
       if (dockingAction) {
         this.dockingActions.push(dockingAction);
+        this.keys[event.code] = true;
+        event.preventDefault();
+        return;
+      }
+      if (isFreshKeyDown(event.code, Boolean(this.keys[event.code]), "Backslash") && event.altKey) {
+        this.focusedObjectOwnerClaimRequested = true;
         this.keys[event.code] = true;
         event.preventDefault();
         return;
@@ -741,6 +749,13 @@ export class InputController {
   consumeRandomShipChangeRequest(): boolean {
     const requested = this.randomShipChangeRequested;
     this.randomShipChangeRequested = false;
+    return requested;
+  }
+
+  // Возвращает тестовую команду присвоения объекта один раз на одно нажатие.
+  consumeFocusedObjectOwnerClaimRequest(): boolean {
+    const requested = this.focusedObjectOwnerClaimRequested;
+    this.focusedObjectOwnerClaimRequested = false;
     return requested;
   }
 

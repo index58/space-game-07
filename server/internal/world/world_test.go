@@ -16,14 +16,14 @@ import (
 )
 
 // Ищет объект в снимке мира по ID, чтобы тесты не зависели от порядка массива.
-func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (data.CosmicObject, bool) {
+func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (game.SnapshotCosmicObject, bool) {
 	for _, object := range snapshot.Objects {
 		if object.ID == objectID {
 			return object, true
 		}
 	}
 
-	return data.CosmicObject{}, false
+	return game.SnapshotCosmicObject{}, false
 }
 
 // Кладет запись в сырой справочник так же, как это делает загрузка JSON-файла.
@@ -423,6 +423,48 @@ func TestDockingRequestDoesNotRequireAnchoredObjects(t *testing.T) {
 
 	if err := gameWorld.SendDockingRequest(1); err != nil {
 		t.Fatalf("send docking request without anchors: %v", err)
+	}
+}
+
+// Проверяет тестовое присвоение объекта, который находится перед носом текущего корабля.
+func TestClaimFocusedObjectOwnerForTestingChangesProbeTargetOwner(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 0
+	serverData.CosmicObjects.Items[3].X = 0
+	serverData.CosmicObjects.Items[3].Y = 14
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	if err := gameWorld.ClaimFocusedObjectOwnerForTesting(1); err != nil {
+		t.Fatalf("claim focused object owner: %v", err)
+	}
+
+	if serverData.CosmicObjects.Items[3].OwnerCharacterID != 1 {
+		t.Fatalf("owner was not changed: %d", serverData.CosmicObjects.Items[3].OwnerCharacterID)
+	}
+}
+
+// Проверяет временную передачу имени владельца в снимке мира для информационной панели.
+func TestSnapshotForAccountIncludesOwnerNameForTesting(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "owner@email.net", Nickname: "OwnerName", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 3}
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	snapshot := gameWorld.SnapshotForAccount(1)
+	object, ok := findCosmicObjectInSnapshot(snapshot, 3)
+	if !ok {
+		t.Fatal("owned object was not found in snapshot")
+	}
+
+	if object.OwnerName != "OwnerName" {
+		t.Fatalf("owner name = %q, want OwnerName", object.OwnerName)
 	}
 }
 
@@ -1179,7 +1221,7 @@ func TestTickPreventsControlledShipFromIntersectingAnchoredObject(t *testing.T) 
 	obstacle := serverData.CosmicObjects.Items[2]
 	objectModel := serverData.CosmicObjectModels.Items[object.CosmicObjectModelID]
 	obstacleModel := serverData.CosmicObjectModels.Items[obstacle.CosmicObjectModelID]
-	if _, collided := physics.CollisionCorrection(object, *objectModel, *obstacle, *obstacleModel); collided {
+	if _, collided := physics.CollisionCorrection(object.CosmicObject, *objectModel, *obstacle, *obstacleModel); collided {
 		t.Fatalf("controlled object still intersects anchored object: %+v", object)
 	}
 }
@@ -2426,6 +2468,24 @@ func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) 
 	}
 	if installed[0].EquipmentItemModelID != 201 || installed[0].Count != 4 {
 		t.Fatalf("equipment was not replaced from selected assembly: %+v", installed[0])
+	}
+}
+
+// Проверяет, что тестовая замена корабля передает собственность текущему персонажу.
+func TestChangeControlledShipToRandomModelAssignsCurrentCharacterOwner(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].OwnerCharacterID = 2
+	gameWorld := world.New(1, serverData)
+
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatalf("account was not connected")
+	}
+	if !gameWorld.ChangeControlledShipToRandomModel(1) {
+		t.Fatalf("ship model was not changed")
+	}
+
+	if serverData.CosmicObjects.Items[1].OwnerCharacterID != 1 {
+		t.Fatalf("changed ship owner = %d, want 1", serverData.CosmicObjects.Items[1].OwnerCharacterID)
 	}
 }
 

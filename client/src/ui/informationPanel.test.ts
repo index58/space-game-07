@@ -91,10 +91,10 @@ describe("getInformationPanelView", () => {
     expect(getInformationPanelView({ selfObject, objects: [selfObject, target], referenceData })).toBeNull();
   });
 
-  // Проверяет временное поле ника владельца, если сервер уже прислал его в снимке.
-  it("shows owner nickname when snapshot object contains it", () => {
+  // Проверяет временное поле имени владельца, если сервер уже прислал его в снимке.
+  it("shows owner name when snapshot object contains it", () => {
     const selfObject = object({ ID: 1, CosmicObjectModelID: 10, X: 0, Y: 0, Rotation: 0 });
-    const target = { ...object({ ID: 2, CosmicObjectModelID: 20, X: 0, Y: 55 }), OwnerAccountNickname: "Pilot2" };
+    const target = { ...object({ ID: 2, CosmicObjectModelID: 20, X: 0, Y: 55 }), OwnerName: "Pilot2" };
 
     const view = getInformationPanelView({ selfObject, objects: [selfObject, target], referenceData });
 

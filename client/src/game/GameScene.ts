@@ -22,6 +22,7 @@ import type {
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
 import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
+import { getInformationPanelView } from "../ui/informationPanel";
 import { getInputBindingMap, getInputSettingsLeftColumnRowCount, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
@@ -265,6 +266,9 @@ export class GameScene extends Phaser.Scene {
     const serverSelfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
     const effectiveEquipmentGroups = snapshot ? applyControlPanelPendingToEquipmentGroups(snapshot.equipmentGroups ?? [], this.controlPanelPending) : [];
     const selfObject = applyControlPanelPendingToObject(serverSelfObject, this.controlPanelPending);
+    if (this.inputController.consumeFocusedObjectOwnerClaimRequest() && snapshot && selfObject && this.referenceData && getInformationPanelView({ selfObject, objects: snapshot.objects, referenceData: this.referenceData })) {
+      this.gameClient?.requestFocusedObjectOwnerClaim();
+    }
     this.syncControlPanelUsageSelection(selfObject?.ID ?? null, effectiveEquipmentGroups, snapshot?.equipmentGroupRelations ?? []);
     this.syncControlPanelConstructorMainJobSelection(snapshot?.constructorProductionJobs ?? []);
     this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(selfObject, effectiveEquipmentGroups, snapshot?.itemGroups ?? []);

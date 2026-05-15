@@ -30,6 +30,11 @@ export type RandomShipMessage = {
   type: "randomShip";
 };
 
+export type TestClaimFocusedObjectOwnerMessage = {
+  // Вид тестовой команды, по которому сервер присваивает объект в фокусе текущему персонажу.
+  type: "testClaimFocusedObjectOwner";
+};
+
 export type DockingCommandMessage = {
   // Вид отдельной команды стыковки для серверного маршрутизатора.
   type: "dockingRequest" | "dockingApprove" | "dockingReject" | "dockingUndock";
@@ -337,6 +342,8 @@ export type CosmicObject = {
   CosmicObjectModelID: number;
   // Персонаж-владелец, если объект принадлежит игроку.
   OwnerCharacterID: number;
+  // Временное тестовое имя владельца для информационной панели.
+  OwnerName?: string;
   // NPC-клан-владелец, если объект не принадлежит персонажу.
   OwnerNpcClanID: number;
   // Персонаж, создавший объект.

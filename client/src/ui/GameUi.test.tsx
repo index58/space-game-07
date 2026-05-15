@@ -369,7 +369,7 @@ describe("GameUi", () => {
       ...state(),
       objects: [
         object({ ID: 1, CosmicObjectModelID: 10, X: 0, Y: 0, Rotation: 0 }),
-        object({ ID: 2, Title: "Target", CosmicObjectModelID: 11, X: 0, Y: 55 }),
+        object({ ID: 2, Title: "Target", CosmicObjectModelID: 11, X: 0, Y: 55, OwnerName: "Pilot2" }),
       ],
     });
 
@@ -377,8 +377,8 @@ describe("GameUi", () => {
 
     expect(root.querySelector(".information-panel")).not.toBeNull();
     expect(Array.from(root.querySelector(".information-panel")?.classList ?? [])).toContain("hud-panel--right-middle");
-    expect(Array.from(root.querySelectorAll(".information-panel__label")).map((row) => row.textContent)).toEqual(["Название", "Модель"]);
-    expect(Array.from(root.querySelectorAll(".information-panel__value")).map((row) => row.textContent)).toEqual(["Target", "Цель"]);
+    expect(Array.from(root.querySelectorAll(".information-panel__label")).map((row) => row.textContent)).toEqual(["Название", "Модель", "Владелец"]);
+    expect(Array.from(root.querySelectorAll(".information-panel__value")).map((row) => row.textContent)).toEqual(["Target", "Цель", "Pilot2"]);
   });
 
   it("renders chat panel with tabs, selected history and local input text", () => {

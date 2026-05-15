@@ -61,6 +61,13 @@ func TestDecodeRandomShipMessageRejectsOtherTypes(t *testing.T) {
 }
 
 // Проверяет, что команда отправки запроса стыковки принимается отдельным WebSocket-сообщением.
+// Проверяет, что тестовая команда присвоения объекта принимается по согласованному типу.
+func TestDecodeTestClaimFocusedObjectOwnerMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeTestClaimFocusedObjectOwnerMessage([]byte(`{"type":"testClaimFocusedObjectOwner"}`)) {
+		t.Fatalf("test owner claim message was not accepted")
+	}
+}
+
 func TestDecodeDockingRequestMessageAcceptsAgreedType(t *testing.T) {
 	if !transport.DecodeDockingRequestMessage([]byte(`{"type":"dockingRequest"}`)) {
 		t.Fatalf("docking request message was not accepted")
@@ -343,17 +350,19 @@ func TestEncodeSnapshotMessageUsesAgreedCamelCaseFields(t *testing.T) {
 		Type:         "snapshot",
 		Tick:         123,
 		SelfObjectID: 7,
-		Objects: []data.CosmicObject{
+		Objects: []game.SnapshotCosmicObject{
 			{
-				ID:                  7,
-				CosmicObjectModelID: 1,
-				X:                   10.5,
-				Y:                   -3.2,
-				VelocityX:           1.1,
-				VelocityY:           0.4,
-				Rotation:            0.2,
-				AngularSpeed:        0.01,
-				TargetRotation:      0.25,
+				CosmicObject: data.CosmicObject{
+					ID:                  7,
+					CosmicObjectModelID: 1,
+					X:                   10.5,
+					Y:                   -3.2,
+					VelocityX:           1.1,
+					VelocityY:           0.4,
+					Rotation:            0.2,
+					AngularSpeed:        0.01,
+					TargetRotation:      0.25,
+				},
 			},
 		},
 		EquipmentGroups: []data.EquipmentGroup{

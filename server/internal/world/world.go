@@ -438,6 +438,28 @@ func (world *World) UndockControlledObject(accountID int64) error {
 	return nil
 }
 
+// ClaimFocusedObjectOwnerForTesting делает объект перед носом текущего корабля собственностью текущего персонажа.
+func (world *World) ClaimFocusedObjectOwnerForTesting(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	character, err := world.currentCharacterLocked(accountID)
+	if err != nil {
+		return err
+	}
+	cosmicObject, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	target, err := world.findDockingReceiverLocked(cosmicObject)
+	if err != nil {
+		return err
+	}
+	target.OwnerCharacterID = character.ID
+	target.OwnerNpcClanID = 0
+	return world.data.CosmicObjects.RebuildIndexes()
+}
+
 // Меняет управляемый объект на другую случайную модель корабля из справочника.
 func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	world.mu.Lock()
@@ -450,6 +472,10 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 
 	cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
 	if !ok {
+		return false
+	}
+	character, err := world.currentCharacterLocked(accountID)
+	if err != nil {
 		return false
 	}
 
@@ -483,6 +509,8 @@ func (world *World) ChangeControlledShipToRandomModel(accountID int64) bool {
 	}
 
 	world.applyModelAndAssembly(cosmicObject, model, assembly)
+	cosmicObject.OwnerCharacterID = character.ID
+	cosmicObject.OwnerNpcClanID = 0
 	cosmicObject.TargetRotation = cosmicObject.Rotation
 	if err := world.replaceEquipmentFromAssembly(cosmicObject.ID, assembly); err != nil {
 		return false
@@ -504,6 +532,19 @@ func (world *World) controlledCosmicObjectLocked(accountID int64) (*data.CosmicO
 		return nil, errors.New("controlled object not found")
 	}
 	return cosmicObject, nil
+}
+
+// Возвращает текущего персонажа подключенного аккаунта под уже взятым mutex.
+func (world *World) currentCharacterLocked(accountID int64) (*data.Character, error) {
+	account, ok := world.data.Accounts.Get(accountID)
+	if !ok || account.CurrentCharacterID <= 0 {
+		return nil, errors.New("account is not connected")
+	}
+	character, ok := world.data.Characters.Get(account.CurrentCharacterID)
+	if !ok || character.AccountID != account.ID {
+		return nil, errors.New("current character not found")
+	}
+	return character, nil
 }
 
 // validateDockingSenderLocked проверяет условия для объекта, отправляющего запрос.
@@ -697,6 +738,22 @@ func (world *World) disbandClusterLocked(mainID int64) {
 			clusterObject.Anchored = false
 		}
 	}
+}
+
+// Возвращает временное тестовое имя владельца объекта для клиентской информационной панели.
+func (world *World) ownerNameForTestingLocked(ownerCharacterID int64) string {
+	if ownerCharacterID <= 0 {
+		return ""
+	}
+	character, ok := world.data.Characters.Get(ownerCharacterID)
+	if !ok {
+		return ""
+	}
+	account, ok := world.data.Accounts.Get(character.AccountID)
+	if !ok {
+		return ""
+	}
+	return account.Nickname
 }
 
 // ApplyControlPanelObjectUpdate применяет подтвержденное изменение панели к объекту текущего аккаунта.
@@ -2287,13 +2344,16 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		return objectIDs[left] < objectIDs[right]
 	})
 
-	objects := make([]data.CosmicObject, 0, len(objectIDs))
+	objects := make([]game.SnapshotCosmicObject, 0, len(objectIDs))
 	for _, objectID := range objectIDs {
 		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
 		if !ok {
 			continue
 		}
-		objects = append(objects, *cosmicObject)
+		objects = append(objects, game.SnapshotCosmicObject{
+			CosmicObject: *cosmicObject,
+			OwnerName:    world.ownerNameForTestingLocked(cosmicObject.OwnerCharacterID),
+		})
 	}
 
 	equipmentGroups := make([]data.EquipmentGroup, 0)
