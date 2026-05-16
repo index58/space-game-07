@@ -1,5 +1,5 @@
 {
-  "MaxID": 1340,
+  "MaxID": 1370,
   "Items": {
     "603": {
       "ID": 603,
@@ -463,116 +463,6 @@
       "Active": false,
       "LastRechargeStartTime": 0
     },
-    "1191": {
-      "ID": 1191,
-      "CosmicObjectID": 11,
-      "Title": "SimpleThruster",
-      "EquipmentItemModelID": 1,
-      "Count": 2,
-      "EnabledCount": 2,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "1192": {
-      "ID": 1192,
-      "CosmicObjectID": 11,
-      "Title": "SimpleTorquer",
-      "EquipmentItemModelID": 2,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": true,
-      "LastRechargeStartTime": 0
-    },
-    "1193": {
-      "ID": 1193,
-      "CosmicObjectID": 11,
-      "Title": "LightCannon120mm",
-      "EquipmentItemModelID": 3,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "1194": {
-      "ID": 1194,
-      "CosmicObjectID": 11,
-      "Title": "CompactGenerator",
-      "EquipmentItemModelID": 4,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": true,
-      "LastRechargeStartTime": 0
-    },
-    "1195": {
-      "ID": 1195,
-      "CosmicObjectID": 11,
-      "Title": "SmallMelitFuelTank",
-      "EquipmentItemModelID": 5,
-      "Count": 4,
-      "EnabledCount": 4,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "1196": {
-      "ID": 1196,
-      "CosmicObjectID": 11,
-      "Title": "SmallCargoContainer",
-      "EquipmentItemModelID": 6,
-      "Count": 2,
-      "EnabledCount": 2,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "1197": {
-      "ID": 1197,
-      "CosmicObjectID": 11,
-      "Title": "ReserveCargoContainer",
-      "EquipmentItemModelID": 6,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "1198": {
-      "ID": 1198,
-      "CosmicObjectID": 11,
-      "Title": "AuxiliaryCargoContainer",
-      "EquipmentItemModelID": 6,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "1199": {
-      "ID": 1199,
-      "CosmicObjectID": 11,
-      "Title": "SmallConstructor",
-      "EquipmentItemModelID": 13,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
-    "1200": {
-      "ID": 1200,
-      "CosmicObjectID": 11,
-      "Title": "SmallDeconstructor",
-      "EquipmentItemModelID": 14,
-      "Count": 1,
-      "EnabledCount": 1,
-      "Enabled": true,
-      "Active": false,
-      "LastRechargeStartTime": 0
-    },
     "1221": {
       "ID": 1221,
       "CosmicObjectID": 1,
@@ -895,6 +785,116 @@
     "1340": {
       "ID": 1340,
       "CosmicObjectID": 13,
+      "Title": "SmallDeconstructor",
+      "EquipmentItemModelID": 14,
+      "Count": 1,
+      "EnabledCount": 1,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1361": {
+      "ID": 1361,
+      "CosmicObjectID": 11,
+      "Title": "SimpleThruster",
+      "EquipmentItemModelID": 1,
+      "Count": 10,
+      "EnabledCount": 10,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1362": {
+      "ID": 1362,
+      "CosmicObjectID": 11,
+      "Title": "SimpleTorquer",
+      "EquipmentItemModelID": 2,
+      "Count": 2,
+      "EnabledCount": 2,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1363": {
+      "ID": 1363,
+      "CosmicObjectID": 11,
+      "Title": "LightCannon120mm",
+      "EquipmentItemModelID": 3,
+      "Count": 1,
+      "EnabledCount": 1,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1364": {
+      "ID": 1364,
+      "CosmicObjectID": 11,
+      "Title": "CompactGenerator",
+      "EquipmentItemModelID": 4,
+      "Count": 4,
+      "EnabledCount": 4,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1365": {
+      "ID": 1365,
+      "CosmicObjectID": 11,
+      "Title": "SmallMelitFuelTank",
+      "EquipmentItemModelID": 5,
+      "Count": 14,
+      "EnabledCount": 14,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1366": {
+      "ID": 1366,
+      "CosmicObjectID": 11,
+      "Title": "SmallCargoContainer",
+      "EquipmentItemModelID": 6,
+      "Count": 2,
+      "EnabledCount": 2,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1367": {
+      "ID": 1367,
+      "CosmicObjectID": 11,
+      "Title": "ReserveCargoContainer",
+      "EquipmentItemModelID": 6,
+      "Count": 1,
+      "EnabledCount": 1,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1368": {
+      "ID": 1368,
+      "CosmicObjectID": 11,
+      "Title": "AuxiliaryCargoContainer",
+      "EquipmentItemModelID": 6,
+      "Count": 1,
+      "EnabledCount": 1,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1369": {
+      "ID": 1369,
+      "CosmicObjectID": 11,
+      "Title": "SmallConstructor",
+      "EquipmentItemModelID": 13,
+      "Count": 1,
+      "EnabledCount": 1,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0
+    },
+    "1370": {
+      "ID": 1370,
+      "CosmicObjectID": 11,
       "Title": "SmallDeconstructor",
       "EquipmentItemModelID": 14,
       "Count": 1,

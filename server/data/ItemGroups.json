@@ -1,5 +1,5 @@
 {
-  "MaxID": 614,
+  "MaxID": 671,
   "Items": {
     "39": {
       "ID": 39,
@@ -382,6 +382,120 @@
     "614": {
       "ID": 614,
       "ContainerEquipmentGroupID": 1336,
+      "ContentItemModelID": 20,
+      "Count": 1000
+    },
+    "653": {
+      "ID": 653,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 3,
+      "Count": 10
+    },
+    "654": {
+      "ID": 654,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 1,
+      "Count": 10
+    },
+    "655": {
+      "ID": 655,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 4,
+      "Count": 10
+    },
+    "656": {
+      "ID": 656,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 6,
+      "Count": 10
+    },
+    "657": {
+      "ID": 657,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 5,
+      "Count": 10
+    },
+    "658": {
+      "ID": 658,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 13,
+      "Count": 10
+    },
+    "659": {
+      "ID": 659,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 14,
+      "Count": 10
+    },
+    "660": {
+      "ID": 660,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 7,
+      "Count": 10
+    },
+    "661": {
+      "ID": 661,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 8,
+      "Count": 1000
+    },
+    "662": {
+      "ID": 662,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 9,
+      "Count": 1000
+    },
+    "663": {
+      "ID": 663,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 10,
+      "Count": 1000
+    },
+    "664": {
+      "ID": 664,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 11,
+      "Count": 1000
+    },
+    "665": {
+      "ID": 665,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 12,
+      "Count": 1000
+    },
+    "666": {
+      "ID": 666,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 15,
+      "Count": 1000
+    },
+    "667": {
+      "ID": 667,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 16,
+      "Count": 1000
+    },
+    "668": {
+      "ID": 668,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 17,
+      "Count": 1000
+    },
+    "669": {
+      "ID": 669,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 18,
+      "Count": 1000
+    },
+    "670": {
+      "ID": 670,
+      "ContainerEquipmentGroupID": 1366,
+      "ContentItemModelID": 19,
+      "Count": 1000
+    },
+    "671": {
+      "ID": 671,
+      "ContainerEquipmentGroupID": 1366,
       "ContentItemModelID": 20,
       "Count": 1000
     }
