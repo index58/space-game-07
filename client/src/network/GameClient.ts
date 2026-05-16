@@ -224,7 +224,8 @@ const isDockingEventMessage = (message: unknown): message is DockingEventMessage
     typeof event.kind === "string" &&
     (event.role === undefined || event.role === "sender" || event.role === "receiver") &&
     (event.message === undefined || typeof event.message === "string") &&
-    (event.duration === undefined || typeof event.duration === "number");
+    (event.duration === undefined || typeof event.duration === "number") &&
+    (event.targetIds === undefined || Array.isArray(event.targetIds));
 };
 
 // Сохраняет секрет, если окружение предоставляет браузерное хранилище.
@@ -432,6 +433,30 @@ export class GameClient {
   // Отправляет отстыковку текущего объекта отдельной WebSocket-командой.
   sendDockingUndock(): void {
     this.sendDockingCommand("dockingUndock");
+  }
+
+  // Отправляет начало пересадки персонажа отдельной WebSocket-командой.
+  sendLandingBegin(): void {
+    this.sendDockingCommand("landingBegin");
+  }
+
+  // Отправляет принятие входящего запроса посадки отдельной WebSocket-командой.
+  sendLandingApprove(): void {
+    this.sendDockingCommand("landingApprove");
+  }
+
+  // Отправляет отказ входящего запроса посадки отдельной WebSocket-командой.
+  sendLandingReject(): void {
+    this.sendDockingCommand("landingReject");
+  }
+
+  // Отправляет запрос посадки в выбранный объект назначения.
+  sendLandingRequest(targetObjectId: number): void {
+    if (this.status !== "connected" || !this.socket || targetObjectId <= 0) {
+      return;
+    }
+
+    this.socket.send(JSON.stringify({ type: "landingRequest", targetObjectId }));
   }
 
   // Отправляет текстовую команду отдельно от потокового управления кораблем.

@@ -562,6 +562,100 @@ func TestDockingRequestRejectsForeignShipWithoutPilotImmediately(t *testing.T) {
 	}
 }
 
+// Проверяет, что пересадка из второстепенного объекта в собственный главный объект сразу меняет местонахождение персонажа.
+func TestBeginCharacterTransferFromSecondaryToOwnedMainMovesCharacter(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 3
+	serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID = 3
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 1
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	if err := gameWorld.BeginCharacterTransfer(1); err != nil {
+		t.Fatalf("begin character transfer: %v", err)
+	}
+
+	if serverData.Characters.Items[1].LocationCosmicObjectID != 3 {
+		t.Fatalf("character location = %d, want 3", serverData.Characters.Items[1].LocationCosmicObjectID)
+	}
+	if objectID, ok := gameWorld.ConnectAccount(1); !ok || objectID != 3 {
+		t.Fatalf("controlled object after reconnect = %d, %v; want 3, true", objectID, ok)
+	}
+}
+
+// Проверяет, что попытка пересадки вне кластера показывает уведомление и оставляет персонажа на месте.
+func TestBeginCharacterTransferOutsideClusterShowsNotification(t *testing.T) {
+	serverData := testWorldData(t)
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	if err := gameWorld.BeginCharacterTransfer(1); err != nil {
+		t.Fatalf("begin character transfer: %v", err)
+	}
+
+	if serverData.Characters.Items[1].LocationCosmicObjectID != 1 {
+		t.Fatalf("character location changed to %d", serverData.Characters.Items[1].LocationCosmicObjectID)
+	}
+	if !dockingEventsContainMessage(gameWorld.DrainDockingEvents(), "Объект не пристыкован") {
+		t.Fatal("missing not-docked notification")
+	}
+}
+
+// Проверяет, что чужой объект с пассажирским креслом получает запрос на посадку и пересадка завершается после одобрения.
+func TestCharacterTransferToForeignObjectWithPassengerSeatWaitsForApproval(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "receiver@email.net", Nickname: "receiver", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 3}
+	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 3
+	serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID = 3
+	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
+	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Пассажирское кресло", TitleEn: "Passenger Seat", Acronym: "PassengerSeat", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Пассажирское кресло", TitleEn: "Passenger Seat", Acronym: "PassengerSeat", ItemtypeID: 19}
+	if _, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: 3, Title: "Passenger Seat", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true}); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Accounts.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Characters.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("sender account was not connected")
+	}
+	if _, ok := gameWorld.ConnectAccount(2); !ok {
+		t.Fatal("receiver account was not connected")
+	}
+
+	if err := gameWorld.BeginCharacterTransfer(1); err != nil {
+		t.Fatalf("begin character transfer: %v", err)
+	}
+	if serverData.Characters.Items[1].LocationCosmicObjectID != 1 {
+		t.Fatalf("character moved before approval to %d", serverData.Characters.Items[1].LocationCosmicObjectID)
+	}
+	if !dockingEventsContainKind(gameWorld.DrainDockingEvents(), "landingRequestStarted") {
+		t.Fatal("landing request window was not shown")
+	}
+	if err := gameWorld.ApproveCharacterLanding(2); err != nil {
+		t.Fatalf("approve character landing: %v", err)
+	}
+
+	if serverData.Characters.Items[1].LocationCosmicObjectID != 3 {
+		t.Fatalf("character location = %d, want 3", serverData.Characters.Items[1].LocationCosmicObjectID)
+	}
+}
+
 func TestUndockMainObjectDisbandsWholeCluster(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 3

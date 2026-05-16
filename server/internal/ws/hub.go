@@ -80,6 +80,9 @@ func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 		mutationSessionID string
 	}, 0, len(hub.clients))
 	for client := range hub.clients {
+		if objectID, ok := hub.world.ObjectIDForAccount(client.accountID); ok {
+			client.objectID = objectID
+		}
 		clients = append(clients, struct {
 			client            *Client
 			mutationSessionID string
@@ -152,6 +155,18 @@ func (hub *Hub) readLoop(client *Client) {
 			if DecodeDockingUndockMessage(payload) {
 				hub.handleDockingUndock(client)
 			}
+			if DecodeLandingBeginMessage(payload) {
+				hub.handleLandingBegin(client)
+			}
+			if DecodeLandingApproveMessage(payload) {
+				hub.handleLandingApprove(client)
+			}
+			if DecodeLandingRejectMessage(payload) {
+				hub.handleLandingReject(client)
+			}
+			if message, ok := DecodeLandingRequestMessage(payload); ok {
+				hub.handleLandingRequest(client, message)
+			}
 			if message, ok := DecodeControlPanelObjectUpdateMessage(payload); ok {
 				hub.handleControlPanelObjectUpdate(client, message)
 			}
@@ -209,6 +224,42 @@ func (hub *Hub) handleDockingReject(client *Client) {
 // handleDockingUndock выводит объект из кластера или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleDockingUndock(client *Client) {
 	if err := hub.world.UndockControlledObject(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+		return
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+}
+
+// handleLandingBegin запускает пересадку персонажа или возвращает причину отказа текущему подключению.
+func (hub *Hub) handleLandingBegin(client *Client) {
+	if err := hub.world.BeginCharacterTransfer(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+		return
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+}
+
+// handleLandingApprove принимает входящий запрос посадки или возвращает причину отказа текущему подключению.
+func (hub *Hub) handleLandingApprove(client *Client) {
+	if err := hub.world.ApproveCharacterLanding(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+		return
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+}
+
+// handleLandingReject отклоняет входящий запрос посадки или возвращает причину отказа текущему подключению.
+func (hub *Hub) handleLandingReject(client *Client) {
+	if err := hub.world.RejectCharacterLanding(client.accountID); err != nil {
+		hub.sendDockingError(client, err.Error())
+		return
+	}
+	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+}
+
+// handleLandingRequest отправляет запрос посадки в выбранный объект назначения.
+func (hub *Hub) handleLandingRequest(client *Client, message LandingRequestMessage) {
+	if err := hub.world.RequestCharacterLanding(client.accountID, message.TargetObjectID); err != nil {
 		hub.sendDockingError(client, err.Error())
 		return
 	}

@@ -51,8 +51,8 @@ type ShipInput struct {
 
 // SnapshotCosmicObject передает объект в снимке мира с временными тестовыми полями клиента.
 type SnapshotCosmicObject struct {
-	data.CosmicObject // Базовые данные объекта из модели игрового мира.
-	OwnerName string `json:"OwnerName,omitempty"` // Временное тестовое имя владельца для информационной панели.
+	data.CosmicObject        // Базовые данные объекта из модели игрового мира.
+	OwnerName         string `json:"OwnerName,omitempty"` // Временное тестовое имя владельца для информационной панели.
 }
 
 // ???????? ?????? ????????? ?????? ???? ?? ?????????? ????.
@@ -94,10 +94,11 @@ type ClientMutationAck struct {
 
 // DockingEvent описывает одно клиентское событие стыковки или уведомление.
 type DockingEvent struct {
-	Type      string  `json:"type"`               // Вид сетевого сообщения для маршрутизации на клиенте.
-	Kind      string  `json:"kind"`               // Вид события стыковки внутри сообщения.
-	Role      string  `json:"role,omitempty"`     // Роль текущего клиента в окне стыковки.
-	Message   string  `json:"message,omitempty"`  // Текст уведомления или причины отказа.
-	Duration  float64 `json:"duration,omitempty"` // Длительность окна с прогрессом в секундах.
-	ObjectIDs []int64 `json:"-"`                  // Объекты, подключенным игрокам которых нужно отправить событие.
+	Type      string  `json:"type"`                // Вид сетевого сообщения для маршрутизации на клиенте.
+	Kind      string  `json:"kind"`                // Вид события стыковки внутри сообщения.
+	Role      string  `json:"role,omitempty"`      // Роль текущего клиента в окне стыковки.
+	Message   string  `json:"message,omitempty"`   // Текст уведомления или причины отказа.
+	Duration  float64 `json:"duration,omitempty"`  // Длительность окна с прогрессом в секундах.
+	ObjectIDs []int64 `json:"-"`                   // Объекты, подключенным игрокам которых нужно отправить событие.
+	TargetIDs []int64 `json:"targetIds,omitempty"` // Объекты назначения, доступные для выбора при пересадке.
 }

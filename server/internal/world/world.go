@@ -69,6 +69,7 @@ type World struct {
 	constructorProductionJobs      []constructorProductionJob // Задания изготовления, ожидающие или выполняющиеся в конструкторах.
 	dockingRequests                []dockingRequest           // Активные запросы стыковки, ожидающие ответа.
 	dockingProcesses               []dockingProcess           // Активные автоматические стыковки, хранящиеся только в памяти.
+	landingRequests                []landingRequest           // Активные запросы посадки персонажа, ожидающие ответа.
 	dockingEvents                  []game.DockingEvent        // Накопленные клиентские события стыковки до ближайшей рассылки.
 }
 
@@ -101,6 +102,12 @@ type dockingRequest struct {
 	SenderCosmicObjectID   int64   // Объект, который отправил запрос.
 	ReceiverCosmicObjectID int64   // Объект, который должен принять решение.
 	RemainingSeconds       float64 // Оставшееся время ожидания ответа.
+}
+
+type landingRequest struct {
+	CharacterID            int64 // Персонаж, который пересаживается.
+	SenderCosmicObjectID   int64 // Объект отправления, где персонаж остается до решения.
+	ReceiverCosmicObjectID int64 // Объект назначения, который должен принять решение.
 }
 
 // ControlPanelObjectUpdate описывает частичное изменение управляемого объекта.
@@ -438,6 +445,90 @@ func (world *World) UndockControlledObject(accountID int64) error {
 	return nil
 }
 
+// BeginCharacterTransfer начинает пересадку текущего персонажа в объект того же кластера.
+func (world *World) BeginCharacterTransfer(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	character, err := world.currentCharacterLocked(accountID)
+	if err != nil {
+		return err
+	}
+	sender, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	if sender.ClusterMainCosmicObjectID <= 0 {
+		world.addDockingNotificationLocked([]int64{sender.ID}, "Объект не пристыкован")
+		return nil
+	}
+	targetID, ok := world.autoLandingTargetIDLocked(sender)
+	if !ok {
+		world.addLandingTargetSelectionLocked(sender.ID)
+		return nil
+	}
+	return world.requestCharacterLandingLocked(character.ID, sender.ID, targetID)
+}
+
+// RequestCharacterLanding отправляет запрос на посадку в выбранный объект назначения.
+func (world *World) RequestCharacterLanding(accountID int64, targetID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	character, err := world.currentCharacterLocked(accountID)
+	if err != nil {
+		return err
+	}
+	sender, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	if sender.ClusterMainCosmicObjectID <= 0 {
+		world.addDockingNotificationLocked([]int64{sender.ID}, "Объект не пристыкован")
+		return nil
+	}
+	return world.requestCharacterLandingLocked(character.ID, sender.ID, targetID)
+}
+
+// ApproveCharacterLanding одобряет единственный входящий запрос посадки для текущего объекта.
+func (world *World) ApproveCharacterLanding(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	receiver, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	requestIndex := world.landingRequestIndexByReceiverLocked(receiver.ID)
+	if requestIndex < 0 {
+		return errors.New("landing request not found")
+	}
+	request := world.landingRequests[requestIndex]
+	world.removeLandingRequestLocked(requestIndex)
+	world.moveCharacterToObjectLocked(request.CharacterID, request.ReceiverCosmicObjectID)
+	world.addLandingWindowEventsLocked("landingFinished", request.SenderCosmicObjectID, request.ReceiverCosmicObjectID)
+	return nil
+}
+
+// RejectCharacterLanding отклоняет единственный входящий запрос посадки для текущего объекта.
+func (world *World) RejectCharacterLanding(accountID int64) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	receiver, err := world.controlledCosmicObjectLocked(accountID)
+	if err != nil {
+		return err
+	}
+	requestIndex := world.landingRequestIndexByReceiverLocked(receiver.ID)
+	if requestIndex < 0 {
+		return errors.New("landing request not found")
+	}
+	request := world.landingRequests[requestIndex]
+	world.removeLandingRequestLocked(requestIndex)
+	world.addLandingWindowEventsLocked("landingFinished", request.SenderCosmicObjectID, request.ReceiverCosmicObjectID)
+	return nil
+}
+
 // ClaimFocusedObjectOwnerForTesting делает объект перед носом текущего корабля собственностью текущего персонажа.
 func (world *World) ClaimFocusedObjectOwnerForTesting(accountID int64) error {
 	world.mu.Lock()
@@ -674,6 +765,146 @@ func (world *World) removeDockingRequestLocked(index int) {
 // closeDockingRequestWindowLocked добавляет событие закрытия окна ожидания ответа.
 func (world *World) closeDockingRequestWindowLocked(request dockingRequest) {
 	world.addDockingWindowEventsLocked("dockingFinished", request.SenderCosmicObjectID, request.ReceiverCosmicObjectID, 0)
+}
+
+// autoLandingTargetIDLocked выбирает единственное назначение пересадки по составу кластера.
+func (world *World) autoLandingTargetIDLocked(sender *data.CosmicObject) (int64, bool) {
+	if sender == nil || sender.ClusterMainCosmicObjectID <= 0 {
+		return 0, false
+	}
+	mainID := sender.ClusterMainCosmicObjectID
+	if sender.ID != mainID {
+		return mainID, true
+	}
+	secondaryIDs := world.secondaryClusterObjectIDsLocked(mainID)
+	if len(secondaryIDs) != 1 {
+		return 0, false
+	}
+	return secondaryIDs[0], true
+}
+
+// requestCharacterLandingLocked применяет правила посадки в выбранный объект назначения.
+func (world *World) requestCharacterLandingLocked(characterID int64, senderID int64, receiverID int64) error {
+	character, ok := world.data.Characters.Get(characterID)
+	if !ok {
+		return errors.New("character not found")
+	}
+	sender, ok := world.data.CosmicObjects.Get(senderID)
+	if !ok {
+		return errors.New("sender object not found")
+	}
+	receiver, ok := world.data.CosmicObjects.Get(receiverID)
+	if !ok {
+		return errors.New("receiver object not found")
+	}
+	if !world.objectsInSameClusterLocked(sender, receiver) || sender.ID == receiver.ID {
+		return errors.New("landing target is not in the same cluster")
+	}
+	if receiver.OwnerCharacterID == character.ID {
+		world.moveCharacterToObjectLocked(character.ID, receiver.ID)
+		return nil
+	}
+	if !world.cosmicObjectHasPassengerSeatLocked(receiver.ID) {
+		world.addDockingNotificationLocked([]int64{sender.ID}, "В объекте назначения не установлено пассажирское кресло")
+		return nil
+	}
+	if world.landingRequestIndexByReceiverLocked(receiver.ID) >= 0 {
+		return errors.New("landing request already exists")
+	}
+	world.landingRequests = append(world.landingRequests, landingRequest{
+		CharacterID:            character.ID,
+		SenderCosmicObjectID:   sender.ID,
+		ReceiverCosmicObjectID: receiver.ID,
+	})
+	world.addLandingWindowEventsLocked("landingRequestStarted", sender.ID, receiver.ID)
+	return nil
+}
+
+// moveCharacterToObjectLocked переносит персонажа и обновляет управляемый объект подключенного аккаунта.
+func (world *World) moveCharacterToObjectLocked(characterID int64, objectID int64) {
+	character, ok := world.data.Characters.Get(characterID)
+	if !ok {
+		return
+	}
+	character.LocationCosmicObjectID = objectID
+	world.accountObjectIDs[character.AccountID] = objectID
+}
+
+// objectsInSameClusterLocked проверяет, что оба объекта входят в один кластер.
+func (world *World) objectsInSameClusterLocked(left *data.CosmicObject, right *data.CosmicObject) bool {
+	return left != nil && right != nil && left.ClusterMainCosmicObjectID > 0 && left.ClusterMainCosmicObjectID == right.ClusterMainCosmicObjectID
+}
+
+// secondaryClusterObjectIDsLocked возвращает второстепенные объекты кластера в стабильном порядке.
+func (world *World) secondaryClusterObjectIDsLocked(mainID int64) []int64 {
+	objectIDs := make([]int64, 0)
+	for _, cosmicObject := range world.data.CosmicObjects.Items {
+		if cosmicObject != nil && cosmicObject.ClusterMainCosmicObjectID == mainID && cosmicObject.ID != mainID {
+			objectIDs = append(objectIDs, cosmicObject.ID)
+		}
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+	return objectIDs
+}
+
+// cosmicObjectHasPassengerSeatLocked проверяет установленное пассажирское кресло по акрониму типа предмета.
+func (world *World) cosmicObjectHasPassengerSeatLocked(objectID int64) bool {
+	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil || world.data.Itemtypes == nil {
+		return false
+	}
+	for _, group := range world.data.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group == nil || group.Count <= 0 {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok {
+			continue
+		}
+		itemtype, ok := world.data.Itemtypes.Get(model.ItemtypeID)
+		if ok && itemtype.Acronym == "PassengerSeat" {
+			return true
+		}
+	}
+	return false
+}
+
+// landingRequestIndexByReceiverLocked ищет активный входящий запрос посадки для объекта.
+func (world *World) landingRequestIndexByReceiverLocked(receiverID int64) int {
+	for index, request := range world.landingRequests {
+		if request.ReceiverCosmicObjectID == receiverID {
+			return index
+		}
+	}
+	return -1
+}
+
+// removeLandingRequestLocked удаляет запрос посадки без сохранения порядка.
+func (world *World) removeLandingRequestLocked(index int) {
+	world.landingRequests = append(world.landingRequests[:index], world.landingRequests[index+1:]...)
+}
+
+// addLandingWindowEventsLocked добавляет парные события окна для пересаживающегося персонажа и объекта назначения.
+func (world *World) addLandingWindowEventsLocked(kind string, senderID int64, receiverID int64) {
+	world.dockingEvents = append(world.dockingEvents,
+		game.DockingEvent{Type: "dockingEvent", Kind: kind, Role: "sender", ObjectIDs: []int64{senderID}},
+		game.DockingEvent{Type: "dockingEvent", Kind: kind, Role: "receiver", ObjectIDs: []int64{receiverID}},
+	)
+}
+
+// addLandingTargetSelectionLocked сообщает клиенту, что нужно выбрать второстепенный объект назначения.
+func (world *World) addLandingTargetSelectionLocked(senderID int64) {
+	sender, ok := world.data.CosmicObjects.Get(senderID)
+	if !ok {
+		return
+	}
+	world.dockingEvents = append(world.dockingEvents, game.DockingEvent{
+		Type:      "dockingEvent",
+		Kind:      "landingTargetSelection",
+		ObjectIDs: []int64{senderID},
+		TargetIDs: world.secondaryClusterObjectIDsLocked(sender.ClusterMainCosmicObjectID),
+	})
 }
 
 // dockingReceiverHasDecisionMakerLocked проверяет, что Получателем сейчас кто-то управляет.

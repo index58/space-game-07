@@ -185,6 +185,10 @@ export class GameScene extends Phaser.Scene {
   private dockingNotifications: DockingNotification[] = [];
   // Следующий локальный идентификатор уведомления.
   private nextDockingNotificationID = 1;
+  // Объекты, доступные для выбора при пересадке из главного объекта.
+  private landingTargetObjectIds: number[] = [];
+  // Текущий выбор в окне пересадки.
+  private selectedLandingTargetObjectId: number | null = null;
 
   constructor(
     // Мост передачи состояния из Phaser в SolidJS UI.
@@ -310,6 +314,8 @@ export class GameScene extends Phaser.Scene {
         chatErrorSeq: 0,
         dockingWindow: this.dockingWindow,
         dockingNotifications: this.dockingNotifications,
+        landingTargetObjectIds: this.landingTargetObjectIds,
+        selectedLandingTargetObjectId: this.selectedLandingTargetObjectId,
         chatContextMenu: null,
         gameCursor: this.inputController.getGameCursor(),
         hoveredGameUiControlId: this.inputController.getHoveredGameUiControlId(),
@@ -398,6 +404,8 @@ export class GameScene extends Phaser.Scene {
       chatErrorSeq: this.gameClient?.getLatestChatErrorSeq() ?? 0,
       dockingWindow: this.dockingWindow,
       dockingNotifications: this.dockingNotifications,
+      landingTargetObjectIds: this.landingTargetObjectIds,
+      selectedLandingTargetObjectId: this.selectedLandingTargetObjectId,
       chatContextMenu: this.inputController.getChatContextMenu(),
       gameCursor: this.inputController.getGameCursor(),
       hoveredGameUiControlId: this.inputController.getHoveredGameUiControlId(),
@@ -825,6 +833,10 @@ export class GameScene extends Phaser.Scene {
   private consumeGameUiActions(): void {
     let action = this.inputController.consumeGameUiAction();
     while (action) {
+      if (this.consumeLandingTargetUiAction(action)) {
+        action = this.inputController.consumeGameUiAction();
+        continue;
+      }
       if (this.inputController.isSettingsVisible() && this.consumeSettingsUiAction(action)) {
         action = this.inputController.consumeGameUiAction();
         continue;
@@ -838,6 +850,39 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // Обрабатывает окно выбора объекта назначения для пересадки.
+  private consumeLandingTargetUiAction(action: GameUiAction): boolean {
+    if (this.landingTargetObjectIds.length === 0 || action.type !== "click") {
+      return false;
+    }
+    if (action.controlId === "landing-target-modal-close-button") {
+      this.closeLandingTargetModal();
+      return true;
+    }
+    if (action.controlId.startsWith("landing-target-list-") && typeof action.value === "string") {
+      const targetID = Number(action.value);
+      if (this.landingTargetObjectIds.includes(targetID)) {
+        this.selectedLandingTargetObjectId = targetID;
+      }
+      return true;
+    }
+    if (action.controlId === "landing-target-send-button") {
+      const targetID = this.selectedLandingTargetObjectId ?? this.landingTargetObjectIds[0] ?? 0;
+      if (targetID > 0) {
+        this.gameClient?.sendLandingRequest(targetID);
+      }
+      this.closeLandingTargetModal();
+      return true;
+    }
+    return action.controlId.startsWith("landing-target-");
+  }
+
+  // Закрывает окно выбора назначения и сбрасывает локальный выбор.
+  private closeLandingTargetModal(): void {
+    this.landingTargetObjectIds = [];
+    this.selectedLandingTargetObjectId = null;
+  }
+
   // Отправляет накопленные клавиатурные команды стыковки отдельными сетевыми пакетами.
   private consumeDockingActions(): void {
     let action = this.inputController.consumeDockingAction();
@@ -845,9 +890,19 @@ export class GameScene extends Phaser.Scene {
       if (action === "request") {
         this.gameClient?.sendDockingRequest();
       } else if (action === "approve") {
-        this.gameClient?.sendDockingApprove();
+        if (this.dockingWindow?.kind === "landingRequest") {
+          this.gameClient?.sendLandingApprove();
+        } else {
+          this.gameClient?.sendDockingApprove();
+        }
       } else if (action === "reject") {
-        this.gameClient?.sendDockingReject();
+        if (this.dockingWindow?.kind === "landingRequest") {
+          this.gameClient?.sendLandingReject();
+        } else {
+          this.gameClient?.sendDockingReject();
+        }
+      } else if (action === "landing") {
+        this.gameClient?.sendLandingBegin();
       } else {
         this.gameClient?.sendDockingUndock();
       }
@@ -873,15 +928,20 @@ export class GameScene extends Phaser.Scene {
       }
       return;
     }
-    if (event.kind === "dockingFinished") {
+    if (event.kind === "dockingFinished" || event.kind === "landingFinished") {
       this.dockingWindow = null;
+      return;
+    }
+    if (event.kind === "landingTargetSelection") {
+      this.landingTargetObjectIds = event.targetIds ?? [];
+      this.selectedLandingTargetObjectId = this.landingTargetObjectIds[0] ?? null;
       return;
     }
     if (!event.role) {
       return;
     }
     this.dockingWindow = {
-      kind: event.kind === "dockingRequestStarted" ? "request" : "process",
+      kind: event.kind === "landingRequestStarted" ? "landingRequest" : event.kind === "dockingRequestStarted" ? "request" : "process",
       role: event.role,
       startedAtMs: nowMs,
       durationMs: Math.max(0, (event.duration ?? 0) * 1000),

@@ -135,6 +135,11 @@ type ControlPanelConstructorQueueCommandMessage struct {
 	Command                     string `json:"command"`                     // Действие над выбранной строкой и следующими строками.
 }
 
+type LandingRequestMessage struct {
+	Type           string `json:"type"`           // Вид команды отправки запроса посадки.
+	TargetObjectID int64  `json:"targetObjectId"` // Объект назначения, выбранный игроком.
+}
+
 type ControlPanelErrorMessage struct {
 	Type            string `json:"type"`            // ??? ?????? ??? ??????????? ??????????????.
 	ClientSessionID string `json:"clientSessionId"` // ??????, ??????? ??????? ???? ?????????.
@@ -210,6 +215,45 @@ func DecodeDockingUndockMessage(payload []byte) bool {
 		return false
 	}
 	return message.Type == "dockingUndock"
+}
+
+// DecodeLandingBeginMessage проверяет команду начала пересадки персонажа.
+func DecodeLandingBeginMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+	return message.Type == "landingBegin"
+}
+
+// DecodeLandingApproveMessage проверяет команду одобрения входящего запроса посадки.
+func DecodeLandingApproveMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+	return message.Type == "landingApprove"
+}
+
+// DecodeLandingRejectMessage проверяет команду отказа входящему запросу посадки.
+func DecodeLandingRejectMessage(payload []byte) bool {
+	var message clientMessageType
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return false
+	}
+	return message.Type == "landingReject"
+}
+
+// DecodeLandingRequestMessage проверяет команду посадки в выбранный объект.
+func DecodeLandingRequestMessage(payload []byte) (LandingRequestMessage, bool) {
+	var message LandingRequestMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return LandingRequestMessage{}, false
+	}
+	if message.Type != "landingRequest" || message.TargetObjectID <= 0 {
+		return LandingRequestMessage{}, false
+	}
+	return message, true
 }
 
 // DecodeInputSettingsRequestMessage ?????????, ??? ?????? ???????? ?????? ????????? ?????.

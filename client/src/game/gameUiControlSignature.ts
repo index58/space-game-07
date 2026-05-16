@@ -34,6 +34,14 @@ export const getGameUiControlLayoutSignature = (
     visible: state.uiKitShowcaseVisible,
     state: state.uiKitDemoState,
   },
+  landingTarget: {
+    ids: (state.landingTargetObjectIds ?? []).join(","),
+    selectedId: state.selectedLandingTargetObjectId,
+    titles: state.objects
+      .filter((object) => (state.landingTargetObjectIds ?? []).includes(object.ID))
+      .map((object) => `${object.ID}:${object.Title}`)
+      .join("|"),
+  },
   settings: {
     visible: state.settingsVisible,
     selectedTab: state.selectedSettingsTab,

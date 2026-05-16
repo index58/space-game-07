@@ -49,6 +49,7 @@ export const GameUi = (props: GameUiProps) => (
       <SettingsModal state={props.state} />
       <ControlPanelModal state={props.state} />
       <ControlPanelConstructorRecipeTooltip state={props.state} />
+      <LandingTargetModal state={props.state} />
       <DockingOverlay state={props.state} />
       <GameCursor state={props.state} />
     </Show>
@@ -115,14 +116,40 @@ const DockingOverlay = (props: DockingOverlayProps) => (
   </div>
 );
 
+// Показывает выбор объекта назначения, когда в кластере несколько второстепенных объектов.
+const LandingTargetModal = (props: DockingOverlayProps) => {
+  const targetIds = () => props.state().landingTargetObjectIds ?? [];
+  const items = () => targetIds().map((id) => {
+    const object = props.state().objects.find((candidate) => candidate.ID === id);
+    return { value: String(id), label: object?.Title?.trim() || `Объект ${id}` };
+  });
+  const selectedValue = () => String(props.state().selectedLandingTargetObjectId ?? targetIds()[0] ?? "");
+
+  return (
+    <Show when={targetIds().length > 0}>
+      <Portal>
+        <Modal id="landing-target-modal" title="Выбор объекта назначения">
+          <ListBox id="landing-target-list" items={items()} selectedValue={selectedValue()} />
+          <div class="ui-kit-dialog__actions">
+            <Button id="landing-target-send-button" label="Отправить запрос на посадку" />
+          </div>
+        </Modal>
+      </Portal>
+    </Show>
+  );
+};
+
 // Возвращает заголовок маленького окна по фазе стыковки.
 const getDockingWindowTitle = (state: NonNullable<GameUiState["dockingWindow"]>): string =>
-  state.kind === "request" ? "Запрос стыковки" : "Стыковка";
+  state.kind === "landingRequest" ? "Запрос посадки" : state.kind === "request" ? "Запрос стыковки" : "Стыковка";
 
 // Возвращает текст маленького окна по роли текущего клиента.
 const getDockingWindowText = (state: NonNullable<GameUiState["dockingWindow"]>): string => {
   if (state.kind === "process") {
     return "Автоматическая стыковка";
+  }
+  if (state.kind === "landingRequest") {
+    return state.role === "sender" ? "Ожидание ответа" : "Входящий запрос на посадку";
   }
   return state.role === "sender" ? "Ожидание ответа" : "Входящий запрос";
 };

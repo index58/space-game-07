@@ -95,6 +95,27 @@ func TestDecodeDockingUndockMessageAcceptsAgreedType(t *testing.T) {
 	}
 }
 
+// Проверяет, что команда начала пересадки принимается без дополнительных полей.
+func TestDecodeLandingBeginMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeLandingBeginMessage([]byte(`{"type":"landingBegin"}`)) {
+		t.Fatalf("landing begin message was not accepted")
+	}
+}
+
+// Проверяет, что команда одобрения посадки принимается без идентификатора запроса.
+func TestDecodeLandingApproveMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeLandingApproveMessage([]byte(`{"type":"landingApprove"}`)) {
+		t.Fatalf("landing approve message was not accepted")
+	}
+}
+
+// Проверяет, что команда отказа посадки принимается без идентификатора запроса.
+func TestDecodeLandingRejectMessageAcceptsAgreedType(t *testing.T) {
+	if !transport.DecodeLandingRejectMessage([]byte(`{"type":"landingReject"}`)) {
+		t.Fatalf("landing reject message was not accepted")
+	}
+}
+
 // Проверяет, что запрос свежих настроек ввода принимается по согласованному типу.
 func TestDecodeInputSettingsRequestMessageAcceptsAgreedType(t *testing.T) {
 	if !transport.DecodeInputSettingsRequestMessage([]byte(`{"type":"inputSettingsRequest"}`)) {

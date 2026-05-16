@@ -8,7 +8,7 @@ import { isFreshKeyboardBinding, isFreshKeyboardEventBinding, isFreshKeyDown, to
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
 
-export type DockingAction = "request" | "approve" | "reject" | "undock";
+export type DockingAction = "request" | "approve" | "reject" | "undock" | "landing";
 
 export type ChatSelectAction = {
   // Чат, который игрок выбрал игровым указателем.
@@ -696,6 +696,9 @@ export class InputController {
     }
     if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingUndock)) {
       return "undock";
+    }
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.LandingBegin)) {
+      return "landing";
     }
     return getDefaultDockingActionFromKey(event, wasPressed);
   }
@@ -1680,6 +1683,9 @@ const getDefaultDockingActionFromKey = (event: KeyboardEvent, wasPressed: boolea
   }
   if (event.code === "Minus" || event.code === "NumpadSubtract") {
     return event.shiftKey ? "undock" : "reject";
+  }
+  if (event.code === "Slash" || event.code === "NumpadDivide") {
+    return "landing";
   }
   return null;
 };

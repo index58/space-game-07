@@ -328,6 +328,30 @@ describe("InputController", () => {
     expect(controller.consumeDockingAction()).toBe("request");
   });
 
+  // Проверяет, что базовое сочетание начала пересадки ставит одноразовую команду посадки.
+  it("returns landing request once from Alt Slash", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("Slash", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("landing");
+    expect(controller.consumeDockingAction()).toBeNull();
+  });
+
+  // Проверяет, что начало пересадки работает с клавишей деления на цифровом блоке.
+  it("returns landing request once from Alt NumpadDivide", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("NumpadDivide", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("landing");
+    expect(controller.consumeDockingAction()).toBeNull();
+  });
+
   // Проверяет тестовую команду присвоения объекта по сочетанию Alt и обратной косой черты.
   it("returns test owner claim request once from Alt Backslash", () => {
     const canvas = document.createElement("canvas");

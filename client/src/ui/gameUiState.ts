@@ -51,6 +51,10 @@ export type GameUiState = {
   dockingWindow?: DockingWindowState | null;
   // Отдельные уведомления стыковки, видимые до автоматического скрытия.
   dockingNotifications?: DockingNotification[];
+  // Список объектов назначения для окна выбора пересадки.
+  landingTargetObjectIds?: number[];
+  // Выбранный объект назначения для пересадки.
+  selectedLandingTargetObjectId?: number | null;
   // Открытое игровое меню вкладки, если игрок вызвал его правым кликом.
   chatContextMenu: ChatContextMenuState | null;
   // Положение и видимость игрового указателя мыши.
@@ -193,6 +197,8 @@ const initialGameUiState: GameUiState = {
   chatErrorSeq: 0,
   dockingWindow: null,
   dockingNotifications: [],
+  landingTargetObjectIds: [],
+  selectedLandingTargetObjectId: null,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },
   hoveredGameUiControlId: null,

@@ -37,10 +37,10 @@ export type TestClaimFocusedObjectOwnerMessage = {
 
 export type DockingCommandMessage = {
   // Вид отдельной команды стыковки для серверного маршрутизатора.
-  type: "dockingRequest" | "dockingApprove" | "dockingReject" | "dockingUndock";
+  type: "dockingRequest" | "dockingApprove" | "dockingReject" | "dockingUndock" | "landingBegin" | "landingApprove" | "landingReject" | "landingRequest";
 };
 
-export type DockingEventKind = "dockingRequestStarted" | "dockingProcessStarted" | "dockingFinished" | "dockingNotification";
+export type DockingEventKind = "dockingRequestStarted" | "dockingProcessStarted" | "dockingFinished" | "dockingNotification" | "landingRequestStarted" | "landingFinished" | "landingTargetSelection";
 
 export type DockingEventMessage = {
   // Вид сообщения, по которому клиент отличает события стыковки от снимков мира.
@@ -53,11 +53,13 @@ export type DockingEventMessage = {
   message?: string;
   // Длительность окна с прогрессом в секундах.
   duration?: number;
+  // Объекты назначения, доступные для выбора при пересадке.
+  targetIds?: number[];
 };
 
 export type DockingWindowState = {
   // Фаза, от которой зависит текст маленького окна.
-  kind: "request" | "process";
+  kind: "request" | "process" | "landingRequest";
   // Роль текущего клиента в парном окне.
   role: "sender" | "receiver";
   // Время появления окна в миллисекундах игрового кадра.
