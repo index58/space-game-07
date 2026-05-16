@@ -192,17 +192,17 @@
     },
     "28": {
       "ID": 28,
-      "TitleRu": "Одобрить запрос на стыковку",
-      "TitleEn": "Approve docking request",
-      "Acronym": "DockingApprove",
-      "Description": "Отправляет одноразовую команду одобрения входящего запроса на стыковку."
+      "TitleRu": "Одобрить запрос",
+      "TitleEn": "Approve request",
+      "Acronym": "ApproveRequest",
+      "Description": "Отправляет одноразовую команду одобрения входящего запроса."
     },
     "29": {
       "ID": 29,
-      "TitleRu": "Отказать запросу на стыковку",
-      "TitleEn": "Reject docking request",
-      "Acronym": "DockingReject",
-      "Description": "Отправляет одноразовую команду отказа на входящий запрос стыковки."
+      "TitleRu": "Отклонить запрос",
+      "TitleEn": "Reject request",
+      "Acronym": "RejectRequest",
+      "Description": "Отправляет одноразовую команду отклонения входящего запроса."
     },
     "30": {
       "ID": 30,

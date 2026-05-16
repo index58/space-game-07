@@ -688,10 +688,10 @@ export class InputController {
     if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingRequest)) {
       return "request";
     }
-    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingApprove)) {
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.ApproveRequest) || isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingApprove)) {
       return "approve";
     }
-    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingReject)) {
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.RejectRequest) || isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingReject)) {
       return "reject";
     }
     if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.DockingUndock)) {
@@ -1673,16 +1673,22 @@ const scrollableListIdFromControl = (control: GameUiControlState): string | null
   return listRoot?.id ?? control.id;
 };
 
-// Преобразует базовые сочетания Alt с плюсами и минусами в команды стыковки.
+// Преобразует базовые сочетания Alt в одноразовые команды запросов и стыковки.
 const getDefaultDockingActionFromKey = (event: KeyboardEvent, wasPressed: boolean): DockingAction | null => {
   if (!event.altKey || wasPressed) {
     return null;
   }
   if (event.code === "Equal" || event.code === "NumpadAdd") {
-    return event.shiftKey ? "request" : "approve";
+    return "request";
   }
   if (event.code === "Minus" || event.code === "NumpadSubtract") {
-    return event.shiftKey ? "undock" : "reject";
+    return "undock";
+  }
+  if (event.code === "Digit1" || event.code === "Numpad1") {
+    return "approve";
+  }
+  if (event.code === "Digit2" || event.code === "Numpad2") {
+    return "reject";
   }
   if (event.code === "Slash" || event.code === "NumpadDivide") {
     return "landing";

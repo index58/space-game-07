@@ -134,22 +134,22 @@
     "27": {
       "ID": 27,
       "ActionTypeID": 27,
-      "InputEventTypeID": 183
+      "InputEventTypeID": 184
     },
     "28": {
       "ID": 28,
       "ActionTypeID": 28,
-      "InputEventTypeID": 184
+      "InputEventTypeID": 183
     },
     "29": {
       "ID": 29,
       "ActionTypeID": 29,
-      "InputEventTypeID": 185
+      "InputEventTypeID": 186
     },
     "30": {
       "ID": 30,
       "ActionTypeID": 30,
-      "InputEventTypeID": 186
+      "InputEventTypeID": 185
     }
   }
 }

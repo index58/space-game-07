@@ -88,14 +88,14 @@ const DockingOverlay = (props: DockingOverlayProps) => (
                 <span class="docking-window__hint-separator"> — </span>
                 <span class="docking-window__hint-key">Alt</span>
                 <span class="docking-window__hint-plus"> + </span>
-                <span class="docking-window__hint-key">+</span>
+                <span class="docking-window__hint-key">1</span>
               </div>
               <div class="docking-window__hint">
-                <span class="docking-window__hint-action docking-window__hint-action--reject">Отказать</span>
+                <span class="docking-window__hint-action docking-window__hint-action--reject">Отклонить</span>
                 <span class="docking-window__hint-separator"> — </span>
                 <span class="docking-window__hint-key">Alt</span>
                 <span class="docking-window__hint-plus"> + </span>
-                <span class="docking-window__hint-key">-</span>
+                <span class="docking-window__hint-key">2</span>
               </div>
             </div>
           </Show>

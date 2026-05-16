@@ -274,16 +274,16 @@ describe("GameUi", () => {
     })} />, root);
 
     expect(Array.from(root.querySelectorAll(".docking-window__hint")).map((hint) => hint.textContent)).toEqual([
-      "Одобрить — Alt + +",
-      "Отказать — Alt + -",
+      "Одобрить — Alt + 1",
+      "Отклонить — Alt + 2",
     ]);
     expect(root.querySelector(".docking-window__hint-action--approve")?.textContent).toBe("Одобрить");
-    expect(root.querySelector(".docking-window__hint-action--reject")?.textContent).toBe("Отказать");
+    expect(root.querySelector(".docking-window__hint-action--reject")?.textContent).toBe("Отклонить");
     expect(Array.from(root.querySelectorAll(".docking-window__hint-key")).map((key) => key.textContent)).toEqual([
       "Alt",
-      "+",
+      "1",
       "Alt",
-      "-",
+      "2",
     ]);
     expect(root.querySelector(".docking-window__hint")?.classList.contains("docking-window__hint-key")).toBe(false);
   });

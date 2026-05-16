@@ -1641,12 +1641,12 @@
     },
     "183": {
       "ID": 183,
-      "TitleRu": "Alt Shift +",
-      "TitleEn": "Alt Shift +",
-      "Acronym": "KeyboardAltShiftEqual",
-      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.shiftKey\u0026\u0026KeyboardEvent.code:Equal",
+      "TitleRu": "Alt 1",
+      "TitleEn": "Alt 1",
+      "Acronym": "KeyboardAltDigit1",
+      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.code:Digit1",
       "SystemIntegerValue": 0,
-      "Description": "Первичное нажатие клавиши + при удержанных Alt и Shift."
+      "Description": "Первичное нажатие клавиши 1 при удержанном Alt."
     },
     "184": {
       "ID": 184,
@@ -1668,12 +1668,12 @@
     },
     "186": {
       "ID": 186,
-      "TitleRu": "Alt Shift -",
-      "TitleEn": "Alt Shift -",
-      "Acronym": "KeyboardAltShiftMinus",
-      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.shiftKey\u0026\u0026KeyboardEvent.code:Minus",
+      "TitleRu": "Alt 2",
+      "TitleEn": "Alt 2",
+      "Acronym": "KeyboardAltDigit2",
+      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.code:Digit2",
       "SystemIntegerValue": 0,
-      "Description": "Первичное нажатие клавиши - при удержанных Alt и Shift."
+      "Description": "Первичное нажатие клавиши 2 при удержанном Alt."
     }
   }
 }

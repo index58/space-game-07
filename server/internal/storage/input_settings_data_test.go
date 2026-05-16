@@ -15,10 +15,10 @@ func TestServerDataContainsDockingInputActions(t *testing.T) {
 	}
 
 	expected := map[string]string{
-		"DockingRequest": "KeyboardEvent.altKey&&KeyboardEvent.shiftKey&&KeyboardEvent.code:Equal",
-		"DockingApprove": "KeyboardEvent.altKey&&KeyboardEvent.code:Equal",
-		"DockingReject":  "KeyboardEvent.altKey&&KeyboardEvent.code:Minus",
-		"DockingUndock":  "KeyboardEvent.altKey&&KeyboardEvent.shiftKey&&KeyboardEvent.code:Minus",
+		"DockingRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:Equal",
+		"ApproveRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:Digit1",
+		"RejectRequest":  "KeyboardEvent.altKey&&KeyboardEvent.code:Digit2",
+		"DockingUndock":  "KeyboardEvent.altKey&&KeyboardEvent.code:Minus",
 	}
 	for acronym, systemStringValue := range expected {
 		action := serverData.ActionTypes.ByAcronym[acronym]

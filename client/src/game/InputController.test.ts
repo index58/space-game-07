@@ -328,6 +328,54 @@ describe("InputController", () => {
     expect(controller.consumeDockingAction()).toBe("request");
   });
 
+  // Проверяет, что новая базовая клавиша отправляет запрос стыковки без Shift.
+  it("returns docking request once from Alt Equal", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("Equal", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("request");
+    expect(controller.consumeDockingAction()).toBeNull();
+  });
+
+  // Проверяет, что новая базовая клавиша отстыковывает объект без Shift.
+  it("returns undock once from Alt Minus", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("Minus", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("undock");
+    expect(controller.consumeDockingAction()).toBeNull();
+  });
+
+  // Проверяет, что общее одобрение запроса выполняется через первую цифровую клавишу.
+  it("returns approval request once from Alt Digit1", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("Digit1", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("approve");
+    expect(controller.consumeDockingAction()).toBeNull();
+  });
+
+  // Проверяет, что общий отказ запроса выполняется через вторую цифровую клавишу.
+  it("returns rejection request once from Alt Digit2", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("Digit2", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("reject");
+    expect(controller.consumeDockingAction()).toBeNull();
+  });
+
   // Проверяет, что базовое сочетание начала пересадки ставит одноразовую команду посадки.
   it("returns landing request once from Alt Slash", () => {
     const canvas = document.createElement("canvas");
