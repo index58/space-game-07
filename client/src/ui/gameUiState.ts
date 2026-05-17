@@ -9,6 +9,7 @@ export type SettingsTabValue = "video" | "audio" | "input";
 export type ControlPanelTabValue = "object" | "equipment" | "pilotTools" | "schemas" | "blueprints" | "map";
 export type ControlPanelEquipmentSubTabValue = "setup" | "usage";
 export type ControlPanelConstructorTabValue = "items" | "objects";
+export type ControlPanelUsageSelectValue = "leftObject" | "left" | "rightObject" | "right" | "constructorMaterialObject" | "constructorMaterials" | "constructorProductObject" | "constructorProducts";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
@@ -77,18 +78,28 @@ export type GameUiState = {
   selectedControlPanelEquipmentTab: ControlPanelEquipmentSubTabValue;
   // ID выбранной группы оборудования в панели управления.
   selectedControlPanelEquipmentGroupId: number | null;
+  // ID объекта для левого контейнера использования.
+  selectedControlPanelUsageLeftObjectId: number | null;
+  // ID объекта для правого оборудования использования.
+  selectedControlPanelUsageRightObjectId: number | null;
+  // ID объекта для контейнера материалов конструктора.
+  selectedControlPanelConstructorMaterialObjectId: number | null;
+  // ID объекта для контейнера продукции конструктора.
+  selectedControlPanelConstructorProductObjectId: number | null;
   // ID контейнера в левой панели подвкладки использования.
   selectedControlPanelUsageLeftContainerGroupId: number | null;
   // ID оборудования в правой панели подвкладки использования.
   selectedControlPanelUsageRightEquipmentGroupId: number | null;
   // Открытый выпадающий список подвкладки использования.
-  openControlPanelUsageSelect: "left" | "right" | "constructorMaterials" | null;
+  openControlPanelUsageSelect: ControlPanelUsageSelectValue | null;
   // ID выбранных строк содержимого левого контейнера.
   selectedControlPanelUsageLeftItemGroupIds: number[];
   // ID выбранных строк содержимого правого контейнера.
   selectedControlPanelUsageRightItemGroupIds: number[];
   // ID контейнера материалов в использовании конструктора.
   selectedControlPanelConstructorMaterialContainerGroupId: number | null;
+  // ID контейнера продукции в использовании конструктора.
+  selectedControlPanelConstructorProductContainerGroupId: number | null;
   // Активная вкладка верхней части конструктора.
   selectedControlPanelConstructorTab: ControlPanelConstructorTabValue;
   // ID выбранной схемы предмета в конструкторе.
@@ -210,12 +221,17 @@ const initialGameUiState: GameUiState = {
   selectedControlPanelTab: "object",
   selectedControlPanelEquipmentTab: "setup",
   selectedControlPanelEquipmentGroupId: null,
+  selectedControlPanelUsageLeftObjectId: null,
+  selectedControlPanelUsageRightObjectId: null,
+  selectedControlPanelConstructorMaterialObjectId: null,
+  selectedControlPanelConstructorProductObjectId: null,
   selectedControlPanelUsageLeftContainerGroupId: null,
   selectedControlPanelUsageRightEquipmentGroupId: null,
   openControlPanelUsageSelect: null,
   selectedControlPanelUsageLeftItemGroupIds: [],
   selectedControlPanelUsageRightItemGroupIds: [],
   selectedControlPanelConstructorMaterialContainerGroupId: null,
+  selectedControlPanelConstructorProductContainerGroupId: null,
   selectedControlPanelConstructorTab: "items",
   selectedControlPanelConstructorSchemaId: null,
   selectedControlPanelConstructorBlueprintId: null,

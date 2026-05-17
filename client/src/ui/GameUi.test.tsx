@@ -161,12 +161,17 @@ const state = (): GameUiState => ({
   selectedControlPanelTab: "object",
   selectedControlPanelEquipmentTab: "setup",
   selectedControlPanelEquipmentGroupId: null,
+  selectedControlPanelUsageLeftObjectId: null,
+  selectedControlPanelUsageRightObjectId: null,
+  selectedControlPanelConstructorMaterialObjectId: null,
+  selectedControlPanelConstructorProductObjectId: null,
   selectedControlPanelUsageLeftContainerGroupId: null,
   selectedControlPanelUsageRightEquipmentGroupId: null,
   openControlPanelUsageSelect: null,
   selectedControlPanelUsageLeftItemGroupIds: [],
   selectedControlPanelUsageRightItemGroupIds: [],
   selectedControlPanelConstructorMaterialContainerGroupId: null,
+  selectedControlPanelConstructorProductContainerGroupId: null,
   selectedControlPanelConstructorTab: "items",
   selectedControlPanelConstructorSchemaId: null,
   selectedControlPanelConstructorBlueprintId: null,
@@ -761,6 +766,62 @@ describe("GameUi", () => {
   });
 
   // Проверяет, что выбранный конструктор показывает схемы, чертежи и отдельный контейнер материалов.
+  // Проверяет, что выбор использования разделён на объект кластера и группу оборудования выбранного объекта.
+  it("renders cluster object selects before usage equipment selects", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const equipmentReferenceData = {
+      ...referenceData,
+      Itemtype: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "FuelTank", IsPilotInstrument: false, IsInternalUsable: true },
+        },
+      },
+      ItemModel: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemtypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
+        },
+      },
+    } as unknown as ReferenceDataMessage;
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selfObject: object({ ID: 1, Title: "База", OwnerCharacterID: 7, ClusterMainCosmicObjectID: 1 }),
+      objects: [
+        object({ ID: 1, Title: "База", OwnerCharacterID: 7, ClusterMainCosmicObjectID: 1 }),
+        object({ ID: 2, Title: "Буксир", OwnerCharacterID: 7, ClusterMainCosmicObjectID: 1 }),
+        object({ ID: 3, Title: "Чужой", OwnerCharacterID: 8, ClusterMainCosmicObjectID: 1 }),
+      ],
+      selectedControlPanelUsageLeftObjectId: 2,
+      selectedControlPanelUsageLeftContainerGroupId: 20,
+      selectedControlPanelUsageRightObjectId: 1,
+      selectedControlPanelUsageRightEquipmentGroupId: 11,
+      selectedControlPanelConstructorMaterialObjectId: 2,
+      selectedControlPanelConstructorMaterialContainerGroupId: 20,
+      openControlPanelUsageSelect: "leftObject",
+      referenceData: equipmentReferenceData,
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 1, Title: "Склад базы", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 11, CosmicObjectID: 1, Title: "Бак базы", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 20, CosmicObjectID: 2, Title: "Склад буксира", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 30, CosmicObjectID: 3, Title: "Чужой склад", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-usage-left-object-select .ui-kit-dropdown__value")?.textContent).toBe("Буксир");
+    expect(root.querySelector("#control-panel-usage-left-container-select .ui-kit-dropdown__value")?.textContent).toBe("Склад буксира");
+    expect(root.querySelector("#control-panel-usage-right-object-select .ui-kit-dropdown__value")?.textContent).toBe("База");
+    expect(root.querySelector("#control-panel-usage-right-equipment-select .ui-kit-dropdown__value")?.textContent).toBe("Бак базы");
+    expect(document.querySelector("#control-panel-usage-left-object-select .ui-kit-dropdown__menu")?.textContent ?? "").not.toContain("Чужой");
+  });
+
   it("renders control panel equipment usage constructor UI", async () => {
     const root = document.createElement("div");
     document.body.append(root);
@@ -823,9 +884,10 @@ describe("GameUi", () => {
       selectedControlPanelEquipmentTab: "usage",
       gameCursor: { visible: true, x: 240, y: 180 },
       hoveredGameUiControlId: "control-panel-constructor-schema-list-1",
-      selectedControlPanelUsageLeftContainerGroupId: 10,
+      selectedControlPanelUsageLeftContainerGroupId: 13,
       selectedControlPanelUsageRightEquipmentGroupId: 11,
       selectedControlPanelConstructorMaterialContainerGroupId: 12,
+      selectedControlPanelConstructorProductContainerGroupId: 10,
       selectedControlPanelConstructorSchemaId: 1,
       selectedControlPanelConstructorMainJobId: 1,
       referenceData: equipmentReferenceData,
@@ -833,6 +895,7 @@ describe("GameUi", () => {
         { ID: 10, CosmicObjectID: 1, Title: "Продукция", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
         { ID: 11, CosmicObjectID: 1, Title: "Сборщик", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
         { ID: 12, CosmicObjectID: 1, Title: "Материалы", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 13, CosmicObjectID: 1, Title: "Обычный левый", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
       ],
       itemGroups: [
         { ID: 1, ContainerEquipmentGroupID: 12, ContentItemModelID: 3, Count: 15 },
@@ -847,7 +910,8 @@ describe("GameUi", () => {
     })} />, root);
 
     expect(root.querySelector(".control-panel-equipment-usage--constructor")).not.toBeNull();
-    expect(root.querySelector("#control-panel-usage-left-container-select .ui-kit-dropdown__value")?.textContent).toBe("Продукция");
+    expect(root.querySelector("#control-panel-constructor-product-select .ui-kit-dropdown__value")?.textContent).toBe("Продукция");
+    expect(root.querySelector("#control-panel-usage-left-container-select")).toBeNull();
     expect(root.querySelector("#control-panel-constructor-material-select .ui-kit-dropdown__value")?.textContent).toBe("Материалы");
     expect(root.querySelector("#control-panel-usage-left-container-content-2")?.textContent).toBe("Пластина2");
     expect(root.querySelector(".control-panel-constructor-storage")?.closest(".control-panel-equipment-usage__panel--left")).not.toBeNull();

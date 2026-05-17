@@ -1142,6 +1142,13 @@ body {
   overflow: hidden;
 }
 
+.control-panel-usage-select-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.8vh;
+  min-width: 0;
+}
+
 .control-panel-equipment-usage--constructor .control-panel-equipment-usage__panel--left {
   grid-template-rows: minmax(0, 1fr);
 }

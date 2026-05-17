@@ -1,7 +1,7 @@
 import { createMemo, For, Match, Show, Switch, type Accessor, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 import { formatNumber } from "../domain/format";
-import type { BlueprintReference, ConstructorProductionJob, EquipmentGroup, ItemGroup, ItemModelReference, SchemaReference } from "../network/protocol";
+import type { BlueprintReference, ConstructorProductionJob, CosmicObject, EquipmentGroup, ItemGroup, ItemModelReference, SchemaReference } from "../network/protocol";
 import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiState, SettingsTabValue } from "./gameUiState";
 import { getDebugOverlayLines } from "./debugOverlay";
 import { getObjectIndicators, type ObjectIndicatorView } from "./objectIndicators";
@@ -10,6 +10,7 @@ import { getPilotToolbarView, type PilotToolSlotView } from "./pilotToolbar";
 import { getInformationPanelView, type InformationPanelRow } from "./informationPanel";
 import { getInputEventOptions, getInputSettingsLeftColumnRowCount, getInputSettingsRows, type InputSettingsRow } from "./inputSettings";
 import { Button, Checkbox, ContextMenu, Dropdown, EditControl, ListBox, Modal, NumericStepper, RadioGroup, Scrollbar, Slider, Splitter, Tabs, TextInput, Tooltip, TreeView, VirtualList } from "../ui-kit/components";
+import { getAvailableClusterObjectIDs } from "../game/controlPanelUsageSelection";
 
 type HudPanelPosition = "left-bottom" | "left-middle" | "bottom-center" | "right-middle" | "right-bottom" | "left-top";
 
@@ -674,16 +675,33 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
   const modelTitle = createMemo(() => getControlPanelModelTitle(props.state()));
   const rows = createMemo(() => getControlPanelObjectRows(props.state()));
   const equipmentGroups = createMemo(() => getControlPanelEquipmentGroups(props.state()));
+  const usageObjectIDs = createMemo(() => {
+    const selfObject = props.state().selfObject;
+    return selfObject ? getAvailableClusterObjectIDs(selfObject.ID, props.state().objects) : [];
+  });
+  const usageObjects = createMemo(() => usageObjectIDs().map((id) => props.state().objects.find((object) => object.ID === id)).filter((object): object is CosmicObject => Boolean(object)));
+  const usageEquipmentGroups = createMemo(() => getControlPanelEquipmentViews(props.state()).filter((equipment) => usageObjectIDs().includes(equipment.group.CosmicObjectID)));
   const selectedEquipment = createMemo(() => getSelectedControlPanelEquipment(equipmentGroups(), props.state().selectedControlPanelEquipmentGroupId));
   const selectedEquipmentEnabled = createMemo(() => getControlPanelEquipmentEnabled(props.state(), selectedEquipment()));
   const selectedEquipmentEnabledCount = createMemo(() => getControlPanelEquipmentEnabledCount(props.state(), selectedEquipment()));
   const selectedEquipmentCanBeUsed = createMemo(() => canUseControlPanelEquipment(props.state(), selectedEquipment()));
   const selectedEquipmentRows = createMemo(() => getControlPanelEquipmentInfoRows(selectedEquipment()));
-  const usageContainers = createMemo(() => getControlPanelContainerEquipment(equipmentGroups(), props.state()));
-  const usageInternalEquipment = createMemo(() => getControlPanelInternalEquipment(equipmentGroups(), props.state()));
-  const usageLeftContainer = createMemo(() => getSelectedControlPanelEquipment(usageContainers(), props.state().selectedControlPanelUsageLeftContainerGroupId));
-  const usageRightEquipment = createMemo(() => getSelectedControlPanelEquipment(usageInternalEquipment(), props.state().selectedControlPanelUsageRightEquipmentGroupId));
-  const usageConstructorMaterialContainer = createMemo(() => getSelectedControlPanelEquipment(usageContainers(), props.state().selectedControlPanelConstructorMaterialContainerGroupId));
+  const usageContainers = createMemo(() => getControlPanelContainerEquipment(usageEquipmentGroups(), props.state()));
+  const usageInternalEquipment = createMemo(() => getControlPanelInternalEquipment(usageEquipmentGroups(), props.state()));
+  const usageLeftObject = createMemo(() => usageObjects().find((object) => object?.ID === props.state().selectedControlPanelUsageLeftObjectId) ?? usageObjects()[0] ?? null);
+  const usageRightObject = createMemo(() => usageObjects().find((object) => object?.ID === props.state().selectedControlPanelUsageRightObjectId) ?? usageObjects()[0] ?? null);
+  const usageConstructorMaterialObject = createMemo(() => usageObjects().find((object) => object?.ID === props.state().selectedControlPanelConstructorMaterialObjectId) ?? usageObjects()[0] ?? null);
+  const usageConstructorProductObject = createMemo(() => usageObjects().find((object) => object?.ID === props.state().selectedControlPanelConstructorProductObjectId) ?? usageObjects()[0] ?? null);
+  const usageLeftContainers = createMemo(() => usageContainers().filter((equipment) => equipment.group.CosmicObjectID === usageLeftObject()?.ID));
+  const usageRightInternalEquipment = createMemo(() => usageInternalEquipment().filter((equipment) => equipment.group.CosmicObjectID === usageRightObject()?.ID));
+  const usageConstructorMaterialContainers = createMemo(() => usageContainers().filter((equipment) => equipment.group.CosmicObjectID === usageConstructorMaterialObject()?.ID));
+  const usageConstructorProductContainers = createMemo(() => usageContainers().filter((equipment) => equipment.group.CosmicObjectID === usageConstructorProductObject()?.ID));
+  const usageLeftContainer = createMemo(() => getSelectedControlPanelEquipment(usageLeftContainers(), props.state().selectedControlPanelUsageLeftContainerGroupId));
+  const usageRightEquipment = createMemo(() => getSelectedControlPanelEquipment(usageRightInternalEquipment(), props.state().selectedControlPanelUsageRightEquipmentGroupId));
+  const usageConstructorMaterialContainer = createMemo(() => getSelectedControlPanelEquipment(usageConstructorMaterialContainers(), props.state().selectedControlPanelConstructorMaterialContainerGroupId));
+  const usageConstructorProductContainer = createMemo(() => getSelectedControlPanelEquipment(usageConstructorProductContainers(), props.state().selectedControlPanelConstructorProductContainerGroupId));
+  const usageObjectOptions = createMemo(() => usageObjects().map((object) => ({ value: String(object?.ID), label: object?.Title?.trim() || `Object ${object?.ID}` })));
+  const usageRightEquipmentObject = createMemo(() => props.state().selfObject?.ID === usageRightEquipment()?.group.CosmicObjectID ? props.state().selfObject : props.state().objects.find((object) => object.ID === usageRightEquipment()?.group.CosmicObjectID) ?? props.state().selfObject);
 
   return (
     <Show when={props.state().controlPanelVisible}>
@@ -806,12 +824,20 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                             when={isConstructorEquipment(usageRightEquipment(), props.state())}
                             fallback={(
                               <>
-                                <Dropdown
-                                  id="control-panel-usage-left-container-select"
-                                  open={props.state().openControlPanelUsageSelect === "left"}
-                                  selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
-                                  options={usageContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                                />
+                                <div class="control-panel-usage-select-pair">
+                                  <Dropdown
+                                    id="control-panel-usage-left-object-select"
+                                    open={props.state().openControlPanelUsageSelect === "leftObject"}
+                                    selectedValue={usageLeftObject() ? String(usageLeftObject()?.ID) : ""}
+                                    options={usageObjectOptions()}
+                                  />
+                                  <Dropdown
+                                    id="control-panel-usage-left-container-select"
+                                    open={props.state().openControlPanelUsageSelect === "left"}
+                                    selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
+                                    options={usageLeftContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                  />
+                                </div>
                                 <Show when={usageLeftContainer()} fallback={<div class="control-panel-empty-page" />}>
                                   {(container) => (
                                     <ControlPanelContainerContent
@@ -827,12 +853,20 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                           >
                             <div class="control-panel-constructor-storage">
                               <div class="control-panel-constructor-storage__section">
-                                <Dropdown
-                                  id="control-panel-constructor-material-select"
-                                  open={props.state().openControlPanelUsageSelect === "constructorMaterials"}
-                                  selectedValue={usageConstructorMaterialContainer() ? String(usageConstructorMaterialContainer()?.group.ID) : ""}
-                                  options={usageContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                                />
+                                <div class="control-panel-usage-select-pair">
+                                  <Dropdown
+                                    id="control-panel-constructor-material-object-select"
+                                    open={props.state().openControlPanelUsageSelect === "constructorMaterialObject"}
+                                    selectedValue={usageConstructorMaterialObject() ? String(usageConstructorMaterialObject()?.ID) : ""}
+                                    options={usageObjectOptions()}
+                                  />
+                                  <Dropdown
+                                    id="control-panel-constructor-material-select"
+                                    open={props.state().openControlPanelUsageSelect === "constructorMaterials"}
+                                    selectedValue={usageConstructorMaterialContainer() ? String(usageConstructorMaterialContainer()?.group.ID) : ""}
+                                    options={usageConstructorMaterialContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                  />
+                                </div>
                                 <Show when={usageConstructorMaterialContainer()} fallback={<div class="control-panel-empty-page" />}>
                                   {(container) => (
                                     <ControlPanelContainerContent
@@ -845,13 +879,21 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                 </Show>
                               </div>
                               <div class="control-panel-constructor-storage__section">
-                                <Dropdown
-                                  id="control-panel-usage-left-container-select"
-                                  open={props.state().openControlPanelUsageSelect === "left"}
-                                  selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
-                                  options={usageContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                                />
-                                <Show when={usageLeftContainer()} fallback={<div class="control-panel-empty-page" />}>
+                                <div class="control-panel-usage-select-pair">
+                                  <Dropdown
+                                    id="control-panel-constructor-product-object-select"
+                                    open={props.state().openControlPanelUsageSelect === "constructorProductObject"}
+                                    selectedValue={usageConstructorProductObject() ? String(usageConstructorProductObject()?.ID) : ""}
+                                    options={usageObjectOptions()}
+                                  />
+                                  <Dropdown
+                                    id="control-panel-constructor-product-select"
+                                    open={props.state().openControlPanelUsageSelect === "constructorProducts"}
+                                    selectedValue={usageConstructorProductContainer() ? String(usageConstructorProductContainer()?.group.ID) : ""}
+                                    options={usageConstructorProductContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                  />
+                                </div>
+                                <Show when={usageConstructorProductContainer()} fallback={<div class="control-panel-empty-page" />}>
                                   {(container) => (
                                     <ControlPanelContainerContent
                                       listId="control-panel-usage-left-container-content"
@@ -866,12 +908,20 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                           </Show>
                         </div>
                         <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--right">
-                          <Dropdown
-                            id="control-panel-usage-right-equipment-select"
-                            open={props.state().openControlPanelUsageSelect === "right"}
-                            selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
-                            options={usageInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                          />
+                          <div class="control-panel-usage-select-pair">
+                            <Dropdown
+                              id="control-panel-usage-right-object-select"
+                              open={props.state().openControlPanelUsageSelect === "rightObject"}
+                              selectedValue={usageRightObject() ? String(usageRightObject()?.ID) : ""}
+                              options={usageObjectOptions()}
+                            />
+                            <Dropdown
+                              id="control-panel-usage-right-equipment-select"
+                              open={props.state().openControlPanelUsageSelect === "right"}
+                              selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
+                              options={usageRightInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                            />
+                          </div>
                           <Show when={isConstructorEquipment(usageRightEquipment(), props.state())}>
                             <div class="control-panel-constructor-usage">
                               <ControlPanelConstructorRecipePanel state={props.state} />
@@ -884,7 +934,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                 <Button id="control-panel-fuel-drain-open" label="<" ariaLabel="Слить топливо в левый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
                                 <Button id="control-panel-fuel-transfer-to-tank" label=">" ariaLabel="Переместить выбранное топливо в топливный бак" state={usageLeftContainer() && props.state().selectedControlPanelUsageLeftItemGroupIds.length > 0 ? "normal" : "disabled"} />
                               </div>
-                              <ControlPanelFuelTank object={props.state().selfObject} />
+                              <ControlPanelFuelTank object={usageRightEquipmentObject()} />
                             </div>
                           </Show>
                           <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && !isFuelTankEquipment(usageRightEquipment(), props.state()) && isContainerEquipment(usageRightEquipment(), props.state()) ? usageRightEquipment() : null} fallback={<Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && !isFuelTankEquipment(usageRightEquipment(), props.state())}><div class="control-panel-empty-page" /></Show>}>
@@ -1166,8 +1216,13 @@ const getControlPanelEquipmentGroups = (state: GameUiState): ControlPanelEquipme
     return [];
   }
 
-  return state.equipmentGroups
-    .filter((group) => group.CosmicObjectID === objectId)
+  return getControlPanelEquipmentViews(state)
+    .filter((equipment) => equipment.group.CosmicObjectID === objectId);
+};
+
+// Возвращает группы оборудования всех объектов, видимых текущему UI.
+const getControlPanelEquipmentViews = (state: GameUiState): ControlPanelEquipmentView[] =>
+  state.equipmentGroups
     .sort((left, right) => left.ID - right.ID)
     .map((group) => {
       const itemModel = state.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
@@ -1177,7 +1232,6 @@ const getControlPanelEquipmentGroups = (state: GameUiState): ControlPanelEquipme
         itemModel,
       };
     });
-};
 
 const getControlPanelContainerEquipment = (groups: ControlPanelEquipmentView[], state: GameUiState): ControlPanelEquipmentView[] =>
   groups.filter((equipment) => isContainerEquipment(equipment, state));

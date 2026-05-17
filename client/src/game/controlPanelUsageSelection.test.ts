@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
-import { normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
+import type { CosmicObject, EquipmentGroup, ReferenceDataMessage } from "../network/protocol";
+import { applyActiveControlPanelUsageRelations, normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
 
 const equipmentGroup = (partial: Partial<EquipmentGroup>): EquipmentGroup => ({
   // Создаёт минимальную группу оборудования для проверки выбора в панели использования.
@@ -13,6 +13,46 @@ const equipmentGroup = (partial: Partial<EquipmentGroup>): EquipmentGroup => ({
   Enabled: true,
   Active: false,
   LastRechargeStartTime: 0,
+  ...partial,
+});
+
+const cosmicObject = (partial: Partial<CosmicObject>): CosmicObject => ({
+  // Создает минимальный объект мира для проверки состава доступного кластера.
+  ID: 100,
+  Title: "Ship",
+  CosmicObjectModelID: 1,
+  OwnerCharacterID: 7,
+  OwnerNpcClanID: 0,
+  CreatorCharacterID: 7,
+  Mass: 1,
+  Capacity: 0,
+  MaxArmor: 100,
+  MaxSpeed: 0,
+  MaxAngularSpeed: 0,
+  X: 0,
+  Y: 0,
+  Rotation: 0,
+  Armor: 100,
+  MaxAlongForce: 0,
+  MaxAcrossForce: 0,
+  MaxTorque: 0,
+  GeneratingPower: 0,
+  ConsumingPower: 0,
+  AlongForce: 0,
+  AcrossForce: 0,
+  Torque: 0,
+  Enabled: true,
+  LastReceivedDamageTime: 0,
+  Anchored: false,
+  Complexity: 0,
+  OccupiedVolume: 0,
+  MaxFuel: 0,
+  Fuel: 0,
+  Speed: 0,
+  VelocityX: 0,
+  VelocityY: 0,
+  AngularSpeed: 0,
+  TargetRotation: 0,
   ...partial,
 });
 
@@ -58,10 +98,11 @@ describe("normalizeControlPanelUsageSelection", () => {
         equipmentGroup({ ID: 10, EquipmentItemModelID: 10 }),
         equipmentGroup({ ID: 20, EquipmentItemModelID: 20 }),
       ],
-      selection: { leftContainerGroupId: null, rightEquipmentGroupId: null },
+      objects: [cosmicObject({ ID: 100 })],
+      selection: { leftContainerObjectId: null, leftContainerGroupId: null, rightEquipmentObjectId: null, rightEquipmentGroupId: null, constructorMaterialObjectId: null, constructorMaterialGroupId: null, constructorProductObjectId: null, constructorProductGroupId: null },
     });
 
-    expect(selection).toEqual({ leftContainerGroupId: 10, rightEquipmentGroupId: 10 });
+    expect(selection).toEqual({ leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 10, constructorMaterialObjectId: 100, constructorMaterialGroupId: 10, constructorProductObjectId: 100, constructorProductGroupId: 10 });
   });
 
   // Проверяет, что ручной выбор сохраняется, пока выбранные группы остаются доступными.
@@ -73,9 +114,125 @@ describe("normalizeControlPanelUsageSelection", () => {
         equipmentGroup({ ID: 10, EquipmentItemModelID: 10 }),
         equipmentGroup({ ID: 20, EquipmentItemModelID: 20 }),
       ],
-      selection: { leftContainerGroupId: 10, rightEquipmentGroupId: 20 },
+      objects: [cosmicObject({ ID: 100 })],
+      selection: { leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 100, constructorMaterialGroupId: 10, constructorProductObjectId: 100, constructorProductGroupId: 10 },
     });
 
-    expect(selection).toEqual({ leftContainerGroupId: 10, rightEquipmentGroupId: 20 });
+    expect(selection).toEqual({ leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 100, constructorMaterialGroupId: 10, constructorProductObjectId: 100, constructorProductGroupId: 10 });
+  });
+
+  // Проверяет, что для своего кластера доступны только собственные объекты, а выбор объекта берется из выбранной группы.
+  it("keeps cluster object from selected group and excludes foreign cluster objects", () => {
+    const selection = normalizeControlPanelUsageSelection({
+      objectId: 100,
+      referenceData: referenceData(),
+      objects: [
+        cosmicObject({ ID: 100, OwnerCharacterID: 7, ClusterMainCosmicObjectID: 100 }),
+        cosmicObject({ ID: 101, OwnerCharacterID: 7, ClusterMainCosmicObjectID: 100 }),
+        cosmicObject({ ID: 102, OwnerCharacterID: 8, ClusterMainCosmicObjectID: 100 }),
+      ],
+      equipmentGroups: [
+        equipmentGroup({ ID: 10, CosmicObjectID: 100, EquipmentItemModelID: 10 }),
+        equipmentGroup({ ID: 20, CosmicObjectID: 101, EquipmentItemModelID: 10 }),
+        equipmentGroup({ ID: 30, CosmicObjectID: 102, EquipmentItemModelID: 10 }),
+      ],
+      selection: { leftContainerObjectId: null, leftContainerGroupId: 20, rightEquipmentObjectId: null, rightEquipmentGroupId: 20, constructorMaterialObjectId: null, constructorMaterialGroupId: 20, constructorProductObjectId: null, constructorProductGroupId: 20 },
+    });
+
+    expect(selection).toEqual({ leftContainerObjectId: 101, leftContainerGroupId: 20, rightEquipmentObjectId: 101, rightEquipmentGroupId: 20, constructorMaterialObjectId: 101, constructorMaterialGroupId: 20, constructorProductObjectId: 101, constructorProductGroupId: 20 });
+  });
+
+  // Проверяет, что при недоступной выбранной группе используется первый собственный объект кластера.
+  it("falls back to first owned cluster object when selected group is unavailable", () => {
+    const selection = normalizeControlPanelUsageSelection({
+      objectId: 100,
+      referenceData: referenceData(),
+      objects: [
+        cosmicObject({ ID: 100, OwnerCharacterID: 7, ClusterMainCosmicObjectID: 100 }),
+        cosmicObject({ ID: 101, OwnerCharacterID: 7, ClusterMainCosmicObjectID: 100 }),
+      ],
+      equipmentGroups: [
+        equipmentGroup({ ID: 20, CosmicObjectID: 101, EquipmentItemModelID: 10 }),
+      ],
+      selection: { leftContainerObjectId: null, leftContainerGroupId: 999, rightEquipmentObjectId: null, rightEquipmentGroupId: 999, constructorMaterialObjectId: null, constructorMaterialGroupId: 999, constructorProductObjectId: null, constructorProductGroupId: 999 },
+    });
+
+    expect(selection).toEqual({ leftContainerObjectId: 100, leftContainerGroupId: null, rightEquipmentObjectId: 100, rightEquipmentGroupId: null, constructorMaterialObjectId: 100, constructorMaterialGroupId: null, constructorProductObjectId: 100, constructorProductGroupId: null });
+  });
+});
+
+describe("applyActiveControlPanelUsageRelations", () => {
+  // Проверяет, что сохранённые связи левой панели не применяются для бездействующего правого оборудования.
+  it("keeps current left selections when right equipment is not active", () => {
+    const selection = applyActiveControlPanelUsageRelations({
+      selection: { leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 100, constructorMaterialGroupId: 11, constructorProductObjectId: 100, constructorProductGroupId: 12 },
+      rightEquipmentActive: false,
+      relatedOppositeGroupId: 30,
+      relatedSourceGroupId: 31,
+      relatedDestinationGroupId: 32,
+      groupObjectId: (groupId) => groupId + 1000,
+    });
+
+    expect(selection).toEqual({ leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 100, constructorMaterialGroupId: 11, constructorProductObjectId: 100, constructorProductGroupId: 12 });
+  });
+
+  // Проверяет, что сохранённые связи левой панели применяются для работающего правого оборудования.
+  it("restores related left selections when right equipment is active", () => {
+    const selection = applyActiveControlPanelUsageRelations({
+      selection: { leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 100, constructorMaterialGroupId: 11, constructorProductObjectId: 100, constructorProductGroupId: 12 },
+      rightEquipmentActive: true,
+      relatedOppositeGroupId: 30,
+      relatedSourceGroupId: 31,
+      relatedDestinationGroupId: 32,
+      groupObjectId: (groupId) => groupId + 1000,
+    });
+
+    expect(selection).toEqual({ leftContainerObjectId: 1030, leftContainerGroupId: 30, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 1031, constructorMaterialGroupId: 31, constructorProductObjectId: 1032, constructorProductGroupId: 32 });
+  });
+
+  // Проверяет, что контейнер продукции конструктора не смешивается с обычным левым контейнером.
+  it("restores constructor product selection separately from regular left selection", () => {
+    const selection = applyActiveControlPanelUsageRelations({
+      selection: {
+        leftContainerObjectId: 100,
+        leftContainerGroupId: 10,
+        rightEquipmentObjectId: 100,
+        rightEquipmentGroupId: 20,
+        constructorMaterialObjectId: 100,
+        constructorMaterialGroupId: 11,
+        constructorProductObjectId: 100,
+        constructorProductGroupId: 12,
+      },
+      rightEquipmentActive: true,
+      relatedOppositeGroupId: null,
+      relatedSourceGroupId: null,
+      relatedDestinationGroupId: 32,
+      groupObjectId: (groupId) => groupId + 1000,
+    });
+
+    expect(selection).toEqual({
+      leftContainerObjectId: 100,
+      leftContainerGroupId: 10,
+      rightEquipmentObjectId: 100,
+      rightEquipmentGroupId: 20,
+      constructorMaterialObjectId: 100,
+      constructorMaterialGroupId: 11,
+      constructorProductObjectId: 1032,
+      constructorProductGroupId: 32,
+    });
+  });
+
+  // Проверяет, что сохранённая связь без доступной группы не меняет левую панель.
+  it("ignores related groups that are no longer available", () => {
+    const selection = applyActiveControlPanelUsageRelations({
+      selection: { leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 100, constructorMaterialGroupId: 11, constructorProductObjectId: 100, constructorProductGroupId: 12 },
+      rightEquipmentActive: true,
+      relatedOppositeGroupId: 30,
+      relatedSourceGroupId: 31,
+      relatedDestinationGroupId: null,
+      groupObjectId: () => null,
+    });
+
+    expect(selection).toEqual({ leftContainerObjectId: 100, leftContainerGroupId: 10, rightEquipmentObjectId: 100, rightEquipmentGroupId: 20, constructorMaterialObjectId: 100, constructorMaterialGroupId: 11, constructorProductObjectId: 100, constructorProductGroupId: 12 });
   });
 });

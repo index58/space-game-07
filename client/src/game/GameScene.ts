@@ -21,7 +21,7 @@ import type {
   ReferenceDataMessage,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
-import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
+import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, ControlPanelUsageSelectValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
 import { getInformationPanelView } from "../ui/informationPanel";
 import { getInputBindingMap, getInputSettingsLeftColumnRowCount, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
@@ -34,7 +34,7 @@ import { bodyPolygonToPilotScreen } from "./bodyPolygon";
 import { applyControlPanelPendingToEquipmentGroups, applyControlPanelPendingToObject, emptyControlPanelPendingState, pruneControlPanelPending, rejectControlPanelPending, type ControlPanelPendingState } from "./controlPanelMutations";
 import { getControlPanelFuelFillMaxAmount } from "./controlPanelFuelAmount";
 import { applyControlPanelListSelection } from "./controlPanelListSelection";
-import { normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
+import { applyActiveControlPanelUsageRelations, normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
 import { FrameRateMeter } from "./frameRateMeter";
 import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
 import { InputController, type ChatScrollState } from "./InputController";
@@ -112,7 +112,15 @@ export class GameScene extends Phaser.Scene {
   // ID оборудования в правой панели использования оборудования.
   private selectedControlPanelUsageRightEquipmentGroupId: number | null = null;
   // Открытый выпадающий список использования оборудования.
-  private openControlPanelUsageSelect: "left" | "right" | "constructorMaterials" | null = null;
+  private openControlPanelUsageSelect: ControlPanelUsageSelectValue | null = null;
+  // Выбранный объект для левого контейнера использования.
+  private selectedControlPanelUsageLeftObjectId: number | null = null;
+  // Выбранный объект для правого оборудования использования.
+  private selectedControlPanelUsageRightObjectId: number | null = null;
+  // Выбранный объект для контейнера материалов конструктора.
+  private selectedControlPanelConstructorMaterialObjectId: number | null = null;
+  // Выбранный объект для контейнера продукции конструктора.
+  private selectedControlPanelConstructorProductObjectId: number | null = null;
   // Выбранные строки содержимого левого контейнера.
   private selectedControlPanelUsageLeftItemGroupIds: number[] = [];
   // Опорная строка левого контейнера для выбора диапазона через Shift.
@@ -123,6 +131,8 @@ export class GameScene extends Phaser.Scene {
   private selectedControlPanelUsageRightAnchorItemGroupId: number | null = null;
   // ID контейнера, из которого конструктор берёт материалы.
   private selectedControlPanelConstructorMaterialContainerGroupId: number | null = null;
+  // ID контейнера, в который конструктор кладёт продукцию.
+  private selectedControlPanelConstructorProductContainerGroupId: number | null = null;
   // Активная вкладка списка заданий конструктора.
   private selectedControlPanelConstructorTab: ControlPanelConstructorTabValue = "items";
   // ID схемы, выбранной в списке конструктора.
@@ -273,9 +283,9 @@ export class GameScene extends Phaser.Scene {
     if (this.inputController.consumeFocusedObjectOwnerClaimRequest() && snapshot && selfObject && this.referenceData && getInformationPanelView({ selfObject, objects: snapshot.objects, referenceData: this.referenceData })) {
       this.gameClient?.requestFocusedObjectOwnerClaim();
     }
-    this.syncControlPanelUsageSelection(selfObject?.ID ?? null, effectiveEquipmentGroups, snapshot?.equipmentGroupRelations ?? []);
+    this.syncControlPanelUsageSelection(selfObject?.ID ?? null, snapshot?.objects ?? [], effectiveEquipmentGroups, snapshot?.equipmentGroupRelations ?? []);
     this.syncControlPanelConstructorMainJobSelection(snapshot?.constructorProductionJobs ?? []);
-    this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(selfObject, effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
+    this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(snapshot?.objects ?? [], effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
     this.inputController.syncControlPanelObject(selfObject);
     if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen || this.controlPanelConstructorProduceDialogOpen) {
       const maxAmount = this.currentControlPanelAmountMax(selfObject);
@@ -327,12 +337,17 @@ export class GameScene extends Phaser.Scene {
         selectedControlPanelTab: this.selectedControlPanelTab,
         selectedControlPanelEquipmentTab: this.selectedControlPanelEquipmentTab,
         selectedControlPanelEquipmentGroupId: this.selectedControlPanelEquipmentGroupId,
+        selectedControlPanelUsageLeftObjectId: this.selectedControlPanelUsageLeftObjectId,
+        selectedControlPanelUsageRightObjectId: this.selectedControlPanelUsageRightObjectId,
+        selectedControlPanelConstructorMaterialObjectId: this.selectedControlPanelConstructorMaterialObjectId,
+        selectedControlPanelConstructorProductObjectId: this.selectedControlPanelConstructorProductObjectId,
         selectedControlPanelUsageLeftContainerGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
         selectedControlPanelUsageRightEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
         openControlPanelUsageSelect: this.openControlPanelUsageSelect,
         selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
         selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
         selectedControlPanelConstructorMaterialContainerGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
+        selectedControlPanelConstructorProductContainerGroupId: this.selectedControlPanelConstructorProductContainerGroupId,
         selectedControlPanelConstructorTab: this.selectedControlPanelConstructorTab,
         selectedControlPanelConstructorSchemaId: this.selectedControlPanelConstructorSchemaId,
         selectedControlPanelConstructorBlueprintId: this.selectedControlPanelConstructorBlueprintId,
@@ -417,12 +432,17 @@ export class GameScene extends Phaser.Scene {
       selectedControlPanelTab: this.selectedControlPanelTab,
       selectedControlPanelEquipmentTab: this.selectedControlPanelEquipmentTab,
       selectedControlPanelEquipmentGroupId: this.selectedControlPanelEquipmentGroupId,
+      selectedControlPanelUsageLeftObjectId: this.selectedControlPanelUsageLeftObjectId,
+      selectedControlPanelUsageRightObjectId: this.selectedControlPanelUsageRightObjectId,
+      selectedControlPanelConstructorMaterialObjectId: this.selectedControlPanelConstructorMaterialObjectId,
+      selectedControlPanelConstructorProductObjectId: this.selectedControlPanelConstructorProductObjectId,
       selectedControlPanelUsageLeftContainerGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
       selectedControlPanelUsageRightEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
       openControlPanelUsageSelect: this.openControlPanelUsageSelect,
       selectedControlPanelUsageLeftItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
       selectedControlPanelUsageRightItemGroupIds: this.selectedControlPanelUsageRightItemGroupIds,
       selectedControlPanelConstructorMaterialContainerGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
+      selectedControlPanelConstructorProductContainerGroupId: this.selectedControlPanelConstructorProductContainerGroupId,
       selectedControlPanelConstructorTab: this.selectedControlPanelConstructorTab,
       selectedControlPanelConstructorSchemaId: this.selectedControlPanelConstructorSchemaId,
       selectedControlPanelConstructorBlueprintId: this.selectedControlPanelConstructorBlueprintId,
@@ -719,42 +739,60 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Синхронизирует реальный выбор использования с первым доступным значением, которое показывает UI.
-  private syncControlPanelUsageSelection(objectId: number | null, equipmentGroups: EquipmentGroup[], equipmentGroupRelations: EquipmentGroupRelation[]): void {
+  private syncControlPanelUsageSelection(objectId: number | null, objects: CosmicObject[], equipmentGroups: EquipmentGroup[], equipmentGroupRelations: EquipmentGroupRelation[]): void {
     const selection = normalizeControlPanelUsageSelection({
       objectId,
+      objects,
       equipmentGroups,
       referenceData: this.referenceData,
       selection: {
+        leftContainerObjectId: this.selectedControlPanelUsageLeftObjectId,
         leftContainerGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
+        rightEquipmentObjectId: this.selectedControlPanelUsageRightObjectId,
         rightEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
+        constructorMaterialObjectId: this.selectedControlPanelConstructorMaterialObjectId,
+        constructorMaterialGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
+        constructorProductObjectId: this.selectedControlPanelConstructorProductObjectId,
+        constructorProductGroupId: this.selectedControlPanelConstructorProductContainerGroupId,
       },
     });
 
-    this.selectedControlPanelUsageLeftContainerGroupId = selection.leftContainerGroupId;
-    this.selectedControlPanelUsageRightEquipmentGroupId = selection.rightEquipmentGroupId;
-    const relatedLeftContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, this.selectedControlPanelUsageRightEquipmentGroupId, "Opposite");
-    const relatedSourceContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, this.selectedControlPanelUsageRightEquipmentGroupId, "Source");
-    const relatedDestinationContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, this.selectedControlPanelUsageRightEquipmentGroupId, "Destination");
-    if (relatedLeftContainerGroupId !== null && this.getControlPanelEquipmentGroup(relatedLeftContainerGroupId)) {
-      this.selectedControlPanelUsageLeftContainerGroupId = relatedLeftContainerGroupId;
-    }
-    if (relatedSourceContainerGroupId !== null && this.getControlPanelEquipmentGroup(relatedSourceContainerGroupId)) {
-      this.selectedControlPanelConstructorMaterialContainerGroupId = relatedSourceContainerGroupId;
-    }
-    if (relatedDestinationContainerGroupId !== null && this.getControlPanelEquipmentGroup(relatedDestinationContainerGroupId)) {
-      this.selectedControlPanelUsageLeftContainerGroupId = relatedDestinationContainerGroupId;
-    }
+    const rightEquipmentGroupId = selection.rightEquipmentGroupId;
+    const relatedLeftContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, rightEquipmentGroupId, "Opposite");
+    const relatedSourceContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, rightEquipmentGroupId, "Source");
+    const relatedDestinationContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, rightEquipmentGroupId, "Destination");
+    const relatedSelection = applyActiveControlPanelUsageRelations({
+      selection,
+      rightEquipmentActive: this.getControlPanelEquipmentGroup(rightEquipmentGroupId ?? 0)?.Active ?? false,
+      relatedOppositeGroupId: relatedLeftContainerGroupId,
+      relatedSourceGroupId: relatedSourceContainerGroupId,
+      relatedDestinationGroupId: relatedDestinationContainerGroupId,
+      groupObjectId: (groupId) => this.getControlPanelEquipmentGroup(groupId)?.CosmicObjectID ?? null,
+    });
+    this.selectedControlPanelUsageLeftObjectId = relatedSelection.leftContainerObjectId;
+    this.selectedControlPanelUsageLeftContainerGroupId = relatedSelection.leftContainerGroupId;
+    this.selectedControlPanelUsageRightObjectId = relatedSelection.rightEquipmentObjectId;
+    this.selectedControlPanelUsageRightEquipmentGroupId = relatedSelection.rightEquipmentGroupId;
+    this.selectedControlPanelConstructorMaterialObjectId = relatedSelection.constructorMaterialObjectId;
+    this.selectedControlPanelConstructorMaterialContainerGroupId = relatedSelection.constructorMaterialGroupId;
+    this.selectedControlPanelConstructorProductObjectId = relatedSelection.constructorProductObjectId;
+    this.selectedControlPanelConstructorProductContainerGroupId = relatedSelection.constructorProductGroupId;
     this.selectedControlPanelConstructorMaterialContainerGroupId = normalizeSelectedControlPanelGroupId(
-      equipmentGroups.filter((group) => group.CosmicObjectID === objectId && this.isEquipmentGroupItemtype(group, "Container")),
+      equipmentGroups.filter((group) => group.CosmicObjectID === this.selectedControlPanelConstructorMaterialObjectId && this.isEquipmentGroupItemtype(group, "Container")),
       this.selectedControlPanelConstructorMaterialContainerGroupId,
+    );
+    this.selectedControlPanelConstructorProductContainerGroupId = normalizeSelectedControlPanelGroupId(
+      equipmentGroups.filter((group) => group.CosmicObjectID === this.selectedControlPanelConstructorProductObjectId && this.isEquipmentGroupItemtype(group, "Container")),
+      this.selectedControlPanelConstructorProductContainerGroupId,
     );
   }
 
   // Возвращает количество топлива, доступное для залива из текущего выбора в левом контейнере.
-  private getControlPanelFuelFillMaxAmount(object: CosmicObject | null, equipmentGroups: EquipmentGroup[], itemGroups: GameUiState["itemGroups"]): number {
+  private getControlPanelFuelFillMaxAmount(objects: CosmicObject[], equipmentGroups: EquipmentGroup[], itemGroups: GameUiState["itemGroups"]): number {
+    const fuelTankGroup = equipmentGroups.find((group) => group.ID === this.selectedControlPanelUsageRightEquipmentGroupId) ?? null;
     return getControlPanelFuelFillMaxAmount({
-      object,
-      fuelTankGroup: equipmentGroups.find((group) => group.ID === this.selectedControlPanelUsageRightEquipmentGroupId) ?? null,
+      object: objects.find((object) => object.ID === fuelTankGroup?.CosmicObjectID) ?? null,
+      fuelTankGroup,
       itemGroups,
       selectedItemGroupIds: this.selectedControlPanelUsageLeftItemGroupIds,
       referenceData: this.referenceData,
@@ -776,12 +814,6 @@ export class GameScene extends Phaser.Scene {
       return draft;
     }
     return equipmentGroupRelations.find((relation) => relation.EquipmentGroupID === equipmentGroupId && relation.RelationTypeID === relationType.ID)?.RelatedEquipmentGroupID ?? null;
-  }
-
-  // Определяет вид связи для нижнего левого контейнера текущего использования.
-  private usageLeftRelationTypeAcronym(): "Destination" | "Opposite" {
-    const rightGroup = this.selectedControlPanelUsageRightEquipmentGroupId ? this.getControlPanelEquipmentGroup(this.selectedControlPanelUsageRightEquipmentGroupId) : null;
-    return rightGroup && (this.isEquipmentGroupItemtype(rightGroup, "Constructor") || this.isEquipmentGroupItemtype(rightGroup, "Deconstructor")) ? "Destination" : "Opposite";
   }
 
   // Сохраняет выбор контейнера для текущей правой группы оборудования.
@@ -1029,20 +1061,53 @@ export class GameScene extends Phaser.Scene {
       this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "left" ? null : "left";
       return true;
     }
+    if (action.controlId === "control-panel-usage-left-object-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "leftObject" ? null : "leftObject";
+      return true;
+    }
     if (action.controlId === "control-panel-usage-right-equipment-select") {
       this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "right" ? null : "right";
+      return true;
+    }
+    if (action.controlId === "control-panel-usage-right-object-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "rightObject" ? null : "rightObject";
       return true;
     }
     if (action.controlId === "control-panel-constructor-material-select") {
       this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "constructorMaterials" ? null : "constructorMaterials";
       return true;
     }
+    if (action.controlId === "control-panel-constructor-material-object-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "constructorMaterialObject" ? null : "constructorMaterialObject";
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-product-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "constructorProducts" ? null : "constructorProducts";
+      return true;
+    }
+    if (action.controlId === "control-panel-constructor-product-object-select") {
+      this.openControlPanelUsageSelect = this.openControlPanelUsageSelect === "constructorProductObject" ? null : "constructorProductObject";
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-usage-left-object-select-") && typeof action.value === "string") {
+      this.selectedControlPanelUsageLeftObjectId = Number(action.value);
+      this.selectedControlPanelUsageLeftContainerGroupId = this.firstControlPanelGroupIdOnObject(this.selectedControlPanelUsageLeftObjectId, "Container");
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
     if (action.controlId.startsWith("control-panel-usage-left-container-select-") && typeof action.value === "string") {
       const groupId = Number(action.value);
       if (this.getControlPanelEquipmentGroup(groupId)) {
         this.selectedControlPanelUsageLeftContainerGroupId = groupId;
-        this.saveControlPanelUsageRelatedContainer(groupId, this.usageLeftRelationTypeAcronym());
+        this.selectedControlPanelUsageLeftObjectId = this.getControlPanelEquipmentGroup(groupId)?.CosmicObjectID ?? this.selectedControlPanelUsageLeftObjectId;
+        this.saveControlPanelUsageRelatedContainer(groupId, "Opposite");
       }
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-usage-right-object-select-") && typeof action.value === "string") {
+      this.selectedControlPanelUsageRightObjectId = Number(action.value);
+      this.selectedControlPanelUsageRightEquipmentGroupId = this.firstControlPanelInternalGroupIdOnObject(this.selectedControlPanelUsageRightObjectId);
       this.openControlPanelUsageSelect = null;
       return true;
     }
@@ -1050,7 +1115,14 @@ export class GameScene extends Phaser.Scene {
       const groupId = Number(action.value);
       if (this.getControlPanelEquipmentGroup(groupId)) {
         this.selectedControlPanelUsageRightEquipmentGroupId = groupId;
+        this.selectedControlPanelUsageRightObjectId = this.getControlPanelEquipmentGroup(groupId)?.CosmicObjectID ?? this.selectedControlPanelUsageRightObjectId;
       }
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-constructor-material-object-select-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorMaterialObjectId = Number(action.value);
+      this.selectedControlPanelConstructorMaterialContainerGroupId = this.firstControlPanelGroupIdOnObject(this.selectedControlPanelConstructorMaterialObjectId, "Container");
       this.openControlPanelUsageSelect = null;
       return true;
     }
@@ -1058,7 +1130,24 @@ export class GameScene extends Phaser.Scene {
       const groupId = Number(action.value);
       if (this.getControlPanelEquipmentGroup(groupId)) {
         this.selectedControlPanelConstructorMaterialContainerGroupId = groupId;
+        this.selectedControlPanelConstructorMaterialObjectId = this.getControlPanelEquipmentGroup(groupId)?.CosmicObjectID ?? this.selectedControlPanelConstructorMaterialObjectId;
         this.saveControlPanelUsageRelatedContainer(groupId, "Source");
+      }
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-constructor-product-object-select-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorProductObjectId = Number(action.value);
+      this.selectedControlPanelConstructorProductContainerGroupId = this.firstControlPanelGroupIdOnObject(this.selectedControlPanelConstructorProductObjectId, "Container");
+      this.openControlPanelUsageSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-constructor-product-select-") && typeof action.value === "string") {
+      const groupId = Number(action.value);
+      if (this.getControlPanelEquipmentGroup(groupId)) {
+        this.selectedControlPanelConstructorProductContainerGroupId = groupId;
+        this.selectedControlPanelConstructorProductObjectId = this.getControlPanelEquipmentGroup(groupId)?.CosmicObjectID ?? this.selectedControlPanelConstructorProductObjectId;
+        this.saveControlPanelUsageRelatedContainer(groupId, "Destination");
       }
       this.openControlPanelUsageSelect = null;
       return true;
@@ -1146,7 +1235,7 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId === "control-panel-fuel-transfer-to-tank") {
-      this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(this.gameUi.state().selfObject, this.gameUi.state().equipmentGroups, this.gameUi.state().itemGroups);
+      this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(this.gameUi.state().objects, this.gameUi.state().equipmentGroups, this.gameUi.state().itemGroups);
       if (this.controlPanelFuelFillMaxAmount > 0) {
         this.controlPanelFuelFillDialogOpen = true;
         this.controlPanelFuelDrainDialogOpen = false;
@@ -1174,7 +1263,7 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelFillDialogOpen = false;
       this.controlPanelContainerTransferDialogOpen = false;
       this.controlPanelConstructorProduceDialogOpen = false;
-      this.controlPanelFuelDrainAmount = Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0);
+      this.controlPanelFuelDrainAmount = Math.max(0, this.getSelectedFuelTankObject()?.Fuel ?? 0);
       this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
       return true;
     }
@@ -1192,7 +1281,7 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId === "control-panel-fuel-drain-ok") {
-      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, Math.max(0, this.gameUi.state().selfObject?.Fuel ?? 0));
+      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, Math.max(0, this.getSelectedFuelTankObject()?.Fuel ?? 0));
       this.sendControlPanelFuelTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, [], this.controlPanelFuelDrainAmount);
       this.controlPanelFuelDrainDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
@@ -1329,7 +1418,7 @@ export class GameScene extends Phaser.Scene {
 
   // Меняет количество топлива для слива в пределах текущего запаса.
   private changeControlPanelFuelDrainAmount(delta: number): void {
-    const maxFuel = this.currentControlPanelAmountMax(this.gameUi.state().selfObject);
+    const maxFuel = this.currentControlPanelAmountMax();
     this.controlPanelFuelDrainAmount = clamp(this.controlPanelFuelDrainAmount + delta, 0, maxFuel);
     this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
   }
@@ -1339,14 +1428,14 @@ export class GameScene extends Phaser.Scene {
     if (!action.controlRect || (action.type !== "dragStart" && action.type !== "dragMove")) {
       return;
     }
-    const maxFuel = this.currentControlPanelAmountMax(this.gameUi.state().selfObject);
+    const maxFuel = this.currentControlPanelAmountMax();
     const position = clamp((action.x - action.controlRect.left) / Math.max(1, action.controlRect.width), 0, 1);
     this.controlPanelFuelDrainAmount = Math.round(maxFuel * position);
     this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
   }
 
   // Возвращает верхнюю границу текущего окна выбора количества.
-  private currentControlPanelAmountMax(selfObject: GameUiState["selfObject"]): number {
+  private currentControlPanelAmountMax(_selfObject?: GameUiState["selfObject"]): number {
     if (this.controlPanelContainerTransferDialogOpen) {
       return this.controlPanelContainerTransferMaxAmount;
     }
@@ -1356,7 +1445,7 @@ export class GameScene extends Phaser.Scene {
     if (this.controlPanelConstructorProduceDialogOpen) {
       return this.controlPanelConstructorProduceMaxAmount;
     }
-    return Math.max(0, selfObject?.Fuel ?? 0);
+    return Math.max(0, this.getSelectedFuelTankObject()?.Fuel ?? 0);
   }
 
   // Запускает перенос между контейнерами сразу или через окно количества для одной строки.
@@ -1390,7 +1479,7 @@ export class GameScene extends Phaser.Scene {
       this.sendControlPanelConstructorProduceItem(1);
       return;
     }
-    if (!this.selectedControlPanelUsageLeftContainerGroupId || !this.selectedControlPanelConstructorSchemaId) {
+    if (!this.selectedControlPanelConstructorProductContainerGroupId || !this.selectedControlPanelConstructorSchemaId) {
       return;
     }
     this.controlPanelConstructorProduceDialogOpen = true;
@@ -1491,13 +1580,13 @@ export class GameScene extends Phaser.Scene {
       });
       return;
     }
-    if (!this.selectedControlPanelUsageLeftContainerGroupId || !this.selectedControlPanelConstructorSchemaId) {
+    if (!this.selectedControlPanelConstructorProductContainerGroupId || !this.selectedControlPanelConstructorSchemaId) {
       return;
     }
     this.gameClient?.sendControlPanelConstructorProduceItem({
       constructorEquipmentGroupId: this.selectedControlPanelUsageRightEquipmentGroupId,
       materialContainerEquipmentGroupId: this.selectedControlPanelConstructorMaterialContainerGroupId,
-      productContainerEquipmentGroupId: this.selectedControlPanelUsageLeftContainerGroupId,
+      productContainerEquipmentGroupId: this.selectedControlPanelConstructorProductContainerGroupId,
       schemaId: this.selectedControlPanelConstructorSchemaId,
       amount,
     });
@@ -1532,7 +1621,27 @@ export class GameScene extends Phaser.Scene {
   }
 
   private getControlPanelEquipmentGroup(groupId: number): EquipmentGroup | null {
-    return this.getControlPanelEquipmentGroups().find((group) => group.ID === groupId) ?? null;
+    return this.gameUi.state().equipmentGroups.find((group) => group.ID === groupId) ?? null;
+  }
+
+  // Возвращает первую группу указанного типа на выбранном объекте.
+  private firstControlPanelGroupIdOnObject(objectId: number | null, itemtypeAcronym: string): number | null {
+    return this.gameUi.state().equipmentGroups
+      .filter((group) => group.CosmicObjectID === objectId && this.isEquipmentGroupItemtype(group, itemtypeAcronym))
+      .sort((left, right) => left.ID - right.ID)[0]?.ID ?? null;
+  }
+
+  // Возвращает первую группу, пригодную для правой панели на выбранном объекте.
+  private firstControlPanelInternalGroupIdOnObject(objectId: number | null): number | null {
+    return this.gameUi.state().equipmentGroups
+      .filter((group) => group.CosmicObjectID === objectId && this.isEquipmentGroupInternalUsable(group))
+      .sort((left, right) => left.ID - right.ID)[0]?.ID ?? null;
+  }
+
+  // Возвращает объект выбранного топливного бака.
+  private getSelectedFuelTankObject(): CosmicObject | null {
+    const fuelTankGroup = this.selectedControlPanelUsageRightEquipmentGroupId ? this.getControlPanelEquipmentGroup(this.selectedControlPanelUsageRightEquipmentGroupId) : null;
+    return this.gameUi.state().objects.find((object) => object.ID === fuelTankGroup?.CosmicObjectID) ?? null;
   }
 
   // Возвращает выбранную группу или первую доступную группу оборудования текущего объекта.
@@ -1566,6 +1675,13 @@ export class GameScene extends Phaser.Scene {
     const itemModel = this.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
     const itemtype = this.referenceData?.Itemtype.Items[String(itemModel?.ItemtypeID)];
     return itemtype?.Acronym === itemtypeAcronym;
+  }
+
+  // Проверяет, что оборудование можно выбрать в правой панели использования.
+  private isEquipmentGroupInternalUsable(group: EquipmentGroup): boolean {
+    const itemModel = this.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
+    const itemtype = this.referenceData?.Itemtype.Items[String(itemModel?.ItemtypeID)];
+    return Boolean(itemtype?.IsInternalUsable);
   }
 
   // Возвращает effective-признак включения группы оборудования из снимка с учетом pending.

@@ -1027,8 +1027,8 @@ func (world *World) ApplyControlPanelEquipmentUpdate(accountID int64, sessionID 
 	if !ok {
 		return errors.New("equipment group not found")
 	}
-	if group.CosmicObjectID != objectID {
-		return errors.New("equipment group does not belong to controlled object")
+	if err := world.ensureControlledClusterEquipmentLocked(objectID, group.CosmicObjectID); err != nil {
+		return err
 	}
 
 	if update.EnabledCount != nil {
@@ -1064,8 +1064,8 @@ func (world *World) ApplyControlPanelEquipmentGroupRelationUpdate(accountID int6
 	if !ok {
 		return errors.New("equipment group not found")
 	}
-	if group.CosmicObjectID != objectID {
-		return errors.New("equipment group does not belong to controlled object")
+	if err := world.ensureControlledClusterEquipmentLocked(objectID, group.CosmicObjectID); err != nil {
+		return err
 	}
 	if _, err := world.controlledContainerEquipmentLocked(objectID, update.RelatedEquipmentGroupID); err != nil {
 		return err
@@ -1162,16 +1162,20 @@ func (world *World) ApplyControlPanelFuelTransfer(accountID int64, sessionID str
 	if !ok {
 		return errors.New("account is not connected")
 	}
-	cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
-	if !ok {
-		return errors.New("controlled object not found")
-	}
 	if world.data.EquipmentGroups == nil || world.data.ItemGroups == nil {
 		return errors.New("equipment or item groups are not loaded")
 	}
 	container, err := world.controlledContainerEquipmentLocked(objectID, transfer.ContainerEquipmentGroupID)
 	if err != nil {
 		return err
+	}
+	fuelTankGroup, ok := world.data.EquipmentGroups.Get(transfer.FuelTankEquipmentGroupID)
+	if !ok {
+		return errors.New("equipment group not found")
+	}
+	cosmicObject, ok := world.data.CosmicObjects.Get(fuelTankGroup.CosmicObjectID)
+	if !ok {
+		return errors.New("fuel tank object not found")
 	}
 	fuelModelID, err := world.controlledFuelTankFuelModelIDLocked(objectID, transfer.FuelTankEquipmentGroupID)
 	if err != nil {
@@ -1427,13 +1431,40 @@ func (world *World) controlledContainerEquipmentLocked(objectID int64, groupID i
 	if !ok {
 		return nil, errors.New("equipment group not found")
 	}
-	if group.CosmicObjectID != objectID {
-		return nil, errors.New("equipment group does not belong to controlled object")
+	if err := world.ensureControlledClusterEquipmentLocked(objectID, group.CosmicObjectID); err != nil {
+		return nil, err
 	}
 	if !world.equipmentGroupIsContainerLocked(group) {
 		return nil, errors.New("equipment group is not a container")
 	}
 	return group, nil
+}
+
+// Проверяет, что оборудованием объекта можно управлять из текущего объекта.
+func (world *World) ensureControlledClusterEquipmentLocked(controlledObjectID int64, equipmentObjectID int64) error {
+	if equipmentObjectID == controlledObjectID {
+		return nil
+	}
+	controlledObject, ok := world.data.CosmicObjects.Get(controlledObjectID)
+	if !ok {
+		return errors.New("controlled object not found")
+	}
+	equipmentObject, ok := world.data.CosmicObjects.Get(equipmentObjectID)
+	if !ok {
+		return errors.New("equipment object not found")
+	}
+	mainID := controlledObject.ClusterMainCosmicObjectID
+	if mainID <= 0 || equipmentObject.ClusterMainCosmicObjectID != mainID {
+		return errors.New("equipment group does not belong to controlled object")
+	}
+	mainObject, ok := world.data.CosmicObjects.Get(mainID)
+	if !ok || mainObject.OwnerCharacterID != controlledObject.OwnerCharacterID || controlledObject.OwnerCharacterID <= 0 {
+		return errors.New("equipment group does not belong to controlled object")
+	}
+	if equipmentObject.OwnerCharacterID != controlledObject.OwnerCharacterID {
+		return errors.New("equipment object does not belong to character")
+	}
+	return nil
 }
 
 // controlledEquipmentItemtypeLocked возвращает оборудование текущего объекта с ожидаемым типом предмета; вызывается только под mutex.
@@ -1470,8 +1501,8 @@ func (world *World) controlledEquipmentItemtypeLocked(objectID int64, groupID in
 	if !ok {
 		return nil, errors.New("equipment group not found")
 	}
-	if group.CosmicObjectID != objectID {
-		return nil, errors.New("equipment group does not belong to controlled object")
+	if err := world.ensureControlledClusterEquipmentLocked(objectID, group.CosmicObjectID); err != nil {
+		return nil, err
 	}
 	model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
 	if !ok {
@@ -1621,8 +1652,8 @@ func (world *World) controlledFuelTankFuelModelIDLocked(objectID int64, groupID 
 	if !ok {
 		return 0, errors.New("equipment group not found")
 	}
-	if group.CosmicObjectID != objectID {
-		return 0, errors.New("equipment group does not belong to controlled object")
+	if err := world.ensureControlledClusterEquipmentLocked(objectID, group.CosmicObjectID); err != nil {
+		return 0, err
 	}
 	model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
 	if !ok {
