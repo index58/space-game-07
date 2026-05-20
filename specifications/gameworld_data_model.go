@@ -35,10 +35,10 @@ type AccountActionInputSetting struct {
 // Уникальные наборы свойств: (TitleRu), (TitleEn), (Acronym)
 type ActionType struct {
 	ID          int64  // ID
-	Acronym     string // Акроним
-	Description string // Описание. Значение по умолчанию = ''
 	TitleRu     string // Название на русском. Название типа игрового действия на русском язык
 	TitleEn     string // Название на английском. Название типа игрового действия на английском языке
+	Acronym     string // Акроним
+	Description string // Описание. Значение по умолчанию = ''
 }
 
 // Сборка. Какую модель космического объекта с какими моделями оборудования собрали
