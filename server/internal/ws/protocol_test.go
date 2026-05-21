@@ -219,6 +219,33 @@ func TestDecodeControlPanelFuelTransferMessageUsesAgreedJSONFields(t *testing.T)
 }
 
 // РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕРјР°РЅРґР° РёР·РіРѕС‚РѕРІР»РµРЅРёСЏ РїСЂРµРґРјРµС‚Р° С‡РёС‚Р°РµС‚ РІС‹Р±СЂР°РЅРЅС‹Рµ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ Рё СЃС…РµРјСѓ РёР· СЃРѕРіР»Р°СЃРѕРІР°РЅРЅС‹С… JSON-РїРѕР»РµР№.
+// Проверяет, что команда деконструкции предметов читает выбранные группы оборудования и предметов из согласованных JSON-полей.
+func TestDecodeControlPanelItemDeconstructionMessageUsesAgreedJSONFields(t *testing.T) {
+	message, ok := transport.DecodeControlPanelItemDeconstructionMessage([]byte(`{
+		"type": "controlPanelItemDeconstruction",
+		"clientSessionId": "session-1",
+		"mutationSeq": 10,
+		"deconstructorEquipmentGroupId": 13,
+		"sourceContainerEquipmentGroupId": 11,
+		"targetContainerEquipmentGroupId": 12,
+		"itemGroupIds": [21, 22],
+		"amount": 4
+	}`))
+
+	if !ok {
+		t.Fatalf("item deconstruction message was not decoded")
+	}
+	if message.ClientSessionID != "session-1" || message.MutationSeq != 10 {
+		t.Fatalf("mutation fields were decoded incorrectly: %+v", message)
+	}
+	if message.DeconstructorEquipmentGroupID != 13 || message.SourceContainerEquipmentGroupID != 11 || message.TargetContainerEquipmentGroupID != 12 || message.Amount != 4 {
+		t.Fatalf("item deconstruction fields were decoded incorrectly: %+v", message)
+	}
+	if len(message.ItemGroupIDs) != 2 || message.ItemGroupIDs[0] != 21 || message.ItemGroupIDs[1] != 22 {
+		t.Fatalf("item group fields were decoded incorrectly: %+v", message)
+	}
+}
+
 func TestDecodeControlPanelConstructorProduceItemMessageUsesAgreedJSONFields(t *testing.T) {
 	message, ok := transport.DecodeControlPanelConstructorProduceItemMessage([]byte(`{
 		"type": "controlPanelConstructorProduceItem",

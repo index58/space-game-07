@@ -1131,7 +1131,7 @@
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0,
-      "SourceEquipmentGroupID": 1538,
+      "SourceEquipmentGroupID": 1539,
       "DestinationEquipmentGroupID": 1539,
       "OppositeEquipmentGroupID": 0
     },
@@ -1145,9 +1145,9 @@
       "Enabled": true,
       "Active": false,
       "LastRechargeStartTime": 0,
-      "SourceEquipmentGroupID": 0,
+      "SourceEquipmentGroupID": 1538,
       "DestinationEquipmentGroupID": 0,
-      "OppositeEquipmentGroupID": 0
+      "OppositeEquipmentGroupID": 1539
     },
     "1543": {
       "ID": 1543,

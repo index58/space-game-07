@@ -117,6 +117,17 @@ type ControlPanelFuelTransferMessage struct {
 	Amount                    float64 `json:"amount,omitempty"`          // ?????????? ??????? ??? ????? ?? ????.
 }
 
+// ControlPanelItemDeconstructionMessage описывает запуск разбора выбранных предметов.
+type ControlPanelItemDeconstructionMessage struct {
+	Type string `json:"type"` // Вид команды запуска разбора предметов.
+	ControlPanelMutationMessage
+	DeconstructorEquipmentGroupID   int64   `json:"deconstructorEquipmentGroupId"`   // Группа деконструктора, которая ведет очередь разбора.
+	SourceContainerEquipmentGroupID int64   `json:"sourceContainerEquipmentGroupId"` // Контейнер, из которого забираются разбираемые предметы.
+	TargetContainerEquipmentGroupID int64   `json:"targetContainerEquipmentGroupId"` // Контейнер, в который кладутся полученные компоненты.
+	ItemGroupIDs                    []int64 `json:"itemGroupIds"`                    // Строки предметов, выбранные для разбора.
+	Amount                          float64 `json:"amount,omitempty"`                // Ограничение количества предметов одной выбранной строки.
+}
+
 // ControlPanelConstructorProduceItemMessage ???????? ???????????? ???????? ?? ????? ????????????.
 type ControlPanelConstructorProduceItemMessage struct {
 	Type string `json:"type"` // ??? ??????? ??? ????????????? ???????????? ????????.
@@ -376,6 +387,20 @@ func DecodeControlPanelFuelTransferMessage(payload []byte) (ControlPanelFuelTran
 
 	if message.Type != "controlPanelFuelTransfer" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.ContainerEquipmentGroupID <= 0 || message.FuelTankEquipmentGroupID <= 0 || (len(message.ItemGroupIDs) == 0 && message.Amount <= 0) {
 		return ControlPanelFuelTransferMessage{}, false
+	}
+
+	return message, true
+}
+
+// DecodeControlPanelItemDeconstructionMessage проверяет JSON команды запуска разбора предметов.
+func DecodeControlPanelItemDeconstructionMessage(payload []byte) (ControlPanelItemDeconstructionMessage, bool) {
+	var message ControlPanelItemDeconstructionMessage
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return ControlPanelItemDeconstructionMessage{}, false
+	}
+
+	if message.Type != "controlPanelItemDeconstruction" || !validControlPanelMutation(message.ControlPanelMutationMessage) || message.DeconstructorEquipmentGroupID <= 0 || message.SourceContainerEquipmentGroupID <= 0 || message.TargetContainerEquipmentGroupID <= 0 || len(message.ItemGroupIDs) == 0 {
+		return ControlPanelItemDeconstructionMessage{}, false
 	}
 
 	return message, true

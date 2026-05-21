@@ -149,6 +149,8 @@ export class GameScene extends Phaser.Scene {
   private controlPanelContainerTransferDialogOpen = false;
   // Показывает окно выбора количества запусков изготовления.
   private controlPanelConstructorProduceDialogOpen = false;
+  // Показывает окно выбора количества предметов для деконструкции одной строки.
+  private controlPanelItemDeconstructionDialogOpen = false;
   // Максимальное количество предметов для частичного переноса между контейнерами.
   private controlPanelContainerTransferMaxAmount = 0;
   // Источник ожидающего подтверждения переноса между контейнерами.
@@ -161,10 +163,20 @@ export class GameScene extends Phaser.Scene {
   private controlPanelContainerTransferLeftToRightDirection = true;
   // Строка содержимого, ожидающая частичного переноса между контейнерами.
   private controlPanelContainerTransferItemGroupIds: number[] = [];
+  // Деконструктор, ожидающий подтверждения частичной деконструкции.
+  private controlPanelItemDeconstructionDeconstructorGroupId: number | null = null;
+  // Контейнер-источник, ожидающий подтверждения частичной деконструкции.
+  private controlPanelItemDeconstructionSourceGroupId: number | null = null;
+  // Контейнер-приёмник, ожидающий подтверждения частичной деконструкции.
+  private controlPanelItemDeconstructionTargetGroupId: number | null = null;
+  // Строка содержимого, ожидающая подтверждения частичной деконструкции.
+  private controlPanelItemDeconstructionItemGroupIds: number[] = [];
   // Максимальное количество топлива, доступное для залива в бак.
   private controlPanelFuelFillMaxAmount = 0;
   // Максимальное количество запусков изготовления в окне конструктора.
   private controlPanelConstructorProduceMaxAmount = 100;
+  // Максимальное количество предметов для частичной деконструкции.
+  private controlPanelItemDeconstructionMaxAmount = 0;
   // Количество топлива, выбранное для слива из бака.
   private controlPanelFuelDrainAmount = 0;
   // Ожидающие подтверждения сервером изменения панели управления.
@@ -291,10 +303,10 @@ export class GameScene extends Phaser.Scene {
       this.gameClient?.requestFocusedObjectOwnerClaim();
     }
     this.syncControlPanelUsageSelection(selfObject?.ID ?? null, snapshot?.objects ?? [], effectiveEquipmentGroups);
-    this.syncControlPanelConstructorMainJobSelection(constructorProductionJobs);
+    this.syncControlPanelConstructorMainJobSelection(constructorProductionJobs, snapshotTasks);
     this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(snapshot?.objects ?? [], effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
     this.inputController.syncControlPanelObject(selfObject);
-    if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen || this.controlPanelConstructorProduceDialogOpen) {
+    if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen || this.controlPanelConstructorProduceDialogOpen || this.controlPanelItemDeconstructionDialogOpen) {
       const maxAmount = this.currentControlPanelAmountMax(selfObject);
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, maxAmount);
     }
@@ -365,9 +377,11 @@ export class GameScene extends Phaser.Scene {
         controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
         controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
         controlPanelConstructorProduceDialogOpen: this.controlPanelConstructorProduceDialogOpen,
+        controlPanelItemDeconstructionDialogOpen: this.controlPanelItemDeconstructionDialogOpen,
         controlPanelContainerTransferMaxAmount: this.controlPanelContainerTransferMaxAmount,
         controlPanelFuelFillMaxAmount: this.controlPanelFuelFillMaxAmount,
         controlPanelConstructorProduceMaxAmount: this.controlPanelConstructorProduceMaxAmount,
+        controlPanelItemDeconstructionMaxAmount: this.controlPanelItemDeconstructionMaxAmount,
         controlPanelFuelDrainAmount: this.controlPanelFuelDrainAmount,
         controlPanelFuelDrainAmountText: controlPanelFuelDrainAmountEditState.text,
         controlPanelFuelDrainAmountSelectionStart: controlPanelFuelDrainAmountEditState.selectionStart,
@@ -462,9 +476,11 @@ export class GameScene extends Phaser.Scene {
       controlPanelFuelFillDialogOpen: this.controlPanelFuelFillDialogOpen,
       controlPanelContainerTransferDialogOpen: this.controlPanelContainerTransferDialogOpen,
       controlPanelConstructorProduceDialogOpen: this.controlPanelConstructorProduceDialogOpen,
+      controlPanelItemDeconstructionDialogOpen: this.controlPanelItemDeconstructionDialogOpen,
       controlPanelContainerTransferMaxAmount: this.controlPanelContainerTransferMaxAmount,
       controlPanelFuelFillMaxAmount: this.controlPanelFuelFillMaxAmount,
       controlPanelConstructorProduceMaxAmount: this.controlPanelConstructorProduceMaxAmount,
+      controlPanelItemDeconstructionMaxAmount: this.controlPanelItemDeconstructionMaxAmount,
       controlPanelFuelDrainAmount: this.controlPanelFuelDrainAmount,
       controlPanelFuelDrainAmountText: controlPanelFuelDrainAmountEditState.text,
       controlPanelFuelDrainAmountSelectionStart: controlPanelFuelDrainAmountEditState.selectionStart,
@@ -1184,6 +1200,10 @@ export class GameScene extends Phaser.Scene {
       this.startControlPanelConstructorProduceItem();
       return true;
     }
+    if (action.controlId === "control-panel-deconstructor-make-button") {
+      this.startControlPanelItemDeconstruction();
+      return true;
+    }
     if (action.controlId.startsWith("control-panel-constructor-main-queue-") && typeof action.value === "string") {
       this.selectedControlPanelConstructorMainJobId = Number(action.value);
       return true;
@@ -1193,6 +1213,10 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId.startsWith("control-panel-fuel-queue-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorMainJobId = Number(action.value);
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-deconstructor-main-queue-") && typeof action.value === "string") {
       this.selectedControlPanelConstructorMainJobId = Number(action.value);
       return true;
     }
@@ -1244,8 +1268,25 @@ export class GameScene extends Phaser.Scene {
       this.sendControlPanelConstructorQueueCommand("cancelAll");
       return true;
     }
+    if (action.controlId === "control-panel-deconstructor-skip-next") {
+      this.sendControlPanelConstructorQueueCommand("skipNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-deconstructor-skip-all-next") {
+      this.sendControlPanelConstructorQueueCommand("skipAllNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-deconstructor-cancel") {
+      this.sendControlPanelConstructorQueueCommand("cancel");
+      return true;
+    }
+    if (action.controlId === "control-panel-deconstructor-cancel-all") {
+      this.sendControlPanelConstructorQueueCommand("cancelAll");
+      return true;
+    }
     if (action.controlId === "control-panel-constructor-produce-cancel") {
       this.controlPanelConstructorProduceDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1253,6 +1294,25 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 1, this.controlPanelConstructorProduceMaxAmount);
       this.sendControlPanelConstructorProduceItem(this.controlPanelFuelDrainAmount);
       this.controlPanelConstructorProduceDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-item-deconstruction-cancel") {
+      this.controlPanelItemDeconstructionDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "control-panel-item-deconstruction-ok") {
+      this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 1, this.controlPanelItemDeconstructionMaxAmount);
+      this.sendControlPanelItemDeconstruction(
+        this.controlPanelItemDeconstructionDeconstructorGroupId,
+        this.controlPanelItemDeconstructionSourceGroupId,
+        this.controlPanelItemDeconstructionTargetGroupId,
+        this.controlPanelItemDeconstructionItemGroupIds,
+        this.controlPanelFuelDrainAmount,
+      );
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1278,6 +1338,7 @@ export class GameScene extends Phaser.Scene {
     }
     if (action.controlId === "control-panel-container-transfer-cancel") {
       this.controlPanelContainerTransferDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1285,6 +1346,7 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, this.controlPanelContainerTransferMaxAmount);
       this.sendControlPanelContainerTransfer(this.controlPanelContainerTransferSourceGroupId, this.controlPanelContainerTransferTargetGroupId, this.controlPanelContainerTransferControllerGroupId, this.controlPanelContainerTransferLeftToRightDirection, this.controlPanelContainerTransferItemGroupIds, this.controlPanelFuelDrainAmount);
       this.controlPanelContainerTransferDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1295,6 +1357,7 @@ export class GameScene extends Phaser.Scene {
         this.controlPanelFuelDrainDialogOpen = false;
         this.controlPanelContainerTransferDialogOpen = false;
         this.controlPanelConstructorProduceDialogOpen = false;
+        this.controlPanelItemDeconstructionDialogOpen = false;
         this.controlPanelFuelDrainAmount = this.controlPanelFuelFillMaxAmount;
         this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
       }
@@ -1302,6 +1365,7 @@ export class GameScene extends Phaser.Scene {
     }
     if (action.controlId === "control-panel-fuel-fill-cancel") {
       this.controlPanelFuelFillDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1309,6 +1373,7 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, this.controlPanelFuelFillMaxAmount);
       this.sendControlPanelFuelTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftItemGroupIds, this.controlPanelFuelDrainAmount);
       this.controlPanelFuelFillDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1317,12 +1382,14 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelFillDialogOpen = false;
       this.controlPanelContainerTransferDialogOpen = false;
       this.controlPanelConstructorProduceDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.controlPanelFuelDrainAmount = Math.max(0, this.getSelectedFuelTankObject()?.Fuel ?? 0);
       this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
       return true;
     }
     if (action.controlId === "control-panel-fuel-drain-cancel") {
       this.controlPanelFuelDrainDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1338,6 +1405,7 @@ export class GameScene extends Phaser.Scene {
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, Math.max(0, this.getSelectedFuelTankObject()?.Fuel ?? 0));
       this.sendControlPanelFuelTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, [], this.controlPanelFuelDrainAmount);
       this.controlPanelFuelDrainDialogOpen = false;
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
     }
@@ -1499,6 +1567,9 @@ export class GameScene extends Phaser.Scene {
     if (this.controlPanelConstructorProduceDialogOpen) {
       return this.controlPanelConstructorProduceMaxAmount;
     }
+    if (this.controlPanelItemDeconstructionDialogOpen) {
+      return this.controlPanelItemDeconstructionMaxAmount;
+    }
     return Math.max(0, this.getSelectedFuelTankObject()?.Fuel ?? 0);
   }
 
@@ -1523,6 +1594,7 @@ export class GameScene extends Phaser.Scene {
     this.controlPanelFuelDrainDialogOpen = false;
     this.controlPanelFuelFillDialogOpen = false;
     this.controlPanelConstructorProduceDialogOpen = false;
+    this.controlPanelItemDeconstructionDialogOpen = false;
     this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
   }
 
@@ -1532,6 +1604,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     if (this.selectedControlPanelConstructorTab === "objects") {
+      this.controlPanelItemDeconstructionDialogOpen = false;
       this.sendControlPanelConstructorProduceItem(1);
       return;
     }
@@ -1542,7 +1615,40 @@ export class GameScene extends Phaser.Scene {
     this.controlPanelFuelDrainDialogOpen = false;
     this.controlPanelFuelFillDialogOpen = false;
     this.controlPanelContainerTransferDialogOpen = false;
+    this.controlPanelItemDeconstructionDialogOpen = false;
     this.controlPanelFuelDrainAmount = 1;
+    this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+  }
+
+  // Открывает выбор количества для одной строки деконструкции или сразу запускает разбор нескольких строк.
+  private startControlPanelItemDeconstruction(): void {
+    const deconstructorGroupId = this.selectedControlPanelUsageRightEquipmentGroupId;
+    const sourceGroupId = this.selectedControlPanelConstructorMaterialContainerGroupId;
+    const targetGroupId = this.selectedControlPanelUsageLeftContainerGroupId;
+    const itemGroupIds = this.selectedControlPanelUsageRightItemGroupIds;
+    if (!deconstructorGroupId || !sourceGroupId || !targetGroupId || itemGroupIds.length === 0) {
+      return;
+    }
+    if (itemGroupIds.length !== 1) {
+      this.controlPanelItemDeconstructionDialogOpen = false;
+      this.sendControlPanelItemDeconstruction(deconstructorGroupId, sourceGroupId, targetGroupId, itemGroupIds);
+      return;
+    }
+    const itemGroup = this.gameUi.state().itemGroups.find((group) => group.ID === itemGroupIds[0] && group.ContainerEquipmentGroupID === sourceGroupId);
+    if (!itemGroup) {
+      return;
+    }
+    this.controlPanelItemDeconstructionDeconstructorGroupId = deconstructorGroupId;
+    this.controlPanelItemDeconstructionSourceGroupId = sourceGroupId;
+    this.controlPanelItemDeconstructionTargetGroupId = targetGroupId;
+    this.controlPanelItemDeconstructionItemGroupIds = itemGroupIds;
+    this.controlPanelItemDeconstructionMaxAmount = itemGroup.Count;
+    this.controlPanelFuelDrainAmount = itemGroup.Count;
+    this.controlPanelItemDeconstructionDialogOpen = true;
+    this.controlPanelFuelDrainDialogOpen = false;
+    this.controlPanelFuelFillDialogOpen = false;
+    this.controlPanelContainerTransferDialogOpen = false;
+    this.controlPanelConstructorProduceDialogOpen = false;
     this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
   }
 
@@ -1564,6 +1670,9 @@ export class GameScene extends Phaser.Scene {
   private getControlPanelUsageRightContentContainerGroupId(): number | null {
     const rightGroup = this.selectedControlPanelUsageRightEquipmentGroupId ? this.getControlPanelEquipmentGroup(this.selectedControlPanelUsageRightEquipmentGroupId) : null;
     if (rightGroup && this.isEquipmentGroupItemType(rightGroup, "Constructor")) {
+      return this.selectedControlPanelConstructorMaterialContainerGroupId;
+    }
+    if (rightGroup && this.isEquipmentGroupItemType(rightGroup, "Deconstructor")) {
       return this.selectedControlPanelConstructorMaterialContainerGroupId;
     }
     return this.selectedControlPanelUsageRightEquipmentGroupId;
@@ -1618,6 +1727,20 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  // Отправляет запуск деконструкции выбранных предметов из правого контейнера в левый контейнер.
+  private sendControlPanelItemDeconstruction(deconstructorGroupId: number | null, sourceGroupId: number | null, targetGroupId: number | null, itemGroupIds: number[], amount = 0): void {
+    if (!deconstructorGroupId || !sourceGroupId || !targetGroupId || itemGroupIds.length === 0) {
+      return;
+    }
+    this.gameClient?.sendControlPanelItemDeconstruction({
+      deconstructorEquipmentGroupId: deconstructorGroupId,
+      sourceContainerEquipmentGroupId: sourceGroupId,
+      targetContainerEquipmentGroupId: targetGroupId,
+      itemGroupIds,
+      amount: amount > 0 ? amount : undefined,
+    });
+  }
+
   // Отправляет изготовление одной партии предметов по выбранной схеме конструктора.
   private sendControlPanelConstructorProduceItem(amount: number): void {
     if (
@@ -1664,18 +1787,30 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Сбрасывает выбор строки основной очереди, если сервер больше не присылает эту строку.
-  private syncControlPanelConstructorMainJobSelection(jobs: ConstructorProductionJob[]): void {
+  private syncControlPanelConstructorMainJobSelection(jobs: ConstructorProductionJob[], tasks: Task[]): void {
     if (!this.selectedControlPanelConstructorMainJobId) {
       return;
     }
-    const selectedExists = jobs.some((job) =>
+    const selectedConstructorJobExists = jobs.some((job) =>
       job.id === this.selectedControlPanelConstructorMainJobId &&
       job.queueType === "main" &&
       job.constructorEquipmentGroupId === this.selectedControlPanelUsageRightEquipmentGroupId,
     );
-    if (!selectedExists) {
+    const selectedTaskJobExists = tasks.some((task) =>
+      task.ID === this.selectedControlPanelConstructorMainJobId &&
+      task.ParentTaskID === 0 &&
+      task.ControllerEquipmentGroupID === this.selectedControlPanelUsageRightEquipmentGroupId &&
+      this.isControlPanelSelectableTaskQueueType(task.TaskTypeID),
+    );
+    if (!selectedConstructorJobExists && !selectedTaskJobExists) {
       this.selectedControlPanelConstructorMainJobId = null;
     }
+  }
+
+  // Проверяет, что тип задания относится к очередям, строки которых можно выбирать в панели оборудования.
+  private isControlPanelSelectableTaskQueueType(taskTypeId: number): boolean {
+    const taskType = this.referenceData?.TaskType?.Items[String(taskTypeId)];
+    return Boolean(taskType && controlPanelSelectableTaskQueueTypeAcronyms.has(taskType.Acronym));
   }
 
   // Создает старую форму строк очереди из новой таблицы заданий для существующих компонентов UI.
@@ -2189,6 +2324,18 @@ export class GameScene extends Phaser.Scene {
     if (listId === "control-panel-constructor-required-queue") {
       return this.getControlPanelConstructorProductionJobCount("auxiliary");
     }
+    if (listId === "control-panel-container-queue") {
+      return this.getControlPanelTaskQueueCount("CargoMovement");
+    }
+    if (listId === "control-panel-fuel-queue") {
+      return this.getControlPanelTaskQueueCount("Fueling");
+    }
+    if (listId === "control-panel-deconstructor-main-queue") {
+      return this.getControlPanelTaskQueueCount("ItemDeconstruction");
+    }
+    if (listId === "control-panel-deconstructor-required-queue") {
+      return 0;
+    }
     return 0;
   }
 
@@ -2199,6 +2346,16 @@ export class GameScene extends Phaser.Scene {
       return 0;
     }
     return this.gameUi.state().constructorProductionJobs.filter((job) => job.constructorEquipmentGroupId === constructorID && job.queueType === queueType).length;
+  }
+
+  // Возвращает количество строк очереди заданий выбранного контроллера по акрониму типа работы.
+  private getControlPanelTaskQueueCount(taskTypeAcronym: string): number {
+    const controllerID = this.gameUi.state().selectedControlPanelUsageRightEquipmentGroupId;
+    const taskType = Object.values(this.referenceData?.TaskType?.Items ?? {}).find((item) => item.Acronym === taskTypeAcronym);
+    if (!controllerID || !taskType) {
+      return 0;
+    }
+    return (this.gameUi.state().tasks ?? []).filter((task) => task.ControllerEquipmentGroupID === controllerID && task.TaskTypeID === taskType.ID).length;
   }
 
   // Возвращает количество групп предметов в выбранном контейнере.
@@ -2240,6 +2397,16 @@ const scrollableListIds = new Set([
   "control-panel-constructor-blueprint-list",
   "control-panel-constructor-main-queue",
   "control-panel-constructor-required-queue",
+  "control-panel-container-queue",
+  "control-panel-fuel-queue",
+  "control-panel-deconstructor-main-queue",
+  "control-panel-deconstructor-required-queue",
+]);
+
+const controlPanelSelectableTaskQueueTypeAcronyms = new Set([
+  "CargoMovement",
+  "Fueling",
+  "ItemDeconstruction",
 ]);
 
 // Возвращает ID списка по ID встроенной полосы прокрутки.

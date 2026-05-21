@@ -700,8 +700,25 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
   const usageRightEquipment = createMemo(() => getSelectedControlPanelEquipment(usageRightInternalEquipment(), props.state().selectedControlPanelUsageRightEquipmentGroupId));
   const usageConstructorMaterialContainer = createMemo(() => getSelectedControlPanelEquipment(usageConstructorMaterialContainers(), props.state().selectedControlPanelConstructorMaterialContainerGroupId));
   const usageConstructorProductContainer = createMemo(() => getSelectedControlPanelEquipment(usageConstructorProductContainers(), props.state().selectedControlPanelConstructorProductContainerGroupId));
+  const usageDeconstructorSourceContainer = createMemo(() => usageConstructorMaterialContainer());
   const usageObjectOptions = createMemo(() => usageObjects().map((object) => ({ value: String(object?.ID), label: object?.Title?.trim() || `Object ${object?.ID}` })));
   const usageRightEquipmentObject = createMemo(() => props.state().selfObject?.ID === usageRightEquipment()?.group.CosmicObjectID ? props.state().selfObject : props.state().objects.find((object) => object.ID === usageRightEquipment()?.group.CosmicObjectID) ?? props.state().selfObject);
+  const controllerSelectPair = () => (
+    <div class="control-panel-usage-select-pair">
+      <Dropdown
+        id="control-panel-usage-right-object-select"
+        open={props.state().openControlPanelUsageSelect === "rightObject"}
+        selectedValue={usageRightObject() ? String(usageRightObject()?.ID) : ""}
+        options={usageObjectOptions()}
+      />
+      <Dropdown
+        id="control-panel-usage-right-equipment-select"
+        open={props.state().openControlPanelUsageSelect === "right"}
+        selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
+        options={usageRightInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+      />
+    </div>
+  );
 
   return (
     <Show when={props.state().controlPanelVisible}>
@@ -818,26 +835,49 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                       </div>
                     </Match>
                     <Match when={props.state().selectedControlPanelEquipmentTab === "usage"}>
-                      <div class={`control-panel-equipment-usage ${isConstructorEquipment(usageRightEquipment(), props.state()) || isContainerEquipment(usageRightEquipment(), props.state()) || isFuelTankEquipment(usageRightEquipment(), props.state()) ? "control-panel-equipment-usage--wide-right" : ""} ${isConstructorEquipment(usageRightEquipment(), props.state()) ? "control-panel-equipment-usage--constructor" : ""}`}>
+                      <div class={`control-panel-equipment-usage ${isConstructorEquipment(usageRightEquipment(), props.state()) || isDeconstructorEquipment(usageRightEquipment(), props.state()) || isContainerEquipment(usageRightEquipment(), props.state()) || isFuelTankEquipment(usageRightEquipment(), props.state()) ? "control-panel-equipment-usage--wide-right" : ""} ${isConstructorEquipment(usageRightEquipment(), props.state()) ? "control-panel-equipment-usage--constructor" : ""} ${isDeconstructorEquipment(usageRightEquipment(), props.state()) ? "control-panel-equipment-usage--deconstructor" : ""}`}>
                         <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--left">
                           <Show
                             when={isConstructorEquipment(usageRightEquipment(), props.state())}
                             fallback={(
                               <>
-                                <div class="control-panel-usage-select-pair">
-                                  <Dropdown
-                                    id="control-panel-usage-left-object-select"
-                                    open={props.state().openControlPanelUsageSelect === "leftObject"}
-                                    selectedValue={usageLeftObject() ? String(usageLeftObject()?.ID) : ""}
-                                    options={usageObjectOptions()}
-                                  />
-                                  <Dropdown
-                                    id="control-panel-usage-left-container-select"
-                                    open={props.state().openControlPanelUsageSelect === "left"}
-                                    selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
-                                    options={usageLeftContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                                  />
-                                </div>
+                                <Show
+                                  when={isDeconstructorEquipment(usageRightEquipment(), props.state())}
+                                  fallback={(
+                                    <div class="control-panel-usage-select-pair">
+                                      <Dropdown
+                                        id="control-panel-usage-left-object-select"
+                                        open={props.state().openControlPanelUsageSelect === "leftObject"}
+                                        selectedValue={usageLeftObject() ? String(usageLeftObject()?.ID) : ""}
+                                        options={usageObjectOptions()}
+                                      />
+                                      <Dropdown
+                                        id="control-panel-usage-left-container-select"
+                                        open={props.state().openControlPanelUsageSelect === "left"}
+                                        selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
+                                        options={usageLeftContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                      />
+                                    </div>
+                                  )}
+                                >
+                                  <div class="control-panel-storage-select-block">
+                                    <div class="control-panel-constructor-storage__title">Приёмник</div>
+                                    <div class="control-panel-usage-select-pair">
+                                      <Dropdown
+                                        id="control-panel-usage-left-object-select"
+                                        open={props.state().openControlPanelUsageSelect === "leftObject"}
+                                        selectedValue={usageLeftObject() ? String(usageLeftObject()?.ID) : ""}
+                                        options={usageObjectOptions()}
+                                      />
+                                      <Dropdown
+                                        id="control-panel-usage-left-container-select"
+                                        open={props.state().openControlPanelUsageSelect === "left"}
+                                        selectedValue={usageLeftContainer() ? String(usageLeftContainer()?.group.ID) : ""}
+                                        options={usageLeftContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                      />
+                                    </div>
+                                  </div>
+                                </Show>
                                 <Show when={usageLeftContainer()} fallback={<div class="control-panel-empty-page" />}>
                                   {(container) => (
                                     <ControlPanelContainerContent
@@ -853,6 +893,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                           >
                             <div class="control-panel-constructor-storage">
                               <div class="control-panel-constructor-storage__section">
+                                <div class="control-panel-constructor-storage__title">Материалы</div>
                                 <div class="control-panel-usage-select-pair">
                                   <Dropdown
                                     id="control-panel-constructor-material-object-select"
@@ -879,6 +920,7 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                                 </Show>
                               </div>
                               <div class="control-panel-constructor-storage__section">
+                                <div class="control-panel-constructor-storage__title">Продукция</div>
                                 <div class="control-panel-usage-select-pair">
                                   <Dropdown
                                     id="control-panel-constructor-product-object-select"
@@ -910,79 +952,83 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                         <div class="control-panel-equipment-usage__panel control-panel-equipment-usage__panel--right">
                           <Show when={isConstructorEquipment(usageRightEquipment(), props.state())}>
                             <div class="control-panel-constructor-usage">
-                              <ControlPanelConstructorQueuePanel state={props.state} />
-                              <div class="control-panel-equipment-right-stack">
-                                <div class="control-panel-usage-select-pair">
-                                  <Dropdown
-                                    id="control-panel-usage-right-object-select"
-                                    open={props.state().openControlPanelUsageSelect === "rightObject"}
-                                    selectedValue={usageRightObject() ? String(usageRightObject()?.ID) : ""}
-                                    options={usageObjectOptions()}
-                                  />
-                                  <Dropdown
-                                    id="control-panel-usage-right-equipment-select"
-                                    open={props.state().openControlPanelUsageSelect === "right"}
-                                    selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
-                                    options={usageRightInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                                  />
-                                </div>
+                              <div class="control-panel-controller-work">
+                                {controllerSelectPair()}
+                                <ControlPanelConstructorQueuePanel state={props.state} />
+                              </div>
+                              <div class="control-panel-equipment-right-stack control-panel-equipment-right-stack--content-only">
                                 <ControlPanelConstructorRecipePanel state={props.state} />
                               </div>
                             </div>
                           </Show>
-                          <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && isFuelTankEquipment(usageRightEquipment(), props.state())}>
+                          <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && isDeconstructorEquipment(usageRightEquipment(), props.state())}>
                             <div class="control-panel-equipment-usage-container control-panel-equipment-usage-container--queue-left">
-                              <div class="control-panel-container-work">
+                              <div class="control-panel-controller-work">
+                                {controllerSelectPair()}
+                                <div class="control-panel-container-work control-panel-container-work--deconstructor">
+                                  <ControlPanelDeconstructorQueuePanel state={props.state} />
+                                </div>
+                              </div>
+                              <div class="control-panel-equipment-right-stack control-panel-equipment-right-stack--source">
+                                <div class="control-panel-constructor-storage__title">Источник</div>
+                                <div class="control-panel-usage-select-pair">
+                                  <Dropdown
+                                    id="control-panel-constructor-material-object-select"
+                                    open={props.state().openControlPanelUsageSelect === "constructorMaterialObject"}
+                                    selectedValue={usageConstructorMaterialObject() ? String(usageConstructorMaterialObject()?.ID) : ""}
+                                    options={usageObjectOptions()}
+                                  />
+                                  <Dropdown
+                                    id="control-panel-constructor-material-select"
+                                    open={props.state().openControlPanelUsageSelect === "constructorMaterials"}
+                                    selectedValue={usageDeconstructorSourceContainer() ? String(usageDeconstructorSourceContainer()?.group.ID) : ""}
+                                    options={usageConstructorMaterialContainers().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
+                                  />
+                                </div>
+                                <Show when={usageDeconstructorSourceContainer()} fallback={<div class="control-panel-empty-page" />}>
+                                  {(container) => (
+                                    <ControlPanelContainerContent
+                                      listId="control-panel-usage-right-container-content"
+                                      rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, container().group.ID)}
+                                      selectedIds={props.state().selectedControlPanelUsageRightItemGroupIds}
+                                      scroll={props.state().listScroll["control-panel-usage-right-container-content"]}
+                                    />
+                                  )}
+                                </Show>
+                              </div>
+                            </div>
+                          </Show>
+                          <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && !isDeconstructorEquipment(usageRightEquipment(), props.state()) && isFuelTankEquipment(usageRightEquipment(), props.state())}>
+                            <div class="control-panel-equipment-usage-container control-panel-equipment-usage-container--queue-left">
+                              <div class="control-panel-controller-work">
+                                {controllerSelectPair()}
+                                <div class="control-panel-container-work">
                                 <div class="control-panel-equipment-usage-container__actions">
                                 <Button id="control-panel-fuel-drain-open" label="<" ariaLabel="Слить топливо в левый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
                                 <Button id="control-panel-fuel-transfer-to-tank" label=">" ariaLabel="Переместить выбранное топливо в топливный бак" state={usageLeftContainer() && props.state().selectedControlPanelUsageLeftItemGroupIds.length > 0 ? "normal" : "disabled"} />
                                 </div>
                                 <ControlPanelFuelQueuePanel state={props.state} />
-                              </div>
-                              <div class="control-panel-equipment-right-stack">
-                                <div class="control-panel-usage-select-pair">
-                                  <Dropdown
-                                    id="control-panel-usage-right-object-select"
-                                    open={props.state().openControlPanelUsageSelect === "rightObject"}
-                                    selectedValue={usageRightObject() ? String(usageRightObject()?.ID) : ""}
-                                    options={usageObjectOptions()}
-                                  />
-                                  <Dropdown
-                                    id="control-panel-usage-right-equipment-select"
-                                    open={props.state().openControlPanelUsageSelect === "right"}
-                                    selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
-                                    options={usageRightInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                                  />
                                 </div>
+                              </div>
+                              <div class="control-panel-equipment-right-stack control-panel-equipment-right-stack--content-only">
                                 <ControlPanelFuelTank object={usageRightEquipmentObject()} />
                               </div>
                             </div>
                           </Show>
-                          <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && !isFuelTankEquipment(usageRightEquipment(), props.state()) && isContainerEquipment(usageRightEquipment(), props.state()) ? usageRightEquipment() : null} fallback={<Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && !isFuelTankEquipment(usageRightEquipment(), props.state())}><div class="control-panel-empty-page" /></Show>}>
+                          <Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && !isDeconstructorEquipment(usageRightEquipment(), props.state()) && !isFuelTankEquipment(usageRightEquipment(), props.state()) && isContainerEquipment(usageRightEquipment(), props.state()) ? usageRightEquipment() : null} fallback={<Show when={!isConstructorEquipment(usageRightEquipment(), props.state()) && !isDeconstructorEquipment(usageRightEquipment(), props.state()) && !isFuelTankEquipment(usageRightEquipment(), props.state())}><div class="control-panel-empty-page" /></Show>}>
                             {(equipment) => (
                               <div class="control-panel-equipment-usage-container control-panel-equipment-usage-container--queue-left">
-                                <div class="control-panel-container-work">
+                                <div class="control-panel-controller-work">
+                                  {controllerSelectPair()}
+                                  <div class="control-panel-container-work">
                                   <div class="control-panel-equipment-usage-container__actions">
                                     <Button id="control-panel-container-transfer-to-left" label="<" ariaLabel="Переместить выбранные предметы в левый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
                                     <Button id="control-panel-container-transfer-to-right" label=">" ariaLabel="Переместить выбранные предметы в правый контейнер" state={usageLeftContainer() ? "normal" : "disabled"} />
                                   </div>
                                   <ControlPanelContainerQueuePanel state={props.state} />
-                                </div>
-                                <div class="control-panel-equipment-right-stack">
-                                  <div class="control-panel-usage-select-pair">
-                                    <Dropdown
-                                      id="control-panel-usage-right-object-select"
-                                      open={props.state().openControlPanelUsageSelect === "rightObject"}
-                                      selectedValue={usageRightObject() ? String(usageRightObject()?.ID) : ""}
-                                      options={usageObjectOptions()}
-                                    />
-                                    <Dropdown
-                                      id="control-panel-usage-right-equipment-select"
-                                      open={props.state().openControlPanelUsageSelect === "right"}
-                                      selectedValue={usageRightEquipment() ? String(usageRightEquipment()?.group.ID) : ""}
-                                      options={usageRightInternalEquipment().map((equipment) => ({ value: String(equipment.group.ID), label: getControlPanelEquipmentGroupTitle(equipment) }))}
-                                    />
                                   </div>
+                                </div>
+                                <div class="control-panel-equipment-right-stack control-panel-equipment-right-stack--content-only">
                                   <ControlPanelContainerContent
                                     listId="control-panel-usage-right-container-content"
                                     rows={getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, equipment().group.ID)}
@@ -1062,6 +1108,20 @@ const ControlPanelModal = (props: ControlPanelModalProps) => {
                 cancelId="control-panel-constructor-produce-cancel"
                 amount={props.state().controlPanelFuelDrainAmount}
                 maxAmount={props.state().controlPanelConstructorProduceMaxAmount}
+                text={props.state().controlPanelFuelDrainAmountText}
+                selectionStart={props.state().controlPanelFuelDrainAmountSelectionStart}
+                selectionEnd={props.state().controlPanelFuelDrainAmountSelectionEnd}
+                focused={props.state().controlPanelFuelDrainAmountFocused}
+              />
+            </Show>
+            <Show when={props.state().controlPanelItemDeconstructionDialogOpen}>
+              <ControlPanelFuelAmountDialog
+                id="control-panel-item-deconstruction-dialog"
+                title="Деконструкция"
+                okId="control-panel-item-deconstruction-ok"
+                cancelId="control-panel-item-deconstruction-cancel"
+                amount={props.state().controlPanelFuelDrainAmount}
+                maxAmount={props.state().controlPanelItemDeconstructionMaxAmount}
                 text={props.state().controlPanelFuelDrainAmountText}
                 selectionStart={props.state().controlPanelFuelDrainAmountSelectionStart}
                 selectionEnd={props.state().controlPanelFuelDrainAmountSelectionEnd}
@@ -1203,6 +1263,41 @@ const ControlPanelFuelQueuePanel = (props: { state: Accessor<GameUiState> }) => 
         <Button id="control-panel-fuel-skip-all-next" label="Не делать все следующие" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
         <Button id="control-panel-fuel-cancel-all" label="Отменить все" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
       </div>
+    </div>
+  );
+};
+
+// Показывает очереди деконструктора и кнопку запуска разбора выбранных предметов.
+const ControlPanelDeconstructorQueuePanel = (props: { state: Accessor<GameUiState> }) => {
+  const mainRows = createMemo(() => getControlPanelDeconstructionQueueRows(props.state()));
+  const canDeconstruct = createMemo(() => props.state().selectedControlPanelUsageRightItemGroupIds.length > 0 && props.state().selectedControlPanelUsageLeftContainerGroupId !== null);
+  return (
+    <div class="control-panel-constructor-queues control-panel-constructor-queues--constructor">
+      <div class="control-panel-constructor-queue-make">
+        <Button
+          id="control-panel-deconstructor-make-button"
+          label="Деконструировать"
+          state={canDeconstruct() ? "normal" : "disabled"}
+        />
+      </div>
+      <ControlPanelConstructorQueueList
+        id="control-panel-deconstructor-main-queue"
+        rows={mainRows()}
+        selectedId={props.state().selectedControlPanelConstructorMainJobId}
+        scroll={props.state().listScroll["control-panel-deconstructor-main-queue"]}
+      />
+      <div class="control-panel-constructor-queue-actions">
+        <Button id="control-panel-deconstructor-skip-next" label="Не делать следующие" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+        <Button id="control-panel-deconstructor-cancel" label="Отменить" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+        <Button id="control-panel-deconstructor-skip-all-next" label="Не делать все следующие" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+        <Button id="control-panel-deconstructor-cancel-all" label="Отменить все" state={props.state().selectedControlPanelConstructorMainJobId ? "normal" : "disabled"} />
+      </div>
+      <ControlPanelConstructorQueueList
+        id="control-panel-deconstructor-required-queue"
+        rows={[]}
+        selectedId={null}
+        scroll={props.state().listScroll["control-panel-deconstructor-required-queue"]}
+      />
     </div>
   );
 };
@@ -1367,6 +1462,14 @@ const isConstructorEquipment = (equipment: ControlPanelEquipmentView | null, sta
   return itemType?.Acronym === "Constructor";
 };
 
+const isDeconstructorEquipment = (equipment: ControlPanelEquipmentView | null, state: GameUiState): boolean => {
+  if (!equipment) {
+    return false;
+  }
+  const itemType = state.referenceData?.ItemType.Items[String(equipment.itemModel?.ItemTypeID)];
+  return itemType?.Acronym === "Deconstructor";
+};
+
 const getControlPanelContainerContentRows = (itemGroups: ItemGroup[], itemModels: Record<string, ItemModelReference> | undefined, containerGroupId: number): ControlPanelContainerContentRow[] =>
   itemGroups
     .filter((itemGroup) => itemGroup.ContainerEquipmentGroupID === containerGroupId)
@@ -1405,6 +1508,11 @@ const getControlPanelFuelQueueRows = (state: GameUiState): ControlPanelConstruct
 };
 
 // Собирает строки очереди заданий указанного типа для правой группы оборудования.
+// Собирает строки очереди деконструкции для выбранного деконструктора.
+const getControlPanelDeconstructionQueueRows = (state: GameUiState): ControlPanelConstructorQueueRow[] => {
+  return getControlPanelTaskQueueRows(state, "ItemDeconstruction");
+};
+
 const getControlPanelTaskQueueRows = (state: GameUiState, taskTypeAcronym: string): ControlPanelConstructorQueueRow[] => {
   const controllerId = state.selectedControlPanelUsageRightEquipmentGroupId;
   const taskType = Object.values(state.referenceData?.TaskType?.Items ?? {}).find((item) => item.Acronym === taskTypeAcronym);

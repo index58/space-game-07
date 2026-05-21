@@ -75,6 +75,29 @@ const object = (partial: Partial<CosmicObject> = {}): CosmicObject => ({
     expect(root.querySelector("#control-panel-constructor-produce-cancel")?.textContent).toBe("Отмена");
   });
 
+  // Проверяет, что окно количества деконструкции использует общий шаблон выбора числа.
+  it("renders control panel item deconstruction amount dialog", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      controlPanelItemDeconstructionDialogOpen: true,
+      controlPanelItemDeconstructionMaxAmount: 12,
+      controlPanelFuelDrainAmount: 4,
+      controlPanelFuelDrainAmountText: "4",
+      controlPanelFuelDrainAmountSelectionStart: 1,
+      controlPanelFuelDrainAmountSelectionEnd: 1,
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-item-deconstruction-dialog .control-panel-fuel-drain-dialog__title")?.textContent).toBe("Деконструкция");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-input .ui-kit-text-input__text")?.textContent).toBe("4");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-slider .ui-kit-slider__fill")).not.toBeNull();
+    expect(root.querySelector("#control-panel-item-deconstruction-ok")?.textContent).toBe("ОК");
+    expect(root.querySelector("#control-panel-item-deconstruction-cancel")?.textContent).toBe("Отмена");
+  });
+
 const visibleControlText = (element: Element | null): string | null =>
   element?.querySelector(".ui-kit-text-input__text")?.textContent ?? element?.textContent ?? null;
 
@@ -180,9 +203,11 @@ const state = (): GameUiState => ({
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,
   controlPanelConstructorProduceDialogOpen: false,
+  controlPanelItemDeconstructionDialogOpen: false,
   controlPanelContainerTransferMaxAmount: 0,
   controlPanelFuelFillMaxAmount: 0,
   controlPanelConstructorProduceMaxAmount: 100,
+  controlPanelItemDeconstructionMaxAmount: 0,
   controlPanelFuelDrainAmount: 0,
   controlPanelFuelDrainAmountText: "0",
   controlPanelFuelDrainAmountSelectionStart: 1,
@@ -931,10 +956,10 @@ describe("GameUi", () => {
     expect(root.querySelector(".control-panel-constructor-storage")?.closest(".control-panel-equipment-usage__panel--left")).not.toBeNull();
     expect(root.querySelector(".control-panel-constructor-recipes")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
     expect(root.querySelector(".control-panel-constructor-queues")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
-    expect(root.querySelector(".control-panel-constructor-usage")?.children[0]?.classList.contains("control-panel-constructor-queues")).toBe(true);
+    expect(root.querySelector(".control-panel-constructor-usage")?.children[0]?.classList.contains("control-panel-controller-work")).toBe(true);
     expect(root.querySelector(".control-panel-constructor-usage")?.children[1]?.classList.contains("control-panel-equipment-right-stack")).toBe(true);
     expect(root.querySelector(".control-panel-constructor-recipes")?.closest(".control-panel-equipment-right-stack")).not.toBeNull();
-    expect(root.querySelector("#control-panel-usage-right-equipment-select")?.closest(".control-panel-equipment-right-stack")).not.toBeNull();
+    expect(root.querySelector("#control-panel-usage-right-equipment-select")?.closest(".control-panel-controller-work")).not.toBeNull();
     expect(root.querySelector("#control-panel-constructor-main-queue-1")?.textContent).toBe("Пластина2 / 8");
     expect(root.querySelector("#control-panel-constructor-required-queue-2")?.textContent).toBe("Пластина6 / 12");
     expect(root.querySelector("#control-panel-constructor-required-queue-4")?.textContent).toBe("Пластина0 / 3");
@@ -951,6 +976,63 @@ describe("GameUi", () => {
     await Promise.resolve();
     expect(document.querySelector(".control-panel-constructor-recipe-tooltip")?.textContent).toBe("ПластинаФеррогель: 5Получается: 2Время: 10 с");
     expect(document.querySelector(".control-panel-constructor-recipe-tooltip__component")?.textContent).toBe("Феррогель: 5");
+  });
+
+  // Проверяет, что выбранная строка очереди деконструкции получает общий класс выделения списка.
+  it("highlights selected deconstructor queue row", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const equipmentReferenceData = {
+      ...referenceData,
+      ItemType: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
+          "2": { ID: 2, Acronym: "Deconstructor", IsPilotInstrument: false, IsInternalUsable: true },
+        },
+      },
+      ItemModel: {
+        MaxID: 3,
+        Items: {
+          "1": { ID: 1, TitleRu: "Контейнер", TitleEn: "Container", Acronym: "Container", ItemTypeID: 1 },
+          "2": { ID: 2, TitleRu: "Деконструктор", TitleEn: "Deconstructor", Acronym: "Deconstructor", ItemTypeID: 2 },
+          "3": { ID: 3, TitleRu: "Пластина", TitleEn: "Plate", Acronym: "Plate", ItemTypeID: 1 },
+        },
+      },
+      TaskType: {
+        MaxID: 3,
+        Items: {
+          "3": { ID: 3, TitleRu: "Деконструкция предметов", TitleEn: "Item deconstruction", Acronym: "ItemDeconstruction" },
+        },
+      },
+    } as unknown as ReferenceDataMessage;
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      selectedControlPanelEquipmentTab: "usage",
+      selectedControlPanelUsageRightEquipmentGroupId: 11,
+      selectedControlPanelConstructorMaterialContainerGroupId: 10,
+      selectedControlPanelUsageLeftContainerGroupId: 10,
+      selectedControlPanelConstructorMainJobId: 31,
+      referenceData: equipmentReferenceData,
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 1, Title: "Контейнер", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+        { ID: 11, CosmicObjectID: 1, Title: "Деконструктор", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+      itemGroups: [
+        { ID: 21, ContainerEquipmentGroupID: 10, ContentItemModelID: 3, Count: 4 },
+      ],
+      tasks: [
+        { ID: 31, ControllerEquipmentGroupID: 11, ParentTaskID: 0, TaskTypeID: 3, RemainingEnergy: 5, TotalEnergy: 10, Count: 1, SchemaID: 0, BlueprintID: 0, LeftToRightDirection: true },
+      ],
+      taskItemGroups: [
+        { ID: 41, TaskID: 31, ItemModelID: 3, Count: 4, IsStored: true },
+      ],
+    })} />, root);
+
+    expect(root.querySelector("#control-panel-deconstructor-main-queue-31")?.classList.contains("is-selected")).toBe(true);
   });
 
   // Проверяет, что выбранный чертёж объекта включает кнопку запуска изготовления.

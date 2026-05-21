@@ -153,6 +153,15 @@ type ControlPanelFuelTransfer struct {
 }
 
 // ControlPanelConstructorProduceItem Р С•Р С—Р С‘РЎРѓРЎвЂ№Р Р†Р В°Р ВµРЎвЂљ Р С‘Р В·Р С–Р С•РЎвЂљР С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР В° Р С—Р С• РЎРѓРЎвЂ¦Р ВµР СР Вµ Р С”Р С•Р Р…РЎРѓРЎвЂљРЎР‚РЎС“Р С”РЎвЂљР С•РЎР‚Р В°.
+// ControlPanelItemDeconstruction описывает запуск деконструкции выбранных предметов.
+type ControlPanelItemDeconstruction struct {
+	DeconstructorEquipmentGroupID   int64   // Группа деконструктора, которая управляет очередью заданий.
+	SourceContainerEquipmentGroupID int64   // Контейнер с предметами, выбранный в правой части панели.
+	TargetContainerEquipmentGroupID int64   // Контейнер результата, выбранный в левой части панели.
+	ItemGroupIDs                    []int64 // Строки предметов, выбранные для деконструкции.
+	Amount                          float64 // Максимальное количество предметов одной выбранной строки для деконструкции.
+}
+
 type ControlPanelConstructorProduceItem struct {
 	ConstructorEquipmentGroupID       int64 // Р вЂњРЎР‚РЎС“Р С—Р С—Р В° Р С”Р С•Р Р…РЎРѓРЎвЂљРЎР‚РЎС“Р С”РЎвЂљР С•РЎР‚Р С•Р Р†, Р С”Р С•РЎвЂљР С•РЎР‚Р В°РЎРЏ Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…РЎРЏР ВµРЎвЂљ Р С‘Р В·Р С–Р С•РЎвЂљР С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ.
 	MaterialContainerEquipmentGroupID int64 // Р С™Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚, Р С‘Р В· Р С”Р С•РЎвЂљР С•РЎР‚Р С•Р С–Р С• РЎРѓР С—Р С‘РЎРѓРЎвЂ№Р Р†Р В°РЎР‹РЎвЂљРЎРѓРЎРЏ Р С”Р С•Р СР С—Р С•Р Р…Р ВµР Р…РЎвЂљРЎвЂ№ РЎРѓРЎвЂ¦Р ВµР СРЎвЂ№.
@@ -1290,6 +1299,77 @@ func (world *World) ApplyControlPanelFuelTransfer(accountID int64, sessionID str
 }
 
 // ApplyControlPanelConstructorProduceItem Р С‘Р В·Р С–Р С•РЎвЂљР В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµРЎвЂљ Р С•Р Т‘Р Р…РЎС“ Р С—Р В°РЎР‚РЎвЂљР С‘РЎР‹ Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р† Р С—Р С• Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р в„– РЎРѓРЎвЂ¦Р ВµР СР Вµ.
+// ApplyControlPanelItemDeconstruction ставит выбранные предметы в очередь деконструктора.
+func (world *World) ApplyControlPanelItemDeconstruction(accountID int64, sessionID string, mutationSeq int64, deconstruction ControlPanelItemDeconstruction) error {
+	world.mu.Lock()
+	defer world.mu.Unlock()
+
+	objectID, ok := world.accountObjectIDs[accountID]
+	if !ok {
+		return errors.New("account is not connected")
+	}
+	if world.data.EquipmentGroups == nil || world.data.ItemGroups == nil || world.data.ItemModels == nil || world.data.Tasks == nil || world.data.TaskTypes == nil || world.data.TaskItemGroups == nil || world.data.Schemas == nil || world.data.SchemaComponents == nil {
+		return errors.New("deconstruction data is not loaded")
+	}
+	if _, err := world.controlledEquipmentitemTypeLocked(objectID, deconstruction.DeconstructorEquipmentGroupID, "Deconstructor"); err != nil {
+		return err
+	}
+	sourceContainer, err := world.controlledContainerEquipmentLocked(objectID, deconstruction.SourceContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	targetContainer, err := world.controlledContainerEquipmentLocked(objectID, deconstruction.TargetContainerEquipmentGroupID)
+	if err != nil {
+		return err
+	}
+	taskType, ok := world.data.TaskTypes.GetByAcronym("ItemDeconstruction")
+	if !ok {
+		return errors.New("item deconstruction task type not found")
+	}
+	queued := 0
+	for _, itemGroupID := range deconstruction.ItemGroupIDs {
+		itemGroup, ok := world.data.ItemGroups.Get(itemGroupID)
+		if !ok || itemGroup.ContainerEquipmentGroupID != sourceContainer.ID {
+			continue
+		}
+		schema, err := world.cheapestItemSchemaByProductModelLocked(itemGroup.ContentItemModelID)
+		if err != nil || schema.Count <= 0 {
+			continue
+		}
+		selectedCount := itemGroup.Count
+		if deconstruction.Amount > 0 && selectedCount > deconstruction.Amount {
+			selectedCount = deconstruction.Amount
+		}
+		batches := math.Floor(selectedCount/schema.Count + physics.Epsilon)
+		if batches <= 0 {
+			continue
+		}
+		reservedCount := batches * schema.Count
+		task, err := world.data.Tasks.Add(&data.Task{
+			ControllerEquipmentGroupID:      deconstruction.DeconstructorEquipmentGroupID,
+			TaskTypeID:                      taskType.ID,
+			RemainingEnergy:                 schema.ProductionEnergy * batches,
+			TotalEnergy:                     schema.ProductionEnergy * batches,
+			Count:                           batches,
+			SchemaID:                        schema.ID,
+			SourceContainerEquipmentGroupID: sourceContainer.ID,
+			TargetContainerEquipmentGroupID: targetContainer.ID,
+		})
+		if err != nil {
+			return err
+		}
+		if _, err := world.data.TaskItemGroups.Add(&data.TaskItemGroup{TaskID: task.ID, ItemModelID: itemGroup.ContentItemModelID, Count: reservedCount}); err != nil {
+			return err
+		}
+		queued++
+	}
+	if queued == 0 {
+		return errors.New("deconstruction items not found")
+	}
+	world.ackMutationLocked(accountID, sessionID, mutationSeq)
+	return nil
+}
+
 func (world *World) ApplyControlPanelConstructorProduceItem(accountID int64, sessionID string, mutationSeq int64, production ControlPanelConstructorProduceItem) error {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -1366,7 +1446,9 @@ func (world *World) ApplyControlPanelConstructorQueueCommand(accountID int64, se
 		constructorController = false
 		if _, err := world.controlledContainerEquipmentLocked(objectID, command.ConstructorEquipmentGroupID); err != nil {
 			if _, fuelTankErr := world.controlledFuelTankFuelModelIDLocked(objectID, command.ConstructorEquipmentGroupID); fuelTankErr != nil {
-				return err
+				if _, deconstructorErr := world.controlledEquipmentitemTypeLocked(objectID, command.ConstructorEquipmentGroupID, "Deconstructor"); deconstructorErr != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -1602,6 +1684,10 @@ func (world *World) returnTaskReserveLocked(taskID int64) {
 		world.returnFuelingReserveLocked(task)
 		return
 	}
+	if world.taskTypeAcronymLocked(task) == "ItemDeconstruction" {
+		world.returnStoredTaskReserveToContainerLocked(task, task.SourceContainerEquipmentGroupID)
+		return
+	}
 	reservedGroups := world.data.TaskItemGroups.GetByTaskID(taskID)
 	if len(reservedGroups) == 0 {
 		return
@@ -1618,6 +1704,21 @@ func (world *World) returnTaskReserveLocked(taskID int64) {
 }
 
 // returnFuelingReserveLocked возвращает уже взятое топливо при отмене заправки или слива.
+// returnStoredTaskReserveToContainerLocked возвращает временно хранимые предметы в указанный контейнер.
+func (world *World) returnStoredTaskReserveToContainerLocked(task *data.Task, containerID int64) {
+	if task == nil || containerID <= 0 {
+		return
+	}
+	for _, group := range world.data.TaskItemGroups.GetByTaskID(task.ID) {
+		if group == nil || !group.IsStored {
+			continue
+		}
+		_ = world.addItemModelToContainerLocked(containerID, group.ItemModelID, group.Count)
+		group.IsStored = false
+	}
+	_ = world.data.ItemGroups.RebuildIndexes()
+}
+
 func (world *World) returnFuelingReserveLocked(task *data.Task) {
 	if task == nil || task.SourceContainerEquipmentGroupID <= 0 || task.FuelTankEquipmentGroupID <= 0 {
 		return
@@ -2099,6 +2200,39 @@ func (world *World) itemSchemaByProductModelLocked(itemModelID int64) (controlPa
 	return controlPanelItemSchema{}, errors.New("item schema not found")
 }
 
+// cheapestItemSchemaByProductModelLocked находит схему с минимальной работой для указанной модели.
+func (world *World) cheapestItemSchemaByProductModelLocked(itemModelID int64) (controlPanelItemSchema, error) {
+	schemaIDs := make([]int64, 0, len(world.data.Schemas.Items))
+	for key := range world.data.Schemas.Items {
+		var schemaID int64
+		if _, err := fmt.Sscanf(key, "%d", &schemaID); err == nil {
+			schemaIDs = append(schemaIDs, schemaID)
+		}
+	}
+	sort.Slice(schemaIDs, func(left int, right int) bool {
+		return schemaIDs[left] < schemaIDs[right]
+	})
+	var best controlPanelItemSchema
+	found := false
+	for _, schemaID := range schemaIDs {
+		schema, err := world.itemSchemaLocked(schemaID)
+		if err != nil {
+			return controlPanelItemSchema{}, err
+		}
+		if schema.ItemModelID != itemModelID {
+			continue
+		}
+		if !found || schema.ProductionEnergy < best.ProductionEnergy {
+			best = schema
+			found = true
+		}
+	}
+	if !found {
+		return controlPanelItemSchema{}, errors.New("item schema not found")
+	}
+	return best, nil
+}
+
 func (world *World) itemSchemaComponentsLocked(schemaID int64) ([]controlPanelItemSchemaComponent, error) {
 	components := make([]controlPanelItemSchemaComponent, 0)
 	for _, raw := range world.data.SchemaComponents.Items {
@@ -2478,7 +2612,7 @@ func (world *World) activeTaskLocked(controllerID int64) *data.Task {
 // taskHasReserveLocked проверяет, что расходники уже вынесены в отдельное хранилище задания.
 func (world *World) taskHasReserveLocked(taskID int64) bool {
 	task, ok := world.data.Tasks.Get(taskID)
-	if ok && (world.taskTypeAcronymLocked(task) == "CargoMovement" || world.taskTypeAcronymLocked(task) == "Fueling") {
+	if ok && (world.taskTypeAcronymLocked(task) == "CargoMovement" || world.taskTypeAcronymLocked(task) == "Fueling" || world.taskTypeAcronymLocked(task) == "ItemDeconstruction") {
 		return taskItemGroupsAreStored(world.data.TaskItemGroups.GetByTaskID(taskID))
 	}
 	return len(world.data.TaskItemGroups.GetByTaskID(taskID)) > 0
@@ -2504,6 +2638,9 @@ func (world *World) reserveTaskItemsLocked(task *data.Task) bool {
 	}
 	if world.taskTypeAcronymLocked(task) == "Fueling" {
 		return world.reserveFuelingItemsLocked(task)
+	}
+	if world.taskTypeAcronymLocked(task) == "ItemDeconstruction" {
+		return world.reserveItemDeconstructionItemsLocked(task)
 	}
 	requiredByModel, ok := world.taskRequirementsLocked(task)
 	if !ok {
@@ -2536,6 +2673,38 @@ func (world *World) reserveTaskItemsLocked(task *data.Task) bool {
 }
 
 // reserveFuelingItemsLocked переносит топливо во временное хранилище задания заправки или слива.
+// reserveItemDeconstructionItemsLocked переносит разбираемые предметы во временное хранилище задания.
+func (world *World) reserveItemDeconstructionItemsLocked(task *data.Task) bool {
+	requiredGroups := world.data.TaskItemGroups.GetByTaskID(task.ID)
+	if taskItemGroupsAreStored(requiredGroups) {
+		return true
+	}
+	if len(requiredGroups) == 0 || task.SourceContainerEquipmentGroupID <= 0 {
+		return false
+	}
+	availableByModel := map[int64]float64{}
+	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(task.SourceContainerEquipmentGroupID) {
+		availableByModel[itemGroup.ContentItemModelID] += itemGroup.Count
+	}
+	for _, group := range requiredGroups {
+		if group != nil && group.IsStored {
+			continue
+		}
+		if group == nil || availableByModel[group.ItemModelID]+physics.Epsilon < group.Count {
+			return false
+		}
+	}
+	for _, group := range requiredGroups {
+		if group == nil || group.IsStored {
+			continue
+		}
+		world.consumeItemModelFromContainerLocked(task.SourceContainerEquipmentGroupID, group.ItemModelID, group.Count)
+		group.IsStored = true
+	}
+	_ = world.data.ItemGroups.RebuildIndexes()
+	return true
+}
+
 func (world *World) reserveFuelingItemsLocked(task *data.Task) bool {
 	requiredGroups := world.data.TaskItemGroups.GetByTaskID(task.ID)
 	if taskItemGroupsAreStored(requiredGroups) {
@@ -2827,6 +2996,9 @@ func (world *World) completeTaskLocked(task *data.Task) error {
 	if world.taskTypeAcronymLocked(task) == "Fueling" {
 		return world.completeFuelingTaskLocked(task)
 	}
+	if world.taskTypeAcronymLocked(task) == "ItemDeconstruction" {
+		return world.completeItemDeconstructionTaskLocked(task)
+	}
 	job := constructorProductionJob{ConstructorEquipmentGroupID: task.ControllerEquipmentGroupID, SchemaID: task.SchemaID, BlueprintID: task.BlueprintID}
 	if task.BlueprintID > 0 {
 		blueprint, err := world.objectBlueprintLocked(task.BlueprintID)
@@ -2863,6 +3035,27 @@ func (world *World) completeTaskLocked(task *data.Task) error {
 }
 
 // completeFuelingTaskLocked применяет результат завершенной заправки или слива.
+// completeItemDeconstructionTaskLocked кладет компоненты разобранной партии в контейнер результата.
+func (world *World) completeItemDeconstructionTaskLocked(task *data.Task) error {
+	if task == nil || task.SchemaID <= 0 || task.TargetContainerEquipmentGroupID <= 0 {
+		return errors.New("item deconstruction task is invalid")
+	}
+	components, err := world.itemSchemaComponentsLocked(task.SchemaID)
+	if err != nil {
+		return err
+	}
+	batches := taskCount(task)
+	for _, component := range components {
+		if component.Count <= 0 {
+			continue
+		}
+		if err := world.addItemModelToContainerLocked(task.TargetContainerEquipmentGroupID, component.ComponentItemModelID, component.Count*batches); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (world *World) completeFuelingTaskLocked(task *data.Task) error {
 	if task == nil || task.FuelTankEquipmentGroupID <= 0 || task.SourceContainerEquipmentGroupID <= 0 {
 		return errors.New("fueling task is invalid")

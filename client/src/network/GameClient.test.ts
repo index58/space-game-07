@@ -481,6 +481,7 @@ describe("GameClient", () => {
     const equipmentMutation = client.sendControlPanelEquipmentUpdate({ equipmentGroupId: 12, enabledCount: 3, title: "Renamed equipment" });
     const containerMutation = client.sendControlPanelContainerTransfer({ controllerEquipmentGroupId: 22, leftToRightDirection: true, sourceContainerEquipmentGroupId: 21, targetContainerEquipmentGroupId: 22, itemGroupIds: [31], amount: 4 });
     const fuelMutation = client.sendControlPanelFuelTransfer({ containerEquipmentGroupId: 21, fuelTankEquipmentGroupId: 23, itemGroupIds: [32], amount: 12 });
+    const deconstructionMutation = client.sendControlPanelItemDeconstruction({ deconstructorEquipmentGroupId: 25, sourceContainerEquipmentGroupId: 22, targetContainerEquipmentGroupId: 21, itemGroupIds: [33], amount: 2 });
     const constructorMutation = client.sendControlPanelConstructorProduceItem({ constructorEquipmentGroupId: 24, materialContainerEquipmentGroupId: 21, productContainerEquipmentGroupId: 22, schemaId: 41, amount: 3 });
     const blueprintMutation = client.sendControlPanelConstructorProduceItem({ constructorEquipmentGroupId: 24, materialContainerEquipmentGroupId: 21, blueprintId: 51, amount: 1 });
     const queueMutation = client.sendControlPanelConstructorQueueCommand({ constructorEquipmentGroupId: 24, jobId: 61, command: "cancelAll" });
@@ -489,9 +490,10 @@ describe("GameClient", () => {
     expect(equipmentMutation).toEqual({ sessionId: "session-1", seq: 2 });
     expect(containerMutation).toEqual({ sessionId: "session-1", seq: 3 });
     expect(fuelMutation).toEqual({ sessionId: "session-1", seq: 4 });
-    expect(constructorMutation).toEqual({ sessionId: "session-1", seq: 5 });
-    expect(blueprintMutation).toEqual({ sessionId: "session-1", seq: 6 });
-    expect(queueMutation).toEqual({ sessionId: "session-1", seq: 7 });
+    expect(deconstructionMutation).toEqual({ sessionId: "session-1", seq: 5 });
+    expect(constructorMutation).toEqual({ sessionId: "session-1", seq: 6 });
+    expect(blueprintMutation).toEqual({ sessionId: "session-1", seq: 7 });
+    expect(queueMutation).toEqual({ sessionId: "session-1", seq: 8 });
     expect(JSON.parse(socket.sent[0])).toEqual({
       type: "controlPanelObjectUpdate",
       clientSessionId: "session-1",
@@ -527,14 +529,14 @@ describe("GameClient", () => {
       amount: 12,
     });
     expect(JSON.parse(socket.sent[4])).toEqual({
-      type: "controlPanelConstructorProduceItem",
+      type: "controlPanelItemDeconstruction",
       clientSessionId: "session-1",
       mutationSeq: 5,
-      constructorEquipmentGroupId: 24,
-      materialContainerEquipmentGroupId: 21,
-      productContainerEquipmentGroupId: 22,
-      schemaId: 41,
-      amount: 3,
+      deconstructorEquipmentGroupId: 25,
+      sourceContainerEquipmentGroupId: 22,
+      targetContainerEquipmentGroupId: 21,
+      itemGroupIds: [33],
+      amount: 2,
     });
     expect(JSON.parse(socket.sent[5])).toEqual({
       type: "controlPanelConstructorProduceItem",
@@ -542,13 +544,23 @@ describe("GameClient", () => {
       mutationSeq: 6,
       constructorEquipmentGroupId: 24,
       materialContainerEquipmentGroupId: 21,
+      productContainerEquipmentGroupId: 22,
+      schemaId: 41,
+      amount: 3,
+    });
+    expect(JSON.parse(socket.sent[6])).toEqual({
+      type: "controlPanelConstructorProduceItem",
+      clientSessionId: "session-1",
+      mutationSeq: 7,
+      constructorEquipmentGroupId: 24,
+      materialContainerEquipmentGroupId: 21,
       blueprintId: 51,
       amount: 1,
     });
-    expect(JSON.parse(socket.sent[6])).toEqual({
+    expect(JSON.parse(socket.sent[7])).toEqual({
       type: "controlPanelConstructorQueueCommand",
       clientSessionId: "session-1",
-      mutationSeq: 7,
+      mutationSeq: 8,
       constructorEquipmentGroupId: 24,
       jobId: 61,
       command: "cancelAll",

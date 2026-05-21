@@ -227,6 +227,25 @@ export type ControlPanelFuelTransferMessage = {
   amount?: number;
 };
 
+export type ControlPanelItemDeconstructionMessage = {
+  // Вид команды запуска деконструкции выбранных предметов.
+  type: "controlPanelItemDeconstruction";
+  // Сессия клиента, отправившая команду.
+  clientSessionId: string;
+  // Порядковый номер команды внутри сессии.
+  mutationSeq: number;
+  // Группа деконструктора, которая ведет очередь разбора.
+  deconstructorEquipmentGroupId: number;
+  // Контейнер, из которого забираются разбираемые предметы.
+  sourceContainerEquipmentGroupId: number;
+  // Контейнер, в который кладутся полученные компоненты.
+  targetContainerEquipmentGroupId: number;
+  // Группы предметов, выбранные для деконструкции.
+  itemGroupIds: number[];
+  // Ограничение количества предметов одной выбранной строки.
+  amount?: number;
+};
+
 export type ControlPanelConstructorProduceItemMessage = {
   // Вид команды изготовления предмета в конструкторе.
   type: "controlPanelConstructorProduceItem";

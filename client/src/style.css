@@ -1157,6 +1157,10 @@ body {
   grid-template-rows: minmax(0, 1fr);
 }
 
+.control-panel-equipment-usage--deconstructor .control-panel-equipment-usage__panel--left {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
 .control-panel-equipment-usage-container {
   display: grid;
   grid-template-columns: minmax(3.2vh, 0.12fr) minmax(0, 1fr);
@@ -1202,8 +1206,24 @@ body {
   overflow: hidden;
 }
 
+.control-panel-container-work--deconstructor {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.control-panel-controller-work {
+  display: grid;
+  grid-template-rows: var(--hud-dropdown-min-height) minmax(0, 1fr);
+  gap: 0.8vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .control-panel-container-work .control-panel-constructor-queues {
   grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.control-panel-container-work .control-panel-constructor-queues--constructor {
+  grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 1fr);
 }
 
 .control-panel-container-content .ui-kit-list {
@@ -1222,10 +1242,21 @@ body {
 
 .control-panel-constructor-storage__section {
   display: grid;
-  grid-template-rows: var(--hud-dropdown-min-height) minmax(0, 1fr);
-  gap: 0.8vh;
+  grid-template-rows: auto var(--hud-dropdown-min-height) minmax(0, 1fr);
+  gap: 0.55vh;
   min-height: 0;
   overflow: hidden;
+}
+
+.control-panel-constructor-storage__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.35vh;
+  color: #d8f3ff;
+  font-family: var(--hud-control-font-family);
+  font-size: var(--hud-control-font-size);
+  line-height: 1;
 }
 
 .control-panel-constructor-usage {
@@ -1242,6 +1273,21 @@ body {
   gap: 0.8vh;
   min-height: 0;
   overflow: hidden;
+}
+
+.control-panel-equipment-right-stack--content-only {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.control-panel-equipment-right-stack--source {
+  grid-template-rows: auto var(--hud-dropdown-min-height) minmax(0, 1fr);
+}
+
+.control-panel-storage-select-block {
+  display: grid;
+  grid-template-rows: auto var(--hud-dropdown-min-height);
+  gap: 0.55vh;
+  min-width: 0;
 }
 
 .control-panel-constructor-recipes {

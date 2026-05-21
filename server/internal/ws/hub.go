@@ -182,6 +182,9 @@ func (hub *Hub) readLoop(client *Client) {
 			if message, ok := DecodeControlPanelFuelTransferMessage(payload); ok {
 				hub.handleControlPanelFuelTransfer(client, message)
 			}
+			if message, ok := DecodeControlPanelItemDeconstructionMessage(payload); ok {
+				hub.handleControlPanelItemDeconstruction(client, message)
+			}
 			if message, ok := DecodeControlPanelConstructorProduceItemMessage(payload); ok {
 				hub.handleControlPanelConstructorProduceItem(client, message)
 			}
@@ -337,6 +340,21 @@ func (hub *Hub) handleControlPanelFuelTransfer(client *Client, message ControlPa
 }
 
 // handleControlPanelConstructorProduceItem РїСЂРёРјРµРЅСЏРµС‚ РёР·РіРѕС‚РѕРІР»РµРЅРёРµ РїСЂРµРґРјРµС‚Р° РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
+// handleControlPanelItemDeconstruction применяет запуск разбора предметов или возвращает отказ с номером мутации.
+func (hub *Hub) handleControlPanelItemDeconstruction(client *Client, message ControlPanelItemDeconstructionMessage) {
+	hub.setClientMutationSession(client, message.ClientSessionID)
+	err := hub.world.ApplyControlPanelItemDeconstruction(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelItemDeconstruction{
+		DeconstructorEquipmentGroupID:   message.DeconstructorEquipmentGroupID,
+		SourceContainerEquipmentGroupID: message.SourceContainerEquipmentGroupID,
+		TargetContainerEquipmentGroupID: message.TargetContainerEquipmentGroupID,
+		ItemGroupIDs:                    message.ItemGroupIDs,
+		Amount:                          message.Amount,
+	})
+	if err != nil {
+		hub.sendControlPanelError(client, message.ClientSessionID, message.MutationSeq, err.Error())
+	}
+}
+
 func (hub *Hub) handleControlPanelConstructorProduceItem(client *Client, message ControlPanelConstructorProduceItemMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
 	err := hub.world.ApplyControlPanelConstructorProduceItem(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelConstructorProduceItem{

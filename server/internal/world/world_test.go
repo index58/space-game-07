@@ -182,6 +182,32 @@ func addTestRobots(t *testing.T, serverData world.Data, cosmicObjectID int64) *d
 	return group
 }
 
+// Добавляет тестовый деконструктор для заданий разбора предметов.
+func addTestDeconstructor(t *testing.T, serverData world.Data, cosmicObjectID int64) *data.EquipmentGroup {
+	t.Helper()
+
+	serverData.ItemTypes.Items[12] = &data.ItemType{ID: 12, TitleRu: "Deconstructor", TitleEn: "Deconstructor", Acronym: "Deconstructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[405] = &data.ItemModel{ID: 405, TitleRu: "Deconstructor", TitleEn: "Deconstructor", Acronym: "Deconstructor", ItemTypeID: 12, ConsumingPower: 10}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	group, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       cosmicObjectID,
+		Title:                "Deconstructor",
+		EquipmentItemModelID: 405,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return group
+}
+
 // Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В РЎВР В Р’ВµР В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р РЋР Р‰Р В РЎвЂќР В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р В РЎвЂ Р В РЎвЂ”Р В РЎвЂўР В РўвЂР РЋРІР‚С™Р В Р вЂ Р В Р’ВµР РЋР вЂљР В Р’В¶Р В РўвЂР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎВР РЋРЎвЂњР РЋРІР‚С™Р В Р’В°Р РЋРІР‚В Р В РЎвЂР РЋР вЂ№.
 func TestApplyControlPanelObjectUpdateChangesControlledObjectAndAcknowledgesMutation(t *testing.T) {
 	serverData := testWorldData(t)
@@ -377,6 +403,16 @@ func testWorldData(t *testing.T) world.Data {
 		t.Fatal(err)
 	}
 	if _, err := implementers.Add(&data.Implementer{TaskTypeID: fuelingType.ID, ImplementerEquipmentItemTypeID: 20, WorkPart: 1}); err != nil {
+		t.Fatal(err)
+	}
+	itemDeconstructionType, err := taskTypes.Add(&data.TaskType{TitleRu: "Деконструкция предметов", TitleEn: "Item deconstruction", Acronym: "ItemDeconstruction"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: itemDeconstructionType.ID, ImplementerEquipmentItemTypeID: 12, WorkPart: 0.5}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: itemDeconstructionType.ID, ImplementerEquipmentItemTypeID: 20, WorkPart: 0.5}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3034,6 +3070,75 @@ func TestApplyControlPanelFuelTransferDrainsObjectFuelToContainer(t *testing.T) 
 	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
 	if len(items) != 1 || items[0].ContentItemModelID != 7 || items[0].Count != 12 {
 		t.Fatalf("container fuel item was not created: %+v", items)
+	}
+}
+
+// Проверяет, что деконструкция предметов использует самую дешевую схему и может вернуть компоненты в тот же контейнер.
+func TestApplyControlPanelItemDeconstructionQueuesAndCompletesSchemaBatch(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.Schemas = storage.NewRawReferenceTable()
+	serverData.SchemaComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 2, "ProductionEnergy": 300})
+	addRawReferenceItem(t, serverData.Schemas, 2, map[string]any{"ID": 2, "ItemModelID": 302, "Count": 2, "ProductionEnergy": 100})
+	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 9})
+	addRawReferenceItem(t, serverData.SchemaComponents, 2, map[string]any{"ID": 2, "SchemaID": 2, "ComponentItemModelID": 303, "Count": 4})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var sourceContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 && sourceContainer == nil {
+			sourceContainer = group
+		}
+	}
+	if sourceContainer == nil {
+		t.Fatalf("source container was not installed")
+	}
+	deconstructor := addTestDeconstructor(t, serverData, objectID)
+	addTestRobots(t, serverData, objectID)
+	itemGroup, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: sourceContainer.ID, ContentItemModelID: 302, Count: 5})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelItemDeconstruction(1, "session-1", 40, world.ControlPanelItemDeconstruction{
+		DeconstructorEquipmentGroupID:   deconstructor.ID,
+		SourceContainerEquipmentGroupID: sourceContainer.ID,
+		TargetContainerEquipmentGroupID: sourceContainer.ID,
+		ItemGroupIDs:                    []int64{itemGroup.ID},
+	}); err != nil {
+		t.Fatalf("item deconstruction returned error: %v", err)
+	}
+
+	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(deconstructor.ID)
+	if len(tasks) != 1 || tasks[0].SchemaID != 2 || tasks[0].Count != 2 || tasks[0].TotalEnergy != 200 {
+		t.Fatalf("deconstruction task was not queued correctly: %+v", tasks)
+	}
+	reserves := serverData.TaskItemGroups.GetByTaskID(tasks[0].ID)
+	if len(reserves) != 1 || reserves[0].ItemModelID != 302 || reserves[0].Count != 4 || reserves[0].IsStored {
+		t.Fatalf("deconstruction reserve was not created correctly: %+v", reserves)
+	}
+
+	gameWorld.Tick(1)
+	reserves = serverData.TaskItemGroups.GetByTaskID(tasks[0].ID)
+	if len(reserves) != 1 || !reserves[0].IsStored {
+		t.Fatalf("deconstruction task did not store source items: %+v", reserves)
+	}
+	sourceItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(sourceContainer.ID)
+	if len(sourceItems) != 1 || sourceItems[0].ContentItemModelID != 302 || sourceItems[0].Count != 1 {
+		t.Fatalf("source container after deconstruction start: %+v", sourceItems)
+	}
+
+	gameWorld.Tick(10)
+	targetItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(sourceContainer.ID)
+	if len(targetItems) != 2 || targetItems[0].ContentItemModelID != 302 || targetItems[0].Count != 1 || targetItems[1].ContentItemModelID != 303 || targetItems[1].Count != 8 {
+		t.Fatalf("container after deconstruction completion: %+v", targetItems)
+	}
+	if tasks := serverData.Tasks.GetByControllerEquipmentGroupID(deconstructor.ID); len(tasks) != 0 {
+		t.Fatalf("completed deconstruction task stayed in queue: %+v", tasks)
 	}
 }
 

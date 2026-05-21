@@ -14,6 +14,7 @@ import type {
   ControlPanelContainerTransferMessage,
   ControlPanelErrorMessage,
   ControlPanelFuelTransferMessage,
+  ControlPanelItemDeconstructionMessage,
   ControlPanelMutationRef,
   DockingCommandMessage,
   DockingEventMessage,
@@ -574,6 +575,24 @@ export class GameClient {
   }
 
   // Отправляет изготовление предмета по схеме конструктора панели управления.
+  // Отправляет запуск деконструкции выбранных предметов панели управления.
+  sendControlPanelItemDeconstruction(deconstruction: Omit<ControlPanelItemDeconstructionMessage, "type" | "clientSessionId" | "mutationSeq">): ControlPanelMutationRef | null {
+    if (this.status !== "connected" || !this.socket) {
+      return null;
+    }
+
+    const mutation = this.nextControlPanelMutation();
+    const payload: ControlPanelItemDeconstructionMessage = {
+      type: "controlPanelItemDeconstruction",
+      clientSessionId: this.clientSessionId,
+      mutationSeq: mutation.seq,
+      ...deconstruction,
+    };
+
+    this.socket.send(JSON.stringify(payload));
+    return mutation;
+  }
+
   sendControlPanelConstructorProduceItem(
     production: Omit<ControlPanelConstructorProduceItemMessage, "type" | "clientSessionId" | "mutationSeq">,
   ): ControlPanelMutationRef | null {

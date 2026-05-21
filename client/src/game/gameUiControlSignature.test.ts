@@ -58,9 +58,11 @@ const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   controlPanelFuelFillDialogOpen: false,
   controlPanelContainerTransferDialogOpen: false,
   controlPanelConstructorProduceDialogOpen: false,
+  controlPanelItemDeconstructionDialogOpen: false,
   controlPanelContainerTransferMaxAmount: 0,
   controlPanelFuelFillMaxAmount: 0,
   controlPanelConstructorProduceMaxAmount: 100,
+  controlPanelItemDeconstructionMaxAmount: 0,
   controlPanelFuelDrainAmount: 0,
   controlPanelFuelDrainAmountText: "0",
   controlPanelFuelDrainAmountSelectionStart: 1,
@@ -219,6 +221,22 @@ describe("getGameUiControlLayoutSignature", () => {
       constructorProductionJobs: [
         { id: 1, constructorEquipmentGroupId: 10, queueType: "main", schemaId: 2, blueprintId: 0, productItemModelId: 3, productCosmicObjectModelId: 0, productCount: 1, remainingCount: 1, totalCount: 2, remainingTime: 5, totalTime: 10, running: true, parentJobId: 0 },
       ],
+    }), viewport);
+
+    expect(second).not.toBe(first);
+  });
+
+  // Проверяет, что окно количества деконструкции пересобирает интерактивные области модального окна.
+  it("changes when item deconstruction amount dialog opens", () => {
+    const first = getGameUiControlLayoutSignature(state({
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+    }), viewport);
+    const second = getGameUiControlLayoutSignature(state({
+      controlPanelVisible: true,
+      selectedControlPanelTab: "equipment",
+      controlPanelItemDeconstructionDialogOpen: true,
+      controlPanelItemDeconstructionMaxAmount: 5,
     }), viewport);
 
     expect(second).not.toBe(first);
