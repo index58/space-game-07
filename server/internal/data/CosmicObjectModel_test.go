@@ -1,7 +1,8 @@
-﻿package data
+package data
 
 import (
 	"encoding/json"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,11 +37,11 @@ func TestCosmicObjectModelsAddAssignsIDCalculatesBodySizeAndIndexesModel(t *test
 	if cosmicObjectModel.ID != 1 {
 		t.Fatalf("model ID = %d, want 1", cosmicObjectModel.ID)
 	}
-	if cosmicObjectModel.BodyLength != 217.5 {
-		t.Fatalf("BodyLength = %v, want 217.5", cosmicObjectModel.BodyLength)
+	if cosmicObjectModel.BodyLength != 206.625 {
+		t.Fatalf("BodyLength = %v, want 206.625", cosmicObjectModel.BodyLength)
 	}
-	if cosmicObjectModel.BodyWidth != 220.5 {
-		t.Fatalf("BodyWidth = %v, want 220.5", cosmicObjectModel.BodyWidth)
+	if cosmicObjectModel.BodyWidth != 209.475 {
+		t.Fatalf("BodyWidth = %v, want 209.475", cosmicObjectModel.BodyWidth)
 	}
 
 	byAcronym, ok := cosmicObjectModels.GetByAcronym("asteroid_0001")
@@ -69,17 +70,17 @@ func TestCosmicObjectModelsBuildsSixteenPointBodyPolygon(t *testing.T) {
 	if len(cosmicObjectModel.BodyPolygon) != 16 {
 		t.Fatalf("BodyPolygon vertex count = %d, want 16", len(cosmicObjectModel.BodyPolygon))
 	}
-	if cosmicObjectModel.BodyPolygon[0].X != 0 || cosmicObjectModel.BodyPolygon[0].Y != 10 {
-		t.Fatalf("BodyPolygon[0] = %+v, want X=0 Y=10", cosmicObjectModel.BodyPolygon[0])
+	if cosmicObjectModel.BodyPolygon[0].X != 0 || cosmicObjectModel.BodyPolygon[0].Y != 9.5 {
+		t.Fatalf("BodyPolygon[0] = %+v, want X=0 Y=9.5", cosmicObjectModel.BodyPolygon[0])
 	}
-	if cosmicObjectModel.BodyPolygon[4].X != 5 || cosmicObjectModel.BodyPolygon[4].Y != 0 {
-		t.Fatalf("BodyPolygon[4] = %+v, want X=5 Y=0", cosmicObjectModel.BodyPolygon[4])
+	if cosmicObjectModel.BodyPolygon[4].X != 4.75 || cosmicObjectModel.BodyPolygon[4].Y != 0 {
+		t.Fatalf("BodyPolygon[4] = %+v, want X=4.75 Y=0", cosmicObjectModel.BodyPolygon[4])
 	}
-	if cosmicObjectModel.BodyPolygon[8].X != 0 || cosmicObjectModel.BodyPolygon[8].Y != -10 {
-		t.Fatalf("BodyPolygon[8] = %+v, want X=0 Y=-10", cosmicObjectModel.BodyPolygon[8])
+	if cosmicObjectModel.BodyPolygon[8].X != 0 || cosmicObjectModel.BodyPolygon[8].Y != -9.5 {
+		t.Fatalf("BodyPolygon[8] = %+v, want X=0 Y=-9.5", cosmicObjectModel.BodyPolygon[8])
 	}
-	if cosmicObjectModel.BodyPolygon[12].X != -5 || cosmicObjectModel.BodyPolygon[12].Y != 0 {
-		t.Fatalf("BodyPolygon[12] = %+v, want X=-5 Y=0", cosmicObjectModel.BodyPolygon[12])
+	if cosmicObjectModel.BodyPolygon[12].X != -4.75 || cosmicObjectModel.BodyPolygon[12].Y != 0 {
+		t.Fatalf("BodyPolygon[12] = %+v, want X=-4.75 Y=0", cosmicObjectModel.BodyPolygon[12])
 	}
 }
 
@@ -104,17 +105,17 @@ func TestCosmicObjectModelsOffsetsBodyPolygonFromTextureBodyOrigin(t *testing.T)
 		t.Fatalf("Add returned error: %v", err)
 	}
 
-	if cosmicObjectModel.BodyPolygon[0].X != 1 || cosmicObjectModel.BodyPolygon[0].Y != 6 {
-		t.Fatalf("BodyPolygon[0] = %+v, want X=1 Y=6", cosmicObjectModel.BodyPolygon[0])
+	if cosmicObjectModel.BodyPolygon[0].X != 1 || cosmicObjectModel.BodyPolygon[0].Y != 5.8 {
+		t.Fatalf("BodyPolygon[0] = %+v, want X=1 Y=5.8", cosmicObjectModel.BodyPolygon[0])
 	}
-	if cosmicObjectModel.BodyPolygon[4].X != 3 || cosmicObjectModel.BodyPolygon[4].Y != 2 {
-		t.Fatalf("BodyPolygon[4] = %+v, want X=3 Y=2", cosmicObjectModel.BodyPolygon[4])
+	if cosmicObjectModel.BodyPolygon[4].X != 2.9 || cosmicObjectModel.BodyPolygon[4].Y != 2 {
+		t.Fatalf("BodyPolygon[4] = %+v, want X=2.9 Y=2", cosmicObjectModel.BodyPolygon[4])
 	}
-	if cosmicObjectModel.BodyPolygon[8].X != 1 || cosmicObjectModel.BodyPolygon[8].Y != -2 {
-		t.Fatalf("BodyPolygon[8] = %+v, want X=1 Y=-2", cosmicObjectModel.BodyPolygon[8])
+	if cosmicObjectModel.BodyPolygon[8].X != 1 || math.Abs(cosmicObjectModel.BodyPolygon[8].Y-(-1.8)) > 1e-9 {
+		t.Fatalf("BodyPolygon[8] = %+v, want X=1 Y=-1.8", cosmicObjectModel.BodyPolygon[8])
 	}
-	if cosmicObjectModel.BodyPolygon[12].X != -1 || cosmicObjectModel.BodyPolygon[12].Y != 2 {
-		t.Fatalf("BodyPolygon[12] = %+v, want X=-1 Y=2", cosmicObjectModel.BodyPolygon[12])
+	if math.Abs(cosmicObjectModel.BodyPolygon[12].X-(-0.9)) > 1e-9 || cosmicObjectModel.BodyPolygon[12].Y != 2 {
+		t.Fatalf("BodyPolygon[12] = %+v, want X=-0.9 Y=2", cosmicObjectModel.BodyPolygon[12])
 	}
 }
 

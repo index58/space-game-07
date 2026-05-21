@@ -381,8 +381,8 @@ func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	if !ok {
 		t.Fatal("cosmic object model is not available by acronym")
 	}
-	if cosmicObjectModel.BodyLength != 217.5 {
-		t.Fatalf("cosmic object model BodyLength = %v, want 217.5", cosmicObjectModel.BodyLength)
+	if cosmicObjectModel.BodyLength != 206.625 {
+		t.Fatalf("cosmic object model BodyLength = %v, want 206.625", cosmicObjectModel.BodyLength)
 	}
 }
 

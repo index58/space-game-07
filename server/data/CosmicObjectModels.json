@@ -22,8 +22,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 47959,
-      "BodyLength": 217.5,
-      "BodyWidth": 220.5
+      "BodyLength": 206.625,
+      "BodyWidth": 209.475
     },
     "2": {
       "ID": 2,
@@ -46,8 +46,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 39346,
-      "BodyLength": 195.75,
-      "BodyWidth": 201
+      "BodyLength": 185.96249999999998,
+      "BodyWidth": 190.95
     },
     "3": {
       "ID": 3,
@@ -70,8 +70,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 87924,
-      "BodyLength": 272,
-      "BodyWidth": 323.25
+      "BodyLength": 258.4,
+      "BodyWidth": 307.0875
     },
     "4": {
       "ID": 4,
@@ -94,8 +94,8 @@
       "MaxSpeed": 458,
       "MaxAngularSpeed": 3,
       "Complexity": 108796,
-      "BodyLength": 334.5,
-      "BodyWidth": 325.25
+      "BodyLength": 317.775,
+      "BodyWidth": 308.9875
     },
     "5": {
       "ID": 5,
@@ -118,8 +118,8 @@
       "MaxSpeed": 456,
       "MaxAngularSpeed": 3,
       "Complexity": 118670,
-      "BodyLength": 347.75,
-      "BodyWidth": 341.25
+      "BodyLength": 330.3625,
+      "BodyWidth": 324.1875
     },
     "6": {
       "ID": 6,
@@ -142,8 +142,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 77203,
-      "BodyLength": 274.5,
-      "BodyWidth": 281.25
+      "BodyLength": 260.775,
+      "BodyWidth": 267.1875
     },
     "7": {
       "ID": 7,
@@ -166,8 +166,8 @@
       "MaxSpeed": 461,
       "MaxAngularSpeed": 3,
       "Complexity": 95077,
-      "BodyLength": 298.75,
-      "BodyWidth": 318.25
+      "BodyLength": 283.8125,
+      "BodyWidth": 302.3375
     },
     "8": {
       "ID": 8,
@@ -190,8 +190,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 79735,
-      "BodyLength": 281.5,
-      "BodyWidth": 283.25
+      "BodyLength": 267.425,
+      "BodyWidth": 269.0875
     },
     "9": {
       "ID": 9,
@@ -214,8 +214,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 61476,
-      "BodyLength": 187,
-      "BodyWidth": 328.75
+      "BodyLength": 177.65,
+      "BodyWidth": 312.3125
     },
     "10": {
       "ID": 10,
@@ -238,8 +238,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 90598,
-      "BodyLength": 302.75,
-      "BodyWidth": 299.25
+      "BodyLength": 287.6125,
+      "BodyWidth": 284.28749999999997
     },
     "11": {
       "ID": 11,
@@ -262,8 +262,8 @@
       "MaxSpeed": 458,
       "MaxAngularSpeed": 3,
       "Complexity": 107964,
-      "BodyLength": 273.5,
-      "BodyWidth": 394.75
+      "BodyLength": 259.825,
+      "BodyWidth": 375.0125
     },
     "12": {
       "ID": 12,
@@ -286,8 +286,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 61281,
-      "BodyLength": 231.25,
-      "BodyWidth": 265
+      "BodyLength": 219.6875,
+      "BodyWidth": 251.75
     },
     "13": {
       "ID": 13,
@@ -310,8 +310,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 58831,
-      "BodyLength": 228.25,
-      "BodyWidth": 257.75
+      "BodyLength": 216.83749999999998,
+      "BodyWidth": 244.86249999999998
     },
     "14": {
       "ID": 14,
@@ -334,8 +334,8 @@
       "MaxSpeed": 449,
       "MaxAngularSpeed": 3,
       "Complexity": 162493,
-      "BodyLength": 399,
-      "BodyWidth": 407.25
+      "BodyLength": 379.04999999999995,
+      "BodyWidth": 386.8875
     },
     "15": {
       "ID": 15,
@@ -358,8 +358,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 72424,
-      "BodyLength": 271.25,
-      "BodyWidth": 267
+      "BodyLength": 257.6875,
+      "BodyWidth": 253.64999999999998
     },
     "16": {
       "ID": 16,
@@ -382,8 +382,8 @@
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
       "Complexity": 1310,
-      "BodyLength": 42.25,
-      "BodyWidth": 31
+      "BodyLength": 40.137499999999996,
+      "BodyWidth": 29.45
     },
     "17": {
       "ID": 17,
@@ -406,8 +406,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 818,
-      "BodyLength": 31.75,
-      "BodyWidth": 25.75
+      "BodyLength": 30.162499999999998,
+      "BodyWidth": 24.4625
     },
     "18": {
       "ID": 18,
@@ -430,8 +430,8 @@
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
       "Complexity": 1301,
-      "BodyLength": 43,
-      "BodyWidth": 30.25
+      "BodyLength": 40.85,
+      "BodyWidth": 28.737499999999997
     },
     "19": {
       "ID": 19,
@@ -454,8 +454,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 851,
-      "BodyLength": 31.5,
-      "BodyWidth": 27
+      "BodyLength": 29.924999999999997,
+      "BodyWidth": 25.65
     },
     "20": {
       "ID": 20,
@@ -478,8 +478,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 1019,
-      "BodyLength": 29.75,
-      "BodyWidth": 34.25
+      "BodyLength": 28.2625,
+      "BodyWidth": 32.5375
     },
     "21": {
       "ID": 21,
@@ -502,8 +502,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 1064,
-      "BodyLength": 32,
-      "BodyWidth": 33.25
+      "BodyLength": 30.4,
+      "BodyWidth": 31.5875
     },
     "22": {
       "ID": 22,
@@ -526,8 +526,8 @@
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
       "Complexity": 607,
-      "BodyLength": 30.75,
-      "BodyWidth": 19.75
+      "BodyLength": 29.2125,
+      "BodyWidth": 18.7625
     },
     "23": {
       "ID": 23,
@@ -550,8 +550,8 @@
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
       "Complexity": 495,
-      "BodyLength": 22.5,
-      "BodyWidth": 22
+      "BodyLength": 21.375,
+      "BodyWidth": 20.9
     },
     "24": {
       "ID": 24,
@@ -574,8 +574,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 1024,
-      "BodyLength": 31.75,
-      "BodyWidth": 32.25
+      "BodyLength": 30.162499999999998,
+      "BodyWidth": 30.6375
     },
     "25": {
       "ID": 25,
@@ -598,8 +598,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 1126,
-      "BodyLength": 31.5,
-      "BodyWidth": 35.75
+      "BodyLength": 29.924999999999997,
+      "BodyWidth": 33.9625
     },
     "26": {
       "ID": 26,
@@ -622,8 +622,8 @@
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
       "Complexity": 744,
-      "BodyLength": 29.75,
-      "BodyWidth": 25
+      "BodyLength": 28.2625,
+      "BodyWidth": 23.75
     },
     "27": {
       "ID": 27,
@@ -646,8 +646,8 @@
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
       "Complexity": 654,
-      "BodyLength": 31.5,
-      "BodyWidth": 20.75
+      "BodyLength": 29.924999999999997,
+      "BodyWidth": 19.7125
     },
     "28": {
       "ID": 28,
@@ -670,8 +670,8 @@
       "MaxSpeed": 494,
       "MaxAngularSpeed": 3,
       "Complexity": 2322,
-      "BodyLength": 61.5,
-      "BodyWidth": 37.75
+      "BodyLength": 58.425,
+      "BodyWidth": 35.8625
     },
     "29": {
       "ID": 29,
@@ -694,8 +694,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 852,
-      "BodyLength": 35.5,
-      "BodyWidth": 24
+      "BodyLength": 33.725,
+      "BodyWidth": 22.799999999999997
     },
     "30": {
       "ID": 30,
@@ -718,8 +718,8 @@
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
       "Complexity": 1544,
-      "BodyLength": 43.5,
-      "BodyWidth": 35.5
+      "BodyLength": 41.324999999999996,
+      "BodyWidth": 33.725
     },
     "31": {
       "ID": 31,
@@ -742,8 +742,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 1134,
-      "BodyLength": 36,
-      "BodyWidth": 31.5
+      "BodyLength": 34.199999999999996,
+      "BodyWidth": 29.924999999999997
     },
     "32": {
       "ID": 32,
@@ -766,8 +766,8 @@
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
       "Complexity": 502,
-      "BodyLength": 27.5,
-      "BodyWidth": 18.25
+      "BodyLength": 26.125,
+      "BodyWidth": 17.3375
     },
     "33": {
       "ID": 33,
@@ -790,8 +790,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 1106,
-      "BodyLength": 39.5,
-      "BodyWidth": 28
+      "BodyLength": 37.525,
+      "BodyWidth": 26.599999999999998
     },
     "34": {
       "ID": 34,
@@ -814,8 +814,8 @@
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
       "Complexity": 724,
-      "BodyLength": 23.75,
-      "BodyWidth": 30.5
+      "BodyLength": 22.5625,
+      "BodyWidth": 28.974999999999998
     },
     "35": {
       "ID": 35,
@@ -838,8 +838,8 @@
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
       "Complexity": 1783,
-      "BodyLength": 40.75,
-      "BodyWidth": 43.75
+      "BodyLength": 38.7125,
+      "BodyWidth": 41.5625
     },
     "36": {
       "ID": 36,
@@ -862,8 +862,8 @@
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
       "Complexity": 1395,
-      "BodyLength": 38.75,
-      "BodyWidth": 36
+      "BodyLength": 36.8125,
+      "BodyWidth": 34.199999999999996
     },
     "37": {
       "ID": 37,
@@ -886,8 +886,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 1056,
-      "BodyLength": 32.75,
-      "BodyWidth": 32.25
+      "BodyLength": 31.112499999999997,
+      "BodyWidth": 30.6375
     },
     "38": {
       "ID": 38,
@@ -910,8 +910,8 @@
       "MaxSpeed": 497,
       "MaxAngularSpeed": 3,
       "Complexity": 736,
-      "BodyLength": 32,
-      "BodyWidth": 23
+      "BodyLength": 30.4,
+      "BodyWidth": 21.849999999999998
     },
     "39": {
       "ID": 39,
@@ -934,8 +934,8 @@
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
       "Complexity": 1583,
-      "BodyLength": 42.5,
-      "BodyWidth": 37.25
+      "BodyLength": 40.375,
+      "BodyWidth": 35.387499999999996
     },
     "40": {
       "ID": 40,
@@ -958,8 +958,8 @@
       "MaxSpeed": 494,
       "MaxAngularSpeed": 3,
       "Complexity": 2067,
-      "BodyLength": 47.25,
-      "BodyWidth": 43.75
+      "BodyLength": 44.887499999999996,
+      "BodyWidth": 41.5625
     },
     "41": {
       "ID": 41,
@@ -982,8 +982,8 @@
       "MaxSpeed": 495,
       "MaxAngularSpeed": 3,
       "Complexity": 1868,
-      "BodyLength": 47,
-      "BodyWidth": 39.75
+      "BodyLength": 44.65,
+      "BodyWidth": 37.762499999999996
     },
     "42": {
       "ID": 42,
@@ -1006,8 +1006,8 @@
       "MaxSpeed": 496,
       "MaxAngularSpeed": 3,
       "Complexity": 957,
-      "BodyLength": 33,
-      "BodyWidth": 29
+      "BodyLength": 31.349999999999998,
+      "BodyWidth": 27.549999999999997
     },
     "43": {
       "ID": 43,
@@ -1030,8 +1030,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4208,
-      "BodyLength": 64.25,
-      "BodyWidth": 65.5
+      "BodyLength": 61.037499999999994,
+      "BodyWidth": 62.224999999999994
     },
     "44": {
       "ID": 44,
@@ -1054,8 +1054,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5068,
-      "BodyLength": 97,
-      "BodyWidth": 52.25
+      "BodyLength": 92.14999999999999,
+      "BodyWidth": 49.637499999999996
     },
     "45": {
       "ID": 45,
@@ -1078,8 +1078,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9636,
-      "BodyLength": 142.75,
-      "BodyWidth": 67.5
+      "BodyLength": 135.61249999999998,
+      "BodyWidth": 64.125
     },
     "46": {
       "ID": 46,
@@ -1102,8 +1102,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6256,
-      "BodyLength": 81.25,
-      "BodyWidth": 77
+      "BodyLength": 77.1875,
+      "BodyWidth": 73.14999999999999
     },
     "47": {
       "ID": 47,
@@ -1126,8 +1126,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5714,
-      "BodyLength": 100.25,
-      "BodyWidth": 57
+      "BodyLength": 95.2375,
+      "BodyWidth": 54.15
     },
     "48": {
       "ID": 48,
@@ -1150,8 +1150,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3242,
-      "BodyLength": 68.25,
-      "BodyWidth": 47.5
+      "BodyLength": 64.83749999999999,
+      "BodyWidth": 45.125
     },
     "49": {
       "ID": 49,
@@ -1174,8 +1174,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4339,
-      "BodyLength": 84.25,
-      "BodyWidth": 51.5
+      "BodyLength": 80.0375,
+      "BodyWidth": 48.925
     },
     "50": {
       "ID": 50,
@@ -1198,8 +1198,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4869,
-      "BodyLength": 91,
-      "BodyWidth": 53.5
+      "BodyLength": 86.45,
+      "BodyWidth": 50.824999999999996
     },
     "51": {
       "ID": 51,
@@ -1222,8 +1222,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3850,
-      "BodyLength": 70,
-      "BodyWidth": 55
+      "BodyLength": 66.5,
+      "BodyWidth": 52.25
     },
     "52": {
       "ID": 52,
@@ -1246,8 +1246,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3308,
-      "BodyLength": 73.5,
-      "BodyWidth": 45
+      "BodyLength": 69.825,
+      "BodyWidth": 42.75
     },
     "53": {
       "ID": 53,
@@ -1270,8 +1270,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7807,
-      "BodyLength": 105.5,
-      "BodyWidth": 74
+      "BodyLength": 100.225,
+      "BodyWidth": 70.3
     },
     "54": {
       "ID": 54,
@@ -1294,8 +1294,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8279,
-      "BodyLength": 92.5,
-      "BodyWidth": 89.5
+      "BodyLength": 87.875,
+      "BodyWidth": 85.02499999999999
     },
     "55": {
       "ID": 55,
@@ -1318,8 +1318,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7557,
-      "BodyLength": 133.75,
-      "BodyWidth": 56.5
+      "BodyLength": 127.0625,
+      "BodyWidth": 53.675
     },
     "56": {
       "ID": 56,
@@ -1342,8 +1342,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4720,
-      "BodyLength": 61.5,
-      "BodyWidth": 76.75
+      "BodyLength": 58.425,
+      "BodyWidth": 72.9125
     },
     "57": {
       "ID": 57,
@@ -1366,8 +1366,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6184,
-      "BodyLength": 74.5,
-      "BodyWidth": 83
+      "BodyLength": 70.77499999999999,
+      "BodyWidth": 78.85
     },
     "58": {
       "ID": 58,
@@ -1390,8 +1390,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7773,
-      "BodyLength": 112.25,
-      "BodyWidth": 69.25
+      "BodyLength": 106.63749999999999,
+      "BodyWidth": 65.7875
     },
     "59": {
       "ID": 59,
@@ -1414,8 +1414,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5673,
-      "BodyLength": 92.25,
-      "BodyWidth": 61.5
+      "BodyLength": 87.6375,
+      "BodyWidth": 58.425
     },
     "60": {
       "ID": 60,
@@ -1438,8 +1438,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6319,
-      "BodyLength": 80.5,
-      "BodyWidth": 78.5
+      "BodyLength": 76.475,
+      "BodyWidth": 74.575
     },
     "61": {
       "ID": 61,
@@ -1462,8 +1462,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4764,
-      "BodyLength": 80.75,
-      "BodyWidth": 59
+      "BodyLength": 76.71249999999999,
+      "BodyWidth": 56.05
     },
     "62": {
       "ID": 62,
@@ -1486,8 +1486,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4522,
-      "BodyLength": 74.75,
-      "BodyWidth": 60.5
+      "BodyLength": 71.0125,
+      "BodyWidth": 57.474999999999994
     },
     "63": {
       "ID": 63,
@@ -1510,8 +1510,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6491,
-      "BodyLength": 97.25,
-      "BodyWidth": 66.75
+      "BodyLength": 92.38749999999999,
+      "BodyWidth": 63.412499999999994
     },
     "64": {
       "ID": 64,
@@ -1534,8 +1534,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 2864,
-      "BodyLength": 85.5,
-      "BodyWidth": 33.5
+      "BodyLength": 81.225,
+      "BodyWidth": 31.825
     },
     "65": {
       "ID": 65,
@@ -1558,8 +1558,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4839,
-      "BodyLength": 63.25,
-      "BodyWidth": 76.5
+      "BodyLength": 60.0875,
+      "BodyWidth": 72.675
     },
     "66": {
       "ID": 66,
@@ -1582,8 +1582,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3200,
-      "BodyLength": 52.25,
-      "BodyWidth": 61.25
+      "BodyLength": 49.637499999999996,
+      "BodyWidth": 58.1875
     },
     "67": {
       "ID": 67,
@@ -1606,8 +1606,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6724,
-      "BodyLength": 122.25,
-      "BodyWidth": 55
+      "BodyLength": 116.13749999999999,
+      "BodyWidth": 52.25
     },
     "68": {
       "ID": 68,
@@ -1630,8 +1630,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4281,
-      "BodyLength": 73.5,
-      "BodyWidth": 58.25
+      "BodyLength": 69.825,
+      "BodyWidth": 55.3375
     },
     "69": {
       "ID": 69,
@@ -1654,8 +1654,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4418,
-      "BodyLength": 71.25,
-      "BodyWidth": 62
+      "BodyLength": 67.6875,
+      "BodyWidth": 58.9
     },
     "70": {
       "ID": 70,
@@ -1678,8 +1678,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4202,
-      "BodyLength": 95.5,
-      "BodyWidth": 44
+      "BodyLength": 90.725,
+      "BodyWidth": 41.8
     },
     "71": {
       "ID": 71,
@@ -1702,8 +1702,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5221,
-      "BodyLength": 87.75,
-      "BodyWidth": 59.5
+      "BodyLength": 83.3625,
+      "BodyWidth": 56.525
     },
     "72": {
       "ID": 72,
@@ -1726,8 +1726,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7420,
-      "BodyLength": 110.75,
-      "BodyWidth": 67
+      "BodyLength": 105.21249999999999,
+      "BodyWidth": 63.65
     },
     "73": {
       "ID": 73,
@@ -1750,8 +1750,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5046,
-      "BodyLength": 87,
-      "BodyWidth": 58
+      "BodyLength": 82.64999999999999,
+      "BodyWidth": 55.099999999999994
     },
     "74": {
       "ID": 74,
@@ -1774,8 +1774,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4631,
-      "BodyLength": 75,
-      "BodyWidth": 61.75
+      "BodyLength": 71.25,
+      "BodyWidth": 58.662499999999994
     },
     "75": {
       "ID": 75,
@@ -1798,8 +1798,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5606,
-      "BodyLength": 74,
-      "BodyWidth": 75.75
+      "BodyLength": 70.3,
+      "BodyWidth": 71.96249999999999
     },
     "76": {
       "ID": 76,
@@ -1822,8 +1822,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9216,
-      "BodyLength": 96.25,
-      "BodyWidth": 95.75
+      "BodyLength": 91.4375,
+      "BodyWidth": 90.96249999999999
     },
     "77": {
       "ID": 77,
@@ -1846,8 +1846,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6612,
-      "BodyLength": 116,
-      "BodyWidth": 57
+      "BodyLength": 110.19999999999999,
+      "BodyWidth": 54.15
     },
     "78": {
       "ID": 78,
@@ -1870,8 +1870,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5850,
-      "BodyLength": 78,
-      "BodyWidth": 75
+      "BodyLength": 74.1,
+      "BodyWidth": 71.25
     },
     "79": {
       "ID": 79,
@@ -1894,8 +1894,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4524,
-      "BodyLength": 77,
-      "BodyWidth": 58.75
+      "BodyLength": 73.14999999999999,
+      "BodyWidth": 55.8125
     },
     "80": {
       "ID": 80,
@@ -1918,8 +1918,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3504,
-      "BodyLength": 53.5,
-      "BodyWidth": 65.5
+      "BodyLength": 50.824999999999996,
+      "BodyWidth": 62.224999999999994
     },
     "81": {
       "ID": 81,
@@ -1942,8 +1942,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3816,
-      "BodyLength": 67.25,
-      "BodyWidth": 56.75
+      "BodyLength": 63.887499999999996,
+      "BodyWidth": 53.912499999999994
     },
     "82": {
       "ID": 82,
@@ -1966,8 +1966,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4115,
-      "BodyLength": 71.25,
-      "BodyWidth": 57.75
+      "BodyLength": 67.6875,
+      "BodyWidth": 54.8625
     },
     "83": {
       "ID": 83,
@@ -1990,8 +1990,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4359,
-      "BodyLength": 62.5,
-      "BodyWidth": 69.75
+      "BodyLength": 59.375,
+      "BodyWidth": 66.2625
     },
     "84": {
       "ID": 84,
@@ -2014,8 +2014,8 @@
       "MaxSpeed": 494,
       "MaxAngularSpeed": 3,
       "Complexity": 2391,
-      "BodyLength": 56.25,
-      "BodyWidth": 42.5
+      "BodyLength": 53.4375,
+      "BodyWidth": 40.375
     },
     "85": {
       "ID": 85,
@@ -2038,8 +2038,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6317,
-      "BodyLength": 119.75,
-      "BodyWidth": 52.75
+      "BodyLength": 113.76249999999999,
+      "BodyWidth": 50.1125
     },
     "86": {
       "ID": 86,
@@ -2062,8 +2062,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7497,
-      "BodyLength": 102,
-      "BodyWidth": 73.5
+      "BodyLength": 96.89999999999999,
+      "BodyWidth": 69.825
     },
     "87": {
       "ID": 87,
@@ -2086,8 +2086,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5556,
-      "BodyLength": 67.75,
-      "BodyWidth": 82
+      "BodyLength": 64.3625,
+      "BodyWidth": 77.89999999999999
     },
     "88": {
       "ID": 88,
@@ -2110,8 +2110,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4016,
-      "BodyLength": 63.25,
-      "BodyWidth": 63.5
+      "BodyLength": 60.0875,
+      "BodyWidth": 60.324999999999996
     },
     "89": {
       "ID": 89,
@@ -2134,8 +2134,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5462,
-      "BodyLength": 82.75,
-      "BodyWidth": 66
+      "BodyLength": 78.6125,
+      "BodyWidth": 62.699999999999996
     },
     "90": {
       "ID": 90,
@@ -2158,8 +2158,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9545,
-      "BodyLength": 101,
-      "BodyWidth": 94.5
+      "BodyLength": 95.94999999999999,
+      "BodyWidth": 89.77499999999999
     },
     "91": {
       "ID": 91,
@@ -2182,8 +2182,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5947,
-      "BodyLength": 123.25,
-      "BodyWidth": 48.25
+      "BodyLength": 117.08749999999999,
+      "BodyWidth": 45.8375
     },
     "92": {
       "ID": 92,
@@ -2206,8 +2206,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4511,
-      "BodyLength": 97,
-      "BodyWidth": 46.5
+      "BodyLength": 92.14999999999999,
+      "BodyWidth": 44.175
     },
     "93": {
       "ID": 93,
@@ -2230,8 +2230,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5871,
-      "BodyLength": 99.5,
-      "BodyWidth": 59
+      "BodyLength": 94.52499999999999,
+      "BodyWidth": 56.05
     },
     "94": {
       "ID": 94,
@@ -2254,8 +2254,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6039,
-      "BodyLength": 101.5,
-      "BodyWidth": 59.5
+      "BodyLength": 96.425,
+      "BodyWidth": 56.525
     },
     "95": {
       "ID": 95,
@@ -2278,8 +2278,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3206,
-      "BodyLength": 57.25,
-      "BodyWidth": 56
+      "BodyLength": 54.387499999999996,
+      "BodyWidth": 53.199999999999996
     },
     "96": {
       "ID": 96,
@@ -2302,8 +2302,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4807,
-      "BodyLength": 71.75,
-      "BodyWidth": 67
+      "BodyLength": 68.1625,
+      "BodyWidth": 63.65
     },
     "97": {
       "ID": 97,
@@ -2326,8 +2326,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3960,
-      "BodyLength": 89.5,
-      "BodyWidth": 44.25
+      "BodyLength": 85.02499999999999,
+      "BodyWidth": 42.0375
     },
     "98": {
       "ID": 98,
@@ -2350,8 +2350,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3408,
-      "BodyLength": 58.75,
-      "BodyWidth": 58
+      "BodyLength": 55.8125,
+      "BodyWidth": 55.099999999999994
     },
     "99": {
       "ID": 99,
@@ -2374,8 +2374,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3622,
-      "BodyLength": 76.25,
-      "BodyWidth": 47.5
+      "BodyLength": 72.4375,
+      "BodyWidth": 45.125
     },
     "100": {
       "ID": 100,
@@ -2398,8 +2398,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5231,
-      "BodyLength": 94.25,
-      "BodyWidth": 55.5
+      "BodyLength": 89.5375,
+      "BodyWidth": 52.724999999999994
     },
     "101": {
       "ID": 101,
@@ -2422,8 +2422,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5551,
-      "BodyLength": 84.75,
-      "BodyWidth": 65.5
+      "BodyLength": 80.5125,
+      "BodyWidth": 62.224999999999994
     },
     "102": {
       "ID": 102,
@@ -2446,8 +2446,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3715,
-      "BodyLength": 77,
-      "BodyWidth": 48.25
+      "BodyLength": 73.14999999999999,
+      "BodyWidth": 45.8375
     },
     "103": {
       "ID": 103,
@@ -2470,8 +2470,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3445,
-      "BodyLength": 53,
-      "BodyWidth": 65
+      "BodyLength": 50.349999999999994,
+      "BodyWidth": 61.75
     },
     "104": {
       "ID": 104,
@@ -2494,8 +2494,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 2820,
-      "BodyLength": 60,
-      "BodyWidth": 47
+      "BodyLength": 57,
+      "BodyWidth": 44.65
     },
     "105": {
       "ID": 105,
@@ -2518,8 +2518,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5204,
-      "BodyLength": 81,
-      "BodyWidth": 64.25
+      "BodyLength": 76.95,
+      "BodyWidth": 61.037499999999994
     },
     "106": {
       "ID": 106,
@@ -2542,8 +2542,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5885,
-      "BodyLength": 110,
-      "BodyWidth": 53.5
+      "BodyLength": 104.5,
+      "BodyWidth": 50.824999999999996
     },
     "107": {
       "ID": 107,
@@ -2566,8 +2566,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4225,
-      "BodyLength": 65.5,
-      "BodyWidth": 64.5
+      "BodyLength": 62.224999999999994,
+      "BodyWidth": 61.275
     },
     "108": {
       "ID": 108,
@@ -2590,8 +2590,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3739,
-      "BodyLength": 77.5,
-      "BodyWidth": 48.25
+      "BodyLength": 73.625,
+      "BodyWidth": 45.8375
     },
     "109": {
       "ID": 109,
@@ -2614,8 +2614,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5005,
-      "BodyLength": 65,
-      "BodyWidth": 77
+      "BodyLength": 61.75,
+      "BodyWidth": 73.14999999999999
     },
     "110": {
       "ID": 110,
@@ -2638,8 +2638,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4710,
-      "BodyLength": 79.5,
-      "BodyWidth": 59.25
+      "BodyLength": 75.52499999999999,
+      "BodyWidth": 56.287499999999994
     },
     "111": {
       "ID": 111,
@@ -2662,8 +2662,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6754,
-      "BodyLength": 88,
-      "BodyWidth": 76.75
+      "BodyLength": 83.6,
+      "BodyWidth": 72.9125
     },
     "112": {
       "ID": 112,
@@ -2686,8 +2686,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3040,
-      "BodyLength": 64,
-      "BodyWidth": 47.5
+      "BodyLength": 60.8,
+      "BodyWidth": 45.125
     },
     "113": {
       "ID": 113,
@@ -2710,8 +2710,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5017,
-      "BodyLength": 79,
-      "BodyWidth": 63.5
+      "BodyLength": 75.05,
+      "BodyWidth": 60.324999999999996
     },
     "114": {
       "ID": 114,
@@ -2734,8 +2734,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6367,
-      "BodyLength": 95.75,
-      "BodyWidth": 66.5
+      "BodyLength": 90.96249999999999,
+      "BodyWidth": 63.175
     },
     "115": {
       "ID": 115,
@@ -2758,8 +2758,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4903,
-      "BodyLength": 88.75,
-      "BodyWidth": 55.25
+      "BodyLength": 84.3125,
+      "BodyWidth": 52.4875
     },
     "116": {
       "ID": 116,
@@ -2782,8 +2782,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4518,
-      "BodyLength": 72,
-      "BodyWidth": 62.75
+      "BodyLength": 68.39999999999999,
+      "BodyWidth": 59.6125
     },
     "117": {
       "ID": 117,
@@ -2806,8 +2806,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4029,
-      "BodyLength": 79,
-      "BodyWidth": 51
+      "BodyLength": 75.05,
+      "BodyWidth": 48.449999999999996
     },
     "118": {
       "ID": 118,
@@ -2830,8 +2830,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5273,
-      "BodyLength": 95,
-      "BodyWidth": 55.5
+      "BodyLength": 90.25,
+      "BodyWidth": 52.724999999999994
     },
     "119": {
       "ID": 119,
@@ -2854,8 +2854,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 2870,
-      "BodyLength": 56,
-      "BodyWidth": 51.25
+      "BodyLength": 53.199999999999996,
+      "BodyWidth": 48.6875
     },
     "120": {
       "ID": 120,
@@ -2878,8 +2878,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3319,
-      "BodyLength": 71,
-      "BodyWidth": 46.75
+      "BodyLength": 67.45,
+      "BodyWidth": 44.4125
     },
     "121": {
       "ID": 121,
@@ -2902,8 +2902,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3959,
-      "BodyLength": 77.25,
-      "BodyWidth": 51.25
+      "BodyLength": 73.3875,
+      "BodyWidth": 48.6875
     },
     "122": {
       "ID": 122,
@@ -2926,8 +2926,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4489,
-      "BodyLength": 94,
-      "BodyWidth": 47.75
+      "BodyLength": 89.3,
+      "BodyWidth": 45.3625
     },
     "123": {
       "ID": 123,
@@ -2950,8 +2950,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 2875,
-      "BodyLength": 42.75,
-      "BodyWidth": 67.25
+      "BodyLength": 40.6125,
+      "BodyWidth": 63.887499999999996
     },
     "124": {
       "ID": 124,
@@ -2974,8 +2974,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 2778,
-      "BodyLength": 46.5,
-      "BodyWidth": 59.75
+      "BodyLength": 44.175,
+      "BodyWidth": 56.762499999999996
     },
     "125": {
       "ID": 125,
@@ -2998,8 +2998,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3674,
-      "BodyLength": 71,
-      "BodyWidth": 51.75
+      "BodyLength": 67.45,
+      "BodyWidth": 49.162499999999994
     },
     "126": {
       "ID": 126,
@@ -3022,8 +3022,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 2965,
-      "BodyLength": 62.75,
-      "BodyWidth": 47.25
+      "BodyLength": 59.6125,
+      "BodyWidth": 44.887499999999996
     },
     "127": {
       "ID": 127,
@@ -3046,8 +3046,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4399,
-      "BodyLength": 59.25,
-      "BodyWidth": 74.25
+      "BodyLength": 56.287499999999994,
+      "BodyWidth": 70.5375
     },
     "128": {
       "ID": 128,
@@ -3070,8 +3070,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5466,
-      "BodyLength": 84.75,
-      "BodyWidth": 64.5
+      "BodyLength": 80.5125,
+      "BodyWidth": 61.275
     },
     "129": {
       "ID": 129,
@@ -3094,8 +3094,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5996,
-      "BodyLength": 84.75,
-      "BodyWidth": 70.75
+      "BodyLength": 80.5125,
+      "BodyWidth": 67.21249999999999
     },
     "130": {
       "ID": 130,
@@ -3118,8 +3118,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4867,
-      "BodyLength": 77.25,
-      "BodyWidth": 63
+      "BodyLength": 73.3875,
+      "BodyWidth": 59.849999999999994
     },
     "131": {
       "ID": 131,
@@ -3142,8 +3142,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6769,
-      "BodyLength": 86.5,
-      "BodyWidth": 78.25
+      "BodyLength": 82.175,
+      "BodyWidth": 74.33749999999999
     },
     "132": {
       "ID": 132,
@@ -3166,8 +3166,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4278,
-      "BodyLength": 73.75,
-      "BodyWidth": 58
+      "BodyLength": 70.0625,
+      "BodyWidth": 55.099999999999994
     },
     "133": {
       "ID": 133,
@@ -3190,8 +3190,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5160,
-      "BodyLength": 80,
-      "BodyWidth": 64.5
+      "BodyLength": 76,
+      "BodyWidth": 61.275
     },
     "134": {
       "ID": 134,
@@ -3214,8 +3214,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 12737,
-      "BodyLength": 147.25,
-      "BodyWidth": 86.5
+      "BodyLength": 139.8875,
+      "BodyWidth": 82.175
     },
     "135": {
       "ID": 135,
@@ -3238,8 +3238,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10723,
-      "BodyLength": 99.75,
-      "BodyWidth": 107.5
+      "BodyLength": 94.76249999999999,
+      "BodyWidth": 102.125
     },
     "136": {
       "ID": 136,
@@ -3262,8 +3262,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8733,
-      "BodyLength": 109.5,
-      "BodyWidth": 79.75
+      "BodyLength": 104.02499999999999,
+      "BodyWidth": 75.7625
     },
     "137": {
       "ID": 137,
@@ -3286,8 +3286,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10990,
-      "BodyLength": 154.25,
-      "BodyWidth": 71.25
+      "BodyLength": 146.5375,
+      "BodyWidth": 67.6875
     },
     "138": {
       "ID": 138,
@@ -3310,8 +3310,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10083,
-      "BodyLength": 114.25,
-      "BodyWidth": 88.25
+      "BodyLength": 108.5375,
+      "BodyWidth": 83.83749999999999
     },
     "139": {
       "ID": 139,
@@ -3334,8 +3334,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10152,
-      "BodyLength": 109.75,
-      "BodyWidth": 92.5
+      "BodyLength": 104.26249999999999,
+      "BodyWidth": 87.875
     },
     "140": {
       "ID": 140,
@@ -3358,8 +3358,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5005,
-      "BodyLength": 69.75,
-      "BodyWidth": 71.75
+      "BodyLength": 66.2625,
+      "BodyWidth": 68.1625
     },
     "141": {
       "ID": 141,
@@ -3382,8 +3382,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9042,
-      "BodyLength": 85.5,
-      "BodyWidth": 105.75
+      "BodyLength": 81.225,
+      "BodyWidth": 100.46249999999999
     },
     "142": {
       "ID": 142,
@@ -3406,8 +3406,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4872,
-      "BodyLength": 87,
-      "BodyWidth": 56
+      "BodyLength": 82.64999999999999,
+      "BodyWidth": 53.199999999999996
     },
     "143": {
       "ID": 143,
@@ -3430,8 +3430,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9250,
-      "BodyLength": 113.5,
-      "BodyWidth": 81.5
+      "BodyLength": 107.82499999999999,
+      "BodyWidth": 77.425
     },
     "144": {
       "ID": 144,
@@ -3454,8 +3454,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9715,
-      "BodyLength": 128.25,
-      "BodyWidth": 75.75
+      "BodyLength": 121.83749999999999,
+      "BodyWidth": 71.96249999999999
     },
     "145": {
       "ID": 145,
@@ -3478,8 +3478,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5802,
-      "BodyLength": 79.75,
-      "BodyWidth": 72.75
+      "BodyLength": 75.7625,
+      "BodyWidth": 69.1125
     },
     "146": {
       "ID": 146,
@@ -3502,8 +3502,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10684,
-      "BodyLength": 131.5,
-      "BodyWidth": 81.25
+      "BodyLength": 124.925,
+      "BodyWidth": 77.1875
     },
     "147": {
       "ID": 147,
@@ -3526,8 +3526,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 13053,
-      "BodyLength": 113.5,
-      "BodyWidth": 115
+      "BodyLength": 107.82499999999999,
+      "BodyWidth": 109.25
     },
     "148": {
       "ID": 148,
@@ -3550,8 +3550,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8541,
-      "BodyLength": 147.25,
-      "BodyWidth": 58
+      "BodyLength": 139.8875,
+      "BodyWidth": 55.099999999999994
     },
     "149": {
       "ID": 149,
@@ -3574,8 +3574,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6775,
-      "BodyLength": 91.25,
-      "BodyWidth": 74.25
+      "BodyLength": 86.6875,
+      "BodyWidth": 70.5375
     },
     "150": {
       "ID": 150,
@@ -3598,8 +3598,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7617,
-      "BodyLength": 91.5,
-      "BodyWidth": 83.25
+      "BodyLength": 86.925,
+      "BodyWidth": 79.08749999999999
     },
     "151": {
       "ID": 151,
@@ -3622,8 +3622,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 9998,
-      "BodyLength": 107.5,
-      "BodyWidth": 93
+      "BodyLength": 102.125,
+      "BodyWidth": 88.35
     },
     "152": {
       "ID": 152,
@@ -3646,8 +3646,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7467,
-      "BodyLength": 109,
-      "BodyWidth": 68.5
+      "BodyLength": 103.55,
+      "BodyWidth": 65.075
     },
     "153": {
       "ID": 153,
@@ -3670,8 +3670,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7865,
-      "BodyLength": 107,
-      "BodyWidth": 73.5
+      "BodyLength": 101.64999999999999,
+      "BodyWidth": 69.825
     },
     "154": {
       "ID": 154,
@@ -3694,8 +3694,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4690,
-      "BodyLength": 83.75,
-      "BodyWidth": 56
+      "BodyLength": 79.5625,
+      "BodyWidth": 53.199999999999996
     },
     "155": {
       "ID": 155,
@@ -3718,8 +3718,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 12381,
-      "BodyLength": 155.25,
-      "BodyWidth": 79.75
+      "BodyLength": 147.48749999999998,
+      "BodyWidth": 75.7625
     },
     "156": {
       "ID": 156,
@@ -3742,8 +3742,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10454,
-      "BodyLength": 95.25,
-      "BodyWidth": 109.75
+      "BodyLength": 90.4875,
+      "BodyWidth": 104.26249999999999
     },
     "157": {
       "ID": 157,
@@ -3766,8 +3766,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 8037,
-      "BodyLength": 76,
-      "BodyWidth": 105.75
+      "BodyLength": 72.2,
+      "BodyWidth": 100.46249999999999
     },
     "158": {
       "ID": 158,
@@ -3790,8 +3790,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7633,
-      "BodyLength": 134.5,
-      "BodyWidth": 56.75
+      "BodyLength": 127.77499999999999,
+      "BodyWidth": 53.912499999999994
     },
     "159": {
       "ID": 159,
@@ -3814,8 +3814,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 18625,
-      "BodyLength": 203,
-      "BodyWidth": 91.75
+      "BodyLength": 192.85,
+      "BodyWidth": 87.1625
     },
     "160": {
       "ID": 160,
@@ -3838,8 +3838,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5943,
-      "BodyLength": 72.25,
-      "BodyWidth": 82.25
+      "BodyLength": 68.6375,
+      "BodyWidth": 78.1375
     },
     "161": {
       "ID": 161,
@@ -3862,8 +3862,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 8079,
-      "BodyLength": 119.25,
-      "BodyWidth": 67.75
+      "BodyLength": 113.2875,
+      "BodyWidth": 64.3625
     },
     "162": {
       "ID": 162,
@@ -3886,8 +3886,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7178,
-      "BodyLength": 90,
-      "BodyWidth": 79.75
+      "BodyLength": 85.5,
+      "BodyWidth": 75.7625
     },
     "163": {
       "ID": 163,
@@ -3910,8 +3910,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6054,
-      "BodyLength": 83.5,
-      "BodyWidth": 72.5
+      "BodyLength": 79.325,
+      "BodyWidth": 68.875
     },
     "164": {
       "ID": 164,
@@ -3934,8 +3934,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5384,
-      "BodyLength": 73,
-      "BodyWidth": 73.75
+      "BodyLength": 69.35,
+      "BodyWidth": 70.0625
     },
     "165": {
       "ID": 165,
@@ -3958,8 +3958,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 11735,
-      "BodyLength": 134.5,
-      "BodyWidth": 87.25
+      "BodyLength": 127.77499999999999,
+      "BodyWidth": 82.8875
     },
     "166": {
       "ID": 166,
@@ -3982,8 +3982,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10557,
-      "BodyLength": 153,
-      "BodyWidth": 69
+      "BodyLength": 145.35,
+      "BodyWidth": 65.55
     },
     "167": {
       "ID": 167,
@@ -4006,8 +4006,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9359,
-      "BodyLength": 98,
-      "BodyWidth": 95.5
+      "BodyLength": 93.1,
+      "BodyWidth": 90.725
     },
     "168": {
       "ID": 168,
@@ -4030,8 +4030,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6242,
-      "BodyLength": 87,
-      "BodyWidth": 71.75
+      "BodyLength": 82.64999999999999,
+      "BodyWidth": 68.1625
     },
     "169": {
       "ID": 169,
@@ -4054,8 +4054,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 11704,
-      "BodyLength": 132.25,
-      "BodyWidth": 88.5
+      "BodyLength": 125.63749999999999,
+      "BodyWidth": 84.075
     },
     "170": {
       "ID": 170,
@@ -4078,8 +4078,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9298,
-      "BodyLength": 137.75,
-      "BodyWidth": 67.5
+      "BodyLength": 130.86249999999998,
+      "BodyWidth": 64.125
     },
     "171": {
       "ID": 171,
@@ -4102,8 +4102,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8344,
-      "BodyLength": 111.25,
-      "BodyWidth": 75
+      "BodyLength": 105.6875,
+      "BodyWidth": 71.25
     },
     "172": {
       "ID": 172,
@@ -4126,8 +4126,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9162,
-      "BodyLength": 108.75,
-      "BodyWidth": 84.25
+      "BodyLength": 103.3125,
+      "BodyWidth": 80.0375
     },
     "173": {
       "ID": 173,
@@ -4150,8 +4150,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 11488,
-      "BodyLength": 115.75,
-      "BodyWidth": 99.25
+      "BodyLength": 109.96249999999999,
+      "BodyWidth": 94.2875
     },
     "174": {
       "ID": 174,
@@ -4174,8 +4174,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9136,
-      "BodyLength": 116.75,
-      "BodyWidth": 78.25
+      "BodyLength": 110.9125,
+      "BodyWidth": 74.33749999999999
     },
     "175": {
       "ID": 175,
@@ -4198,8 +4198,8 @@
       "MaxSpeed": 485,
       "MaxAngularSpeed": 3,
       "Complexity": 14481,
-      "BodyLength": 132.25,
-      "BodyWidth": 109.5
+      "BodyLength": 125.63749999999999,
+      "BodyWidth": 104.02499999999999
     },
     "176": {
       "ID": 176,
@@ -4222,8 +4222,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 11340,
-      "BodyLength": 135,
-      "BodyWidth": 84
+      "BodyLength": 128.25,
+      "BodyWidth": 79.8
     },
     "177": {
       "ID": 177,
@@ -4246,8 +4246,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5405,
-      "BodyLength": 58.75,
-      "BodyWidth": 92
+      "BodyLength": 55.8125,
+      "BodyWidth": 87.39999999999999
     },
     "178": {
       "ID": 178,
@@ -4270,8 +4270,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7983,
-      "BodyLength": 87.25,
-      "BodyWidth": 91.5
+      "BodyLength": 82.8875,
+      "BodyWidth": 86.925
     },
     "179": {
       "ID": 179,
@@ -4294,8 +4294,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10731,
-      "BodyLength": 90.75,
-      "BodyWidth": 118.25
+      "BodyLength": 86.21249999999999,
+      "BodyWidth": 112.33749999999999
     },
     "180": {
       "ID": 180,
@@ -4318,8 +4318,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6479,
-      "BodyLength": 85.25,
-      "BodyWidth": 76
+      "BodyLength": 80.9875,
+      "BodyWidth": 72.2
     },
     "181": {
       "ID": 181,
@@ -4342,8 +4342,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 4112,
-      "BodyLength": 76.5,
-      "BodyWidth": 53.75
+      "BodyLength": 72.675,
+      "BodyWidth": 51.0625
     },
     "182": {
       "ID": 182,
@@ -4366,8 +4366,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8563,
-      "BodyLength": 102.25,
-      "BodyWidth": 83.75
+      "BodyLength": 97.13749999999999,
+      "BodyWidth": 79.5625
     },
     "183": {
       "ID": 183,
@@ -4390,8 +4390,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8762,
-      "BodyLength": 105.25,
-      "BodyWidth": 83.25
+      "BodyLength": 99.9875,
+      "BodyWidth": 79.08749999999999
     },
     "184": {
       "ID": 184,
@@ -4414,8 +4414,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 2693,
-      "BodyLength": 63.75,
-      "BodyWidth": 42.25
+      "BodyLength": 60.5625,
+      "BodyWidth": 40.137499999999996
     },
     "185": {
       "ID": 185,
@@ -4438,8 +4438,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9192,
-      "BodyLength": 138.75,
-      "BodyWidth": 66.25
+      "BodyLength": 131.8125,
+      "BodyWidth": 62.9375
     },
     "186": {
       "ID": 186,
@@ -4462,8 +4462,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7049,
-      "BodyLength": 92.75,
-      "BodyWidth": 76
+      "BodyLength": 88.1125,
+      "BodyWidth": 72.2
     },
     "187": {
       "ID": 187,
@@ -4486,8 +4486,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9125,
-      "BodyLength": 115.5,
-      "BodyWidth": 79
+      "BodyLength": 109.725,
+      "BodyWidth": 75.05
     },
     "188": {
       "ID": 188,
@@ -4510,8 +4510,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6296,
-      "BodyLength": 91.25,
-      "BodyWidth": 69
+      "BodyLength": 86.6875,
+      "BodyWidth": 65.55
     },
     "189": {
       "ID": 189,
@@ -4534,8 +4534,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8548,
-      "BodyLength": 87,
-      "BodyWidth": 98.25
+      "BodyLength": 82.64999999999999,
+      "BodyWidth": 93.33749999999999
     },
     "190": {
       "ID": 190,
@@ -4558,8 +4558,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 5402,
-      "BodyLength": 72.75,
-      "BodyWidth": 74.25
+      "BodyLength": 69.1125,
+      "BodyWidth": 70.5375
     },
     "191": {
       "ID": 191,
@@ -4582,8 +4582,8 @@
       "MaxSpeed": 492,
       "MaxAngularSpeed": 3,
       "Complexity": 3890,
-      "BodyLength": 63,
-      "BodyWidth": 61.75
+      "BodyLength": 59.849999999999994,
+      "BodyWidth": 58.662499999999994
     },
     "192": {
       "ID": 192,
@@ -4606,8 +4606,8 @@
       "MaxSpeed": 485,
       "MaxAngularSpeed": 3,
       "Complexity": 14983,
-      "BodyLength": 175.75,
-      "BodyWidth": 85.25
+      "BodyLength": 166.9625,
+      "BodyWidth": 80.9875
     },
     "193": {
       "ID": 193,
@@ -4630,8 +4630,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8928,
-      "BodyLength": 80.25,
-      "BodyWidth": 111.25
+      "BodyLength": 76.2375,
+      "BodyWidth": 105.6875
     },
     "194": {
       "ID": 194,
@@ -4654,8 +4654,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7702,
-      "BodyLength": 122.25,
-      "BodyWidth": 63
+      "BodyLength": 116.13749999999999,
+      "BodyWidth": 59.849999999999994
     },
     "195": {
       "ID": 195,
@@ -4678,8 +4678,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 8227,
-      "BodyLength": 106.5,
-      "BodyWidth": 77.25
+      "BodyLength": 101.175,
+      "BodyWidth": 73.3875
     },
     "196": {
       "ID": 196,
@@ -4702,8 +4702,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4824,
-      "BodyLength": 100.5,
-      "BodyWidth": 48
+      "BodyLength": 95.475,
+      "BodyWidth": 45.599999999999994
     },
     "197": {
       "ID": 197,
@@ -4726,8 +4726,8 @@
       "MaxSpeed": 485,
       "MaxAngularSpeed": 3,
       "Complexity": 14438,
-      "BodyLength": 135.25,
-      "BodyWidth": 106.75
+      "BodyLength": 128.48749999999998,
+      "BodyWidth": 101.4125
     },
     "198": {
       "ID": 198,
@@ -4750,8 +4750,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 8125,
-      "BodyLength": 103.5,
-      "BodyWidth": 78.5
+      "BodyLength": 98.32499999999999,
+      "BodyWidth": 74.575
     },
     "199": {
       "ID": 199,
@@ -4774,8 +4774,8 @@
       "MaxSpeed": 493,
       "MaxAngularSpeed": 3,
       "Complexity": 3424,
-      "BodyLength": 46.75,
-      "BodyWidth": 73.25
+      "BodyLength": 44.4125,
+      "BodyWidth": 69.58749999999999
     },
     "200": {
       "ID": 200,
@@ -4798,8 +4798,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 17078,
-      "BodyLength": 189.75,
-      "BodyWidth": 90
+      "BodyLength": 180.2625,
+      "BodyWidth": 85.5
     },
     "201": {
       "ID": 201,
@@ -4822,8 +4822,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5647,
-      "BodyLength": 71.25,
-      "BodyWidth": 79.25
+      "BodyLength": 67.6875,
+      "BodyWidth": 75.2875
     },
     "202": {
       "ID": 202,
@@ -4846,8 +4846,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6138,
-      "BodyLength": 76.25,
-      "BodyWidth": 80.5
+      "BodyLength": 72.4375,
+      "BodyWidth": 76.475
     },
     "203": {
       "ID": 203,
@@ -4870,8 +4870,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10346,
-      "BodyLength": 146.75,
-      "BodyWidth": 70.5
+      "BodyLength": 139.4125,
+      "BodyWidth": 66.975
     },
     "204": {
       "ID": 204,
@@ -4894,8 +4894,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8885,
-      "BodyLength": 87.75,
-      "BodyWidth": 101.25
+      "BodyLength": 83.3625,
+      "BodyWidth": 96.1875
     },
     "205": {
       "ID": 205,
@@ -4918,8 +4918,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 9856,
-      "BodyLength": 112,
-      "BodyWidth": 88
+      "BodyLength": 106.39999999999999,
+      "BodyWidth": 83.6
     },
     "206": {
       "ID": 206,
@@ -4942,8 +4942,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6153,
-      "BodyLength": 71.75,
-      "BodyWidth": 85.75
+      "BodyLength": 68.1625,
+      "BodyWidth": 81.46249999999999
     },
     "207": {
       "ID": 207,
@@ -4966,8 +4966,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4646,
-      "BodyLength": 71.75,
-      "BodyWidth": 64.75
+      "BodyLength": 68.1625,
+      "BodyWidth": 61.512499999999996
     },
     "208": {
       "ID": 208,
@@ -4990,8 +4990,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7884,
-      "BodyLength": 108.75,
-      "BodyWidth": 72.5
+      "BodyLength": 103.3125,
+      "BodyWidth": 68.875
     },
     "209": {
       "ID": 209,
@@ -5014,8 +5014,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 9924,
-      "BodyLength": 83.75,
-      "BodyWidth": 118.5
+      "BodyLength": 79.5625,
+      "BodyWidth": 112.57499999999999
     },
     "210": {
       "ID": 210,
@@ -5038,8 +5038,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 12696,
-      "BodyLength": 162.25,
-      "BodyWidth": 78.25
+      "BodyLength": 154.1375,
+      "BodyWidth": 74.33749999999999
     },
     "211": {
       "ID": 211,
@@ -5062,8 +5062,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 5865,
-      "BodyLength": 63.75,
-      "BodyWidth": 92
+      "BodyLength": 60.5625,
+      "BodyWidth": 87.39999999999999
     },
     "212": {
       "ID": 212,
@@ -5086,8 +5086,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9694,
-      "BodyLength": 131,
-      "BodyWidth": 74
+      "BodyLength": 124.44999999999999,
+      "BodyWidth": 70.3
     },
     "213": {
       "ID": 213,
@@ -5110,8 +5110,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 11040,
-      "BodyLength": 115,
-      "BodyWidth": 96
+      "BodyLength": 109.25,
+      "BodyWidth": 91.19999999999999
     },
     "214": {
       "ID": 214,
@@ -5134,8 +5134,8 @@
       "MaxSpeed": 491,
       "MaxAngularSpeed": 3,
       "Complexity": 4615,
-      "BodyLength": 63,
-      "BodyWidth": 73.25
+      "BodyLength": 59.849999999999994,
+      "BodyWidth": 69.58749999999999
     },
     "215": {
       "ID": 215,
@@ -5158,8 +5158,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 9234,
-      "BodyLength": 106.75,
-      "BodyWidth": 86.5
+      "BodyLength": 101.4125,
+      "BodyWidth": 82.175
     },
     "216": {
       "ID": 216,
@@ -5182,8 +5182,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8985,
-      "BodyLength": 108.25,
-      "BodyWidth": 83
+      "BodyLength": 102.83749999999999,
+      "BodyWidth": 78.85
     },
     "217": {
       "ID": 217,
@@ -5206,8 +5206,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7808,
-      "BodyLength": 122,
-      "BodyWidth": 64
+      "BodyLength": 115.89999999999999,
+      "BodyWidth": 60.8
     },
     "218": {
       "ID": 218,
@@ -5230,8 +5230,8 @@
       "MaxSpeed": 485,
       "MaxAngularSpeed": 3,
       "Complexity": 14226,
-      "BodyLength": 149.75,
-      "BodyWidth": 95
+      "BodyLength": 142.2625,
+      "BodyWidth": 90.25
     },
     "219": {
       "ID": 219,
@@ -5254,8 +5254,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 11734,
-      "BodyLength": 125.5,
-      "BodyWidth": 93.5
+      "BodyLength": 119.225,
+      "BodyWidth": 88.825
     },
     "220": {
       "ID": 220,
@@ -5278,8 +5278,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10333,
-      "BodyLength": 125.25,
-      "BodyWidth": 82.5
+      "BodyLength": 118.9875,
+      "BodyWidth": 78.375
     },
     "221": {
       "ID": 221,
@@ -5302,8 +5302,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 11962,
-      "BodyLength": 127.25,
-      "BodyWidth": 94
+      "BodyLength": 120.88749999999999,
+      "BodyWidth": 89.3
     },
     "222": {
       "ID": 222,
@@ -5326,8 +5326,8 @@
       "MaxSpeed": 490,
       "MaxAngularSpeed": 3,
       "Complexity": 6077,
-      "BodyLength": 87.75,
-      "BodyWidth": 69.25
+      "BodyLength": 83.3625,
+      "BodyWidth": 65.7875
     },
     "223": {
       "ID": 223,
@@ -5350,8 +5350,8 @@
       "MaxSpeed": 489,
       "MaxAngularSpeed": 3,
       "Complexity": 7388,
-      "BodyLength": 98.5,
-      "BodyWidth": 75
+      "BodyLength": 93.57499999999999,
+      "BodyWidth": 71.25
     },
     "224": {
       "ID": 224,
@@ -5374,8 +5374,8 @@
       "MaxSpeed": 488,
       "MaxAngularSpeed": 3,
       "Complexity": 8873,
-      "BodyLength": 136.5,
-      "BodyWidth": 65
+      "BodyLength": 129.67499999999998,
+      "BodyWidth": 61.75
     },
     "225": {
       "ID": 225,
@@ -5398,8 +5398,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 24695,
-      "BodyLength": 220,
-      "BodyWidth": 112.25
+      "BodyLength": 209,
+      "BodyWidth": 106.63749999999999
     },
     "226": {
       "ID": 226,
@@ -5422,8 +5422,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 26176,
-      "BodyLength": 170.25,
-      "BodyWidth": 153.75
+      "BodyLength": 161.73749999999998,
+      "BodyWidth": 146.0625
     },
     "227": {
       "ID": 227,
@@ -5446,8 +5446,8 @@
       "MaxSpeed": 484,
       "MaxAngularSpeed": 3,
       "Complexity": 15055,
-      "BodyLength": 126.25,
-      "BodyWidth": 119.25
+      "BodyLength": 119.9375,
+      "BodyWidth": 113.2875
     },
     "228": {
       "ID": 228,
@@ -5470,8 +5470,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 29391,
-      "BodyLength": 198.25,
-      "BodyWidth": 148.25
+      "BodyLength": 188.33749999999998,
+      "BodyWidth": 140.8375
     },
     "229": {
       "ID": 229,
@@ -5494,8 +5494,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25491,
-      "BodyLength": 192.75,
-      "BodyWidth": 132.25
+      "BodyLength": 183.11249999999998,
+      "BodyWidth": 125.63749999999999
     },
     "230": {
       "ID": 230,
@@ -5518,8 +5518,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 17909,
-      "BodyLength": 130.25,
-      "BodyWidth": 137.5
+      "BodyLength": 123.7375,
+      "BodyWidth": 130.625
     },
     "231": {
       "ID": 231,
@@ -5542,8 +5542,8 @@
       "MaxSpeed": 485,
       "MaxAngularSpeed": 3,
       "Complexity": 14323,
-      "BodyLength": 169,
-      "BodyWidth": 84.75
+      "BodyLength": 160.54999999999998,
+      "BodyWidth": 80.5125
     },
     "232": {
       "ID": 232,
@@ -5566,8 +5566,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 26055,
-      "BodyLength": 175.75,
-      "BodyWidth": 148.25
+      "BodyLength": 166.9625,
+      "BodyWidth": 140.8375
     },
     "233": {
       "ID": 233,
@@ -5590,8 +5590,8 @@
       "MaxSpeed": 484,
       "MaxAngularSpeed": 3,
       "Complexity": 15471,
-      "BodyLength": 189.25,
-      "BodyWidth": 81.75
+      "BodyLength": 179.7875,
+      "BodyWidth": 77.6625
     },
     "234": {
       "ID": 234,
@@ -5614,8 +5614,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 24724,
-      "BodyLength": 173.5,
-      "BodyWidth": 142.5
+      "BodyLength": 164.825,
+      "BodyWidth": 135.375
     },
     "235": {
       "ID": 235,
@@ -5638,8 +5638,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 33166,
-      "BodyLength": 209.25,
-      "BodyWidth": 158.5
+      "BodyLength": 198.7875,
+      "BodyWidth": 150.575
     },
     "236": {
       "ID": 236,
@@ -5662,8 +5662,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 30086,
-      "BodyLength": 169.5,
-      "BodyWidth": 177.5
+      "BodyLength": 161.025,
+      "BodyWidth": 168.625
     },
     "237": {
       "ID": 237,
@@ -5686,8 +5686,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 20103,
-      "BodyLength": 153.75,
-      "BodyWidth": 130.75
+      "BodyLength": 146.0625,
+      "BodyWidth": 124.21249999999999
     },
     "238": {
       "ID": 238,
@@ -5710,8 +5710,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 30632,
-      "BodyLength": 159.75,
-      "BodyWidth": 191.75
+      "BodyLength": 151.7625,
+      "BodyWidth": 182.1625
     },
     "239": {
       "ID": 239,
@@ -5734,8 +5734,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 31902,
-      "BodyLength": 213.75,
-      "BodyWidth": 149.25
+      "BodyLength": 203.0625,
+      "BodyWidth": 141.7875
     },
     "240": {
       "ID": 240,
@@ -5758,8 +5758,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 28742,
-      "BodyLength": 199.25,
-      "BodyWidth": 144.25
+      "BodyLength": 189.2875,
+      "BodyWidth": 137.0375
     },
     "241": {
       "ID": 241,
@@ -5782,8 +5782,8 @@
       "MaxSpeed": 484,
       "MaxAngularSpeed": 3,
       "Complexity": 16502,
-      "BodyLength": 97.5,
-      "BodyWidth": 169.25
+      "BodyLength": 92.625,
+      "BodyWidth": 160.7875
     },
     "242": {
       "ID": 242,
@@ -5806,8 +5806,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 17370,
-      "BodyLength": 144.75,
-      "BodyWidth": 120
+      "BodyLength": 137.5125,
+      "BodyWidth": 114
     },
     "243": {
       "ID": 243,
@@ -5830,8 +5830,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 18485,
-      "BodyLength": 186.25,
-      "BodyWidth": 99.25
+      "BodyLength": 176.9375,
+      "BodyWidth": 94.2875
     },
     "244": {
       "ID": 244,
@@ -5854,8 +5854,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 23829,
-      "BodyLength": 179.5,
-      "BodyWidth": 132.75
+      "BodyLength": 170.525,
+      "BodyWidth": 126.1125
     },
     "245": {
       "ID": 245,
@@ -5878,8 +5878,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 24814,
-      "BodyLength": 195,
-      "BodyWidth": 127.25
+      "BodyLength": 185.25,
+      "BodyWidth": 120.88749999999999
     },
     "246": {
       "ID": 246,
@@ -5902,8 +5902,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 26598,
-      "BodyLength": 201.5,
-      "BodyWidth": 132
+      "BodyLength": 191.42499999999998,
+      "BodyWidth": 125.39999999999999
     },
     "247": {
       "ID": 247,
@@ -5926,8 +5926,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27632,
-      "BodyLength": 218,
-      "BodyWidth": 126.75
+      "BodyLength": 207.1,
+      "BodyWidth": 120.4125
     },
     "248": {
       "ID": 248,
@@ -5950,8 +5950,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27601,
-      "BodyLength": 195.75,
-      "BodyWidth": 141
+      "BodyLength": 185.96249999999998,
+      "BodyWidth": 133.95
     },
     "249": {
       "ID": 249,
@@ -5974,8 +5974,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 21252,
-      "BodyLength": 169,
-      "BodyWidth": 125.75
+      "BodyLength": 160.54999999999998,
+      "BodyWidth": 119.46249999999999
     },
     "250": {
       "ID": 250,
@@ -5998,8 +5998,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27612,
-      "BodyLength": 177,
-      "BodyWidth": 156
+      "BodyLength": 168.15,
+      "BodyWidth": 148.2
     },
     "251": {
       "ID": 251,
@@ -6022,8 +6022,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25423,
-      "BodyLength": 227.5,
-      "BodyWidth": 111.75
+      "BodyLength": 216.125,
+      "BodyWidth": 106.1625
     },
     "252": {
       "ID": 252,
@@ -6046,8 +6046,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 19258,
-      "BodyLength": 156.25,
-      "BodyWidth": 123.25
+      "BodyLength": 148.4375,
+      "BodyWidth": 117.08749999999999
     },
     "253": {
       "ID": 253,
@@ -6070,8 +6070,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 36537,
-      "BodyLength": 211.5,
-      "BodyWidth": 172.75
+      "BodyLength": 200.92499999999998,
+      "BodyWidth": 164.11249999999998
     },
     "254": {
       "ID": 254,
@@ -6094,8 +6094,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25828,
-      "BodyLength": 164.25,
-      "BodyWidth": 157.25
+      "BodyLength": 156.0375,
+      "BodyWidth": 149.3875
     },
     "255": {
       "ID": 255,
@@ -6118,8 +6118,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 18782,
-      "BodyLength": 198.75,
-      "BodyWidth": 94.5
+      "BodyLength": 188.8125,
+      "BodyWidth": 89.77499999999999
     },
     "256": {
       "ID": 256,
@@ -6142,8 +6142,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 28581,
-      "BodyLength": 205.25,
-      "BodyWidth": 139.25
+      "BodyLength": 194.98749999999998,
+      "BodyWidth": 132.2875
     },
     "257": {
       "ID": 257,
@@ -6166,8 +6166,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 34445,
-      "BodyLength": 283.5,
-      "BodyWidth": 121.5
+      "BodyLength": 269.325,
+      "BodyWidth": 115.425
     },
     "258": {
       "ID": 258,
@@ -6190,8 +6190,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 30968,
-      "BodyLength": 250.75,
-      "BodyWidth": 123.5
+      "BodyLength": 238.21249999999998,
+      "BodyWidth": 117.32499999999999
     },
     "259": {
       "ID": 259,
@@ -6214,8 +6214,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 17982,
-      "BodyLength": 121.5,
-      "BodyWidth": 148
+      "BodyLength": 115.425,
+      "BodyWidth": 140.6
     },
     "260": {
       "ID": 260,
@@ -6238,8 +6238,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 10587,
-      "BodyLength": 122.75,
-      "BodyWidth": 86.25
+      "BodyLength": 116.6125,
+      "BodyWidth": 81.9375
     },
     "261": {
       "ID": 261,
@@ -6262,8 +6262,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 31588,
-      "BodyLength": 208.5,
-      "BodyWidth": 151.5
+      "BodyLength": 198.075,
+      "BodyWidth": 143.92499999999998
     },
     "262": {
       "ID": 262,
@@ -6286,8 +6286,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 20360,
-      "BodyLength": 184.25,
-      "BodyWidth": 110.5
+      "BodyLength": 175.0375,
+      "BodyWidth": 104.975
     },
     "263": {
       "ID": 263,
@@ -6310,8 +6310,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 19198,
-      "BodyLength": 148.25,
-      "BodyWidth": 129.5
+      "BodyLength": 140.8375,
+      "BodyWidth": 123.02499999999999
     },
     "264": {
       "ID": 264,
@@ -6334,8 +6334,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 21812,
-      "BodyLength": 136.75,
-      "BodyWidth": 159.5
+      "BodyLength": 129.9125,
+      "BodyWidth": 151.525
     },
     "265": {
       "ID": 265,
@@ -6358,8 +6358,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 22415,
-      "BodyLength": 153,
-      "BodyWidth": 146.5
+      "BodyLength": 145.35,
+      "BodyWidth": 139.17499999999998
     },
     "266": {
       "ID": 266,
@@ -6382,8 +6382,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 31736,
-      "BodyLength": 204.75,
-      "BodyWidth": 155
+      "BodyLength": 194.5125,
+      "BodyWidth": 147.25
     },
     "267": {
       "ID": 267,
@@ -6406,8 +6406,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 22155,
-      "BodyLength": 200.5,
-      "BodyWidth": 110.5
+      "BodyLength": 190.475,
+      "BodyWidth": 104.975
     },
     "268": {
       "ID": 268,
@@ -6430,8 +6430,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 18122,
-      "BodyLength": 140.75,
-      "BodyWidth": 128.75
+      "BodyLength": 133.7125,
+      "BodyWidth": 122.3125
     },
     "269": {
       "ID": 269,
@@ -6454,8 +6454,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27906,
-      "BodyLength": 208.25,
-      "BodyWidth": 134
+      "BodyLength": 197.83749999999998,
+      "BodyWidth": 127.3
     },
     "270": {
       "ID": 270,
@@ -6478,8 +6478,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 33212,
-      "BodyLength": 218.5,
-      "BodyWidth": 152
+      "BodyLength": 207.575,
+      "BodyWidth": 144.4
     },
     "271": {
       "ID": 271,
@@ -6502,8 +6502,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 24248,
-      "BodyLength": 184.75,
-      "BodyWidth": 131.25
+      "BodyLength": 175.5125,
+      "BodyWidth": 124.6875
     },
     "272": {
       "ID": 272,
@@ -6526,8 +6526,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 33002,
-      "BodyLength": 294,
-      "BodyWidth": 112.25
+      "BodyLength": 279.3,
+      "BodyWidth": 106.63749999999999
     },
     "273": {
       "ID": 273,
@@ -6550,8 +6550,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 26361,
-      "BodyLength": 169.25,
-      "BodyWidth": 155.75
+      "BodyLength": 160.7875,
+      "BodyWidth": 147.9625
     },
     "274": {
       "ID": 274,
@@ -6574,8 +6574,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 23158,
-      "BodyLength": 172.5,
-      "BodyWidth": 134.25
+      "BodyLength": 163.875,
+      "BodyWidth": 127.5375
     },
     "275": {
       "ID": 275,
@@ -6598,8 +6598,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 21784,
-      "BodyLength": 176.75,
-      "BodyWidth": 123.25
+      "BodyLength": 167.9125,
+      "BodyWidth": 117.08749999999999
     },
     "276": {
       "ID": 276,
@@ -6622,8 +6622,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27852,
-      "BodyLength": 243.25,
-      "BodyWidth": 114.5
+      "BodyLength": 231.08749999999998,
+      "BodyWidth": 108.77499999999999
     },
     "277": {
       "ID": 277,
@@ -6646,8 +6646,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 23537,
-      "BodyLength": 172.75,
-      "BodyWidth": 136.25
+      "BodyLength": 164.11249999999998,
+      "BodyWidth": 129.4375
     },
     "278": {
       "ID": 278,
@@ -6670,8 +6670,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 18431,
-      "BodyLength": 228.25,
-      "BodyWidth": 80.75
+      "BodyLength": 216.83749999999998,
+      "BodyWidth": 76.71249999999999
     },
     "279": {
       "ID": 279,
@@ -6694,8 +6694,8 @@
       "MaxSpeed": 485,
       "MaxAngularSpeed": 3,
       "Complexity": 13896,
-      "BodyLength": 81.5,
-      "BodyWidth": 170.5
+      "BodyLength": 77.425,
+      "BodyWidth": 161.975
     },
     "280": {
       "ID": 280,
@@ -6718,8 +6718,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 31593,
-      "BodyLength": 212.75,
-      "BodyWidth": 148.5
+      "BodyLength": 202.11249999999998,
+      "BodyWidth": 141.075
     },
     "281": {
       "ID": 281,
@@ -6742,8 +6742,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 22263,
-      "BodyLength": 171.25,
-      "BodyWidth": 130
+      "BodyLength": 162.6875,
+      "BodyWidth": 123.5
     },
     "282": {
       "ID": 282,
@@ -6766,8 +6766,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 43263,
-      "BodyLength": 228,
-      "BodyWidth": 189.75
+      "BodyLength": 216.6,
+      "BodyWidth": 180.2625
     },
     "283": {
       "ID": 283,
@@ -6790,8 +6790,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 24052,
-      "BodyLength": 158.5,
-      "BodyWidth": 151.75
+      "BodyLength": 150.575,
+      "BodyWidth": 144.1625
     },
     "284": {
       "ID": 284,
@@ -6814,8 +6814,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25418,
-      "BodyLength": 179,
-      "BodyWidth": 142
+      "BodyLength": 170.04999999999998,
+      "BodyWidth": 134.9
     },
     "285": {
       "ID": 285,
@@ -6838,8 +6838,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25902,
-      "BodyLength": 216.75,
-      "BodyWidth": 119.5
+      "BodyLength": 205.9125,
+      "BodyWidth": 113.52499999999999
     },
     "286": {
       "ID": 286,
@@ -6862,8 +6862,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 21899,
-      "BodyLength": 170.75,
-      "BodyWidth": 128.25
+      "BodyLength": 162.2125,
+      "BodyWidth": 121.83749999999999
     },
     "287": {
       "ID": 287,
@@ -6886,8 +6886,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 45279,
-      "BodyLength": 274,
-      "BodyWidth": 165.25
+      "BodyLength": 260.3,
+      "BodyWidth": 156.98749999999998
     },
     "288": {
       "ID": 288,
@@ -6910,8 +6910,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 33800,
-      "BodyLength": 261,
-      "BodyWidth": 129.5
+      "BodyLength": 247.95,
+      "BodyWidth": 123.02499999999999
     },
     "289": {
       "ID": 289,
@@ -6934,8 +6934,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 35039,
-      "BodyLength": 243.75,
-      "BodyWidth": 143.75
+      "BodyLength": 231.5625,
+      "BodyWidth": 136.5625
     },
     "290": {
       "ID": 290,
@@ -6958,8 +6958,8 @@
       "MaxSpeed": 484,
       "MaxAngularSpeed": 3,
       "Complexity": 16351,
-      "BodyLength": 177.25,
-      "BodyWidth": 92.25
+      "BodyLength": 168.3875,
+      "BodyWidth": 87.6375
     },
     "291": {
       "ID": 291,
@@ -6982,8 +6982,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 26336,
-      "BodyLength": 176.75,
-      "BodyWidth": 149
+      "BodyLength": 167.9125,
+      "BodyWidth": 141.54999999999998
     },
     "292": {
       "ID": 292,
@@ -7006,8 +7006,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 30156,
-      "BodyLength": 195.5,
-      "BodyWidth": 154.25
+      "BodyLength": 185.725,
+      "BodyWidth": 146.5375
     },
     "293": {
       "ID": 293,
@@ -7030,8 +7030,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 29017,
-      "BodyLength": 213.75,
-      "BodyWidth": 135.75
+      "BodyLength": 203.0625,
+      "BodyWidth": 128.9625
     },
     "294": {
       "ID": 294,
@@ -7054,8 +7054,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 40549,
-      "BodyLength": 252.25,
-      "BodyWidth": 160.75
+      "BodyLength": 239.6375,
+      "BodyWidth": 152.7125
     },
     "295": {
       "ID": 295,
@@ -7078,8 +7078,8 @@
       "MaxSpeed": 484,
       "MaxAngularSpeed": 3,
       "Complexity": 15535,
-      "BodyLength": 134.5,
-      "BodyWidth": 115.5
+      "BodyLength": 127.77499999999999,
+      "BodyWidth": 109.725
     },
     "296": {
       "ID": 296,
@@ -7102,8 +7102,8 @@
       "MaxSpeed": 485,
       "MaxAngularSpeed": 3,
       "Complexity": 14355,
-      "BodyLength": 123.75,
-      "BodyWidth": 116
+      "BodyLength": 117.5625,
+      "BodyWidth": 110.19999999999999
     },
     "297": {
       "ID": 297,
@@ -7126,8 +7126,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 11463,
-      "BodyLength": 115.5,
-      "BodyWidth": 99.25
+      "BodyLength": 109.725,
+      "BodyWidth": 94.2875
     },
     "298": {
       "ID": 298,
@@ -7150,8 +7150,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 19481,
-      "BodyLength": 132.75,
-      "BodyWidth": 146.75
+      "BodyLength": 126.1125,
+      "BodyWidth": 139.4125
     },
     "299": {
       "ID": 299,
@@ -7174,8 +7174,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 31174,
-      "BodyLength": 264.75,
-      "BodyWidth": 117.75
+      "BodyLength": 251.5125,
+      "BodyWidth": 111.8625
     },
     "300": {
       "ID": 300,
@@ -7198,8 +7198,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25223,
-      "BodyLength": 190,
-      "BodyWidth": 132.75
+      "BodyLength": 180.5,
+      "BodyWidth": 126.1125
     },
     "301": {
       "ID": 301,
@@ -7222,8 +7222,8 @@
       "MaxSpeed": 487,
       "MaxAngularSpeed": 3,
       "Complexity": 11044,
-      "BodyLength": 142.5,
-      "BodyWidth": 77.5
+      "BodyLength": 135.375,
+      "BodyWidth": 73.625
     },
     "302": {
       "ID": 302,
@@ -7246,8 +7246,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 19032,
-      "BodyLength": 198.25,
-      "BodyWidth": 96
+      "BodyLength": 188.33749999999998,
+      "BodyWidth": 91.19999999999999
     },
     "303": {
       "ID": 303,
@@ -7270,8 +7270,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 38861,
-      "BodyLength": 215,
-      "BodyWidth": 180.75
+      "BodyLength": 204.25,
+      "BodyWidth": 171.7125
     },
     "304": {
       "ID": 304,
@@ -7294,8 +7294,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25090,
-      "BodyLength": 189,
-      "BodyWidth": 132.75
+      "BodyLength": 179.54999999999998,
+      "BodyWidth": 126.1125
     },
     "305": {
       "ID": 305,
@@ -7318,8 +7318,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 31299,
-      "BodyLength": 283.25,
-      "BodyWidth": 110.5
+      "BodyLength": 269.0875,
+      "BodyWidth": 104.975
     },
     "306": {
       "ID": 306,
@@ -7342,8 +7342,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 20848,
-      "BodyLength": 180.5,
-      "BodyWidth": 115.5
+      "BodyLength": 171.475,
+      "BodyWidth": 109.725
     },
     "307": {
       "ID": 307,
@@ -7366,8 +7366,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27604,
-      "BodyLength": 206,
-      "BodyWidth": 134
+      "BodyLength": 195.7,
+      "BodyWidth": 127.3
     },
     "308": {
       "ID": 308,
@@ -7390,8 +7390,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 35113,
-      "BodyLength": 228.75,
-      "BodyWidth": 153.5
+      "BodyLength": 217.3125,
+      "BodyWidth": 145.825
     },
     "309": {
       "ID": 309,
@@ -7414,8 +7414,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 42316,
-      "BodyLength": 268.25,
-      "BodyWidth": 157.75
+      "BodyLength": 254.83749999999998,
+      "BodyWidth": 149.86249999999998
     },
     "310": {
       "ID": 310,
@@ -7438,8 +7438,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 37744,
-      "BodyLength": 228.75,
-      "BodyWidth": 165
+      "BodyLength": 217.3125,
+      "BodyWidth": 156.75
     },
     "311": {
       "ID": 311,
@@ -7462,8 +7462,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 83834,
-      "BodyLength": 347.5,
-      "BodyWidth": 241.25
+      "BodyLength": 330.125,
+      "BodyWidth": 229.1875
     },
     "312": {
       "ID": 312,
@@ -7486,8 +7486,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 66912,
-      "BodyLength": 328,
-      "BodyWidth": 204
+      "BodyLength": 311.59999999999997,
+      "BodyWidth": 193.79999999999998
     },
     "313": {
       "ID": 313,
@@ -7510,8 +7510,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 56343,
-      "BodyLength": 373.75,
-      "BodyWidth": 150.75
+      "BodyLength": 355.0625,
+      "BodyWidth": 143.2125
     },
     "314": {
       "ID": 314,
@@ -7534,8 +7534,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59870,
-      "BodyLength": 324.5,
-      "BodyWidth": 184.5
+      "BodyLength": 308.275,
+      "BodyWidth": 175.275
     },
     "315": {
       "ID": 315,
@@ -7558,8 +7558,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 67087,
-      "BodyLength": 404.75,
-      "BodyWidth": 165.75
+      "BodyLength": 384.5125,
+      "BodyWidth": 157.4625
     },
     "316": {
       "ID": 316,
@@ -7582,8 +7582,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 78224,
-      "BodyLength": 476.25,
-      "BodyWidth": 164.25
+      "BodyLength": 452.4375,
+      "BodyWidth": 156.0375
     },
     "317": {
       "ID": 317,
@@ -7606,8 +7606,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 54523,
-      "BodyLength": 282.5,
-      "BodyWidth": 193
+      "BodyLength": 268.375,
+      "BodyWidth": 183.35
     },
     "318": {
       "ID": 318,
@@ -7630,8 +7630,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 77052,
-      "BodyLength": 399.75,
-      "BodyWidth": 192.75
+      "BodyLength": 379.7625,
+      "BodyWidth": 183.11249999999998
     },
     "319": {
       "ID": 319,
@@ -7654,8 +7654,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 53344,
-      "BodyLength": 284.5,
-      "BodyWidth": 187.5
+      "BodyLength": 270.275,
+      "BodyWidth": 178.125
     },
     "320": {
       "ID": 320,
@@ -7678,8 +7678,8 @@
       "MaxSpeed": 460,
       "MaxAngularSpeed": 3,
       "Complexity": 102346,
-      "BodyLength": 499.25,
-      "BodyWidth": 205
+      "BodyLength": 474.28749999999997,
+      "BodyWidth": 194.75
     },
     "321": {
       "ID": 321,
@@ -7702,8 +7702,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 65722,
-      "BodyLength": 292.75,
-      "BodyWidth": 224.5
+      "BodyLength": 278.1125,
+      "BodyWidth": 213.27499999999998
     },
     "322": {
       "ID": 322,
@@ -7726,8 +7726,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 45644,
-      "BodyLength": 330.75,
-      "BodyWidth": 138
+      "BodyLength": 314.2125,
+      "BodyWidth": 131.1
     },
     "323": {
       "ID": 323,
@@ -7750,8 +7750,8 @@
       "MaxSpeed": 461,
       "MaxAngularSpeed": 3,
       "Complexity": 97241,
-      "BodyLength": 462.5,
-      "BodyWidth": 210.25
+      "BodyLength": 439.375,
+      "BodyWidth": 199.73749999999998
     },
     "324": {
       "ID": 324,
@@ -7774,8 +7774,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 53792,
-      "BodyLength": 273.75,
-      "BodyWidth": 196.5
+      "BodyLength": 260.0625,
+      "BodyWidth": 186.67499999999998
     },
     "325": {
       "ID": 325,
@@ -7798,8 +7798,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55199,
-      "BodyLength": 363.75,
-      "BodyWidth": 151.75
+      "BodyLength": 345.5625,
+      "BodyWidth": 144.1625
     },
     "326": {
       "ID": 326,
@@ -7822,8 +7822,8 @@
       "MaxSpeed": 480,
       "MaxAngularSpeed": 3,
       "Complexity": 25421,
-      "BodyLength": 262.75,
-      "BodyWidth": 96.75
+      "BodyLength": 249.61249999999998,
+      "BodyWidth": 91.9125
     },
     "327": {
       "ID": 327,
@@ -7846,8 +7846,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 45460,
-      "BodyLength": 271,
-      "BodyWidth": 167.75
+      "BodyLength": 257.45,
+      "BodyWidth": 159.36249999999998
     },
     "328": {
       "ID": 328,
@@ -7870,8 +7870,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 44925,
-      "BodyLength": 364.5,
-      "BodyWidth": 123.25
+      "BodyLength": 346.275,
+      "BodyWidth": 117.08749999999999
     },
     "329": {
       "ID": 329,
@@ -7894,8 +7894,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 68266,
-      "BodyLength": 319,
-      "BodyWidth": 214
+      "BodyLength": 303.05,
+      "BodyWidth": 203.29999999999998
     },
     "330": {
       "ID": 330,
@@ -7918,8 +7918,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 57292,
-      "BodyLength": 347.75,
-      "BodyWidth": 164.75
+      "BodyLength": 330.3625,
+      "BodyWidth": 156.5125
     },
     "331": {
       "ID": 331,
@@ -7942,8 +7942,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59637,
-      "BodyLength": 386,
-      "BodyWidth": 154.5
+      "BodyLength": 366.7,
+      "BodyWidth": 146.775
     },
     "332": {
       "ID": 332,
@@ -7966,8 +7966,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 84102,
-      "BodyLength": 393,
-      "BodyWidth": 214
+      "BodyLength": 373.34999999999997,
+      "BodyWidth": 203.29999999999998
     },
     "333": {
       "ID": 333,
@@ -7990,8 +7990,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 76582,
-      "BodyLength": 466.25,
-      "BodyWidth": 164.25
+      "BodyLength": 442.9375,
+      "BodyWidth": 156.0375
     },
     "334": {
       "ID": 334,
@@ -8014,8 +8014,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27366,
-      "BodyLength": 239,
-      "BodyWidth": 114.5
+      "BodyLength": 227.04999999999998,
+      "BodyWidth": 108.77499999999999
     },
     "335": {
       "ID": 335,
@@ -8038,8 +8038,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 38672,
-      "BodyLength": 203,
-      "BodyWidth": 190.5
+      "BodyLength": 192.85,
+      "BodyWidth": 180.975
     },
     "336": {
       "ID": 336,
@@ -8062,8 +8062,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 76701,
-      "BodyLength": 345.5,
-      "BodyWidth": 222
+      "BodyLength": 328.22499999999997,
+      "BodyWidth": 210.89999999999998
     },
     "337": {
       "ID": 337,
@@ -8086,8 +8086,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55334,
-      "BodyLength": 270.25,
-      "BodyWidth": 204.75
+      "BodyLength": 256.7375,
+      "BodyWidth": 194.5125
     },
     "338": {
       "ID": 338,
@@ -8110,8 +8110,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 61030,
-      "BodyLength": 347.75,
-      "BodyWidth": 175.5
+      "BodyLength": 330.3625,
+      "BodyWidth": 166.725
     },
     "339": {
       "ID": 339,
@@ -8134,8 +8134,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 66402,
-      "BodyLength": 357,
-      "BodyWidth": 186
+      "BodyLength": 339.15,
+      "BodyWidth": 176.7
     },
     "340": {
       "ID": 340,
@@ -8158,8 +8158,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 46932,
-      "BodyLength": 461.25,
-      "BodyWidth": 101.75
+      "BodyLength": 438.1875,
+      "BodyWidth": 96.6625
     },
     "341": {
       "ID": 341,
@@ -8182,8 +8182,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 61053,
-      "BodyLength": 433,
-      "BodyWidth": 141
+      "BodyLength": 411.34999999999997,
+      "BodyWidth": 133.95
     },
     "342": {
       "ID": 342,
@@ -8206,8 +8206,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 56527,
-      "BodyLength": 272.75,
-      "BodyWidth": 207.25
+      "BodyLength": 259.1125,
+      "BodyWidth": 196.8875
     },
     "343": {
       "ID": 343,
@@ -8230,8 +8230,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 68182,
-      "BodyLength": 351,
-      "BodyWidth": 194.25
+      "BodyLength": 333.45,
+      "BodyWidth": 184.5375
     },
     "344": {
       "ID": 344,
@@ -8254,8 +8254,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 41330,
-      "BodyLength": 269.25,
-      "BodyWidth": 153.5
+      "BodyLength": 255.7875,
+      "BodyWidth": 145.825
     },
     "345": {
       "ID": 345,
@@ -8278,8 +8278,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 34008,
-      "BodyLength": 278.75,
-      "BodyWidth": 122
+      "BodyLength": 264.8125,
+      "BodyWidth": 115.89999999999999
     },
     "346": {
       "ID": 346,
@@ -8302,8 +8302,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 38708,
-      "BodyLength": 219,
-      "BodyWidth": 176.75
+      "BodyLength": 208.04999999999998,
+      "BodyWidth": 167.9125
     },
     "347": {
       "ID": 347,
@@ -8326,8 +8326,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 65570,
-      "BodyLength": 371.5,
-      "BodyWidth": 176.5
+      "BodyLength": 352.925,
+      "BodyWidth": 167.67499999999998
     },
     "348": {
       "ID": 348,
@@ -8350,8 +8350,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 53678,
-      "BodyLength": 315.75,
-      "BodyWidth": 170
+      "BodyLength": 299.9625,
+      "BodyWidth": 161.5
     },
     "349": {
       "ID": 349,
@@ -8374,8 +8374,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 89012,
-      "BodyLength": 384.5,
-      "BodyWidth": 231.5
+      "BodyLength": 365.275,
+      "BodyWidth": 219.92499999999998
     },
     "350": {
       "ID": 350,
@@ -8398,8 +8398,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 71015,
-      "BodyLength": 367,
-      "BodyWidth": 193.5
+      "BodyLength": 348.65,
+      "BodyWidth": 183.825
     },
     "351": {
       "ID": 351,
@@ -8422,8 +8422,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 46394,
-      "BodyLength": 280.75,
-      "BodyWidth": 165.25
+      "BodyLength": 266.7125,
+      "BodyWidth": 156.98749999999998
     },
     "352": {
       "ID": 352,
@@ -8446,8 +8446,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 79422,
-      "BodyLength": 373.75,
-      "BodyWidth": 212.5
+      "BodyLength": 355.0625,
+      "BodyWidth": 201.875
     },
     "353": {
       "ID": 353,
@@ -8470,8 +8470,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 62233,
-      "BodyLength": 360.25,
-      "BodyWidth": 172.75
+      "BodyLength": 342.2375,
+      "BodyWidth": 164.11249999999998
     },
     "354": {
       "ID": 354,
@@ -8494,8 +8494,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 40469,
-      "BodyLength": 307.75,
-      "BodyWidth": 131.5
+      "BodyLength": 292.3625,
+      "BodyWidth": 124.925
     },
     "355": {
       "ID": 355,
@@ -8518,8 +8518,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 74706,
-      "BodyLength": 307.75,
-      "BodyWidth": 242.75
+      "BodyLength": 292.3625,
+      "BodyWidth": 230.61249999999998
     },
     "356": {
       "ID": 356,
@@ -8542,8 +8542,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59247,
-      "BodyLength": 340.5,
-      "BodyWidth": 174
+      "BodyLength": 323.47499999999997,
+      "BodyWidth": 165.29999999999998
     },
     "357": {
       "ID": 357,
@@ -8566,8 +8566,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 49652,
-      "BodyLength": 379.75,
-      "BodyWidth": 130.75
+      "BodyLength": 360.7625,
+      "BodyWidth": 124.21249999999999
     },
     "358": {
       "ID": 358,
@@ -8590,8 +8590,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 83458,
-      "BodyLength": 374.25,
-      "BodyWidth": 223
+      "BodyLength": 355.53749999999997,
+      "BodyWidth": 211.85
     },
     "359": {
       "ID": 359,
@@ -8614,8 +8614,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 73646,
-      "BodyLength": 359.25,
-      "BodyWidth": 205
+      "BodyLength": 341.28749999999997,
+      "BodyWidth": 194.75
     },
     "360": {
       "ID": 360,
@@ -8638,8 +8638,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 57627,
-      "BodyLength": 353,
-      "BodyWidth": 163.25
+      "BodyLength": 335.34999999999997,
+      "BodyWidth": 155.0875
     },
     "361": {
       "ID": 361,
@@ -8662,8 +8662,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 39413,
-      "BodyLength": 347.25,
-      "BodyWidth": 113.5
+      "BodyLength": 329.8875,
+      "BodyWidth": 107.82499999999999
     },
     "362": {
       "ID": 362,
@@ -8686,8 +8686,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 74733,
-      "BodyLength": 475.25,
-      "BodyWidth": 157.25
+      "BodyLength": 451.48749999999995,
+      "BodyWidth": 149.3875
     },
     "363": {
       "ID": 363,
@@ -8710,8 +8710,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 31135,
-      "BodyLength": 213.25,
-      "BodyWidth": 146
+      "BodyLength": 202.58749999999998,
+      "BodyWidth": 138.7
     },
     "364": {
       "ID": 364,
@@ -8734,8 +8734,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 28649,
-      "BodyLength": 205,
-      "BodyWidth": 139.75
+      "BodyLength": 194.75,
+      "BodyWidth": 132.7625
     },
     "365": {
       "ID": 365,
@@ -8758,8 +8758,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 48704,
-      "BodyLength": 315.75,
-      "BodyWidth": 154.25
+      "BodyLength": 299.9625,
+      "BodyWidth": 146.5375
     },
     "366": {
       "ID": 366,
@@ -8782,8 +8782,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55610,
-      "BodyLength": 268,
-      "BodyWidth": 207.5
+      "BodyLength": 254.6,
+      "BodyWidth": 197.125
     },
     "367": {
       "ID": 367,
@@ -8806,8 +8806,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 42722,
-      "BodyLength": 367.5,
-      "BodyWidth": 116.25
+      "BodyLength": 349.125,
+      "BodyWidth": 110.4375
     },
     "368": {
       "ID": 368,
@@ -8830,8 +8830,8 @@
       "MaxSpeed": 458,
       "MaxAngularSpeed": 3,
       "Complexity": 110804,
-      "BodyLength": 433.25,
-      "BodyWidth": 255.75
+      "BodyLength": 411.5875,
+      "BodyWidth": 242.96249999999998
     },
     "369": {
       "ID": 369,
@@ -8854,8 +8854,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 62469,
-      "BodyLength": 396,
-      "BodyWidth": 157.75
+      "BodyLength": 376.2,
+      "BodyWidth": 149.86249999999998
     },
     "370": {
       "ID": 370,
@@ -8878,8 +8878,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 58627,
-      "BodyLength": 293.5,
-      "BodyWidth": 199.75
+      "BodyLength": 278.825,
+      "BodyWidth": 189.7625
     },
     "371": {
       "ID": 371,
@@ -8902,8 +8902,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 38984,
-      "BodyLength": 202.25,
-      "BodyWidth": 192.75
+      "BodyLength": 192.1375,
+      "BodyWidth": 183.11249999999998
     },
     "372": {
       "ID": 372,
@@ -8926,8 +8926,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 88102,
-      "BodyLength": 402.75,
-      "BodyWidth": 218.75
+      "BodyLength": 382.61249999999995,
+      "BodyWidth": 207.8125
     },
     "373": {
       "ID": 373,
@@ -8950,8 +8950,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 54068,
-      "BodyLength": 267,
-      "BodyWidth": 202.5
+      "BodyLength": 253.64999999999998,
+      "BodyWidth": 192.375
     },
     "374": {
       "ID": 374,
@@ -8974,8 +8974,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 51827,
-      "BodyLength": 349,
-      "BodyWidth": 148.5
+      "BodyLength": 331.55,
+      "BodyWidth": 141.075
     },
     "375": {
       "ID": 375,
@@ -8998,8 +8998,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 67750,
-      "BodyLength": 354.25,
-      "BodyWidth": 191.25
+      "BodyLength": 336.53749999999997,
+      "BodyWidth": 181.6875
     },
     "376": {
       "ID": 376,
@@ -9022,8 +9022,8 @@
       "MaxSpeed": 460,
       "MaxAngularSpeed": 3,
       "Complexity": 100453,
-      "BodyLength": 453,
-      "BodyWidth": 221.75
+      "BodyLength": 430.34999999999997,
+      "BodyWidth": 210.6625
     },
     "377": {
       "ID": 377,
@@ -9046,8 +9046,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 48280,
-      "BodyLength": 262.75,
-      "BodyWidth": 183.75
+      "BodyLength": 249.61249999999998,
+      "BodyWidth": 174.5625
     },
     "378": {
       "ID": 378,
@@ -9070,8 +9070,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 66950,
-      "BodyLength": 378.25,
-      "BodyWidth": 177
+      "BodyLength": 359.3375,
+      "BodyWidth": 168.15
     },
     "379": {
       "ID": 379,
@@ -9094,8 +9094,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 83409,
-      "BodyLength": 339.75,
-      "BodyWidth": 245.5
+      "BodyLength": 322.7625,
+      "BodyWidth": 233.225
     },
     "380": {
       "ID": 380,
@@ -9118,8 +9118,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 39444,
-      "BodyLength": 201.5,
-      "BodyWidth": 195.75
+      "BodyLength": 191.42499999999998,
+      "BodyWidth": 185.96249999999998
     },
     "381": {
       "ID": 381,
@@ -9142,8 +9142,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 52046,
-      "BodyLength": 247.25,
-      "BodyWidth": 210.5
+      "BodyLength": 234.8875,
+      "BodyWidth": 199.975
     },
     "382": {
       "ID": 382,
@@ -9166,8 +9166,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 48900,
-      "BodyLength": 300,
-      "BodyWidth": 163
+      "BodyLength": 285,
+      "BodyWidth": 154.85
     },
     "383": {
       "ID": 383,
@@ -9190,8 +9190,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 75299,
-      "BodyLength": 417.75,
-      "BodyWidth": 180.25
+      "BodyLength": 396.86249999999995,
+      "BodyWidth": 171.23749999999998
     },
     "384": {
       "ID": 384,
@@ -9214,8 +9214,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 48043,
-      "BodyLength": 287.25,
-      "BodyWidth": 167.25
+      "BodyLength": 272.8875,
+      "BodyWidth": 158.8875
     },
     "385": {
       "ID": 385,
@@ -9238,8 +9238,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 39429,
-      "BodyLength": 207.25,
-      "BodyWidth": 190.25
+      "BodyLength": 196.8875,
+      "BodyWidth": 180.73749999999998
     },
     "386": {
       "ID": 386,
@@ -9262,8 +9262,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 87550,
-      "BodyLength": 375.75,
-      "BodyWidth": 233
+      "BodyLength": 356.9625,
+      "BodyWidth": 221.35
     },
     "387": {
       "ID": 387,
@@ -9286,8 +9286,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 36583,
-      "BodyLength": 293.25,
-      "BodyWidth": 124.75
+      "BodyLength": 278.5875,
+      "BodyWidth": 118.51249999999999
     },
     "388": {
       "ID": 388,
@@ -9310,8 +9310,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 53517,
-      "BodyLength": 306.25,
-      "BodyWidth": 174.75
+      "BodyLength": 290.9375,
+      "BodyWidth": 166.0125
     },
     "389": {
       "ID": 389,
@@ -9334,8 +9334,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 70656,
-      "BodyLength": 328.25,
-      "BodyWidth": 215.25
+      "BodyLength": 311.8375,
+      "BodyWidth": 204.48749999999998
     },
     "390": {
       "ID": 390,
@@ -9358,8 +9358,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 54919,
-      "BodyLength": 221,
-      "BodyWidth": 248.5
+      "BodyLength": 209.95,
+      "BodyWidth": 236.075
     },
     "391": {
       "ID": 391,
@@ -9382,8 +9382,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 90713,
-      "BodyLength": 410,
-      "BodyWidth": 221.25
+      "BodyLength": 389.5,
+      "BodyWidth": 210.1875
     },
     "392": {
       "ID": 392,
@@ -9406,8 +9406,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 41948,
-      "BodyLength": 353.25,
-      "BodyWidth": 118.75
+      "BodyLength": 335.5875,
+      "BodyWidth": 112.8125
     },
     "393": {
       "ID": 393,
@@ -9430,8 +9430,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 91495,
-      "BodyLength": 357.75,
-      "BodyWidth": 255.75
+      "BodyLength": 339.8625,
+      "BodyWidth": 242.96249999999998
     },
     "394": {
       "ID": 394,
@@ -9454,8 +9454,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 43713,
-      "BodyLength": 270.25,
-      "BodyWidth": 161.75
+      "BodyLength": 256.7375,
+      "BodyWidth": 153.6625
     },
     "395": {
       "ID": 395,
@@ -9478,8 +9478,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 82283,
-      "BodyLength": 380.5,
-      "BodyWidth": 216.25
+      "BodyLength": 361.47499999999997,
+      "BodyWidth": 205.4375
     },
     "396": {
       "ID": 396,
@@ -9502,8 +9502,8 @@
       "MaxSpeed": 461,
       "MaxAngularSpeed": 3,
       "Complexity": 96732,
-      "BodyLength": 464.5,
-      "BodyWidth": 208.25
+      "BodyLength": 441.275,
+      "BodyWidth": 197.83749999999998
     },
     "397": {
       "ID": 397,
@@ -9526,8 +9526,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 68336,
-      "BodyLength": 327.75,
-      "BodyWidth": 208.5
+      "BodyLength": 311.3625,
+      "BodyWidth": 198.075
     },
     "398": {
       "ID": 398,
@@ -9550,8 +9550,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 82012,
-      "BodyLength": 406,
-      "BodyWidth": 202
+      "BodyLength": 385.7,
+      "BodyWidth": 191.89999999999998
     },
     "399": {
       "ID": 399,
@@ -9574,8 +9574,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55772,
-      "BodyLength": 337.5,
-      "BodyWidth": 165.25
+      "BodyLength": 320.625,
+      "BodyWidth": 156.98749999999998
     },
     "400": {
       "ID": 400,
@@ -9598,8 +9598,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 37929,
-      "BodyLength": 343.25,
-      "BodyWidth": 110.5
+      "BodyLength": 326.0875,
+      "BodyWidth": 104.975
     },
     "401": {
       "ID": 401,
@@ -9622,8 +9622,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 37017,
-      "BodyLength": 263,
-      "BodyWidth": 140.75
+      "BodyLength": 249.85,
+      "BodyWidth": 133.7125
     },
     "402": {
       "ID": 402,
@@ -9646,8 +9646,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 85518,
-      "BodyLength": 395,
-      "BodyWidth": 216.5
+      "BodyLength": 375.25,
+      "BodyWidth": 205.67499999999998
     },
     "403": {
       "ID": 403,
@@ -9670,8 +9670,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 85259,
-      "BodyLength": 377.25,
-      "BodyWidth": 226
+      "BodyLength": 358.3875,
+      "BodyWidth": 214.7
     },
     "404": {
       "ID": 404,
@@ -9694,8 +9694,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 77087,
-      "BodyLength": 417.25,
-      "BodyWidth": 184.75
+      "BodyLength": 396.3875,
+      "BodyWidth": 175.5125
     },
     "405": {
       "ID": 405,
@@ -9718,8 +9718,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 30621,
-      "BodyLength": 259.5,
-      "BodyWidth": 118
+      "BodyLength": 246.52499999999998,
+      "BodyWidth": 112.1
     },
     "406": {
       "ID": 406,
@@ -9742,8 +9742,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 81512,
-      "BodyLength": 443,
-      "BodyWidth": 184
+      "BodyLength": 420.84999999999997,
+      "BodyWidth": 174.79999999999998
     },
     "407": {
       "ID": 407,
@@ -9766,8 +9766,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59889,
-      "BodyLength": 341.25,
-      "BodyWidth": 175.5
+      "BodyLength": 324.1875,
+      "BodyWidth": 166.725
     },
     "408": {
       "ID": 408,
@@ -9790,8 +9790,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 66059,
-      "BodyLength": 299.25,
-      "BodyWidth": 220.75
+      "BodyLength": 284.28749999999997,
+      "BodyWidth": 209.71249999999998
     },
     "409": {
       "ID": 409,
@@ -9814,8 +9814,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 44120,
-      "BodyLength": 329.25,
-      "BodyWidth": 134
+      "BodyLength": 312.78749999999997,
+      "BodyWidth": 127.3
     },
     "410": {
       "ID": 410,
@@ -9838,8 +9838,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 44901,
-      "BodyLength": 354.25,
-      "BodyWidth": 126.75
+      "BodyLength": 336.53749999999997,
+      "BodyWidth": 120.4125
     },
     "411": {
       "ID": 411,
@@ -9862,8 +9862,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 71206,
-      "BodyLength": 346.5,
-      "BodyWidth": 205.5
+      "BodyLength": 329.175,
+      "BodyWidth": 195.225
     },
     "412": {
       "ID": 412,
@@ -9886,8 +9886,8 @@
       "MaxSpeed": 460,
       "MaxAngularSpeed": 3,
       "Complexity": 100335,
-      "BodyLength": 418.5,
-      "BodyWidth": 239.75
+      "BodyLength": 397.575,
+      "BodyWidth": 227.7625
     },
     "413": {
       "ID": 413,
@@ -9910,8 +9910,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 51173,
-      "BodyLength": 303.25,
-      "BodyWidth": 168.75
+      "BodyLength": 288.0875,
+      "BodyWidth": 160.3125
     },
     "414": {
       "ID": 414,
@@ -9934,8 +9934,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 58114,
-      "BodyLength": 267.5,
-      "BodyWidth": 217.25
+      "BodyLength": 254.125,
+      "BodyWidth": 206.3875
     },
     "415": {
       "ID": 415,
@@ -9958,8 +9958,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 66332,
-      "BodyLength": 360.5,
-      "BodyWidth": 184
+      "BodyLength": 342.47499999999997,
+      "BodyWidth": 174.79999999999998
     },
     "416": {
       "ID": 416,
@@ -9982,8 +9982,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55183,
-      "BodyLength": 457,
-      "BodyWidth": 120.75
+      "BodyLength": 434.15,
+      "BodyWidth": 114.71249999999999
     },
     "417": {
       "ID": 417,
@@ -10006,8 +10006,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 61699,
-      "BodyLength": 374.5,
-      "BodyWidth": 164.75
+      "BodyLength": 355.775,
+      "BodyWidth": 156.5125
     },
     "418": {
       "ID": 418,
@@ -10030,8 +10030,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 49273,
-      "BodyLength": 218.75,
-      "BodyWidth": 225.25
+      "BodyLength": 207.8125,
+      "BodyWidth": 213.98749999999998
     },
     "419": {
       "ID": 419,
@@ -10054,8 +10054,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 69458,
-      "BodyLength": 315,
-      "BodyWidth": 220.5
+      "BodyLength": 299.25,
+      "BodyWidth": 209.475
     },
     "420": {
       "ID": 420,
@@ -10078,8 +10078,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55173,
-      "BodyLength": 380.5,
-      "BodyWidth": 145
+      "BodyLength": 361.47499999999997,
+      "BodyWidth": 137.75
     },
     "421": {
       "ID": 421,
@@ -10102,8 +10102,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 84717,
-      "BodyLength": 422,
-      "BodyWidth": 200.75
+      "BodyLength": 400.9,
+      "BodyWidth": 190.71249999999998
     },
     "422": {
       "ID": 422,
@@ -10126,8 +10126,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 90321,
-      "BodyLength": 442.75,
-      "BodyWidth": 204
+      "BodyLength": 420.61249999999995,
+      "BodyWidth": 193.79999999999998
     },
     "423": {
       "ID": 423,
@@ -10150,8 +10150,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 58482,
-      "BodyLength": 401.25,
-      "BodyWidth": 145.75
+      "BodyLength": 381.1875,
+      "BodyWidth": 138.4625
     },
     "424": {
       "ID": 424,
@@ -10174,8 +10174,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 58032,
-      "BodyLength": 277,
-      "BodyWidth": 209.5
+      "BodyLength": 263.15,
+      "BodyWidth": 199.02499999999998
     },
     "425": {
       "ID": 425,
@@ -10198,8 +10198,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59597,
-      "BodyLength": 402,
-      "BodyWidth": 148.25
+      "BodyLength": 381.9,
+      "BodyWidth": 140.8375
     },
     "426": {
       "ID": 426,
@@ -10222,8 +10222,8 @@
       "MaxSpeed": 459,
       "MaxAngularSpeed": 3,
       "Complexity": 103722,
-      "BodyLength": 472,
-      "BodyWidth": 219.75
+      "BodyLength": 448.4,
+      "BodyWidth": 208.7625
     },
     "427": {
       "ID": 427,
@@ -10246,8 +10246,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 54096,
-      "BodyLength": 322,
-      "BodyWidth": 168
+      "BodyLength": 305.9,
+      "BodyWidth": 159.6
     },
     "428": {
       "ID": 428,
@@ -10270,8 +10270,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 68349,
-      "BodyLength": 267.25,
-      "BodyWidth": 255.75
+      "BodyLength": 253.8875,
+      "BodyWidth": 242.96249999999998
     },
     "429": {
       "ID": 429,
@@ -10294,8 +10294,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 72319,
-      "BodyLength": 399,
-      "BodyWidth": 181.25
+      "BodyLength": 379.04999999999995,
+      "BodyWidth": 172.1875
     },
     "430": {
       "ID": 430,
@@ -10318,8 +10318,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 48276,
-      "BodyLength": 247.25,
-      "BodyWidth": 195.25
+      "BodyLength": 234.8875,
+      "BodyWidth": 185.48749999999998
     },
     "431": {
       "ID": 431,
@@ -10342,8 +10342,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 30932,
-      "BodyLength": 176.5,
-      "BodyWidth": 175.25
+      "BodyLength": 167.67499999999998,
+      "BodyWidth": 166.48749999999998
     },
     "432": {
       "ID": 432,
@@ -10366,8 +10366,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 86349,
-      "BodyLength": 382.5,
-      "BodyWidth": 225.75
+      "BodyLength": 363.375,
+      "BodyWidth": 214.46249999999998
     },
     "433": {
       "ID": 433,
@@ -10390,8 +10390,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 37781,
-      "BodyLength": 243.75,
-      "BodyWidth": 155
+      "BodyLength": 231.5625,
+      "BodyWidth": 147.25
     },
     "434": {
       "ID": 434,
@@ -10414,8 +10414,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 88241,
-      "BodyLength": 377.5,
-      "BodyWidth": 233.75
+      "BodyLength": 358.625,
+      "BodyWidth": 222.0625
     },
     "435": {
       "ID": 435,
@@ -10438,8 +10438,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 46480,
-      "BodyLength": 288.25,
-      "BodyWidth": 161.25
+      "BodyLength": 273.8375,
+      "BodyWidth": 153.1875
     },
     "436": {
       "ID": 436,
@@ -10462,8 +10462,8 @@
       "MaxSpeed": 460,
       "MaxAngularSpeed": 3,
       "Complexity": 100913,
-      "BodyLength": 487.5,
-      "BodyWidth": 207
+      "BodyLength": 463.125,
+      "BodyWidth": 196.64999999999998
     },
     "437": {
       "ID": 437,
@@ -10486,8 +10486,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 52960,
-      "BodyLength": 285.5,
-      "BodyWidth": 185.5
+      "BodyLength": 271.22499999999997,
+      "BodyWidth": 176.225
     },
     "438": {
       "ID": 438,
@@ -10510,8 +10510,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 33194,
-      "BodyLength": 214.5,
-      "BodyWidth": 154.75
+      "BodyLength": 203.77499999999998,
+      "BodyWidth": 147.0125
     },
     "439": {
       "ID": 439,
@@ -10534,8 +10534,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 66204,
-      "BodyLength": 395.25,
-      "BodyWidth": 167.5
+      "BodyLength": 375.48749999999995,
+      "BodyWidth": 159.125
     },
     "440": {
       "ID": 440,
@@ -10558,8 +10558,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 58339,
-      "BodyLength": 273.25,
-      "BodyWidth": 213.5
+      "BodyLength": 259.5875,
+      "BodyWidth": 202.825
     },
     "441": {
       "ID": 441,
@@ -10582,8 +10582,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 63501,
-      "BodyLength": 357.75,
-      "BodyWidth": 177.5
+      "BodyLength": 339.8625,
+      "BodyWidth": 168.625
     },
     "442": {
       "ID": 442,
@@ -10606,8 +10606,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 62729,
-      "BodyLength": 300.5,
-      "BodyWidth": 208.75
+      "BodyLength": 285.47499999999997,
+      "BodyWidth": 198.3125
     },
     "443": {
       "ID": 443,
@@ -10630,8 +10630,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 65087,
-      "BodyLength": 345.75,
-      "BodyWidth": 188.25
+      "BodyLength": 328.4625,
+      "BodyWidth": 178.8375
     },
     "444": {
       "ID": 444,
@@ -10654,8 +10654,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 68688,
-      "BodyLength": 324,
-      "BodyWidth": 212
+      "BodyLength": 307.8,
+      "BodyWidth": 201.39999999999998
     },
     "445": {
       "ID": 445,
@@ -10678,8 +10678,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59449,
-      "BodyLength": 415,
-      "BodyWidth": 143.25
+      "BodyLength": 394.25,
+      "BodyWidth": 136.0875
     },
     "446": {
       "ID": 446,
@@ -10702,8 +10702,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 22918,
-      "BodyLength": 162.25,
-      "BodyWidth": 141.25
+      "BodyLength": 154.1375,
+      "BodyWidth": 134.1875
     },
     "447": {
       "ID": 447,
@@ -10726,8 +10726,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 38031,
-      "BodyLength": 232.25,
-      "BodyWidth": 163.75
+      "BodyLength": 220.6375,
+      "BodyWidth": 155.5625
     },
     "448": {
       "ID": 448,
@@ -10750,8 +10750,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 66301,
-      "BodyLength": 266,
-      "BodyWidth": 249.25
+      "BodyLength": 252.7,
+      "BodyWidth": 236.7875
     },
     "449": {
       "ID": 449,
@@ -10774,8 +10774,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 38026,
-      "BodyLength": 262.25,
-      "BodyWidth": 145
+      "BodyLength": 249.1375,
+      "BodyWidth": 137.75
     },
     "450": {
       "ID": 450,
@@ -10798,8 +10798,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 51350,
-      "BodyLength": 389.75,
-      "BodyWidth": 131.75
+      "BodyLength": 370.2625,
+      "BodyWidth": 125.1625
     },
     "451": {
       "ID": 451,
@@ -10822,8 +10822,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 46370,
-      "BodyLength": 368.75,
-      "BodyWidth": 125.75
+      "BodyLength": 350.3125,
+      "BodyWidth": 119.46249999999999
     },
     "452": {
       "ID": 452,
@@ -10846,8 +10846,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 89244,
-      "BodyLength": 402,
-      "BodyWidth": 222
+      "BodyLength": 381.9,
+      "BodyWidth": 210.89999999999998
     },
     "453": {
       "ID": 453,
@@ -10870,8 +10870,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27884,
-      "BodyLength": 243,
-      "BodyWidth": 114.75
+      "BodyLength": 230.85,
+      "BodyWidth": 109.01249999999999
     },
     "454": {
       "ID": 454,
@@ -10894,8 +10894,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55376,
-      "BodyLength": 340.25,
-      "BodyWidth": 162.75
+      "BodyLength": 323.2375,
+      "BodyWidth": 154.61249999999998
     },
     "455": {
       "ID": 455,
@@ -10918,8 +10918,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 83770,
-      "BodyLength": 350.5,
-      "BodyWidth": 239
+      "BodyLength": 332.97499999999997,
+      "BodyWidth": 227.04999999999998
     },
     "456": {
       "ID": 456,
@@ -10942,8 +10942,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 72323,
-      "BodyLength": 416.25,
-      "BodyWidth": 173.75
+      "BodyLength": 395.4375,
+      "BodyWidth": 165.0625
     },
     "457": {
       "ID": 457,
@@ -10966,8 +10966,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 87920,
-      "BodyLength": 425.25,
-      "BodyWidth": 206.75
+      "BodyLength": 403.98749999999995,
+      "BodyWidth": 196.4125
     },
     "458": {
       "ID": 458,
@@ -10990,8 +10990,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 47685,
-      "BodyLength": 361.25,
-      "BodyWidth": 132
+      "BodyLength": 343.1875,
+      "BodyWidth": 125.39999999999999
     },
     "459": {
       "ID": 459,
@@ -11014,8 +11014,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 56858,
-      "BodyLength": 250.75,
-      "BodyWidth": 226.75
+      "BodyLength": 238.21249999999998,
+      "BodyWidth": 215.4125
     },
     "460": {
       "ID": 460,
@@ -11038,8 +11038,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 41105,
-      "BodyLength": 376.25,
-      "BodyWidth": 109.25
+      "BodyLength": 357.4375,
+      "BodyWidth": 103.7875
     },
     "461": {
       "ID": 461,
@@ -11062,8 +11062,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 79069,
-      "BodyLength": 389.5,
-      "BodyWidth": 203
+      "BodyLength": 370.025,
+      "BodyWidth": 192.85
     },
     "462": {
       "ID": 462,
@@ -11086,8 +11086,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 56391,
-      "BodyLength": 317.25,
-      "BodyWidth": 177.75
+      "BodyLength": 301.3875,
+      "BodyWidth": 168.86249999999998
     },
     "463": {
       "ID": 463,
@@ -11110,8 +11110,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 35326,
-      "BodyLength": 290.75,
-      "BodyWidth": 121.5
+      "BodyLength": 276.2125,
+      "BodyWidth": 115.425
     },
     "464": {
       "ID": 464,
@@ -11134,8 +11134,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 80952,
-      "BodyLength": 427.75,
-      "BodyWidth": 189.25
+      "BodyLength": 406.36249999999995,
+      "BodyWidth": 179.7875
     },
     "465": {
       "ID": 465,
@@ -11158,8 +11158,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 46508,
-      "BodyLength": 265,
-      "BodyWidth": 175.5
+      "BodyLength": 251.75,
+      "BodyWidth": 166.725
     },
     "466": {
       "ID": 466,
@@ -11182,8 +11182,8 @@
       "MaxSpeed": 459,
       "MaxAngularSpeed": 3,
       "Complexity": 102960,
-      "BodyLength": 468,
-      "BodyWidth": 220
+      "BodyLength": 444.59999999999997,
+      "BodyWidth": 209
     },
     "467": {
       "ID": 467,
@@ -11206,8 +11206,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 71572,
-      "BodyLength": 393.25,
-      "BodyWidth": 182
+      "BodyLength": 373.5875,
+      "BodyWidth": 172.9
     },
     "468": {
       "ID": 468,
@@ -11230,8 +11230,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 57329,
-      "BodyLength": 335.75,
-      "BodyWidth": 170.75
+      "BodyLength": 318.9625,
+      "BodyWidth": 162.2125
     },
     "469": {
       "ID": 469,
@@ -11254,8 +11254,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 52841,
-      "BodyLength": 346.5,
-      "BodyWidth": 152.5
+      "BodyLength": 329.175,
+      "BodyWidth": 144.875
     },
     "470": {
       "ID": 470,
@@ -11278,8 +11278,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 42851,
-      "BodyLength": 314.5,
-      "BodyWidth": 136.25
+      "BodyLength": 298.775,
+      "BodyWidth": 129.4375
     },
     "471": {
       "ID": 471,
@@ -11302,8 +11302,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 33168,
-      "BodyLength": 220.75,
-      "BodyWidth": 150.25
+      "BodyLength": 209.71249999999998,
+      "BodyWidth": 142.73749999999998
     },
     "472": {
       "ID": 472,
@@ -11326,8 +11326,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 90538,
-      "BodyLength": 406,
-      "BodyWidth": 223
+      "BodyLength": 385.7,
+      "BodyWidth": 211.85
     },
     "473": {
       "ID": 473,
@@ -11350,8 +11350,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 40221,
-      "BodyLength": 349.75,
-      "BodyWidth": 115
+      "BodyLength": 332.2625,
+      "BodyWidth": 109.25
     },
     "474": {
       "ID": 474,
@@ -11374,8 +11374,8 @@
       "MaxSpeed": 467,
       "MaxAngularSpeed": 3,
       "Complexity": 69815,
-      "BodyLength": 386.25,
-      "BodyWidth": 180.75
+      "BodyLength": 366.9375,
+      "BodyWidth": 171.7125
     },
     "475": {
       "ID": 475,
@@ -11398,8 +11398,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55552,
-      "BodyLength": 357.25,
-      "BodyWidth": 155.5
+      "BodyLength": 339.3875,
+      "BodyWidth": 147.725
     },
     "476": {
       "ID": 476,
@@ -11422,8 +11422,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 41973,
-      "BodyLength": 203.75,
-      "BodyWidth": 206
+      "BodyLength": 193.5625,
+      "BodyWidth": 195.7
     },
     "477": {
       "ID": 477,
@@ -11446,8 +11446,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 54706,
-      "BodyLength": 385.25,
-      "BodyWidth": 142
+      "BodyLength": 365.98749999999995,
+      "BodyWidth": 134.9
     },
     "478": {
       "ID": 478,
@@ -11470,8 +11470,8 @@
       "MaxSpeed": 460,
       "MaxAngularSpeed": 3,
       "Complexity": 100125,
-      "BodyLength": 395.75,
-      "BodyWidth": 253
+      "BodyLength": 375.9625,
+      "BodyWidth": 240.35
     },
     "479": {
       "ID": 479,
@@ -11494,8 +11494,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59501,
-      "BodyLength": 309.5,
-      "BodyWidth": 192.25
+      "BodyLength": 294.025,
+      "BodyWidth": 182.6375
     },
     "480": {
       "ID": 480,
@@ -11518,8 +11518,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 89494,
-      "BodyLength": 291.75,
-      "BodyWidth": 306.75
+      "BodyLength": 277.16249999999997,
+      "BodyWidth": 291.41249999999997
     },
     "481": {
       "ID": 481,
@@ -11542,8 +11542,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 88651,
-      "BodyLength": 250.25,
-      "BodyWidth": 354.25
+      "BodyLength": 237.73749999999998,
+      "BodyWidth": 336.53749999999997
     },
     "482": {
       "ID": 482,
@@ -11566,8 +11566,8 @@
       "MaxSpeed": 466,
       "MaxAngularSpeed": 3,
       "Complexity": 72333,
-      "BodyLength": 317.25,
-      "BodyWidth": 228
+      "BodyLength": 301.3875,
+      "BodyWidth": 216.6
     },
     "483": {
       "ID": 483,
@@ -11590,8 +11590,8 @@
       "MaxSpeed": 472,
       "MaxAngularSpeed": 3,
       "Complexity": 48586,
-      "BodyLength": 206.75,
-      "BodyWidth": 235
+      "BodyLength": 196.4125,
+      "BodyWidth": 223.25
     },
     "484": {
       "ID": 484,
@@ -11614,8 +11614,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 60514,
-      "BodyLength": 118.25,
-      "BodyWidth": 511.75
+      "BodyLength": 112.33749999999999,
+      "BodyWidth": 486.16249999999997
     },
     "485": {
       "ID": 485,
@@ -11638,8 +11638,8 @@
       "MaxSpeed": 462,
       "MaxAngularSpeed": 3,
       "Complexity": 90566,
-      "BodyLength": 198.5,
-      "BodyWidth": 456.25
+      "BodyLength": 188.575,
+      "BodyWidth": 433.4375
     },
     "486": {
       "ID": 486,
@@ -11662,8 +11662,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 56728,
-      "BodyLength": 157.25,
-      "BodyWidth": 360.75
+      "BodyLength": 149.3875,
+      "BodyWidth": 342.7125
     },
     "487": {
       "ID": 487,
@@ -11686,8 +11686,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 37557,
-      "BodyLength": 240.75,
-      "BodyWidth": 156
+      "BodyLength": 228.71249999999998,
+      "BodyWidth": 148.2
     },
     "488": {
       "ID": 488,
@@ -11710,8 +11710,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59866,
-      "BodyLength": 220.5,
-      "BodyWidth": 271.5
+      "BodyLength": 209.475,
+      "BodyWidth": 257.925
     },
     "489": {
       "ID": 489,
@@ -11734,8 +11734,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 83269,
-      "BodyLength": 179.75,
-      "BodyWidth": 463.25
+      "BodyLength": 170.7625,
+      "BodyWidth": 440.0875
     },
     "490": {
       "ID": 490,
@@ -11758,8 +11758,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 54384,
-      "BodyLength": 245.25,
-      "BodyWidth": 221.75
+      "BodyLength": 232.98749999999998,
+      "BodyWidth": 210.6625
     },
     "491": {
       "ID": 491,
@@ -11782,8 +11782,8 @@
       "MaxSpeed": 483,
       "MaxAngularSpeed": 3,
       "Complexity": 19015,
-      "BodyLength": 175.25,
-      "BodyWidth": 108.5
+      "BodyLength": 166.48749999999998,
+      "BodyWidth": 103.07499999999999
     },
     "492": {
       "ID": 492,
@@ -11806,8 +11806,8 @@
       "MaxSpeed": 451,
       "MaxAngularSpeed": 3,
       "Complexity": 148330,
-      "BodyLength": 324.75,
-      "BodyWidth": 456.75
+      "BodyLength": 308.5125,
+      "BodyWidth": 433.91249999999997
     },
     "493": {
       "ID": 493,
@@ -11830,8 +11830,8 @@
       "MaxSpeed": 450,
       "MaxAngularSpeed": 3,
       "Complexity": 155444,
-      "BodyLength": 303.75,
-      "BodyWidth": 511.75
+      "BodyLength": 288.5625,
+      "BodyWidth": 486.16249999999997
     },
     "494": {
       "ID": 494,
@@ -11854,8 +11854,8 @@
       "MaxSpeed": 456,
       "MaxAngularSpeed": 3,
       "Complexity": 118560,
-      "BodyLength": 380,
-      "BodyWidth": 312
+      "BodyLength": 361,
+      "BodyWidth": 296.4
     },
     "495": {
       "ID": 495,
@@ -11878,8 +11878,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 80481,
-      "BodyLength": 289.5,
-      "BodyWidth": 278
+      "BodyLength": 275.025,
+      "BodyWidth": 264.09999999999997
     },
     "496": {
       "ID": 496,
@@ -11902,8 +11902,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 77613,
-      "BodyLength": 274.25,
-      "BodyWidth": 283
+      "BodyLength": 260.53749999999997,
+      "BodyWidth": 268.84999999999997
     },
     "497": {
       "ID": 497,
@@ -11926,8 +11926,8 @@
       "MaxSpeed": 482,
       "MaxAngularSpeed": 3,
       "Complexity": 21266,
-      "BodyLength": 133.75,
-      "BodyWidth": 159
+      "BodyLength": 127.0625,
+      "BodyWidth": 151.04999999999998
     },
     "498": {
       "ID": 498,
@@ -11950,8 +11950,8 @@
       "MaxSpeed": 468,
       "MaxAngularSpeed": 3,
       "Complexity": 63030,
-      "BodyLength": 330,
-      "BodyWidth": 191
+      "BodyLength": 313.5,
+      "BodyWidth": 181.45
     },
     "499": {
       "ID": 499,
@@ -11974,8 +11974,8 @@
       "MaxSpeed": 455,
       "MaxAngularSpeed": 3,
       "Complexity": 127091,
-      "BodyLength": 355.25,
-      "BodyWidth": 357.75
+      "BodyLength": 337.4875,
+      "BodyWidth": 339.8625
     },
     "500": {
       "ID": 500,
@@ -11998,8 +11998,8 @@
       "MaxSpeed": 447,
       "MaxAngularSpeed": 3,
       "Complexity": 172575,
-      "BodyLength": 390,
-      "BodyWidth": 442.5
+      "BodyLength": 370.5,
+      "BodyWidth": 420.375
     },
     "501": {
       "ID": 501,
@@ -12022,8 +12022,8 @@
       "MaxSpeed": 460,
       "MaxAngularSpeed": 3,
       "Complexity": 101300,
-      "BodyLength": 223.25,
-      "BodyWidth": 453.75
+      "BodyLength": 212.08749999999998,
+      "BodyWidth": 431.0625
     },
     "502": {
       "ID": 502,
@@ -12046,8 +12046,8 @@
       "MaxSpeed": 453,
       "MaxAngularSpeed": 3,
       "Complexity": 136056,
-      "BodyLength": 332.25,
-      "BodyWidth": 409.5
+      "BodyLength": 315.6375,
+      "BodyWidth": 389.025
     },
     "503": {
       "ID": 503,
@@ -12070,8 +12070,8 @@
       "MaxSpeed": 473,
       "MaxAngularSpeed": 3,
       "Complexity": 46359,
-      "BodyLength": 224.5,
-      "BodyWidth": 206.5
+      "BodyLength": 213.27499999999998,
+      "BodyWidth": 196.17499999999998
     },
     "504": {
       "ID": 504,
@@ -12094,8 +12094,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 76442,
-      "BodyLength": 235.75,
-      "BodyWidth": 324.25
+      "BodyLength": 223.96249999999998,
+      "BodyWidth": 308.03749999999997
     },
     "505": {
       "ID": 505,
@@ -12118,8 +12118,8 @@
       "MaxSpeed": 459,
       "MaxAngularSpeed": 3,
       "Complexity": 107094,
-      "BodyLength": 312,
-      "BodyWidth": 343.25
+      "BodyLength": 296.4,
+      "BodyWidth": 326.0875
     },
     "506": {
       "ID": 506,
@@ -12142,8 +12142,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 81076,
-      "BodyLength": 330.25,
-      "BodyWidth": 245.5
+      "BodyLength": 313.7375,
+      "BodyWidth": 233.225
     },
     "507": {
       "ID": 507,
@@ -12166,8 +12166,8 @@
       "MaxSpeed": 458,
       "MaxAngularSpeed": 3,
       "Complexity": 110552,
-      "BodyLength": 323.25,
-      "BodyWidth": 342
+      "BodyLength": 307.0875,
+      "BodyWidth": 324.9
     },
     "508": {
       "ID": 508,
@@ -12190,8 +12190,8 @@
       "MaxSpeed": 454,
       "MaxAngularSpeed": 3,
       "Complexity": 133004,
-      "BodyLength": 371,
-      "BodyWidth": 358.5
+      "BodyLength": 352.45,
+      "BodyWidth": 340.575
     },
     "509": {
       "ID": 509,
@@ -12214,8 +12214,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 57648,
-      "BodyLength": 195.25,
-      "BodyWidth": 295.25
+      "BodyLength": 185.48749999999998,
+      "BodyWidth": 280.4875
     },
     "510": {
       "ID": 510,
@@ -12238,8 +12238,8 @@
       "MaxSpeed": 446,
       "MaxAngularSpeed": 3,
       "Complexity": 180484,
-      "BodyLength": 394.5,
-      "BodyWidth": 457.5
+      "BodyLength": 374.775,
+      "BodyWidth": 434.625
     },
     "511": {
       "ID": 511,
@@ -12262,8 +12262,8 @@
       "MaxSpeed": 481,
       "MaxAngularSpeed": 3,
       "Complexity": 23548,
-      "BodyLength": 142.5,
-      "BodyWidth": 165.25
+      "BodyLength": 135.375,
+      "BodyWidth": 156.98749999999998
     },
     "512": {
       "ID": 512,
@@ -12286,8 +12286,8 @@
       "MaxSpeed": 457,
       "MaxAngularSpeed": 3,
       "Complexity": 115866,
-      "BodyLength": 328,
-      "BodyWidth": 353.25
+      "BodyLength": 311.59999999999997,
+      "BodyWidth": 335.5875
     },
     "513": {
       "ID": 513,
@@ -12310,8 +12310,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 56603,
-      "BodyLength": 261.75,
-      "BodyWidth": 216.25
+      "BodyLength": 248.6625,
+      "BodyWidth": 205.4375
     },
     "514": {
       "ID": 514,
@@ -12334,8 +12334,8 @@
       "MaxSpeed": 460,
       "MaxAngularSpeed": 3,
       "Complexity": 99044,
-      "BodyLength": 299,
-      "BodyWidth": 331.25
+      "BodyLength": 284.05,
+      "BodyWidth": 314.6875
     },
     "515": {
       "ID": 515,
@@ -12358,8 +12358,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 78224,
-      "BodyLength": 169.5,
-      "BodyWidth": 461.5
+      "BodyLength": 161.025,
+      "BodyWidth": 438.42499999999995
     },
     "516": {
       "ID": 516,
@@ -12382,8 +12382,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 85499,
-      "BodyLength": 276.25,
-      "BodyWidth": 309.5
+      "BodyLength": 262.4375,
+      "BodyWidth": 294.025
     },
     "517": {
       "ID": 517,
@@ -12406,8 +12406,8 @@
       "MaxSpeed": 454,
       "MaxAngularSpeed": 3,
       "Complexity": 132357,
-      "BodyLength": 389,
-      "BodyWidth": 340.25
+      "BodyLength": 369.54999999999995,
+      "BodyWidth": 323.2375
     },
     "518": {
       "ID": 518,
@@ -12430,8 +12430,8 @@
       "MaxSpeed": 449,
       "MaxAngularSpeed": 3,
       "Complexity": 164463,
-      "BodyLength": 329.75,
-      "BodyWidth": 498.75
+      "BodyLength": 313.2625,
+      "BodyWidth": 473.8125
     },
     "519": {
       "ID": 519,
@@ -12454,8 +12454,8 @@
       "MaxSpeed": 449,
       "MaxAngularSpeed": 3,
       "Complexity": 163888,
-      "BodyLength": 320.25,
-      "BodyWidth": 511.75
+      "BodyLength": 304.2375,
+      "BodyWidth": 486.16249999999997
     },
     "520": {
       "ID": 520,
@@ -12478,8 +12478,8 @@
       "MaxSpeed": 477,
       "MaxAngularSpeed": 3,
       "Complexity": 34020,
-      "BodyLength": 162,
-      "BodyWidth": 210
+      "BodyLength": 153.9,
+      "BodyWidth": 199.5
     },
     "521": {
       "ID": 521,
@@ -12502,8 +12502,8 @@
       "MaxSpeed": 464,
       "MaxAngularSpeed": 3,
       "Complexity": 82290,
-      "BodyLength": 189.5,
-      "BodyWidth": 434.25
+      "BodyLength": 180.025,
+      "BodyWidth": 412.53749999999997
     },
     "522": {
       "ID": 522,
@@ -12526,8 +12526,8 @@
       "MaxSpeed": 452,
       "MaxAngularSpeed": 3,
       "Complexity": 146598,
-      "BodyLength": 349.25,
-      "BodyWidth": 419.75
+      "BodyLength": 331.78749999999997,
+      "BodyWidth": 398.7625
     },
     "523": {
       "ID": 523,
@@ -12550,8 +12550,8 @@
       "MaxSpeed": 448,
       "MaxAngularSpeed": 3,
       "Complexity": 168698,
-      "BodyLength": 406.5,
-      "BodyWidth": 415
+      "BodyLength": 386.17499999999995,
+      "BodyWidth": 394.25
     },
     "524": {
       "ID": 524,
@@ -12574,8 +12574,8 @@
       "MaxSpeed": 470,
       "MaxAngularSpeed": 3,
       "Complexity": 55045,
-      "BodyLength": 202,
-      "BodyWidth": 272.5
+      "BodyLength": 191.89999999999998,
+      "BodyWidth": 258.875
     },
     "525": {
       "ID": 525,
@@ -12598,8 +12598,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 37247,
-      "BodyLength": 191.5,
-      "BodyWidth": 194.5
+      "BodyLength": 181.92499999999998,
+      "BodyWidth": 184.77499999999998
     },
     "526": {
       "ID": 526,
@@ -12622,8 +12622,8 @@
       "MaxSpeed": 456,
       "MaxAngularSpeed": 3,
       "Complexity": 119216,
-      "BodyLength": 415.75,
-      "BodyWidth": 286.75
+      "BodyLength": 394.9625,
+      "BodyWidth": 272.41249999999997
     },
     "527": {
       "ID": 527,
@@ -12646,8 +12646,8 @@
       "MaxSpeed": 465,
       "MaxAngularSpeed": 3,
       "Complexity": 76205,
-      "BodyLength": 230.75,
-      "BodyWidth": 330.25
+      "BodyLength": 219.21249999999998,
+      "BodyWidth": 313.7375
     },
     "528": {
       "ID": 528,
@@ -12670,8 +12670,8 @@
       "MaxSpeed": 448,
       "MaxAngularSpeed": 3,
       "Complexity": 170698,
-      "BodyLength": 449.5,
-      "BodyWidth": 379.75
+      "BodyLength": 427.025,
+      "BodyWidth": 360.7625
     },
     "529": {
       "ID": 529,
@@ -12694,8 +12694,8 @@
       "MaxSpeed": 463,
       "MaxAngularSpeed": 3,
       "Complexity": 83683,
-      "BodyLength": 195.75,
-      "BodyWidth": 427.5
+      "BodyLength": 185.96249999999998,
+      "BodyWidth": 406.125
     },
     "530": {
       "ID": 530,
@@ -12718,8 +12718,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 53648,
-      "BodyLength": 224,
-      "BodyWidth": 239.5
+      "BodyLength": 212.79999999999998,
+      "BodyWidth": 227.52499999999998
     },
     "531": {
       "ID": 531,
@@ -12742,8 +12742,8 @@
       "MaxSpeed": 441,
       "MaxAngularSpeed": 3,
       "Complexity": 220564,
-      "BodyLength": 431,
-      "BodyWidth": 511.75
+      "BodyLength": 409.45,
+      "BodyWidth": 486.16249999999997
     },
     "532": {
       "ID": 532,
@@ -12766,8 +12766,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 61580,
-      "BodyLength": 286.75,
-      "BodyWidth": 214.75
+      "BodyLength": 272.41249999999997,
+      "BodyWidth": 204.0125
     },
     "533": {
       "ID": 533,
@@ -12790,8 +12790,8 @@
       "MaxSpeed": 476,
       "MaxAngularSpeed": 3,
       "Complexity": 36732,
-      "BodyLength": 175.75,
-      "BodyWidth": 209
+      "BodyLength": 166.9625,
+      "BodyWidth": 198.54999999999998
     },
     "534": {
       "ID": 534,
@@ -12814,8 +12814,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 59427,
-      "BodyLength": 142,
-      "BodyWidth": 418.5
+      "BodyLength": 134.9,
+      "BodyWidth": 397.575
     },
     "535": {
       "ID": 535,
@@ -12838,8 +12838,8 @@
       "MaxSpeed": 479,
       "MaxAngularSpeed": 3,
       "Complexity": 27181,
-      "BodyLength": 139.75,
-      "BodyWidth": 194.5
+      "BodyLength": 132.7625,
+      "BodyWidth": 184.77499999999998
     },
     "536": {
       "ID": 536,
@@ -12862,8 +12862,8 @@
       "MaxSpeed": 469,
       "MaxAngularSpeed": 3,
       "Complexity": 61837,
-      "BodyLength": 189.25,
-      "BodyWidth": 326.75
+      "BodyLength": 179.7875,
+      "BodyWidth": 310.41249999999997
     },
     "537": {
       "ID": 537,
@@ -12886,8 +12886,8 @@
       "MaxSpeed": 446,
       "MaxAngularSpeed": 3,
       "Complexity": 183779,
-      "BodyLength": 375.25,
-      "BodyWidth": 489.75
+      "BodyLength": 356.4875,
+      "BodyWidth": 465.2625
     },
     "538": {
       "ID": 538,
@@ -12910,8 +12910,8 @@
       "MaxSpeed": 475,
       "MaxAngularSpeed": 3,
       "Complexity": 40609,
-      "BodyLength": 168.5,
-      "BodyWidth": 241
+      "BodyLength": 160.075,
+      "BodyWidth": 228.95
     },
     "539": {
       "ID": 539,
@@ -12934,8 +12934,8 @@
       "MaxSpeed": 478,
       "MaxAngularSpeed": 3,
       "Complexity": 30614,
-      "BodyLength": 131.25,
-      "BodyWidth": 233.25
+      "BodyLength": 124.6875,
+      "BodyWidth": 221.58749999999998
     },
     "540": {
       "ID": 540,
@@ -12958,8 +12958,8 @@
       "MaxSpeed": 436,
       "MaxAngularSpeed": 3,
       "Complexity": 256035,
-      "BodyLength": 505,
-      "BodyWidth": 507
+      "BodyLength": 479.75,
+      "BodyWidth": 481.65
     },
     "541": {
       "ID": 541,
@@ -12982,8 +12982,8 @@
       "MaxSpeed": 474,
       "MaxAngularSpeed": 3,
       "Complexity": 43287,
-      "BodyLength": 199.25,
-      "BodyWidth": 217.25
+      "BodyLength": 189.2875,
+      "BodyWidth": 206.3875
     },
     "542": {
       "ID": 542,
@@ -13006,8 +13006,8 @@
       "MaxSpeed": 471,
       "MaxAngularSpeed": 3,
       "Complexity": 53215,
-      "BodyLength": 183.5,
-      "BodyWidth": 290
+      "BodyLength": 174.325,
+      "BodyWidth": 275.5
     },
     "543": {
       "ID": 543,
@@ -13030,8 +13030,8 @@
       "MaxSpeed": 486,
       "MaxAngularSpeed": 3,
       "Complexity": 11602,
-      "BodyLength": 206.25,
-      "BodyWidth": 56.25
+      "BodyLength": 195.9375,
+      "BodyWidth": 53.4375
     }
   }
 }

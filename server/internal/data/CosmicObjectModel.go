@@ -1,4 +1,4 @@
-﻿package data
+package data
 
 import (
 	"encoding/json"
@@ -11,6 +11,9 @@ import (
 
 const defaultCosmicObjectModelTextureScale = 4
 const bodyPolygonVertexCount = 16
+
+// Коэффициент уменьшения физического тела относительно тела на текстуре.
+const cosmicObjectModelBodyScale = 0.95
 
 // РћРїРёСЃС‹РІР°РµС‚ Р»РѕРєР°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂР° РѕР±СЉРµРєС‚Р°.
 type BodyPoint struct {
@@ -256,8 +259,8 @@ func (cosmicObjectModels *CosmicObjectModels) prepareCalculatedFields(cosmicObje
 	if cosmicObjectModel.TextureScale == 0 {
 		cosmicObjectModel.TextureScale = defaultCosmicObjectModelTextureScale
 	}
-	cosmicObjectModel.BodyLength = float64(cosmicObjectModel.TextureBodyLength) / cosmicObjectModel.TextureScale
-	cosmicObjectModel.BodyWidth = float64(cosmicObjectModel.TextureBodyWidth) / cosmicObjectModel.TextureScale
+	cosmicObjectModel.BodyLength = float64(cosmicObjectModel.TextureBodyLength) / cosmicObjectModel.TextureScale * cosmicObjectModelBodyScale
+	cosmicObjectModel.BodyWidth = float64(cosmicObjectModel.TextureBodyWidth) / cosmicObjectModel.TextureScale * cosmicObjectModelBodyScale
 	cosmicObjectModel.BodyPolygon = buildBodyPolygon(*cosmicObjectModel)
 }
 

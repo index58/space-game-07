@@ -1826,8 +1826,8 @@ func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *tes
 		t.Fatalf("cargo requirement was not saved in task item group: %+v", reserved)
 	}
 	// Проверяет, что работа считается по массе и полуразмеру текущего объекта.
-	if math.Abs(task.TotalEnergy-112.5) > physics.Epsilon {
-		t.Fatalf("movement energy = %v, want 112.5", task.TotalEnergy)
+	if math.Abs(task.TotalEnergy-106.875) > physics.Epsilon {
+		t.Fatalf("movement energy = %v, want 106.875", task.TotalEnergy)
 	}
 
 	gameWorld.Tick(3)
