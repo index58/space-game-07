@@ -87,7 +87,7 @@ const referenceData = {
       "1": { ID: 1, Acronym: "Ship" },
     },
   },
-  Itemtype: { MaxID: 0, Items: {} },
+  ItemType: { MaxID: 0, Items: {} },
   CosmicObjectModel: {
     MaxID: 10,
     Items: {
@@ -623,7 +623,7 @@ describe("GameUi", () => {
     document.body.append(root);
     const equipmentReferenceData = {
       ...referenceData,
-      Itemtype: {
+      ItemType: {
         MaxID: 1,
         Items: {
           "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -633,8 +633,8 @@ describe("GameUi", () => {
       ItemModel: {
         MaxID: 2,
         Items: {
-          "1": { ID: 1, ItemtypeID: 1, Acronym: "SimpleContainer", TitleRu: "Простой контейнер", Mass: 12, Volume: 3, ConsumingPower: 4, GeneratingPower: 0, MaxAlongForce: 15, MaxAcrossForce: 6, MaxTorque: 2, Complexity: 7 },
-          "2": { ID: 2, ItemtypeID: 2, Acronym: "CompactGenerator", TitleRu: "Компактный генератор", Mass: 8, Volume: 2, ConsumingPower: 0, GeneratingPower: 20, MaxAlongForce: 0, MaxAcrossForce: 0, MaxTorque: 0, Complexity: 3 },
+          "1": { ID: 1, ItemTypeID: 1, Acronym: "SimpleContainer", TitleRu: "Простой контейнер", Mass: 12, Volume: 3, ConsumingPower: 4, GeneratingPower: 0, MaxAlongForce: 15, MaxAcrossForce: 6, MaxTorque: 2, Complexity: 7 },
+          "2": { ID: 2, ItemTypeID: 2, Acronym: "CompactGenerator", TitleRu: "Компактный генератор", Mass: 8, Volume: 2, ConsumingPower: 0, GeneratingPower: 20, MaxAlongForce: 0, MaxAcrossForce: 0, MaxTorque: 0, Complexity: 3 },
         },
       },
     } as unknown as ReferenceDataMessage;
@@ -713,7 +713,7 @@ describe("GameUi", () => {
     document.body.append(root);
     const equipmentReferenceData = {
       ...referenceData,
-      Itemtype: {
+      ItemType: {
         MaxID: 2,
         Items: {
           "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -723,10 +723,10 @@ describe("GameUi", () => {
       ItemModel: {
         MaxID: 4,
         Items: {
-          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
-          "2": { ID: 2, ItemtypeID: 2, Acronym: "Generator", TitleRu: "Генератор" },
-          "3": { ID: 3, ItemtypeID: 1, Acronym: "ReserveContainer", TitleRu: "Резервный контейнер" },
-          "4": { ID: 4, ItemtypeID: 2, Acronym: "Ore", TitleRu: "Руда" },
+          "1": { ID: 1, ItemTypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemTypeID: 2, Acronym: "Generator", TitleRu: "Генератор" },
+          "3": { ID: 3, ItemTypeID: 1, Acronym: "ReserveContainer", TitleRu: "Резервный контейнер" },
+          "4": { ID: 4, ItemTypeID: 2, Acronym: "Ore", TitleRu: "Руда" },
         },
       },
     } as unknown as ReferenceDataMessage;
@@ -772,7 +772,7 @@ describe("GameUi", () => {
     document.body.append(root);
     const equipmentReferenceData = {
       ...referenceData,
-      Itemtype: {
+      ItemType: {
         MaxID: 2,
         Items: {
           "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -782,8 +782,8 @@ describe("GameUi", () => {
       ItemModel: {
         MaxID: 2,
         Items: {
-          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
-          "2": { ID: 2, ItemtypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
+          "1": { ID: 1, ItemTypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemTypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
         },
       },
     } as unknown as ReferenceDataMessage;
@@ -827,7 +827,7 @@ describe("GameUi", () => {
     document.body.append(root);
     const equipmentReferenceData = {
       ...referenceData,
-      Itemtype: {
+      ItemType: {
         MaxID: 3,
         Items: {
           "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -838,10 +838,10 @@ describe("GameUi", () => {
       ItemModel: {
         MaxID: 4,
         Items: {
-          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Контейнер" },
-          "2": { ID: 2, ItemtypeID: 2, Acronym: "Constructor", TitleRu: "Конструктор" },
-          "3": { ID: 3, ItemtypeID: 3, Acronym: "Ferrogel", TitleRu: "Феррогель" },
-          "4": { ID: 4, ItemtypeID: 3, Acronym: "Plate", TitleRu: "Пластина" },
+          "1": { ID: 1, ItemTypeID: 1, Acronym: "CargoContainer", TitleRu: "Контейнер" },
+          "2": { ID: 2, ItemTypeID: 2, Acronym: "Constructor", TitleRu: "Конструктор", ConsumingPower: 18, Efficiency: 1 },
+          "3": { ID: 3, ItemTypeID: 3, Acronym: "Ferrogel", TitleRu: "Феррогель" },
+          "4": { ID: 4, ItemTypeID: 3, Acronym: "Plate", TitleRu: "Пластина" },
         },
       },
       CosmicObjectModel: {
@@ -854,7 +854,7 @@ describe("GameUi", () => {
       Schema: {
         MaxID: 1,
         Items: {
-          "1": { ID: 1, TitleRu: "Схема: Пластина", TitleEn: "Schema: Plate", ItemModelID: 4, Count: 2, ProductionBaseTime: 30 },
+          "1": { ID: 1, TitleRu: "Схема: Пластина", TitleEn: "Schema: Plate", ItemModelID: 4, Count: 2, ProductionEnergy: 180 },
         },
       },
       SchemaComponent: {
@@ -866,13 +866,27 @@ describe("GameUi", () => {
       Blueprint: {
         MaxID: 1,
         Items: {
-          "1": { ID: 1, TitleRu: "Чертёж: Катер", TitleEn: "Blueprint: Boat", CosmicObjectModelID: 12, ProductionBaseTime: 90 },
+          "1": { ID: 1, TitleRu: "Чертёж: Катер", TitleEn: "Blueprint: Boat", CosmicObjectModelID: 12, ProductionEnergy: 90 },
         },
       },
       BlueprintComponent: {
         MaxID: 1,
         Items: {
           "1": { ID: 1, BlueprintID: 1, ComponentItemModelID: 4, Count: 6 },
+        },
+      },
+      TaskType: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, TitleRu: "Производство предметов", TitleEn: "Item production", Acronym: "ItemProduction" },
+          "2": { ID: 2, TitleRu: "Производство объектов", TitleEn: "Object production", Acronym: "ObjectProduction" },
+        },
+      },
+      Implementer: {
+        MaxID: 2,
+        Items: {
+          "1": { ID: 1, TaskTypeID: 1, ImplementerEquipmentItemTypeID: 2, WorkPart: 1 },
+          "2": { ID: 2, TaskTypeID: 2, ImplementerEquipmentItemTypeID: 2, WorkPart: 1 },
         },
       },
     } as unknown as ReferenceDataMessage;
@@ -917,8 +931,10 @@ describe("GameUi", () => {
     expect(root.querySelector(".control-panel-constructor-storage")?.closest(".control-panel-equipment-usage__panel--left")).not.toBeNull();
     expect(root.querySelector(".control-panel-constructor-recipes")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
     expect(root.querySelector(".control-panel-constructor-queues")?.closest(".control-panel-equipment-usage__panel--right")).not.toBeNull();
-    expect(root.querySelector(".control-panel-constructor-usage")?.children[0]?.classList.contains("control-panel-constructor-recipes")).toBe(true);
-    expect(root.querySelector(".control-panel-constructor-usage")?.children[1]?.classList.contains("control-panel-constructor-queues")).toBe(true);
+    expect(root.querySelector(".control-panel-constructor-usage")?.children[0]?.classList.contains("control-panel-constructor-queues")).toBe(true);
+    expect(root.querySelector(".control-panel-constructor-usage")?.children[1]?.classList.contains("control-panel-equipment-right-stack")).toBe(true);
+    expect(root.querySelector(".control-panel-constructor-recipes")?.closest(".control-panel-equipment-right-stack")).not.toBeNull();
+    expect(root.querySelector("#control-panel-usage-right-equipment-select")?.closest(".control-panel-equipment-right-stack")).not.toBeNull();
     expect(root.querySelector("#control-panel-constructor-main-queue-1")?.textContent).toBe("Пластина2 / 8");
     expect(root.querySelector("#control-panel-constructor-required-queue-2")?.textContent).toBe("Пластина6 / 12");
     expect(root.querySelector("#control-panel-constructor-required-queue-4")?.textContent).toBe("Пластина0 / 3");
@@ -929,11 +945,11 @@ describe("GameUi", () => {
     expect(root.querySelector("#control-panel-constructor-cancel")?.textContent).toBe("Отменить");
     expect(root.querySelector("#control-panel-constructor-cancel-all")?.textContent).toBe("Отменить все");
     expect(root.querySelector("#control-panel-constructor-schema-list-1")?.textContent).toBe("Пластина");
-    expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 30 с, Феррогель: 5");
+    expect(root.querySelector("#control-panel-constructor-schema-list-1")?.getAttribute("title")).toBe("2 шт, 10 с, Феррогель: 5");
     expect(root.querySelector("#control-panel-constructor-make-button")?.textContent).toBe("Изготовить");
     expect(root.querySelector("#control-panel-usage-right-container-content-1")?.textContent).toBe("Феррогель15");
     await Promise.resolve();
-    expect(document.querySelector(".control-panel-constructor-recipe-tooltip")?.textContent).toBe("ПластинаФеррогель: 5Получается: 2Время: 30 с");
+    expect(document.querySelector(".control-panel-constructor-recipe-tooltip")?.textContent).toBe("ПластинаФеррогель: 5Получается: 2Время: 10 с");
     expect(document.querySelector(".control-panel-constructor-recipe-tooltip__component")?.textContent).toBe("Феррогель: 5");
   });
 
@@ -943,7 +959,7 @@ describe("GameUi", () => {
     document.body.append(root);
     const equipmentReferenceData = {
       ...referenceData,
-      Itemtype: {
+      ItemType: {
         MaxID: 2,
         Items: {
           "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -953,14 +969,14 @@ describe("GameUi", () => {
       ItemModel: {
         MaxID: 2,
         Items: {
-          "1": { ID: 1, TitleRu: "Контейнер", TitleEn: "Container", Acronym: "Container", ItemtypeID: 1 },
-          "2": { ID: 2, TitleRu: "Конструктор", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 2 },
+          "1": { ID: 1, TitleRu: "Контейнер", TitleEn: "Container", Acronym: "Container", ItemTypeID: 1 },
+          "2": { ID: 2, TitleRu: "Конструктор", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 2 },
         },
       },
       Blueprint: {
         MaxID: 1,
         Items: {
-          "1": { ID: 1, TitleRu: "Чертёж: Катер", TitleEn: "Blueprint: Boat", CosmicObjectModelID: 12, ProductionBaseTime: 90 },
+          "1": { ID: 1, TitleRu: "Чертёж: Катер", TitleEn: "Blueprint: Boat", CosmicObjectModelID: 12, ProductionEnergy: 90 },
         },
       },
       BlueprintComponent: {
@@ -1000,7 +1016,7 @@ describe("GameUi", () => {
     document.body.append(root);
     const equipmentReferenceData = {
       ...referenceData,
-      Itemtype: {
+      ItemType: {
         MaxID: 3,
         Items: {
           "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -1011,9 +1027,9 @@ describe("GameUi", () => {
       ItemModel: {
         MaxID: 3,
         Items: {
-          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
-          "2": { ID: 2, ItemtypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
-          "3": { ID: 3, ItemtypeID: 3, Acronym: "Melit", TitleRu: "Мелит" },
+          "1": { ID: 1, ItemTypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemTypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
+          "3": { ID: 3, ItemTypeID: 3, Acronym: "Melit", TitleRu: "Мелит" },
         },
       },
     } as unknown as ReferenceDataMessage;
@@ -1059,7 +1075,7 @@ describe("GameUi", () => {
     document.body.append(root);
     const equipmentReferenceData = {
       ...referenceData,
-      Itemtype: {
+      ItemType: {
         MaxID: 3,
         Items: {
           "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -1070,9 +1086,9 @@ describe("GameUi", () => {
       ItemModel: {
         MaxID: 3,
         Items: {
-          "1": { ID: 1, ItemtypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
-          "2": { ID: 2, ItemtypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
-          "3": { ID: 3, ItemtypeID: 3, Acronym: "Melit", TitleRu: "Мелит" },
+          "1": { ID: 1, ItemTypeID: 1, Acronym: "CargoContainer", TitleRu: "Грузовой контейнер" },
+          "2": { ID: 2, ItemTypeID: 2, Acronym: "FuelTank", TitleRu: "Топливный бак" },
+          "3": { ID: 3, ItemTypeID: 3, Acronym: "Melit", TitleRu: "Мелит" },
         },
       },
     } as unknown as ReferenceDataMessage;

@@ -1,4 +1,4 @@
-﻿// Отражает текущее состояние WebSocket-клиента для сцены и отладочного слоя.
+// Отражает текущее состояние WebSocket-клиента для сцены и отладочного слоя.
 export type ConnectionStatus = "connecting" | "connected" | "waiting";
 
 // Хранит последний пользовательский ввод, еще не упакованный в сетевое сообщение.
@@ -197,9 +197,13 @@ export type ControlPanelContainerTransferMessage = {
   // Порядковый номер команды внутри сессии.
   mutationSeq: number;
   // Контейнер, из которого переносятся предметы.
-  sourceContainerEquipmentGroupId: number;
+  // Правая группа контейнеров, управляющая очередью перемещений.
+  controllerEquipmentGroupId: number;
+  // Перемещается ли груз из левого контейнера в правый.
+  leftToRightDirection: boolean;
+  sourceContainerEquipmentGroupId?: number;
   // Контейнер, в который переносятся предметы.
-  targetContainerEquipmentGroupId: number;
+  targetContainerEquipmentGroupId?: number;
   // Группы предметов, выбранные для переноса.
   itemGroupIds: number[];
   // Количество предметов для частичного переноса одной выбранной группы.
@@ -432,6 +436,12 @@ export type EquipmentGroup = {
   Active: boolean;
   // Время начала последней перезарядки в миллисекундах Unix.
   LastRechargeStartTime: number;
+  // Связанный контейнер, из которого берутся материалы.
+  SourceEquipmentGroupID?: number;
+  // Связанный контейнер, в который кладется результат.
+  DestinationEquipmentGroupID?: number;
+  // Связанный контейнер для встречной панели использования.
+  OppositeEquipmentGroupID?: number;
 };
 
 // Повторяет серверный формат группы предметов внутри контейнера.
@@ -446,6 +456,69 @@ export type ItemGroup = {
   Count: number;
 };
 
+export type Task = {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Контроллер очереди, в которой находится задание.
+  ControllerEquipmentGroupID: number;
+  // Родительское задание для вспомогательной работы.
+  ParentTaskID: number;
+  // Тип выполняемой работы.
+  TaskTypeID: number;
+  // Остаток работы в джоулях.
+  RemainingEnergy: number;
+  // Полный объем работы в джоулях.
+  TotalEnergy: number;
+  // Количество единиц результата, которое должно выполнить задание.
+  Count: number;
+  // Схема для производства предметов.
+  SchemaID: number;
+  // Чертеж для производства объектов.
+  BlueprintID: number;
+  // Направление работы слева направо для заданий с парным интерфейсом.
+  LeftToRightDirection: boolean;
+  // Контейнер, из которого предметы были зарезервированы.
+  SourceContainerEquipmentGroupID?: number;
+  // Контейнер, куда нужно положить результат перемещения.
+  TargetContainerEquipmentGroupID?: number;
+  // Бак, участвующий в заправке или сливе.
+  FuelTankEquipmentGroupID?: number;
+};
+
+export type TaskItemGroup = {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Задание, для которого зарезервированы предметы.
+  TaskID: number;
+  // Модель зарезервированных предметов.
+  ItemModelID: number;
+  // Количество зарезервированных предметов.
+  Count: number;
+  // Хранится ли указанное количество предметов во временном хранилище задания.
+  IsStored: boolean;
+};
+
+export type TaskTypeReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Русское название для интерфейса.
+  TitleRu: string;
+  // Английское название для интерфейса.
+  TitleEn: string;
+  // Неизменяемый строковый идентификатор.
+  Acronym: string;
+};
+
+export type ImplementerReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Тип задания, для которого подходит исполнитель.
+  TaskTypeID: number;
+  // Тип предмета оборудования, выполняющего работу.
+  ImplementerEquipmentItemTypeID: number;
+  // Доля работы, которую выполняет этот тип оборудования.
+  WorkPart: number;
+};
 export type EquipmentGroupRelation = {
   // Уникальный числовой идентификатор записи.
   ID: number;
@@ -501,11 +574,15 @@ export type SnapshotMessage = {
   // Группы оборудования, нужные UI для панели пилота.
   equipmentGroups: EquipmentGroup[];
   // Сохранённые связи выбора групп оборудования.
-  equipmentGroupRelations: EquipmentGroupRelation[];
+  equipmentGroupRelations?: EquipmentGroupRelation[];
+  // Задания оборудования в очередях.
+  tasks?: Task[];
+  // Предметы, зарезервированные заданиями.
+  taskItemGroups?: TaskItemGroup[];
   // Группы предметов внутри контейнерного оборудования.
   itemGroups: ItemGroup[];
   // Задания изготовления в очередях конструкторов.
-  constructorProductionJobs: ConstructorProductionJob[];
+  constructorProductionJobs?: ConstructorProductionJob[];
   // Подтверждение обработанных команд панели для текущей сессии.
   clientMutationAck?: ControlPanelMutationAck;
 };
@@ -543,7 +620,7 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
 };
 
 // Описывает поля типа предмета, нужные клиентскому UI.
-export type ItemtypeReference = Record<string, unknown> & {
+export type ItemTypeReference = Record<string, unknown> & {
   // Уникальный числовой идентификатор записи.
   ID: number;
   // Неизменяемый строковый идентификатор типа.
@@ -566,7 +643,7 @@ export type ItemModelReference = Record<string, unknown> & {
   // Уникальный числовой идентификатор записи.
   ID: number;
   // Тип предмета из справочника типов.
-  ItemtypeID: number;
+  ItemTypeID: number;
   // Неизменяемый строковый идентификатор модели.
   Acronym: string;
   // Русское название модели для интерфейса.
@@ -628,7 +705,7 @@ export type BlueprintReference = Record<string, unknown> & {
   // Модель космического объекта, получаемого по чертежу.
   CosmicObjectModelID: number;
   // Базовое время изготовления объекта в секундах.
-  ProductionBaseTime: number;
+  ProductionEnergy: number;
 };
 
 export type BlueprintComponentReference = Record<string, unknown> & {
@@ -654,7 +731,7 @@ export type SchemaReference = Record<string, unknown> & {
   // Количество предметов, получаемых за одно изготовление.
   Count: number;
   // Базовое время изготовления предметов в секундах.
-  ProductionBaseTime: number;
+  ProductionEnergy: number;
 };
 
 export type SchemaComponentReference = Record<string, unknown> & {
@@ -677,13 +754,17 @@ export type ReferenceDataMessage = {
   // Справочник типов космических объектов.
   CosmicObjectType: ReferenceTable;
   // Справочник типов предметов.
-  Itemtype: ReferenceTable<ItemtypeReference>;
+  ItemType: ReferenceTable<ItemTypeReference>;
   // Справочник видов связей групп оборудования.
   RelationType?: ReferenceTable<RelationTypeReference>;
   // Справочник моделей космических объектов.
   CosmicObjectModel: ReferenceTable<CosmicObjectModelReference>;
   // Справочник моделей предметов.
   ItemModel: ReferenceTable<ItemModelReference>;
+  // Справочник типов заданий.
+  TaskType?: ReferenceTable<TaskTypeReference>;
+  // Справочник исполнителей заданий.
+  Implementer?: ReferenceTable<ImplementerReference>;
   // Справочник чертежей объектов.
   Blueprint: ReferenceTable<BlueprintReference>;
   // Справочник компонентов чертежей.

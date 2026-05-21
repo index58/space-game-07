@@ -1,4 +1,4 @@
-package physics_test
+﻿package physics_test
 
 import (
 	"math"
@@ -9,12 +9,12 @@ import (
 	"space-game-07-server/internal/physics"
 )
 
-// Возвращает пустой ввод для сценариев, где проверяется инерция или торможение.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСѓСЃС‚РѕР№ РІРІРѕРґ РґР»СЏ СЃС†РµРЅР°СЂРёРµРІ, РіРґРµ РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РёРЅРµСЂС†РёСЏ РёР»Рё С‚РѕСЂРјРѕР¶РµРЅРёРµ.
 func idleInput() game.ShipInput {
 	return game.ShipInput{}
 }
 
-// Создаёт объект с устойчивыми параметрами, чтобы физические ожидания были воспроизводимыми.
+// РЎРѕР·РґР°С‘С‚ РѕР±СЉРµРєС‚ СЃ СѓСЃС‚РѕР№С‡РёРІС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё, С‡С‚РѕР±С‹ С„РёР·РёС‡РµСЃРєРёРµ РѕР¶РёРґР°РЅРёСЏ Р±С‹Р»Рё РІРѕСЃРїСЂРѕРёР·РІРѕРґРёРјС‹РјРё.
 func testShip(id int64, x float64, y float64) data.CosmicObject {
 	return data.CosmicObject{
 		ID:                  id,
@@ -29,7 +29,7 @@ func testShip(id int64, x float64, y float64) data.CosmicObject {
 	}
 }
 
-// Создаёт модель с размерами физического тела в пикселях текстуры.
+// РЎРѕР·РґР°С‘С‚ РјРѕРґРµР»СЊ СЃ СЂР°Р·РјРµСЂР°РјРё С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РІ РїРёРєСЃРµР»СЏС… С‚РµРєСЃС‚СѓСЂС‹.
 func testModel() data.CosmicObjectModel {
 	return data.CosmicObjectModel{
 		ID:                1,
@@ -39,7 +39,7 @@ func testModel() data.CosmicObjectModel {
 	}
 }
 
-// Сравнивает float64 с малым допуском, потому что физика работает с дробными величинами.
+// РЎСЂР°РІРЅРёРІР°РµС‚ float64 СЃ РјР°Р»С‹Рј РґРѕРїСѓСЃРєРѕРј, РїРѕС‚РѕРјСѓ С‡С‚Рѕ С„РёР·РёРєР° СЂР°Р±РѕС‚Р°РµС‚ СЃ РґСЂРѕР±РЅС‹РјРё РІРµР»РёС‡РёРЅР°РјРё.
 func closeTo(t *testing.T, actual float64, expected float64) {
 	t.Helper()
 
@@ -48,12 +48,12 @@ func closeTo(t *testing.T, actual float64, expected float64) {
 	}
 }
 
-// Проверяет, что момент инерции считается по приближению заполненного эллипса.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РјРѕРјРµРЅС‚ РёРЅРµСЂС†РёРё СЃС‡РёС‚Р°РµС‚СЃСЏ РїРѕ РїСЂРёР±Р»РёР¶РµРЅРёСЋ Р·Р°РїРѕР»РЅРµРЅРЅРѕРіРѕ СЌР»Р»РёРїСЃР°.
 func TestMomentOfInertiaUsesFilledEllipseApproximation(t *testing.T) {
 	closeTo(t, physics.MomentOfInertia(testShip(1, 0, 0), testModel()), 490173.75)
 }
 
-// Проверяет, что при нулевом повороте тяга вперёд ускоряет корабль по положительной оси Y.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїСЂРё РЅСѓР»РµРІРѕРј РїРѕРІРѕСЂРѕС‚Рµ С‚СЏРіР° РІРїРµСЂС‘Рґ СѓСЃРєРѕСЂСЏРµС‚ РєРѕСЂР°Р±Р»СЊ РїРѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕР№ РѕСЃРё Y.
 func TestStepShipAcceleratesForwardAlongPositiveYAtZeroRotation(t *testing.T) {
 	next := physics.StepShip(
 		testShip(1, 0, 0),
@@ -66,7 +66,7 @@ func TestStepShipAcceleratesForwardAlongPositiveYAtZeroRotation(t *testing.T) {
 	closeTo(t, next.VelocityY, 162.61382953137096)
 }
 
-// Проверяет, что масса объекта напрямую участвует в расчёте ускорения как килограммы.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РјР°СЃСЃР° РѕР±СЉРµРєС‚Р° РЅР°РїСЂСЏРјСѓСЋ СѓС‡Р°СЃС‚РІСѓРµС‚ РІ СЂР°СЃС‡С‘С‚Рµ СѓСЃРєРѕСЂРµРЅРёСЏ РєР°Рє РєРёР»РѕРіСЂР°РјРјС‹.
 func TestStepShipUsesObjectMassAsKilograms(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Mass = 1000
@@ -83,7 +83,7 @@ func TestStepShipUsesObjectMassAsKilograms(t *testing.T) {
 	closeTo(t, next.VelocityY, 100)
 }
 
-// Проверяет, что линейная скорость ограничивается максимальным значением модели.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ Р»РёРЅРµР№РЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РѕРіСЂР°РЅРёС‡РёРІР°РµС‚СЃСЏ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РјРѕРґРµР»Рё.
 func TestStepShipClampsLinearVelocityToModelMaximum(t *testing.T) {
 	next := physics.StepShip(
 		testShip(1, 0, 0),
@@ -95,7 +95,7 @@ func TestStepShipClampsLinearVelocityToModelMaximum(t *testing.T) {
 	closeTo(t, math.Hypot(next.VelocityX, next.VelocityY), 497)
 }
 
-// Проверяет, что ввод игрока изменяет целевой угол поворота.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РІРІРѕРґ РёРіСЂРѕРєР° РёР·РјРµРЅСЏРµС‚ С†РµР»РµРІРѕР№ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р°.
 func TestStepShipUpdatesTargetRotationFromInput(t *testing.T) {
 	next := physics.StepShip(
 		testShip(1, 0, 0),
@@ -107,7 +107,7 @@ func TestStepShipUpdatesTargetRotationFromInput(t *testing.T) {
 	closeTo(t, next.TargetRotation, 0.25)
 }
 
-// Проверяет, что корабль начинает вращаться в сторону заданного целевого угла.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕСЂР°Р±Р»СЊ РЅР°С‡РёРЅР°РµС‚ РІСЂР°С‰Р°С‚СЊСЃСЏ РІ СЃС‚РѕСЂРѕРЅСѓ Р·Р°РґР°РЅРЅРѕРіРѕ С†РµР»РµРІРѕРіРѕ СѓРіР»Р°.
 func TestStepShipStartsRotatingTowardTargetRotation(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.TargetRotation = 1
@@ -119,7 +119,7 @@ func TestStepShipStartsRotatingTowardTargetRotation(t *testing.T) {
 	}
 }
 
-// Проверяет, что ошибка угла через границу пи не нормализуется в короткий путь.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕС€РёР±РєР° СѓРіР»Р° С‡РµСЂРµР· РіСЂР°РЅРёС†Сѓ РїРё РЅРµ РЅРѕСЂРјР°Р»РёР·СѓРµС‚СЃСЏ РІ РєРѕСЂРѕС‚РєРёР№ РїСѓС‚СЊ.
 func TestStepShipDoesNotNormalizeAngleErrorAcrossPiBoundary(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Rotation = math.Pi - 0.1
@@ -132,7 +132,7 @@ func TestStepShipDoesNotNormalizeAngleErrorAcrossPiBoundary(t *testing.T) {
 	}
 }
 
-// Проверяет, что рядом с целевым углом вращение гасится до остановки.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЂСЏРґРѕРј СЃ С†РµР»РµРІС‹Рј СѓРіР»РѕРј РІСЂР°С‰РµРЅРёРµ РіР°СЃРёС‚СЃСЏ РґРѕ РѕСЃС‚Р°РЅРѕРІРєРё.
 func TestStepShipBrakesAngularVelocityNearTargetRotation(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Rotation = 1
@@ -145,7 +145,7 @@ func TestStepShipBrakesAngularVelocityNearTargetRotation(t *testing.T) {
 	closeTo(t, next.Rotation, 1)
 }
 
-// Проверяет, что поворот останавливается ровно на цели без перелёта.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕРІРѕСЂРѕС‚ РѕСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ СЂРѕРІРЅРѕ РЅР° С†РµР»Рё Р±РµР· РїРµСЂРµР»С‘С‚Р°.
 func TestStepShipStopsRotationAtTargetWithoutOvershoot(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Rotation = 0
@@ -158,7 +158,7 @@ func TestStepShipStopsRotationAtTargetWithoutOvershoot(t *testing.T) {
 	closeTo(t, next.AngularSpeed, 0)
 }
 
-// Проверяет, что перед финальной остановкой угловая скорость уже уменьшена до достижимого шага торможения.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРµСЂРµРґ С„РёРЅР°Р»СЊРЅРѕР№ РѕСЃС‚Р°РЅРѕРІРєРѕР№ СѓРіР»РѕРІР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ СѓР¶Рµ СѓРјРµРЅСЊС€РµРЅР° РґРѕ РґРѕСЃС‚РёР¶РёРјРѕРіРѕ С€Р°РіР° С‚РѕСЂРјРѕР¶РµРЅРёСЏ.
 func TestStepShipReducesAngularVelocityBeforeFinalStopAtTarget(t *testing.T) {
 	dtSeconds := 0.05
 	ship := testShip(1, 0, 0)
@@ -186,7 +186,7 @@ func TestStepShipReducesAngularVelocityBeforeFinalStopAtTarget(t *testing.T) {
 	}
 }
 
-// Проверяет, что движение цели поворота не обнуляет текущую угловую скорость преждевременно.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРІРёР¶РµРЅРёРµ С†РµР»Рё РїРѕРІРѕСЂРѕС‚Р° РЅРµ РѕР±РЅСѓР»СЏРµС‚ С‚РµРєСѓС‰СѓСЋ СѓРіР»РѕРІСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ РїСЂРµР¶РґРµРІСЂРµРјРµРЅРЅРѕ.
 func TestStepShipDoesNotZeroAngularVelocityWhileTargetRotationIsMoving(t *testing.T) {
 	dtSeconds := 0.05
 	ship := testShip(1, 0, 0)
@@ -200,7 +200,7 @@ func TestStepShipDoesNotZeroAngularVelocityWhileTargetRotationIsMoving(t *testin
 	closeTo(t, next.AngularSpeed, 1-maxAngularVelocityChange)
 }
 
-// Проверяет, что угловая скорость ограничивается максимальным значением модели.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СѓРіР»РѕРІР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РѕРіСЂР°РЅРёС‡РёРІР°РµС‚СЃСЏ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РјРѕРґРµР»Рё.
 func TestStepShipClampsAngularVelocityToModelMaximum(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.TargetRotation = 100
@@ -210,7 +210,7 @@ func TestStepShipClampsAngularVelocityToModelMaximum(t *testing.T) {
 	closeTo(t, next.AngularSpeed, 3)
 }
 
-// Проверяет, что при достигнутом целевом угле гасится линейное движение и вращение.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїСЂРё РґРѕСЃС‚РёРіРЅСѓС‚РѕРј С†РµР»РµРІРѕРј СѓРіР»Рµ РіР°СЃРёС‚СЃСЏ Р»РёРЅРµР№РЅРѕРµ РґРІРёР¶РµРЅРёРµ Рё РІСЂР°С‰РµРЅРёРµ.
 func TestStepShipBrakesLinearAndAngularVelocityWhenTargetReached(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.VelocityX = 10
@@ -224,7 +224,7 @@ func TestStepShipBrakesLinearAndAngularVelocityWhenTargetReached(t *testing.T) {
 	closeTo(t, next.AngularSpeed, 0)
 }
 
-// Проверяет, что линейное торможение продолжается во время разворота к цели.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ Р»РёРЅРµР№РЅРѕРµ С‚РѕСЂРјРѕР¶РµРЅРёРµ РїСЂРѕРґРѕР»Р¶Р°РµС‚СЃСЏ РІРѕ РІСЂРµРјСЏ СЂР°Р·РІРѕСЂРѕС‚Р° Рє С†РµР»Рё.
 func TestStepShipKeepsLinearBrakingWhileRotatingToTarget(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.VelocityX = 200
@@ -240,7 +240,7 @@ func TestStepShipKeepsLinearBrakingWhileRotatingToTarget(t *testing.T) {
 	}
 }
 
-// Проверяет, что продольная тяга гасит поперечную скорость и создаёт движение вперёд.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїСЂРѕРґРѕР»СЊРЅР°СЏ С‚СЏРіР° РіР°СЃРёС‚ РїРѕРїРµСЂРµС‡РЅСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ Рё СЃРѕР·РґР°С‘С‚ РґРІРёР¶РµРЅРёРµ РІРїРµСЂС‘Рґ.
 func TestStepShipBrakesAcrossVelocityDuringAlongThrust(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.VelocityX = 100
@@ -255,7 +255,7 @@ func TestStepShipBrakesAcrossVelocityDuringAlongThrust(t *testing.T) {
 	}
 }
 
-// Проверяет, что поперечная тяга гасит продольную скорость и создаёт боковое движение.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕРїРµСЂРµС‡РЅР°СЏ С‚СЏРіР° РіР°СЃРёС‚ РїСЂРѕРґРѕР»СЊРЅСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ Рё СЃРѕР·РґР°С‘С‚ Р±РѕРєРѕРІРѕРµ РґРІРёР¶РµРЅРёРµ.
 func TestStepShipBrakesAlongVelocityDuringAcrossThrust(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.VelocityY = 100
@@ -270,7 +270,7 @@ func TestStepShipBrakesAlongVelocityDuringAcrossThrust(t *testing.T) {
 	}
 }
 
-// Проверяет, что одновременная встречная продольная тяга не включает автоторможение по этой оси.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕРґРЅРѕРІСЂРµРјРµРЅРЅР°СЏ РІСЃС‚СЂРµС‡РЅР°СЏ РїСЂРѕРґРѕР»СЊРЅР°СЏ С‚СЏРіР° РЅРµ РІРєР»СЋС‡Р°РµС‚ Р°РІС‚РѕС‚РѕСЂРјРѕР¶РµРЅРёРµ РїРѕ СЌС‚РѕР№ РѕСЃРё.
 func TestStepShipDoesNotAutobrakeAlongAxisWhenForwardAndBackwardPressed(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.VelocityY = 100
@@ -281,7 +281,7 @@ func TestStepShipDoesNotAutobrakeAlongAxisWhenForwardAndBackwardPressed(t *testi
 	closeTo(t, next.VelocityY, 100)
 }
 
-// Проверяет, что одновременная встречная поперечная тяга не включает автоторможение по этой оси.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕРґРЅРѕРІСЂРµРјРµРЅРЅР°СЏ РІСЃС‚СЂРµС‡РЅР°СЏ РїРѕРїРµСЂРµС‡РЅР°СЏ С‚СЏРіР° РЅРµ РІРєР»СЋС‡Р°РµС‚ Р°РІС‚РѕС‚РѕСЂРјРѕР¶РµРЅРёРµ РїРѕ СЌС‚РѕР№ РѕСЃРё.
 func TestStepShipDoesNotAutobrakeAcrossAxisWhenLeftAndRightPressed(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.VelocityX = 100
@@ -292,7 +292,7 @@ func TestStepShipDoesNotAutobrakeAcrossAxisWhenLeftAndRightPressed(t *testing.T)
 	closeTo(t, next.VelocityY, 0)
 }
 
-// Проверяет, что корабль без пилота тормозит с постоянным замедлением и обновляет положение.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕСЂР°Р±Р»СЊ Р±РµР· РїРёР»РѕС‚Р° С‚РѕСЂРјРѕР·РёС‚ СЃ РїРѕСЃС‚РѕСЏРЅРЅС‹Рј Р·Р°РјРµРґР»РµРЅРёРµРј Рё РѕР±РЅРѕРІР»СЏРµС‚ РїРѕР»РѕР¶РµРЅРёРµ.
 func TestStepUnpilotedShipAppliesConstantBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Mass = 1000
@@ -307,7 +307,7 @@ func TestStepUnpilotedShipAppliesConstantBrake(t *testing.T) {
 	closeTo(t, next.X, 9)
 }
 
-// Проверяет, что торможение корабля без пилота не зависит от текущей скорости.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ С‚РѕСЂРјРѕР¶РµРЅРёРµ РєРѕСЂР°Р±Р»СЏ Р±РµР· РїРёР»РѕС‚Р° РЅРµ Р·Р°РІРёСЃРёС‚ РѕС‚ С‚РµРєСѓС‰РµР№ СЃРєРѕСЂРѕСЃС‚Рё.
 func TestStepUnpilotedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
 	slowShip := testShip(1, 0, 0)
 	slowShip.Mass = 1000
@@ -324,7 +324,7 @@ func TestStepUnpilotedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
 	closeTo(t, fastShip.VelocityX-nextFast.VelocityX, 10)
 }
 
-// Проверяет, что постоянное торможение сохраняет направление вектора скорости.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕСЃС‚РѕСЏРЅРЅРѕРµ С‚РѕСЂРјРѕР¶РµРЅРёРµ СЃРѕС…СЂР°РЅСЏРµС‚ РЅР°РїСЂР°РІР»РµРЅРёРµ РІРµРєС‚РѕСЂР° СЃРєРѕСЂРѕСЃС‚Рё.
 func TestStepUnpilotedShipKeepsVelocityDirectionDuringConstantBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Mass = 1000
@@ -339,7 +339,7 @@ func TestStepUnpilotedShipKeepsVelocityDirectionDuringConstantBrake(t *testing.T
 	closeTo(t, next.Speed, 90)
 }
 
-// Проверяет, что постоянное торможение не разворачивает скорость в противоположную сторону.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕСЃС‚РѕСЏРЅРЅРѕРµ С‚РѕСЂРјРѕР¶РµРЅРёРµ РЅРµ СЂР°Р·РІРѕСЂР°С‡РёРІР°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ РІ РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅСѓСЋ СЃС‚РѕСЂРѕРЅСѓ.
 func TestStepUnpilotedShipDoesNotReverseVelocityDuringConstantBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Mass = 1000
@@ -354,7 +354,7 @@ func TestStepUnpilotedShipDoesNotReverseVelocityDuringConstantBrake(t *testing.T
 	closeTo(t, next.X, 0)
 }
 
-// Проверяет, что корабль без пилота получает угловое торможение.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕСЂР°Р±Р»СЊ Р±РµР· РїРёР»РѕС‚Р° РїРѕР»СѓС‡Р°РµС‚ СѓРіР»РѕРІРѕРµ С‚РѕСЂРјРѕР¶РµРЅРёРµ.
 func TestStepUnpilotedShipAppliesAngularBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.AngularSpeed = 3
@@ -364,7 +364,7 @@ func TestStepUnpilotedShipAppliesAngularBrake(t *testing.T) {
 	closeTo(t, next.AngularSpeed, 2.5)
 }
 
-// Проверяет, что угловое торможение не разворачивает вращение в противоположную сторону.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СѓРіР»РѕРІРѕРµ С‚РѕСЂРјРѕР¶РµРЅРёРµ РЅРµ СЂР°Р·РІРѕСЂР°С‡РёРІР°РµС‚ РІСЂР°С‰РµРЅРёРµ РІ РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅСѓСЋ СЃС‚РѕСЂРѕРЅСѓ.
 func TestStepUnpilotedShipDoesNotReverseAngularVelocityDuringBrake(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.AngularSpeed = -0.25
@@ -374,7 +374,7 @@ func TestStepUnpilotedShipDoesNotReverseAngularVelocityDuringBrake(t *testing.T)
 	closeTo(t, next.AngularSpeed, 0)
 }
 
-// Проверяет, что столкновение с закреплённым телом отражает скорость вдоль нормали с упругостью.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃ Р·Р°РєСЂРµРїР»С‘РЅРЅС‹Рј С‚РµР»РѕРј РѕС‚СЂР°Р¶Р°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ РІРґРѕР»СЊ РЅРѕСЂРјР°Р»Рё СЃ СѓРїСЂСѓРіРѕСЃС‚СЊСЋ.
 func TestApplyCollisionResponseBouncesAlongNormalWithRestitution(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Enabled = true
@@ -396,7 +396,7 @@ func TestApplyCollisionResponseBouncesAlongNormalWithRestitution(t *testing.T) {
 	closeTo(t, next.Speed, math.Hypot(5, 5))
 }
 
-// Проверяет, что столкновение двух подвижных тел разделяет коррекцию и импульс с учётом масс.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ РґРІСѓС… РїРѕРґРІРёР¶РЅС‹С… С‚РµР» СЂР°Р·РґРµР»СЏРµС‚ РєРѕСЂСЂРµРєС†РёСЋ Рё РёРјРїСѓР»СЊСЃ СЃ СѓС‡С‘С‚РѕРј РјР°СЃСЃ.
 func TestApplyCollisionResponseUsesMassesForMovableBodies(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Enabled = true
@@ -417,7 +417,7 @@ func TestApplyCollisionResponseUsesMassesForMovableBodies(t *testing.T) {
 	closeTo(t, nextObstacle.VelocityX, -7.5)
 }
 
-// Проверяет, что нецентральный контакт добавляет угловую скорость ударившемуся телу.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РЅРµС†РµРЅС‚СЂР°Р»СЊРЅС‹Р№ РєРѕРЅС‚Р°РєС‚ РґРѕР±Р°РІР»СЏРµС‚ СѓРіР»РѕРІСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ СѓРґР°СЂРёРІС€РµРјСѓСЃСЏ С‚РµР»Сѓ.
 func TestApplyCollisionResponseAddsAngularSpeedFromOffCenterContact(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Enabled = true
@@ -440,7 +440,7 @@ func TestApplyCollisionResponseAddsAngularSpeedFromOffCenterContact(t *testing.T
 	closeTo(t, nextObstacle.AngularSpeed, 0)
 }
 
-// Проверяет, что после вращательного отскока целевой угол переносится на угол остановки.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕСЃР»Рµ РІСЂР°С‰Р°С‚РµР»СЊРЅРѕРіРѕ РѕС‚СЃРєРѕРєР° С†РµР»РµРІРѕР№ СѓРіРѕР» РїРµСЂРµРЅРѕСЃРёС‚СЃСЏ РЅР° СѓРіРѕР» РѕСЃС‚Р°РЅРѕРІРєРё.
 func TestApplyCollisionResponseMovesTargetRotationByAngularBounceStopAngle(t *testing.T) {
 	ship := testShip(1, 0, 0)
 	ship.Enabled = true

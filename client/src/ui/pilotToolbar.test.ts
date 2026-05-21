@@ -56,7 +56,7 @@ const referenceData: ReferenceDataMessage = {
   type: "referenceData",
   NpcClan: { MaxID: 0, Items: {} },
   CosmicObjectType: { MaxID: 0, Items: {} },
-  Itemtype: {
+  ItemType: {
     MaxID: 2,
     Items: {
       "1": { ID: 1, Acronym: "Weapon", IsPilotInstrument: true, IsInternalUsable: false },
@@ -67,9 +67,9 @@ const referenceData: ReferenceDataMessage = {
   ItemModel: {
     MaxID: 3,
     Items: {
-      "101": { ID: 101, ItemtypeID: 1, Acronym: "Laser", TitleRu: "Лазер", IconFilePath: "", MagazineCapacity: 6 },
-      "102": { ID: 102, ItemtypeID: 1, Acronym: "Drill", TitleRu: "Бур", IconFilePath: "", MagazineCapacity: 0 },
-      "201": { ID: 201, ItemtypeID: 2, Acronym: "Box", TitleRu: "Контейнер", IconFilePath: "" },
+      "101": { ID: 101, ItemTypeID: 1, Acronym: "Laser", TitleRu: "Лазер", IconFilePath: "", MagazineCapacity: 6 },
+      "102": { ID: 102, ItemTypeID: 1, Acronym: "Drill", TitleRu: "Бур", IconFilePath: "", MagazineCapacity: 0 },
+      "201": { ID: 201, ItemTypeID: 2, Acronym: "Box", TitleRu: "Контейнер", IconFilePath: "" },
     },
   },
   Blueprint: { MaxID: 0, Items: {} },

@@ -1,4 +1,4 @@
-package ws
+﻿package ws
 
 import (
 	"errors"
@@ -11,20 +11,20 @@ import (
 
 var errUnauthorized = errors.New("unauthorized")
 
-// Хранит итог проверки входящего запроса.
+// РҐСЂР°РЅРёС‚ РёС‚РѕРі РїСЂРѕРІРµСЂРєРё РІС…РѕРґСЏС‰РµРіРѕ Р·Р°РїСЂРѕСЃР°.
 type AuthResult struct {
-	Account  *data.Account // Учетная запись, разрешенная для подключения.
-	NewToken string        // Новый секрет, который клиент должен сохранить.
+	Account  *data.Account // РЈС‡РµС‚РЅР°СЏ Р·Р°РїРёСЃСЊ, СЂР°Р·СЂРµС€РµРЅРЅР°СЏ РґР»СЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ.
+	NewToken string        // РќРѕРІС‹Р№ СЃРµРєСЂРµС‚, РєРѕС‚РѕСЂС‹Р№ РєР»РёРµРЅС‚ РґРѕР»Р¶РµРЅ СЃРѕС…СЂР°РЅРёС‚СЊ.
 }
 
-// Авторизует WebSocket-запросы и передает успешные подключения в Hub.
+// РђРІС‚РѕСЂРёР·СѓРµС‚ WebSocket-Р·Р°РїСЂРѕСЃС‹ Рё РїРµСЂРµРґР°РµС‚ СѓСЃРїРµС€РЅС‹Рµ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РІ Hub.
 type Handler struct {
-	hub      *Hub               // Диспетчер, которому передаются успешные подключения.
-	accounts *data.Accounts     // Хранилище аккаунтов для проверки авторизации.
-	upgrader websocket.Upgrader // Настройки повышения HTTP-запроса до WebSocket.
+	hub      *Hub               // Р”РёСЃРїРµС‚С‡РµСЂ, РєРѕС‚РѕСЂРѕРјСѓ РїРµСЂРµРґР°СЋС‚СЃСЏ СѓСЃРїРµС€РЅС‹Рµ РїРѕРґРєР»СЋС‡РµРЅРёСЏ.
+	accounts *data.Accounts     // РҐСЂР°РЅРёР»РёС‰Рµ Р°РєРєР°СѓРЅС‚РѕРІ РґР»СЏ РїСЂРѕРІРµСЂРєРё Р°РІС‚РѕСЂРёР·Р°С†РёРё.
+	upgrader websocket.Upgrader // РќР°СЃС‚СЂРѕР№РєРё РїРѕРІС‹С€РµРЅРёСЏ HTTP-Р·Р°РїСЂРѕСЃР° РґРѕ WebSocket.
 }
 
-// Настраивает обработчик с локальными origin-правилами для браузерного клиента.
+// РќР°СЃС‚СЂР°РёРІР°РµС‚ РѕР±СЂР°Р±РѕС‚С‡РёРє СЃ Р»РѕРєР°Р»СЊРЅС‹РјРё origin-РїСЂР°РІРёР»Р°РјРё РґР»СЏ Р±СЂР°СѓР·РµСЂРЅРѕРіРѕ РєР»РёРµРЅС‚Р°.
 func NewHandler(hub *Hub, accounts *data.Accounts) *Handler {
 	return &Handler{
 		hub:      hub,
@@ -40,7 +40,7 @@ func NewHandler(hub *Hub, accounts *data.Accounts) *Handler {
 	}
 }
 
-// Проверяет аккаунт, повышает HTTP-запрос до WebSocket и регистрирует соединение.
+// РџСЂРѕРІРµСЂСЏРµС‚ Р°РєРєР°СѓРЅС‚, РїРѕРІС‹С€Р°РµС‚ HTTP-Р·Р°РїСЂРѕСЃ РґРѕ WebSocket Рё СЂРµРіРёСЃС‚СЂРёСЂСѓРµС‚ СЃРѕРµРґРёРЅРµРЅРёРµ.
 func (handler *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	result, err := handler.authorizeRequest(request)
 	if err != nil {
@@ -66,7 +66,7 @@ func (handler *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 	handler.hub.AddConnection(connection, result.Account.ID, initialMessages...)
 }
 
-// Проверяет секрет или создает полный стартовый набор для нового клиента.
+// РџСЂРѕРІРµСЂСЏРµС‚ СЃРµРєСЂРµС‚ РёР»Рё СЃРѕР·РґР°РµС‚ РїРѕР»РЅС‹Р№ СЃС‚Р°СЂС‚РѕРІС‹Р№ РЅР°Р±РѕСЂ РґР»СЏ РЅРѕРІРѕРіРѕ РєР»РёРµРЅС‚Р°.
 func (handler *Handler) authorizeRequest(request *http.Request) (AuthResult, error) {
 	token := request.URL.Query().Get("token")
 	if token == "" {
@@ -92,7 +92,7 @@ func (handler *Handler) authorizeRequest(request *http.Request) (AuthResult, err
 	return AuthResult{Account: account, NewToken: account.Token}, nil
 }
 
-// Ищет учетную запись по секрету из запроса или cookie.
+// РС‰РµС‚ СѓС‡РµС‚РЅСѓСЋ Р·Р°РїРёСЃСЊ РїРѕ СЃРµРєСЂРµС‚Сѓ РёР· Р·Р°РїСЂРѕСЃР° РёР»Рё cookie.
 func (handler *Handler) accountByRequestToken(request *http.Request) (*data.Account, bool) {
 	token := request.URL.Query().Get("token")
 	if token == "" {

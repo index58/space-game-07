@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { formatNumber } from "./format";
 
 // Отладочная панель должна получать предсказуемые строки независимо от текущей локали браузера.

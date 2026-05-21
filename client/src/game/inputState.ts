@@ -1,4 +1,4 @@
-﻿import type { ClientInputState } from "../network/protocol";
+import type { ClientInputState } from "../network/protocol";
 
 // Хранит текущее состояние клавиш по DOM-кодам KeyboardEvent.code.
 export type KeyState = Record<string, boolean>;

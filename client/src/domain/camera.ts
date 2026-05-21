@@ -1,4 +1,4 @@
-﻿import type { WorldVector } from "./types";
+import type { WorldVector } from "./types";
 
 // Описывает камеру пилота: корабль игрока является центром ориентации экрана.
 export type PilotCamera = {

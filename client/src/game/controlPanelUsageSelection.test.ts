@@ -61,7 +61,7 @@ const referenceData = (): ReferenceDataMessage => ({
   type: "referenceData",
   NpcClan: { MaxID: 0, Items: {} },
   CosmicObjectType: { MaxID: 0, Items: {} },
-  Itemtype: {
+  ItemType: {
     MaxID: 3,
     Items: {
       "1": { ID: 1, Acronym: "Container", IsPilotInstrument: false, IsInternalUsable: true },
@@ -73,9 +73,9 @@ const referenceData = (): ReferenceDataMessage => ({
   ItemModel: {
     MaxID: 3,
     Items: {
-      "10": { ID: 10, ItemtypeID: 1, Acronym: "SmallContainer" },
-      "20": { ID: 20, ItemtypeID: 2, Acronym: "SmallFuelTank" },
-      "30": { ID: 30, ItemtypeID: 3, Acronym: "Ore" },
+      "10": { ID: 10, ItemTypeID: 1, Acronym: "SmallContainer" },
+      "20": { ID: 20, ItemTypeID: 2, Acronym: "SmallFuelTank" },
+      "30": { ID: 30, ItemTypeID: 3, Acronym: "Ore" },
     },
   },
   Blueprint: { MaxID: 0, Items: {} },

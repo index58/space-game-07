@@ -8,12 +8,12 @@ import (
 	"testing"
 )
 
-// Проверяет, что добавление типа предмета назначает идентификатор и строит уникальные индексы.
-func TestItemtypesAddAssignsIDAndIndexesType(t *testing.T) {
-	itemtypes := NewItemtypes()
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРѕР±Р°РІР»РµРЅРёРµ С‚РёРїР° РїСЂРµРґРјРµС‚Р° РЅР°Р·РЅР°С‡Р°РµС‚ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Рё СЃС‚СЂРѕРёС‚ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РёРЅРґРµРєСЃС‹.
+func TestItemTypesAddAssignsIDAndIndexesType(t *testing.T) {
+	itemTypes := NewItemTypes()
 
-	itemtype, err := itemtypes.Add(&Itemtype{
-		TitleRu:               "Оружие",
+	itemType, err := itemTypes.Add(&ItemType{
+		TitleRu:               "РћСЂСѓР¶РёРµ",
 		TitleEn:               "Weapon",
 		Acronym:               "Weapon",
 		IsEquipmentForShip:    true,
@@ -25,85 +25,85 @@ func TestItemtypesAddAssignsIDAndIndexesType(t *testing.T) {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
-	if itemtype.ID != 1 {
-		t.Fatalf("itemtype ID = %d, want 1", itemtype.ID)
+	if itemType.ID != 1 {
+		t.Fatalf("itemType ID = %d, want 1", itemType.ID)
 	}
-	if itemtypes.MaxID != 1 {
-		t.Fatalf("MaxID = %d, want 1", itemtypes.MaxID)
-	}
-
-	byID, ok := itemtypes.Get(itemtype.ID)
-	if !ok || byID != itemtype {
-		t.Fatal("Get did not return added itemtype")
+	if itemTypes.MaxID != 1 {
+		t.Fatalf("MaxID = %d, want 1", itemTypes.MaxID)
 	}
 
-	byTitleRu, ok := itemtypes.GetByTitleRu("Оружие")
-	if !ok || byTitleRu != itemtype {
-		t.Fatal("GetByTitleRu did not return added itemtype")
+	byID, ok := itemTypes.Get(itemType.ID)
+	if !ok || byID != itemType {
+		t.Fatal("Get did not return added itemType")
 	}
 
-	byTitleEn, ok := itemtypes.GetByTitleEn("Weapon")
-	if !ok || byTitleEn != itemtype {
-		t.Fatal("GetByTitleEn did not return added itemtype")
+	byTitleRu, ok := itemTypes.GetByTitleRu("РћСЂСѓР¶РёРµ")
+	if !ok || byTitleRu != itemType {
+		t.Fatal("GetByTitleRu did not return added itemType")
 	}
 
-	byAcronym, ok := itemtypes.GetByAcronym("Weapon")
-	if !ok || byAcronym != itemtype {
-		t.Fatal("GetByAcronym did not return added itemtype")
+	byTitleEn, ok := itemTypes.GetByTitleEn("Weapon")
+	if !ok || byTitleEn != itemType {
+		t.Fatal("GetByTitleEn did not return added itemType")
+	}
+
+	byAcronym, ok := itemTypes.GetByAcronym("Weapon")
+	if !ok || byAcronym != itemType {
+		t.Fatal("GetByAcronym did not return added itemType")
 	}
 }
 
-// Проверяет, что повторяющиеся уникальные названия и акроним не допускаются.
-func TestItemtypesAddRejectsDuplicateUniqueFields(t *testing.T) {
-	itemtypes := NewItemtypes()
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕРІС‚РѕСЂСЏСЋС‰РёРµСЃСЏ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РЅР°Р·РІР°РЅРёСЏ Рё Р°РєСЂРѕРЅРёРј РЅРµ РґРѕРїСѓСЃРєР°СЋС‚СЃСЏ.
+func TestItemTypesAddRejectsDuplicateUniqueFields(t *testing.T) {
+	itemTypes := NewItemTypes()
 
-	if _, err := itemtypes.Add(&Itemtype{TitleRu: "Оружие", TitleEn: "Weapon", Acronym: "Weapon"}); err != nil {
+	if _, err := itemTypes.Add(&ItemType{TitleRu: "РћСЂСѓР¶РёРµ", TitleEn: "Weapon", Acronym: "Weapon"}); err != nil {
 		t.Fatalf("first Add returned error: %v", err)
 	}
 
-	if _, err := itemtypes.Add(&Itemtype{TitleRu: "Оружие", TitleEn: "Radar", Acronym: "Radar"}); err == nil {
+	if _, err := itemTypes.Add(&ItemType{TitleRu: "РћСЂСѓР¶РёРµ", TitleEn: "Radar", Acronym: "Radar"}); err == nil {
 		t.Fatal("Add accepted duplicate TitleRu")
 	}
-	if _, err := itemtypes.Add(&Itemtype{TitleRu: "Радар", TitleEn: "Weapon", Acronym: "Radar"}); err == nil {
+	if _, err := itemTypes.Add(&ItemType{TitleRu: "Р Р°РґР°СЂ", TitleEn: "Weapon", Acronym: "Radar"}); err == nil {
 		t.Fatal("Add accepted duplicate TitleEn")
 	}
-	if _, err := itemtypes.Add(&Itemtype{TitleRu: "Радар", TitleEn: "Radar", Acronym: "Weapon"}); err == nil {
+	if _, err := itemTypes.Add(&ItemType{TitleRu: "Р Р°РґР°СЂ", TitleEn: "Radar", Acronym: "Weapon"}); err == nil {
 		t.Fatal("Add accepted duplicate Acronym")
 	}
 }
 
-// Проверяет, что удаление типа предмета очищает основное хранилище и все уникальные индексы.
-func TestItemtypesDeleteRemovesTypeAndIndexes(t *testing.T) {
-	itemtypes := NewItemtypes()
-	itemtype, err := itemtypes.Add(&Itemtype{TitleRu: "Оружие", TitleEn: "Weapon", Acronym: "Weapon"})
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СѓРґР°Р»РµРЅРёРµ С‚РёРїР° РїСЂРµРґРјРµС‚Р° РѕС‡РёС‰Р°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё РІСЃРµ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РёРЅРґРµРєСЃС‹.
+func TestItemTypesDeleteRemovesTypeAndIndexes(t *testing.T) {
+	itemTypes := NewItemTypes()
+	itemType, err := itemTypes.Add(&ItemType{TitleRu: "РћСЂСѓР¶РёРµ", TitleEn: "Weapon", Acronym: "Weapon"})
 	if err != nil {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
-	if !itemtypes.Delete(itemtype.ID) {
+	if !itemTypes.Delete(itemType.ID) {
 		t.Fatal("Delete returned false")
 	}
 
-	if _, ok := itemtypes.Get(itemtype.ID); ok {
-		t.Fatal("deleted itemtype is still stored by ID")
+	if _, ok := itemTypes.Get(itemType.ID); ok {
+		t.Fatal("deleted itemType is still stored by ID")
 	}
-	if _, ok := itemtypes.GetByTitleRu(itemtype.TitleRu); ok {
-		t.Fatal("deleted itemtype TitleRu is still indexed")
+	if _, ok := itemTypes.GetByTitleRu(itemType.TitleRu); ok {
+		t.Fatal("deleted itemType TitleRu is still indexed")
 	}
-	if _, ok := itemtypes.GetByTitleEn(itemtype.TitleEn); ok {
-		t.Fatal("deleted itemtype TitleEn is still indexed")
+	if _, ok := itemTypes.GetByTitleEn(itemType.TitleEn); ok {
+		t.Fatal("deleted itemType TitleEn is still indexed")
 	}
-	if _, ok := itemtypes.GetByAcronym(itemtype.Acronym); ok {
-		t.Fatal("deleted itemtype Acronym is still indexed")
+	if _, ok := itemTypes.GetByAcronym(itemType.Acronym); ok {
+		t.Fatal("deleted itemType Acronym is still indexed")
 	}
 }
 
-// Проверяет, что сохранённые типы предметов загружаются обратно с восстановленным индексом по акрониму.
-func TestItemtypesSaveLoadAndRebuildIndexes(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "Itemtypes.json")
-	itemtypes := NewItemtypes()
-	itemtype, err := itemtypes.Add(&Itemtype{
-		TitleRu:            "Ресурс",
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Рµ С‚РёРїС‹ РїСЂРµРґРјРµС‚РѕРІ Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РѕР±СЂР°С‚РЅРѕ СЃ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹Рј РёРЅРґРµРєСЃРѕРј РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+func TestItemTypesSaveLoadAndRebuildIndexes(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "ItemTypes.json")
+	itemTypes := NewItemTypes()
+	itemType, err := itemTypes.Add(&ItemType{
+		TitleRu:            "Р РµСЃСѓСЂСЃ",
 		TitleEn:            "Resource",
 		Acronym:            "Resource",
 		CountMustBeInteger: false,
@@ -112,38 +112,38 @@ func TestItemtypesSaveLoadAndRebuildIndexes(t *testing.T) {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
-	if err := itemtypes.SaveToFile(path); err != nil {
+	if err := itemTypes.SaveToFile(path); err != nil {
 		t.Fatalf("SaveToFile returned error: %v", err)
 	}
 	if _, err := os.Stat(path); err != nil {
 		t.Fatalf("saved file is not available: %v", err)
 	}
 
-	loaded := NewItemtypes()
+	loaded := NewItemTypes()
 	if err := loaded.LoadFromFile(path); err != nil {
 		t.Fatalf("LoadFromFile returned error: %v", err)
 	}
 
-	loadedType, ok := loaded.Get(itemtype.ID)
+	loadedType, ok := loaded.Get(itemType.ID)
 	if !ok {
-		t.Fatal("loaded itemtype is not available by ID")
+		t.Fatal("loaded itemType is not available by ID")
 	}
-	if loadedType.TitleRu != itemtype.TitleRu || loadedType.TitleEn != itemtype.TitleEn || loadedType.Acronym != itemtype.Acronym {
-		t.Fatal("loaded itemtype fields do not match saved type")
+	if loadedType.TitleRu != itemType.TitleRu || loadedType.TitleEn != itemType.TitleEn || loadedType.Acronym != itemType.Acronym {
+		t.Fatal("loaded itemType fields do not match saved type")
 	}
-	if byAcronym, ok := loaded.GetByAcronym(itemtype.Acronym); !ok || byAcronym != loadedType {
+	if byAcronym, ok := loaded.GetByAcronym(itemType.Acronym); !ok || byAcronym != loadedType {
 		t.Fatal("loaded Acronym index is not rebuilt")
 	}
 }
 
-// Проверяет, что JSON-представление типов предметов использует имена полей из Go-структур.
-func TestItemtypesJSONKeysMatchGoFieldNames(t *testing.T) {
-	itemtypes := NewItemtypes()
-	if _, err := itemtypes.Add(&Itemtype{TitleRu: "Оружие", TitleEn: "Weapon", Acronym: "Weapon"}); err != nil {
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ JSON-РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ С‚РёРїРѕРІ РїСЂРµРґРјРµС‚РѕРІ РёСЃРїРѕР»СЊР·СѓРµС‚ РёРјРµРЅР° РїРѕР»РµР№ РёР· Go-СЃС‚СЂСѓРєС‚СѓСЂ.
+func TestItemTypesJSONKeysMatchGoFieldNames(t *testing.T) {
+	itemTypes := NewItemTypes()
+	if _, err := itemTypes.Add(&ItemType{TitleRu: "РћСЂСѓР¶РёРµ", TitleEn: "Weapon", Acronym: "Weapon"}); err != nil {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
-	content, err := json.Marshal(itemtypes)
+	content, err := json.Marshal(itemTypes)
 	if err != nil {
 		t.Fatalf("Marshal returned error: %v", err)
 	}
@@ -169,12 +169,12 @@ func TestItemtypesJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
-// Проверяет, что восстановление индексов отклоняет сохранённый тип предмета без обязательных полей.
-func TestItemtypesRebuildIndexesRejectsInvalidStoredType(t *testing.T) {
-	itemtypes := NewItemtypes()
-	itemtypes.Items[1] = &Itemtype{ID: 1}
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РёРЅРґРµРєСЃРѕРІ РѕС‚РєР»РѕРЅСЏРµС‚ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ С‚РёРї РїСЂРµРґРјРµС‚Р° Р±РµР· РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… РїРѕР»РµР№.
+func TestItemTypesRebuildIndexesRejectsInvalidStoredType(t *testing.T) {
+	itemTypes := NewItemTypes()
+	itemTypes.Items[1] = &ItemType{ID: 1}
 
-	if err := itemtypes.RebuildIndexes(); err == nil {
-		t.Fatal("RebuildIndexes accepted itemtype without required fields")
+	if err := itemTypes.RebuildIndexes(); err == nil {
+		t.Fatal("RebuildIndexes accepted itemType without required fields")
 	}
 }

@@ -10,23 +10,23 @@ import (
 	transport "space-game-07-server/internal/ws"
 )
 
-// Задает частоту серверной симуляции и отправки снимков клиентам.
+// Р—Р°РґР°РµС‚ С‡Р°СЃС‚РѕС‚Сѓ СЃРµСЂРІРµСЂРЅРѕР№ СЃРёРјСѓР»СЏС†РёРё Рё РѕС‚РїСЂР°РІРєРё СЃРЅРёРјРєРѕРІ РєР»РёРµРЅС‚Р°Рј.
 const tickRate = 30
 
 func main() {
-	// При старте сервер поднимает весь игровой мир из локальных JSON-файлов.
+	// РџСЂРё СЃС‚Р°СЂС‚Рµ СЃРµСЂРІРµСЂ РїРѕРґРЅРёРјР°РµС‚ РІРµСЃСЊ РёРіСЂРѕРІРѕР№ РјРёСЂ РёР· Р»РѕРєР°Р»СЊРЅС‹С… JSON-С„Р°Р№Р»РѕРІ.
 	serverData, err := storage.LoadServerData(".")
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf(
-		"loaded %d accounts, %d characters, %d cosmic objects, %d cosmic object types, %d cosmic object models and %d itemtypes from data",
+		"loaded %d accounts, %d characters, %d cosmic objects, %d cosmic object types, %d cosmic object models and %d ItemTypes from data",
 		len(serverData.Accounts.Items),
 		len(serverData.Characters.Items),
 		len(serverData.CosmicObjects.Items),
 		len(serverData.CosmicObjectTypes.Items),
 		len(serverData.CosmicObjectModels.Items),
-		len(serverData.Itemtypes.Items),
+		len(serverData.ItemTypes.Items),
 	)
 
 	gameWorld := world.New(time.Now().UnixNano(), world.Data{
@@ -35,15 +35,17 @@ func main() {
 		CosmicObjects:              serverData.CosmicObjects,
 		CosmicObjectTypes:          serverData.CosmicObjectTypes,
 		CosmicObjectModels:         serverData.CosmicObjectModels,
-		Itemtypes:                  serverData.Itemtypes,
-		RelationTypes:              serverData.RelationTypes,
+		ItemTypes:                  serverData.ItemTypes,
 		ItemModels:                 serverData.ItemModels,
 		Blueprints:                 serverData.Blueprints,
 		BlueprintComponents:        serverData.BlueprintComponents,
 		Schemas:                    serverData.Schemas,
 		SchemaComponents:           serverData.SchemaComponents,
+		TaskTypes:                  serverData.TaskTypes,
+		Tasks:                      serverData.Tasks,
+		TaskItemGroups:             serverData.TaskItemGroups,
+		Implementers:               serverData.Implementers,
 		EquipmentGroups:            serverData.EquipmentGroups,
-		EquipmentGroupRelations:    serverData.EquipmentGroupRelations,
 		ItemGroups:                 serverData.ItemGroups,
 		Assemblies:                 serverData.Assemblies,
 		AssemblyEquipmentGroups:    serverData.AssemblyEquipmentGroups,
@@ -62,7 +64,7 @@ func main() {
 	hub := transport.NewHub(gameWorld)
 	handler := transport.NewHandler(hub, serverData.Accounts)
 
-	// HTTP-точки обслуживают игровой поток и стартовый пакет справочников.
+	// HTTP-С‚РѕС‡РєРё РѕР±СЃР»СѓР¶РёРІР°СЋС‚ РёРіСЂРѕРІРѕР№ РїРѕС‚РѕРє Рё СЃС‚Р°СЂС‚РѕРІС‹Р№ РїР°РєРµС‚ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ.
 	http.Handle("/ws", handler)
 	http.Handle("/reference-data", transport.NewReferenceDataHandler(serverData))
 
@@ -73,7 +75,7 @@ func main() {
 
 	go func() {
 		for range ticker.C {
-			// Каждый тик двигает мир вперед и рассылает клиентам новый снимок.
+			// РљР°Р¶РґС‹Р№ С‚РёРє РґРІРёРіР°РµС‚ РјРёСЂ РІРїРµСЂРµРґ Рё СЂР°СЃСЃС‹Р»Р°РµС‚ РєР»РёРµРЅС‚Р°Рј РЅРѕРІС‹Р№ СЃРЅРёРјРѕРє.
 			snapshot := gameWorld.Tick(1.0 / tickRate)
 			hub.Broadcast(snapshot)
 		}
@@ -81,7 +83,7 @@ func main() {
 
 	go func() {
 		for range saveTicker.C {
-			// Периодическое сохранение фиксирует изменившиеся координаты и параметры объектов.
+			// РџРµСЂРёРѕРґРёС‡РµСЃРєРѕРµ СЃРѕС…СЂР°РЅРµРЅРёРµ С„РёРєСЃРёСЂСѓРµС‚ РёР·РјРµРЅРёРІС€РёРµСЃСЏ РєРѕРѕСЂРґРёРЅР°С‚С‹ Рё РїР°СЂР°РјРµС‚СЂС‹ РѕР±СЉРµРєС‚РѕРІ.
 			if err := gameWorld.SaveData("."); err != nil {
 				log.Printf("save server data: %v", err)
 			}

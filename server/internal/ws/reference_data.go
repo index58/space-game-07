@@ -9,25 +9,26 @@ import (
 	"space-game-07-server/internal/storage"
 )
 
-// Описывает пакет справочников, который клиент получает перед подключением к игровому потоку.
+// Р С›Р С—Р С‘РЎРѓРЎвЂ№Р Р†Р В°Р ВµРЎвЂљ Р С—Р В°Р С”Р ВµРЎвЂљ РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С•Р Р†, Р С”Р С•РЎвЂљР С•РЎР‚РЎвЂ№Р в„– Р С”Р В»Р С‘Р ВµР Р…РЎвЂљ Р С—Р С•Р В»РЎС“РЎвЂЎР В°Р ВµРЎвЂљ Р С—Р ВµРЎР‚Р ВµР Т‘ Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р ВµР С Р С” Р С‘Р С–РЎР‚Р С•Р Р†Р С•Р СРЎС“ Р С—Р С•РЎвЂљР С•Р С”РЎС“.
 type ReferenceDataResponse struct {
-	RelationType              *data.RelationTypes              `json:"RelationType"`              // Справочник видов связей групп оборудования.
-	Type                      string                           `json:"type"`                      // Тип сообщения для проверки клиентского контракта.
-	NpcClan                   *storage.RawReferenceTable       `json:"NpcClan"`                   // Справочник NPC-кланов.
-	CosmicObjectType          *data.CosmicObjectTypes          `json:"CosmicObjectType"`          // Справочник типов космических объектов.
-	Itemtype                  *data.Itemtypes                  `json:"Itemtype"`                  // Справочник типов предметов.
-	CosmicObjectModel         *data.CosmicObjectModels         `json:"CosmicObjectModel"`         // Справочник моделей космических объектов.
-	ItemModel                 *data.ItemModels                 `json:"ItemModel"`                 // Справочник моделей предметов.
-	Blueprint                 *storage.RawReferenceTable       `json:"Blueprint"`                 // Справочник чертежей объектов.
-	BlueprintComponent        *storage.RawReferenceTable       `json:"BlueprintComponent"`        // Справочник компонентов чертежей.
-	Schema                    *storage.RawReferenceTable       `json:"Schema"`                    // Справочник схем предметов.
-	SchemaComponent           *storage.RawReferenceTable       `json:"SchemaComponent"`           // Справочник компонентов схем.
-	ActionType                *data.ActionTypes                `json:"ActionType"`                // Справочник игровых действий.
-	InputEventType            *data.InputEventTypes            `json:"InputEventType"`            // Справочник событий ввода.
-	DefaultActionInputSetting *data.DefaultActionInputSettings `json:"DefaultActionInputSetting"` // Привязки ввода по умолчанию.
+	Type                      string                           `json:"type"`                      // Р СћР С‘Р С— РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р С‘ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљРЎРѓР С”Р С•Р С–Р С• Р С”Р С•Р Р…РЎвЂљРЎР‚Р В°Р С”РЎвЂљР В°.
+	NpcClan                   *storage.RawReferenceTable       `json:"NpcClan"`                   // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” NPC-Р С”Р В»Р В°Р Р…Р С•Р Р†.
+	CosmicObjectType          *data.CosmicObjectTypes          `json:"CosmicObjectType"`          // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† Р С”Р С•РЎРѓР СР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘РЎвЂ¦ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
+	ItemType                  *data.ItemTypes                  `json:"ItemType"`                  // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†.
+	CosmicObjectModel         *data.CosmicObjectModels         `json:"CosmicObjectModel"`         // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р СР С•Р Т‘Р ВµР В»Р ВµР в„– Р С”Р С•РЎРѓР СР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘РЎвЂ¦ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
+	ItemModel                 *data.ItemModels                 `json:"ItemModel"`                 // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р СР С•Р Т‘Р ВµР В»Р ВµР в„– Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†.
+	TaskType                  *data.TaskTypes                  `json:"TaskType"`                  // Справочник типов заданий для интерфейса.
+	Implementer               *data.Implementers               `json:"Implementer"`               // Справочник исполнителей заданий для расчета времени.
+	Blueprint                 *storage.RawReferenceTable       `json:"Blueprint"`                 // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂЎР ВµРЎР‚РЎвЂљР ВµР В¶Р ВµР в„– Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
+	BlueprintComponent        *storage.RawReferenceTable       `json:"BlueprintComponent"`        // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С”Р С•Р СР С—Р С•Р Р…Р ВµР Р…РЎвЂљР С•Р Р† РЎвЂЎР ВµРЎР‚РЎвЂљР ВµР В¶Р ВµР в„–.
+	Schema                    *storage.RawReferenceTable       `json:"Schema"`                    // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎРѓРЎвЂ¦Р ВµР С Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†.
+	SchemaComponent           *storage.RawReferenceTable       `json:"SchemaComponent"`           // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С”Р С•Р СР С—Р С•Р Р…Р ВµР Р…РЎвЂљР С•Р Р† РЎРѓРЎвЂ¦Р ВµР С.
+	ActionType                *data.ActionTypes                `json:"ActionType"`                // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№РЎвЂ¦ Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘Р в„–.
+	InputEventType            *data.InputEventTypes            `json:"InputEventType"`            // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р в„– Р Р†Р Р†Р С•Р Т‘Р В°.
+	DefaultActionInputSetting *data.DefaultActionInputSettings `json:"DefaultActionInputSetting"` // Р СџРЎР‚Р С‘Р Р†РЎРЏР В·Р С”Р С‘ Р Р†Р Р†Р С•Р Т‘Р В° Р С—Р С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹.
 }
 
-// Создает HTTP-обработчик для выдачи всех справочников одним запросом при входе клиента.
+// Р РЋР С•Р В·Р Т‘Р В°Р ВµРЎвЂљ HTTP-Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р Т‘Р В»РЎРЏ Р Р†РЎвЂ№Р Т‘Р В°РЎвЂЎР С‘ Р Р†РЎРѓР ВµРЎвЂ¦ РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С•Р Р† Р С•Р Т‘Р Р…Р С‘Р С Р В·Р В°Р С—РЎР‚Р С•РЎРѓР С•Р С Р С—РЎР‚Р С‘ Р Р†РЎвЂ¦Р С•Р Т‘Р Вµ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљР В°.
 func NewReferenceDataHandler(serverData *storage.ServerData) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		setLocalCORSHeaders(writer, request)
@@ -47,16 +48,17 @@ func NewReferenceDataHandler(serverData *storage.ServerData) http.Handler {
 	})
 }
 
-// Собирает ответ без клиентских таблиц и без серверных индексов, скрытых JSON-тегами.
+// Р РЋР С•Р В±Р С‘РЎР‚Р В°Р ВµРЎвЂљ Р С•РЎвЂљР Р†Р ВµРЎвЂљ Р В±Р ВµР В· Р С”Р В»Р С‘Р ВµР Р…РЎвЂљРЎРѓР С”Р С‘РЎвЂ¦ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ  Р С‘ Р В±Р ВµР В· РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Р…РЎвЂ№РЎвЂ¦ Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓР С•Р Р†, РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљРЎвЂ№РЎвЂ¦ JSON-РЎвЂљР ВµР С–Р В°Р СР С‘.
 func NewReferenceDataResponse(serverData *storage.ServerData) ReferenceDataResponse {
 	return ReferenceDataResponse{
-		RelationType:              serverData.RelationTypes,
 		Type:                      "referenceData",
 		NpcClan:                   serverData.NpcClans,
 		CosmicObjectType:          serverData.CosmicObjectTypes,
-		Itemtype:                  serverData.Itemtypes,
+		ItemType:                  serverData.ItemTypes,
 		CosmicObjectModel:         serverData.CosmicObjectModels,
 		ItemModel:                 serverData.ItemModels,
+		TaskType:                  serverData.TaskTypes,
+		Implementer:               serverData.Implementers,
 		Blueprint:                 serverData.Blueprints,
 		BlueprintComponent:        serverData.BlueprintComponents,
 		Schema:                    serverData.Schemas,
@@ -67,7 +69,7 @@ func NewReferenceDataResponse(serverData *storage.ServerData) ReferenceDataRespo
 	}
 }
 
-// Разрешает браузерному клиенту читать справочники с локального HTTP-сервера.
+// Р В Р В°Р В·РЎР‚Р ВµРЎв‚¬Р В°Р ВµРЎвЂљ Р В±РЎР‚Р В°РЎС“Р В·Р ВµРЎР‚Р Р…Р С•Р СРЎС“ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљРЎС“ РЎвЂЎР С‘РЎвЂљР В°РЎвЂљРЎРЉ РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С‘ РЎРѓ Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• HTTP-РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°.
 func setLocalCORSHeaders(writer http.ResponseWriter, request *http.Request) {
 	origin := request.Header.Get("Origin")
 	if origin == "" ||

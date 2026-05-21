@@ -119,7 +119,7 @@ const viewport = {
   scaleHeight: 800,
 };
 
-const referenceDataWithInternalUsableItemtype = (isInternalUsable: boolean): NonNullable<GameUiState["referenceData"]> => ({
+const referenceDataWithInternalUsableItemType = (isInternalUsable: boolean): NonNullable<GameUiState["referenceData"]> => ({
   ActionType: { MaxID: 0, Items: {} },
   Blueprint: { MaxID: 0, Items: {} },
   BlueprintComponent: { MaxID: 0, Items: {} },
@@ -128,7 +128,7 @@ const referenceDataWithInternalUsableItemtype = (isInternalUsable: boolean): Non
   DefaultActionInputSetting: { MaxID: 0, Items: {} },
   InputEventType: { MaxID: 0, Items: {} },
   ItemModel: { MaxID: 0, Items: {} },
-  Itemtype: { MaxID: 1, Items: { "1": { ID: 1, Acronym: "Weapon", IsPilotInstrument: true, IsInternalUsable: isInternalUsable } } },
+  ItemType: { MaxID: 1, Items: { "1": { ID: 1, Acronym: "Weapon", IsPilotInstrument: true, IsInternalUsable: isInternalUsable } } },
   NpcClan: { MaxID: 0, Items: {} },
   Schema: { MaxID: 0, Items: {} },
   SchemaComponent: { MaxID: 0, Items: {} },
@@ -192,12 +192,12 @@ describe("getGameUiControlLayoutSignature", () => {
     const first = getGameUiControlLayoutSignature(state({
       controlPanelVisible: true,
       selectedControlPanelTab: "equipment",
-      referenceData: referenceDataWithInternalUsableItemtype(false),
+      referenceData: referenceDataWithInternalUsableItemType(false),
     }), viewport);
     const second = getGameUiControlLayoutSignature(state({
       controlPanelVisible: true,
       selectedControlPanelTab: "equipment",
-      referenceData: referenceDataWithInternalUsableItemtype(true),
+      referenceData: referenceDataWithInternalUsableItemType(true),
     }), viewport);
 
     expect(second).not.toBe(first);

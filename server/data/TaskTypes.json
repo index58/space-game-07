@@ -1,0 +1,41 @@
+{
+    "MaxID":  6,
+    "Items":  {
+                  "1":  {
+                            "ID":  1,
+                            "TitleRu":  "Производство предметов",
+                            "TitleEn":  "Item production",
+                            "Acronym":  "ItemProduction"
+                        },
+                  "2":  {
+                            "ID":  2,
+                            "TitleRu":  "Производство объектов",
+                            "TitleEn":  "Object production",
+                            "Acronym":  "ObjectProduction"
+                        },
+                  "3":  {
+                            "ID":  3,
+                            "TitleRu":  "Перемещение груза",
+                            "TitleEn":  "Cargo movement",
+                            "Acronym":  "CargoMovement"
+                        },
+                  "4":  {
+                            "ID":  4,
+                            "TitleRu":  "Заправка топлива",
+                            "TitleEn":  "Fueling",
+                            "Acronym":  "Fueling"
+                        },
+                  "5":  {
+                            "ID":  5,
+                            "TitleRu":  "Деконструкция предметов",
+                            "TitleEn":  "Item deconstruction",
+                            "Acronym":  "ItemDeconstruction"
+                        },
+                  "6":  {
+                            "ID":  6,
+                            "TitleRu":  "Деконструкция объектов",
+                            "TitleEn":  "Object deconstruction",
+                            "Acronym":  "ObjectDeconstruction"
+                        }
+              }
+}

@@ -1,4 +1,4 @@
-package data
+﻿package data
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-// Сохраняет таблицу так, чтобы ключи основного хранилища шли по числовому порядку.
+// РЎРѕС…СЂР°РЅСЏРµС‚ С‚Р°Р±Р»РёС†Сѓ С‚Р°Рє, С‡С‚РѕР±С‹ РєР»СЋС‡Рё РѕСЃРЅРѕРІРЅРѕРіРѕ С…СЂР°РЅРёР»РёС‰Р° С€Р»Рё РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РїРѕСЂСЏРґРєСѓ.
 func saveTableWithOrderedItems[T any](path string, maxID int64, items map[int64]*T) error {
 	content, err := marshalTableWithOrderedItems(maxID, items)
 	if err != nil {
@@ -17,7 +17,7 @@ func saveTableWithOrderedItems[T any](path string, maxID int64, items map[int64]
 	return os.WriteFile(path, content, 0o600)
 }
 
-// Формирует JSON с устойчивым порядком записей по их числовому идентификатору.
+// Р¤РѕСЂРјРёСЂСѓРµС‚ JSON СЃ СѓСЃС‚РѕР№С‡РёРІС‹Рј РїРѕСЂСЏРґРєРѕРј Р·Р°РїРёСЃРµР№ РїРѕ РёС… С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
 func marshalTableWithOrderedItems[T any](maxID int64, items map[int64]*T) ([]byte, error) {
 	var buffer bytes.Buffer
 
@@ -56,7 +56,7 @@ func marshalTableWithOrderedItems[T any](maxID int64, items map[int64]*T) ([]byt
 	return buffer.Bytes(), nil
 }
 
-// Возвращает ключи основного хранилища по возрастанию.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РєР»СЋС‡Рё РѕСЃРЅРѕРІРЅРѕРіРѕ С…СЂР°РЅРёР»РёС‰Р° РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ.
 func sortedTableItemIDs[T any](items map[int64]*T) []int64 {
 	ids := make([]int64, 0, len(items))
 	for id := range items {

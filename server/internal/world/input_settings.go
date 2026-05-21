@@ -1,4 +1,4 @@
-package world
+﻿package world
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 	"space-game-07-server/internal/data"
 )
 
-// AccountInputSettings возвращает копии привязок ввода только для указанного аккаунта.
+// AccountInputSettings РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёРё РїСЂРёРІСЏР·РѕРє РІРІРѕРґР° С‚РѕР»СЊРєРѕ РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ Р°РєРєР°СѓРЅС‚Р°.
 func (world *World) AccountInputSettings(accountID int64) []data.AccountActionInputSetting {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -22,7 +22,7 @@ func (world *World) AccountInputSettings(accountID int64) []data.AccountActionIn
 	return result
 }
 
-// SaveAccountInputSettings проверяет и заменяет привязки ввода текущего аккаунта в памяти мира.
+// SaveAccountInputSettings РїСЂРѕРІРµСЂСЏРµС‚ Рё Р·Р°РјРµРЅСЏРµС‚ РїСЂРёРІСЏР·РєРё РІРІРѕРґР° С‚РµРєСѓС‰РµРіРѕ Р°РєРєР°СѓРЅС‚Р° РІ РїР°РјСЏС‚Рё РјРёСЂР°.
 func (world *World) SaveAccountInputSettings(accountID int64, settings []data.AccountActionInputSetting) ([]data.AccountActionInputSetting, error) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -68,7 +68,7 @@ func (world *World) SaveAccountInputSettings(accountID int64, settings []data.Ac
 	return world.accountInputSettingsLocked(accountID), nil
 }
 
-// accountInputSettingsLocked возвращает копии привязок ввода под уже взятым mutex мира.
+// accountInputSettingsLocked РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёРё РїСЂРёРІСЏР·РѕРє РІРІРѕРґР° РїРѕРґ СѓР¶Рµ РІР·СЏС‚С‹Рј mutex РјРёСЂР°.
 func (world *World) accountInputSettingsLocked(accountID int64) []data.AccountActionInputSetting {
 	if world.data.AccountActionInputSettings == nil {
 		return nil

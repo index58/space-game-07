@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// Проверяет, что основной загрузчик читает аккаунты из стандартного файла и строит поиск по почте.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕСЃРЅРѕРІРЅРѕР№ Р·Р°РіСЂСѓР·С‡РёРє С‡РёС‚Р°РµС‚ Р°РєРєР°СѓРЅС‚С‹ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё СЃС‚СЂРѕРёС‚ РїРѕРёСЃРє РїРѕ РїРѕС‡С‚Рµ.
 func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -43,7 +43,7 @@ func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectModels.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dataDirectory, "Itemtypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDirectory, "ItemTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
 
@@ -61,7 +61,7 @@ func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	}
 }
 
-// Проверяет, что отсутствие обязательного файла аккаунтов считается ошибкой загрузки.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕС‚СЃСѓС‚СЃС‚РІРёРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРіРѕ С„Р°Р№Р»Р° Р°РєРєР°СѓРЅС‚РѕРІ СЃС‡РёС‚Р°РµС‚СЃСЏ РѕС€РёР±РєРѕР№ Р·Р°РіСЂСѓР·РєРё.
 func TestLoadServerDataReturnsErrorWhenAccountsFileIsMissing(t *testing.T) {
 	_, err := LoadServerData(t.TempDir())
 	if err == nil {
@@ -69,7 +69,7 @@ func TestLoadServerDataReturnsErrorWhenAccountsFileIsMissing(t *testing.T) {
 	}
 }
 
-// Проверяет, что персонажи читаются из стандартного файла и доступны по числовому идентификатору.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРµСЂСЃРѕРЅР°Р¶Рё С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё РґРѕСЃС‚СѓРїРЅС‹ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
 func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -85,7 +85,7 @@ func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectModels.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dataDirectory, "Itemtypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDirectory, "ItemTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectModels.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
@@ -125,7 +125,7 @@ func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	}
 }
 
-// Проверяет, что типы космических объектов читаются из стандартного файла и индексируются по акрониму.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ С‚РёРїС‹ РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё РёРЅРґРµРєСЃРёСЂСѓСЋС‚СЃСЏ РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
 func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -141,7 +141,7 @@ func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjects.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dataDirectory, "Itemtypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDirectory, "ItemTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectModels.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
@@ -153,7 +153,7 @@ func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
   "Items": {
     "1": {
       "ID": 1,
-      "TitleRu": "Корабль",
+      "TitleRu": "РљРѕСЂР°Р±Р»СЊ",
       "TitleEn": "Ship",
       "Acronym": "Ship",
       "CharacterLocatable": true,
@@ -175,12 +175,12 @@ func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
 	if !ok {
 		t.Fatal("cosmic object type is not available by acronym")
 	}
-	if cosmicObjectType.TitleRu != "Корабль" {
-		t.Fatalf("cosmic object type TitleRu = %q, want Корабль", cosmicObjectType.TitleRu)
+	if cosmicObjectType.TitleRu != "РљРѕСЂР°Р±Р»СЊ" {
+		t.Fatalf("cosmic object type TitleRu = %q, want РљРѕСЂР°Р±Р»СЊ", cosmicObjectType.TitleRu)
 	}
 }
 
-// Проверяет, что космические объекты читаются из стандартного файла с сохранением модели.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕСЃРјРёС‡РµСЃРєРёРµ РѕР±СЉРµРєС‚С‹ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° СЃ СЃРѕС…СЂР°РЅРµРЅРёРµРј РјРѕРґРµР»Рё.
 func TestLoadServerDataLoadsCosmicObjectsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -199,7 +199,7 @@ func TestLoadServerDataLoadsCosmicObjectsFromDefaultFile(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectModels.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dataDirectory, "Itemtypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDirectory, "ItemTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
 
@@ -260,8 +260,8 @@ func TestLoadServerDataLoadsCosmicObjectsFromDefaultFile(t *testing.T) {
 	}
 }
 
-// Проверяет, что типы предметов читаются из стандартного файла и индексируются по акрониму.
-func TestLoadServerDataLoadsItemtypesFromDefaultFile(t *testing.T) {
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ С‚РёРїС‹ РїСЂРµРґРјРµС‚РѕРІ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё РёРЅРґРµРєСЃРёСЂСѓСЋС‚СЃСЏ РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+func TestLoadServerDataLoadsitemTypesFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
 	if err := os.Mkdir(dataDirectory, 0o700); err != nil {
@@ -288,7 +288,7 @@ func TestLoadServerDataLoadsItemtypesFromDefaultFile(t *testing.T) {
   "Items": {
     "1": {
       "ID": 1,
-      "TitleRu": "Оружие",
+      "TitleRu": "РћСЂСѓР¶РёРµ",
       "TitleEn": "Weapon",
       "Acronym": "Weapon",
       "IsEquipmentForShip": true,
@@ -298,7 +298,7 @@ func TestLoadServerDataLoadsItemtypesFromDefaultFile(t *testing.T) {
     }
   }
 }`)
-	if err := os.WriteFile(filepath.Join(dataDirectory, "Itemtypes.json"), content, 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDirectory, "ItemTypes.json"), content, 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
 
@@ -307,16 +307,16 @@ func TestLoadServerDataLoadsItemtypesFromDefaultFile(t *testing.T) {
 		t.Fatalf("LoadServerData returned error: %v", err)
 	}
 
-	itemtype, ok := serverData.Itemtypes.GetByAcronym("Weapon")
+	itemType, ok := serverData.ItemTypes.GetByAcronym("Weapon")
 	if !ok {
-		t.Fatal("itemtype is not available by acronym")
+		t.Fatal("itemType is not available by acronym")
 	}
-	if itemtype.TitleRu != "Оружие" {
-		t.Fatalf("itemtype TitleRu = %q, want Оружие", itemtype.TitleRu)
+	if itemType.TitleRu != "РћСЂСѓР¶РёРµ" {
+		t.Fatalf("itemType TitleRu = %q, want РћСЂСѓР¶РёРµ", itemType.TitleRu)
 	}
 }
 
-// Проверяет, что модели космических объектов читаются из стандартного файла с вычисленными размерами тела.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РјРѕРґРµР»Рё РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° СЃ РІС‹С‡РёСЃР»РµРЅРЅС‹РјРё СЂР°Р·РјРµСЂР°РјРё С‚РµР»Р°.
 func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -335,7 +335,7 @@ func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dataDirectory, "CosmicObjectTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dataDirectory, "Itemtypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDirectory, "ItemTypes.json"), []byte(`{"MaxID":0,"Items":{}}`), 0o600); err != nil {
 		t.Fatalf("WriteFile returned error: %v", err)
 	}
 
@@ -344,7 +344,7 @@ func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
   "Items": {
     "1": {
       "ID": 1,
-      "TitleRu": "Астероид 1",
+      "TitleRu": "РђСЃС‚РµСЂРѕРёРґ 1",
       "TitleEn": "Asteroid 1",
       "Acronym": "asteroid_0001",
       "IconFilePath": "",
@@ -386,7 +386,7 @@ func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	}
 }
 
-// Проверяет, что реальные файлы репозитория загружаются как единый набор серверных данных.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЂРµР°Р»СЊРЅС‹Рµ С„Р°Р№Р»С‹ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РєР°Рє РµРґРёРЅС‹Р№ РЅР°Р±РѕСЂ СЃРµСЂРІРµСЂРЅС‹С… РґР°РЅРЅС‹С….
 func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	serverData, err := LoadServerData(filepath.Join("..", ".."))
 	if err != nil {
@@ -408,12 +408,12 @@ func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	if _, ok := serverData.CosmicObjectModels.GetByAcronym("asteroid_0001"); !ok {
 		t.Fatal("repository CosmicObjectModels.json does not contain asteroid_0001")
 	}
-	if _, ok := serverData.Itemtypes.GetByAcronym("Weapon"); !ok {
-		t.Fatal("repository Itemtypes.json does not contain Weapon")
+	if _, ok := serverData.ItemTypes.GetByAcronym("Weapon"); !ok {
+		t.Fatal("repository itemTypes.json does not contain Weapon")
 	}
 }
 
-// Проверяет, что отсутствующие файлы чат-таблиц дают пустые хранилища для первой серверной инициализации.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёРµ С„Р°Р№Р»С‹ С‡Р°С‚-С‚Р°Р±Р»РёС† РґР°СЋС‚ РїСѓСЃС‚С‹Рµ С…СЂР°РЅРёР»РёС‰Р° РґР»СЏ РїРµСЂРІРѕР№ СЃРµСЂРІРµСЂРЅРѕР№ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё.
 func TestLoadServerDataCreatesEmptyChatTablesWhenFilesAreMissing(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -426,7 +426,7 @@ func TestLoadServerDataCreatesEmptyChatTablesWhenFilesAreMissing(t *testing.T) {
 		"CosmicObjects.json":      []byte(`{"MaxID":0,"Items":{}}`),
 		"CosmicObjectTypes.json":  []byte(`{"MaxID":0,"Items":{}}`),
 		"CosmicObjectModels.json": []byte(`{"MaxID":0,"Items":{}}`),
-		"Itemtypes.json":          []byte(`{"MaxID":0,"Items":{}}`),
+		"ItemTypes.json":          []byte(`{"MaxID":0,"Items":{}}`),
 	} {
 		if err := os.WriteFile(filepath.Join(dataDirectory, fileName), content, 0o600); err != nil {
 			t.Fatalf("WriteFile %s returned error: %v", fileName, err)

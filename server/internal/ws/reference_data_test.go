@@ -10,7 +10,7 @@ import (
 	"space-game-07-server/internal/storage"
 )
 
-// Проверяет, что HTTP-ответ справочников содержит все таблицы, необходимые клиенту при старте.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ HTTP-РѕС‚РІРµС‚ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ СЃРѕРґРµСЂР¶РёС‚ РІСЃРµ С‚Р°Р±Р»РёС†С‹, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РєР»РёРµРЅС‚Сѓ РїСЂРё СЃС‚Р°СЂС‚Рµ.
 func TestReferenceDataHandlerReturnsAllStartupTables(t *testing.T) {
 	serverData := &storage.ServerData{
 		CosmicObjectTypes: data.NewCosmicObjectTypes(),
@@ -19,7 +19,7 @@ func TestReferenceDataHandlerReturnsAllStartupTables(t *testing.T) {
 			Items: map[int64]*data.CosmicObjectModel{
 				23: {
 					ID:              23,
-					TitleRu:         "Корабль",
+					TitleRu:         "РљРѕСЂР°Р±Р»СЊ",
 					TitleEn:         "Ship",
 					Acronym:         "ship_bat",
 					TextureFilePath: "assets/world/cosmic-objects/ships/256x512/ship_256x512_0008.png",
@@ -27,7 +27,7 @@ func TestReferenceDataHandlerReturnsAllStartupTables(t *testing.T) {
 				},
 			},
 		},
-		Itemtypes:           data.NewItemtypes(),
+		ItemTypes:           data.NewItemTypes(),
 		NpcClans:            storage.NewRawReferenceTable(),
 		ItemModels:          data.NewItemModels(),
 		Blueprints:          storage.NewRawReferenceTable(),
@@ -53,7 +53,7 @@ func TestReferenceDataHandlerReturnsAllStartupTables(t *testing.T) {
 		"type",
 		"NpcClan",
 		"CosmicObjectType",
-		"Itemtype",
+		"ItemType",
 		"CosmicObjectModel",
 		"ItemModel",
 		"Blueprint",

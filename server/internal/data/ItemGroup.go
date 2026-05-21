@@ -8,30 +8,30 @@ import (
 	"sort"
 )
 
-// Хранит группу одинаковых предметов внутри контейнера.
+// РҐСЂР°РЅРёС‚ РіСЂСѓРїРїСѓ РѕРґРёРЅР°РєРѕРІС‹С… РїСЂРµРґРјРµС‚РѕРІ РІРЅСѓС‚СЂРё РєРѕРЅС‚РµР№РЅРµСЂР°.
 type ItemGroup struct {
-	ID                        int64   `json:"ID"`                        // Уникальный числовой идентификатор записи.
-	ContainerEquipmentGroupID int64   `json:"ContainerEquipmentGroupID"` // Группа оборудования, внутри которой находится содержимое.
-	ContentItemModelID        int64   `json:"ContentItemModelID"`        // Модель предмета, лежащего внутри контейнера.
-	Count                     float64 `json:"Count"`                     // Количество предметов указанной модели.
+	ID                        int64   `json:"ID"`                        // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
+	ContainerEquipmentGroupID int64   `json:"ContainerEquipmentGroupID"` // Р“СЂСѓРїРїР° РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ, РІРЅСѓС‚СЂРё РєРѕС‚РѕСЂРѕР№ РЅР°С…РѕРґРёС‚СЃСЏ СЃРѕРґРµСЂР¶РёРјРѕРµ.
+	ContentItemModelID        int64   `json:"ContentItemModelID"`        // РњРѕРґРµР»СЊ РїСЂРµРґРјРµС‚Р°, Р»РµР¶Р°С‰РµРіРѕ РІРЅСѓС‚СЂРё РєРѕРЅС‚РµР№РЅРµСЂР°.
+	Count                     float64 `json:"Count"`                     // РљРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРµРґРјРµС‚РѕРІ СѓРєР°Р·Р°РЅРЅРѕР№ РјРѕРґРµР»Рё.
 }
 
-// Хранит группы предметов внутри установленного контейнерного оборудования.
+// РҐСЂР°РЅРёС‚ РіСЂСѓРїРїС‹ РїСЂРµРґРјРµС‚РѕРІ РІРЅСѓС‚СЂРё СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РєРѕРЅС‚РµР№РЅРµСЂРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 type ItemGroups struct {
-	MaxID int64                `json:"MaxID"` // Последний выданный числовой идентификатор для новых записей.
-	Items map[int64]*ItemGroup `json:"Items"` // Основное хранилище записей по числовому идентификатору.
+	MaxID int64                `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РЅРѕРІС‹С… Р·Р°РїРёСЃРµР№.
+	Items map[int64]*ItemGroup `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
 
-	ByContainerEquipmentGroupID map[int64][]*ItemGroup `json:"-"` // Быстрый поиск содержимого по группе контейнерного оборудования.
+	ByContainerEquipmentGroupID map[int64][]*ItemGroup `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє СЃРѕРґРµСЂР¶РёРјРѕРіРѕ РїРѕ РіСЂСѓРїРїРµ РєРѕРЅС‚РµР№РЅРµСЂРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 }
 
-// Создает пустое хранилище групп предметов с подготовленными индексами.
+// РЎРѕР·РґР°РµС‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ РіСЂСѓРїРї РїСЂРµРґРјРµС‚РѕРІ СЃ РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
 func NewItemGroups() *ItemGroups {
 	groups := &ItemGroups{}
 	groups.ensureMaps()
 	return groups
 }
 
-// Добавляет новую группу предметов и назначает новый ID.
+// Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІСѓСЋ РіСЂСѓРїРїСѓ РїСЂРµРґРјРµС‚РѕРІ Рё РЅР°Р·РЅР°С‡Р°РµС‚ РЅРѕРІС‹Р№ ID.
 func (groups *ItemGroups) Add(group *ItemGroup) (*ItemGroup, error) {
 	if group == nil {
 		return nil, errors.New("item group is nil")
@@ -48,20 +48,20 @@ func (groups *ItemGroups) Add(group *ItemGroup) (*ItemGroup, error) {
 	return group, nil
 }
 
-// Возвращает группу предметов по ID.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РіСЂСѓРїРїСѓ РїСЂРµРґРјРµС‚РѕРІ РїРѕ ID.
 func (groups *ItemGroups) Get(id int64) (*ItemGroup, bool) {
 	groups.ensureMaps()
 	group, ok := groups.Items[id]
 	return group, ok
 }
 
-// Возвращает содержимое указанной группы контейнерного оборудования.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ СѓРєР°Р·Р°РЅРЅРѕР№ РіСЂСѓРїРїС‹ РєРѕРЅС‚РµР№РЅРµСЂРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 func (groups *ItemGroups) GetByContainerEquipmentGroupID(containerEquipmentGroupID int64) []*ItemGroup {
 	groups.ensureMaps()
 	return groups.ByContainerEquipmentGroupID[containerEquipmentGroupID]
 }
 
-// Удаляет все содержимое указанной группы контейнерного оборудования.
+// РЈРґР°Р»СЏРµС‚ РІСЃРµ СЃРѕРґРµСЂР¶РёРјРѕРµ СѓРєР°Р·Р°РЅРЅРѕР№ РіСЂСѓРїРїС‹ РєРѕРЅС‚РµР№РЅРµСЂРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 func (groups *ItemGroups) DeleteByContainerEquipmentGroupID(containerEquipmentGroupID int64) {
 	groups.ensureMaps()
 	for _, group := range groups.ByContainerEquipmentGroupID[containerEquipmentGroupID] {
@@ -70,14 +70,14 @@ func (groups *ItemGroups) DeleteByContainerEquipmentGroupID(containerEquipmentGr
 	delete(groups.ByContainerEquipmentGroupID, containerEquipmentGroupID)
 }
 
-// Удаляет содержимое нескольких групп контейнерного оборудования.
+// РЈРґР°Р»СЏРµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ РЅРµСЃРєРѕР»СЊРєРёС… РіСЂСѓРїРї РєРѕРЅС‚РµР№РЅРµСЂРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 func (groups *ItemGroups) DeleteByContainerEquipmentGroupIDs(containerEquipmentGroupIDs []int64) {
 	for _, containerEquipmentGroupID := range containerEquipmentGroupIDs {
 		groups.DeleteByContainerEquipmentGroupID(containerEquipmentGroupID)
 	}
 }
 
-// Пересобирает быстрые индексы после загрузки из JSON.
+// РџРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РёР· JSON.
 func (groups *ItemGroups) RebuildIndexes() error {
 	groups.ensureItems()
 	groups.ByContainerEquipmentGroupID = make(map[int64][]*ItemGroup)
@@ -112,7 +112,7 @@ func (groups *ItemGroups) RebuildIndexes() error {
 	return nil
 }
 
-// Загружает группы предметов из JSON-файла и пересобирает быстрые индексы.
+// Р—Р°РіСЂСѓР¶Р°РµС‚ РіСЂСѓРїРїС‹ РїСЂРµРґРјРµС‚РѕРІ РёР· JSON-С„Р°Р№Р»Р° Рё РїРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *ItemGroups) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -131,13 +131,13 @@ func (groups *ItemGroups) LoadFromFile(path string) error {
 	return nil
 }
 
-// Сохраняет группы предметов в JSON-файл без вспомогательных индексов.
+// РЎРѕС…СЂР°РЅСЏРµС‚ РіСЂСѓРїРїС‹ РїСЂРµРґРјРµС‚РѕРІ РІ JSON-С„Р°Р№Р» Р±РµР· РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РёРЅРґРµРєСЃРѕРІ.
 func (groups *ItemGroups) SaveToFile(path string) error {
 	groups.ensureMaps()
 	return saveTableWithOrderedItems(path, groups.MaxID, groups.Items)
 }
 
-// Подготавливает основное хранилище и быстрые индексы.
+// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *ItemGroups) ensureMaps() {
 	groups.ensureItems()
 	if groups.ByContainerEquipmentGroupID == nil {
@@ -145,14 +145,14 @@ func (groups *ItemGroups) ensureMaps() {
 	}
 }
 
-// Подготавливает основную map.
+// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅСѓСЋ map.
 func (groups *ItemGroups) ensureItems() {
 	if groups.Items == nil {
 		groups.Items = make(map[int64]*ItemGroup)
 	}
 }
 
-// Проверяет обязательные поля группы предметов.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РіСЂСѓРїРїС‹ РїСЂРµРґРјРµС‚РѕРІ.
 func (groups *ItemGroups) validateRequiredFields(group *ItemGroup) error {
 	if group.ContainerEquipmentGroupID <= 0 {
 		return errors.New("container equipment group ID is empty")
@@ -166,7 +166,7 @@ func (groups *ItemGroups) validateRequiredFields(group *ItemGroup) error {
 	return nil
 }
 
-// Добавляет группу предметов в быстрые индексы.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РїСЂРµРґРјРµС‚РѕРІ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *ItemGroups) addIndexes(group *ItemGroup) {
 	groups.ByContainerEquipmentGroupID[group.ContainerEquipmentGroupID] = append(groups.ByContainerEquipmentGroupID[group.ContainerEquipmentGroupID], group)
 }

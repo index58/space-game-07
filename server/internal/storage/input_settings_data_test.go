@@ -1,4 +1,4 @@
-package storage
+﻿package storage
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// Проверяет, что действия стыковки доступны в справочнике настроек ввода.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРµР№СЃС‚РІРёСЏ СЃС‚С‹РєРѕРІРєРё РґРѕСЃС‚СѓРїРЅС‹ РІ СЃРїСЂР°РІРѕС‡РЅРёРєРµ РЅР°СЃС‚СЂРѕРµРє РІРІРѕРґР°.
 func TestServerDataContainsDockingInputActions(t *testing.T) {
 	workingDirectory := serverDataWorkingDirectory(t)
 	serverData, err := LoadServerData(workingDirectory)
@@ -39,7 +39,7 @@ func TestServerDataContainsDockingInputActions(t *testing.T) {
 	}
 }
 
-// Находит корень серверной части независимо от текущего каталога тестового процесса.
+// РќР°С…РѕРґРёС‚ РєРѕСЂРµРЅСЊ СЃРµСЂРІРµСЂРЅРѕР№ С‡Р°СЃС‚Рё РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ С‚РµРєСѓС‰РµРіРѕ РєР°С‚Р°Р»РѕРіР° С‚РµСЃС‚РѕРІРѕРіРѕ РїСЂРѕС†РµСЃСЃР°.
 func serverDataWorkingDirectory(t *testing.T) string {
 	t.Helper()
 	workingDirectory, err := os.Getwd()

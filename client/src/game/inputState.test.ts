@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL, isFreshKeyboardEventBinding, isFreshKeyDown, toShipInput } from "./inputState";
 
 // Эти тесты фиксируют границу между заблокированным системным курсором и игровым вводом.

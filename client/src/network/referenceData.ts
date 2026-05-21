@@ -33,9 +33,11 @@ const isReferenceDataMessage = (value: unknown): value is ReferenceDataMessage =
   return message.type === "referenceData" &&
     isReferenceTable(message.NpcClan) &&
     isReferenceTable(message.CosmicObjectType) &&
-    isReferenceTable(message.Itemtype) &&
+    isReferenceTable(message.ItemType) &&
     isReferenceTable(message.CosmicObjectModel) &&
     isReferenceTable(message.ItemModel) &&
+    (!message.TaskType || isReferenceTable(message.TaskType)) &&
+    (!message.Implementer || isReferenceTable(message.Implementer)) &&
     isReferenceTable(message.Blueprint) &&
     isReferenceTable(message.BlueprintComponent) &&
     isReferenceTable(message.Schema) &&

@@ -1,4 +1,4 @@
-package physics
+﻿package physics
 
 import (
 	"math"
@@ -7,22 +7,22 @@ import (
 	"space-game-07-server/internal/game"
 )
 
-// Задает долю скорости, сохраняемую после отскока по нормали удара.
+// Р—Р°РґР°РµС‚ РґРѕР»СЋ СЃРєРѕСЂРѕСЃС‚Рё, СЃРѕС…СЂР°РЅСЏРµРјСѓСЋ РїРѕСЃР»Рµ РѕС‚СЃРєРѕРєР° РїРѕ РЅРѕСЂРјР°Р»Рё СѓРґР°СЂР°.
 const collisionRestitution = 0.5
 
-// Хранит геометрию найденного столкновения для разделения и импульса.
+// РҐСЂР°РЅРёС‚ РіРµРѕРјРµС‚СЂРёСЋ РЅР°Р№РґРµРЅРЅРѕРіРѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ РґР»СЏ СЂР°Р·РґРµР»РµРЅРёСЏ Рё РёРјРїСѓР»СЊСЃР°.
 type Collision struct {
-	Correction   game.WorldVector // Минимальный сдвиг первого тела из пересечения.
-	ContactPoint game.WorldVector // Точка приложения импульса в координатах мира.
+	Correction   game.WorldVector // РњРёРЅРёРјР°Р»СЊРЅС‹Р№ СЃРґРІРёРі РїРµСЂРІРѕРіРѕ С‚РµР»Р° РёР· РїРµСЂРµСЃРµС‡РµРЅРёСЏ.
+	ContactPoint game.WorldVector // РўРѕС‡РєР° РїСЂРёР»РѕР¶РµРЅРёСЏ РёРјРїСѓР»СЊСЃР° РІ РєРѕРѕСЂРґРёРЅР°С‚Р°С… РјРёСЂР°.
 }
 
-// Возвращает минимальный сдвиг первого тела, если два выпуклых тела пересекаются.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СЃРґРІРёРі РїРµСЂРІРѕРіРѕ С‚РµР»Р°, РµСЃР»Рё РґРІР° РІС‹РїСѓРєР»С‹С… С‚РµР»Р° РїРµСЂРµСЃРµРєР°СЋС‚СЃСЏ.
 func CollisionCorrection(moving data.CosmicObject, movingModel data.CosmicObjectModel, obstacle data.CosmicObject, obstacleModel data.CosmicObjectModel) (game.WorldVector, bool) {
 	collision, collided := CollisionInfo(moving, movingModel, obstacle, obstacleModel)
 	return collision.Correction, collided
 }
 
-// Возвращает сдвиг и точку контакта для двух пересекающихся выпуклых тел.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРґРІРёРі Рё С‚РѕС‡РєСѓ РєРѕРЅС‚Р°РєС‚Р° РґР»СЏ РґРІСѓС… РїРµСЂРµСЃРµРєР°СЋС‰РёС…СЃСЏ РІС‹РїСѓРєР»С‹С… С‚РµР».
 func CollisionInfo(moving data.CosmicObject, movingModel data.CosmicObjectModel, obstacle data.CosmicObject, obstacleModel data.CosmicObjectModel) (Collision, bool) {
 	movingPolygon := transformedBodyPolygon(moving, movingModel)
 	obstaclePolygon := transformedBodyPolygon(obstacle, obstacleModel)
@@ -57,7 +57,7 @@ func CollisionInfo(moving data.CosmicObject, movingModel data.CosmicObjectModel,
 	}, true
 }
 
-// Применяет разделение тел и импульс столкновения с учетом массы и вращения.
+// РџСЂРёРјРµРЅСЏРµС‚ СЂР°Р·РґРµР»РµРЅРёРµ С‚РµР» Рё РёРјРїСѓР»СЊСЃ СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ СЃ СѓС‡РµС‚РѕРј РјР°СЃСЃС‹ Рё РІСЂР°С‰РµРЅРёСЏ.
 func ApplyCollisionResponse(moving data.CosmicObject, movingModel data.CosmicObjectModel, obstacle data.CosmicObject, obstacleModel data.CosmicObjectModel, collision Collision) (data.CosmicObject, data.CosmicObject) {
 	correction := collision.Correction
 	length := math.Hypot(correction.X, correction.Y)
@@ -126,7 +126,7 @@ func ApplyCollisionResponse(moving data.CosmicObject, movingModel data.CosmicObj
 	return moving, obstacle
 }
 
-// Возвращает подвижность тела для импульсного расчета.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕРґРІРёР¶РЅРѕСЃС‚СЊ С‚РµР»Р° РґР»СЏ РёРјРїСѓР»СЊСЃРЅРѕРіРѕ СЂР°СЃС‡РµС‚Р°.
 func collisionInverseMass(cosmicObject data.CosmicObject) float64 {
 	if cosmicObject.Anchored || !cosmicObject.Enabled || cosmicObject.Mass <= 0 {
 		return 0
@@ -135,7 +135,7 @@ func collisionInverseMass(cosmicObject data.CosmicObject) float64 {
 	return 1 / cosmicObject.Mass
 }
 
-// Возвращает обратный момент инерции для импульсного расчета.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕР±СЂР°С‚РЅС‹Р№ РјРѕРјРµРЅС‚ РёРЅРµСЂС†РёРё РґР»СЏ РёРјРїСѓР»СЊСЃРЅРѕРіРѕ СЂР°СЃС‡РµС‚Р°.
 func collisionInverseInertia(cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
 	if cosmicObject.Anchored || !cosmicObject.Enabled || cosmicObject.Mass <= 0 {
 		return 0
@@ -149,7 +149,7 @@ func collisionInverseInertia(cosmicObject data.CosmicObject, model data.CosmicOb
 	return 1 / moment
 }
 
-// Считает угол, на который автоматика должна сместить цель после углового импульса.
+// РЎС‡РёС‚Р°РµС‚ СѓРіРѕР», РЅР° РєРѕС‚РѕСЂС‹Р№ Р°РІС‚РѕРјР°С‚РёРєР° РґРѕР»Р¶РЅР° СЃРјРµСЃС‚РёС‚СЊ С†РµР»СЊ РїРѕСЃР»Рµ СѓРіР»РѕРІРѕРіРѕ РёРјРїСѓР»СЊСЃР°.
 func angularBounceStopAngle(angularVelocityDelta float64, cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
 	acceleration := angularAcceleration(cosmicObject, model)
 	if acceleration <= 0 || math.Abs(angularVelocityDelta) <= Epsilon {
@@ -159,7 +159,7 @@ func angularBounceStopAngle(angularVelocityDelta float64, cosmicObject data.Cosm
 	return math.Copysign(angularVelocityDelta*angularVelocityDelta/(2*acceleration), angularVelocityDelta)
 }
 
-// Считает скорость точки тела с учетом поступательного и вращательного движения.
+// РЎС‡РёС‚Р°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ С‚РѕС‡РєРё С‚РµР»Р° СЃ СѓС‡РµС‚РѕРј РїРѕСЃС‚СѓРїР°С‚РµР»СЊРЅРѕРіРѕ Рё РІСЂР°С‰Р°С‚РµР»СЊРЅРѕРіРѕ РґРІРёР¶РµРЅРёСЏ.
 func contactVelocity(cosmicObject data.CosmicObject, radius game.WorldVector) game.WorldVector {
 	return game.WorldVector{
 		X: cosmicObject.VelocityX + cosmicObject.AngularSpeed*radius.Y,
@@ -167,12 +167,12 @@ func contactVelocity(cosmicObject data.CosmicObject, radius game.WorldVector) ga
 	}
 }
 
-// Возвращает двумерное векторное произведение в знаке часовой стрелки.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅРѕРµ РІРµРєС‚РѕСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ РІ Р·РЅР°РєРµ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё.
 func clockwiseCross(first game.WorldVector, second game.WorldVector) float64 {
 	return first.Y*second.X - first.X*second.Y
 }
 
-// Переводит локальные вершины модели в координаты игрового мира.
+// РџРµСЂРµРІРѕРґРёС‚ Р»РѕРєР°Р»СЊРЅС‹Рµ РІРµСЂС€РёРЅС‹ РјРѕРґРµР»Рё РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ РёРіСЂРѕРІРѕРіРѕ РјРёСЂР°.
 func transformedBodyPolygon(cosmicObject data.CosmicObject, model data.CosmicObjectModel) []game.WorldVector {
 	forward := ForwardVector(cosmicObject.Rotation)
 	right := RightVector(cosmicObject.Rotation)
@@ -188,7 +188,7 @@ func transformedBodyPolygon(cosmicObject data.CosmicObject, model data.CosmicObj
 	return points
 }
 
-// Проверяет оси одного тела и возвращает наименьшее перекрытие.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕСЃРё РѕРґРЅРѕРіРѕ С‚РµР»Р° Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РЅР°РёРјРµРЅСЊС€РµРµ РїРµСЂРµРєСЂС‹С‚РёРµ.
 func smallestSeparatingAxis(first []game.WorldVector, second []game.WorldVector, centerDelta game.WorldVector) (bool, float64, game.WorldVector) {
 	smallestOverlap := math.MaxFloat64
 	smallestAxis := game.WorldVector{}
@@ -228,7 +228,7 @@ func smallestSeparatingAxis(first []game.WorldVector, second []game.WorldVector,
 	return false, smallestOverlap, smallestAxis
 }
 
-// Проецирует вершины на заданную ось.
+// РџСЂРѕРµС†РёСЂСѓРµС‚ РІРµСЂС€РёРЅС‹ РЅР° Р·Р°РґР°РЅРЅСѓСЋ РѕСЃСЊ.
 func projectPolygon(points []game.WorldVector, axis game.WorldVector) (float64, float64) {
 	minimum := points[0].X*axis.X + points[0].Y*axis.Y
 	maximum := minimum
@@ -242,7 +242,7 @@ func projectPolygon(points []game.WorldVector, axis game.WorldVector) (float64, 
 	return minimum, maximum
 }
 
-// Оценивает точку контакта как центр пересечения двух выпуклых многоугольников.
+// РћС†РµРЅРёРІР°РµС‚ С‚РѕС‡РєСѓ РєРѕРЅС‚Р°РєС‚Р° РєР°Рє С†РµРЅС‚СЂ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РґРІСѓС… РІС‹РїСѓРєР»С‹С… РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРєРѕРІ.
 func collisionContactPoint(first []game.WorldVector, second []game.WorldVector, correction game.WorldVector) game.WorldVector {
 	intersection := convexIntersection(first, second)
 	if len(intersection) > 0 {
@@ -252,7 +252,7 @@ func collisionContactPoint(first []game.WorldVector, second []game.WorldVector, 
 	return supportContactPoint(first, second, correction)
 }
 
-// Обрезает один выпуклый многоугольник границами другого.
+// РћР±СЂРµР·Р°РµС‚ РѕРґРёРЅ РІС‹РїСѓРєР»С‹Р№ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРє РіСЂР°РЅРёС†Р°РјРё РґСЂСѓРіРѕРіРѕ.
 func convexIntersection(subject []game.WorldVector, clip []game.WorldVector) []game.WorldVector {
 	result := append([]game.WorldVector{}, subject...)
 	orientation := polygonSignedArea(clip)
@@ -288,7 +288,7 @@ func convexIntersection(subject []game.WorldVector, clip []game.WorldVector) []g
 	return result
 }
 
-// Проверяет, лежит ли точка с внутренней стороны ребра.
+// РџСЂРѕРІРµСЂСЏРµС‚, Р»РµР¶РёС‚ Р»Рё С‚РѕС‡РєР° СЃ РІРЅСѓС‚СЂРµРЅРЅРµР№ СЃС‚РѕСЂРѕРЅС‹ СЂРµР±СЂР°.
 func insideClipEdge(point game.WorldVector, edgeStart game.WorldVector, edgeEnd game.WorldVector, orientation float64) bool {
 	cross := (edgeEnd.X-edgeStart.X)*(point.Y-edgeStart.Y) - (edgeEnd.Y-edgeStart.Y)*(point.X-edgeStart.X)
 	if orientation >= 0 {
@@ -297,7 +297,7 @@ func insideClipEdge(point game.WorldVector, edgeStart game.WorldVector, edgeEnd 
 	return cross <= Epsilon
 }
 
-// Возвращает пересечение отрезка с прямой ребра отсечения.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРµСЂРµСЃРµС‡РµРЅРёРµ РѕС‚СЂРµР·РєР° СЃ РїСЂСЏРјРѕР№ СЂРµР±СЂР° РѕС‚СЃРµС‡РµРЅРёСЏ.
 func lineIntersection(segmentStart game.WorldVector, segmentEnd game.WorldVector, edgeStart game.WorldVector, edgeEnd game.WorldVector) game.WorldVector {
 	segment := game.WorldVector{
 		X: segmentEnd.X - segmentStart.X,
@@ -323,7 +323,7 @@ func lineIntersection(segmentStart game.WorldVector, segmentEnd game.WorldVector
 	}
 }
 
-// Считает ориентированную площадь многоугольника.
+// РЎС‡РёС‚Р°РµС‚ РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅСѓСЋ РїР»РѕС‰Р°РґСЊ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРєР°.
 func polygonSignedArea(points []game.WorldVector) float64 {
 	area := 0.0
 	for index := range points {
@@ -333,7 +333,7 @@ func polygonSignedArea(points []game.WorldVector) float64 {
 	return area / 2
 }
 
-// Считает центр площади многоугольника или среднюю точку вырожденного набора.
+// РЎС‡РёС‚Р°РµС‚ С†РµРЅС‚СЂ РїР»РѕС‰Р°РґРё РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРєР° РёР»Рё СЃСЂРµРґРЅСЋСЋ С‚РѕС‡РєСѓ РІС‹СЂРѕР¶РґРµРЅРЅРѕРіРѕ РЅР°Р±РѕСЂР°.
 func polygonCentroid(points []game.WorldVector) game.WorldVector {
 	areaFactor := 0.0
 	centroid := game.WorldVector{}
@@ -354,7 +354,7 @@ func polygonCentroid(points []game.WorldVector) game.WorldVector {
 	}
 }
 
-// Возвращает среднее положение набора точек.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµРґРЅРµРµ РїРѕР»РѕР¶РµРЅРёРµ РЅР°Р±РѕСЂР° С‚РѕС‡РµРє.
 func averagePoint(points []game.WorldVector) game.WorldVector {
 	result := game.WorldVector{}
 	for _, point := range points {
@@ -371,7 +371,7 @@ func averagePoint(points []game.WorldVector) game.WorldVector {
 	}
 }
 
-// Оценивает контакт через опорные точки, если область пересечения выродилась.
+// РћС†РµРЅРёРІР°РµС‚ РєРѕРЅС‚Р°РєС‚ С‡РµСЂРµР· РѕРїРѕСЂРЅС‹Рµ С‚РѕС‡РєРё, РµСЃР»Рё РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РІС‹СЂРѕРґРёР»Р°СЃСЊ.
 func supportContactPoint(first []game.WorldVector, second []game.WorldVector, correction game.WorldVector) game.WorldVector {
 	length := math.Hypot(correction.X, correction.Y)
 	if length <= Epsilon {
@@ -391,7 +391,7 @@ func supportContactPoint(first []game.WorldVector, second []game.WorldVector, co
 	}
 }
 
-// Возвращает среднюю опорную точку по выбранной стороне оси.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµРґРЅСЋСЋ РѕРїРѕСЂРЅСѓСЋ С‚РѕС‡РєСѓ РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ СЃС‚РѕСЂРѕРЅРµ РѕСЃРё.
 func supportAverage(points []game.WorldVector, axis game.WorldVector, maximum bool) game.WorldVector {
 	target := projection(points[0], axis)
 	for _, point := range points[1:] {

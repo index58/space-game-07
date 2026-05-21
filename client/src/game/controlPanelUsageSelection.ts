@@ -58,7 +58,7 @@ export const normalizeControlPanelUsageSelection = (input: NormalizeControlPanel
   const groups = input.equipmentGroups
     .filter((group) => availableObjectIDs.includes(group.CosmicObjectID))
     .sort((left, right) => left.ID - right.ID);
-  const containers = groups.filter((group) => isEquipmentGroupItemtype(group, referenceData, "Container"));
+  const containers = groups.filter((group) => isEquipmentGroupItemType(group, referenceData, "Container"));
   const internalEquipment = groups.filter((group) => isEquipmentGroupInternalUsable(group, referenceData));
   const leftContainer = normalizeSelectedGroupOnObject(availableObjectIDs, containers, input.selection.leftContainerObjectId, input.selection.leftContainerGroupId);
   const rightEquipment = normalizeSelectedGroupOnObject(availableObjectIDs, internalEquipment, input.selection.rightEquipmentObjectId, input.selection.rightEquipmentGroupId);
@@ -177,15 +177,15 @@ const emptySelection = (): ControlPanelUsageSelection => ({
 });
 
 // Проверяет принадлежность группы оборудования к типу предмета по акрониму.
-const isEquipmentGroupItemtype = (group: EquipmentGroup, referenceData: ReferenceDataMessage, itemtypeAcronym: string): boolean => {
+const isEquipmentGroupItemType = (group: EquipmentGroup, referenceData: ReferenceDataMessage, itemTypeAcronym: string): boolean => {
   const itemModel = referenceData.ItemModel.Items[String(group.EquipmentItemModelID)];
-  const itemtype = referenceData.Itemtype.Items[String(itemModel?.ItemtypeID)];
-  return itemtype?.Acronym === itemtypeAcronym;
+  const itemType = referenceData.ItemType.Items[String(itemModel?.ItemTypeID)];
+  return itemType?.Acronym === itemTypeAcronym;
 };
 
 // Проверяет, что группу можно использовать из правой панели использования.
 const isEquipmentGroupInternalUsable = (group: EquipmentGroup, referenceData: ReferenceDataMessage): boolean => {
   const itemModel = referenceData.ItemModel.Items[String(group.EquipmentItemModelID)];
-  const itemtype = referenceData.Itemtype.Items[String(itemModel?.ItemtypeID)];
-  return Boolean(itemtype?.IsInternalUsable);
+  const itemType = referenceData.ItemType.Items[String(itemModel?.ItemTypeID)];
+  return Boolean(itemType?.IsInternalUsable);
 };

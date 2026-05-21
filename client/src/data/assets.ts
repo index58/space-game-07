@@ -1,4 +1,4 @@
-﻿// Ключи ассетов стабильны внутри клиента, а пути соответствуют каталогу client/public.
+// Ключи ассетов стабильны внутри клиента, а пути соответствуют каталогу client/public.
 export const ASSET_KEYS = {
   background: "world.background.space",
 } as const;

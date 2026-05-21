@@ -1,4 +1,4 @@
-﻿import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
+import { INITIAL_ZOOM, clampZoom } from "../domain/camera";
 import type { ChatSendMessage, ChatStateMessage, ClientInputState, CosmicObject } from "../network/protocol";
 import { GameUiRuntime } from "../ui-kit/runtime";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";

@@ -1,5 +1,5 @@
 {
-  "MaxID": 1510,
+  "MaxID": 1543,
   "Items": {
     "603": {
       "ID": 603,
@@ -10,7 +10,10 @@
       "EnabledCount": 103,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "604": {
       "ID": 604,
@@ -21,7 +24,10 @@
       "EnabledCount": 157,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "605": {
       "ID": 605,
@@ -32,7 +38,10 @@
       "EnabledCount": 7,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "606": {
       "ID": 606,
@@ -43,7 +52,10 @@
       "EnabledCount": 42,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "607": {
       "ID": 607,
@@ -54,7 +66,10 @@
       "EnabledCount": 149,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "608": {
       "ID": 608,
@@ -65,7 +80,10 @@
       "EnabledCount": 12,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "633": {
       "ID": 633,
@@ -76,7 +94,10 @@
       "EnabledCount": 18,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "634": {
       "ID": 634,
@@ -87,7 +108,10 @@
       "EnabledCount": 5,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "635": {
       "ID": 635,
@@ -98,7 +122,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "636": {
       "ID": 636,
@@ -109,7 +136,10 @@
       "EnabledCount": 6,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "637": {
       "ID": 637,
@@ -120,7 +150,10 @@
       "EnabledCount": 21,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "638": {
       "ID": 638,
@@ -131,7 +164,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "765": {
       "ID": 765,
@@ -142,7 +178,10 @@
       "EnabledCount": 9,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "766": {
       "ID": 766,
@@ -153,7 +192,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "767": {
       "ID": 767,
@@ -164,7 +206,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "768": {
       "ID": 768,
@@ -175,7 +220,10 @@
       "EnabledCount": 3,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "769": {
       "ID": 769,
@@ -186,7 +234,10 @@
       "EnabledCount": 11,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "770": {
       "ID": 770,
@@ -197,7 +248,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "783": {
       "ID": 783,
@@ -208,7 +262,10 @@
       "EnabledCount": 23,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "784": {
       "ID": 784,
@@ -219,7 +276,10 @@
       "EnabledCount": 6,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "785": {
       "ID": 785,
@@ -230,7 +290,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "786": {
       "ID": 786,
@@ -241,7 +304,10 @@
       "EnabledCount": 7,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "787": {
       "ID": 787,
@@ -252,7 +318,10 @@
       "EnabledCount": 25,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "788": {
       "ID": 788,
@@ -263,7 +332,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "789": {
       "ID": 789,
@@ -274,7 +346,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "790": {
       "ID": 790,
@@ -285,7 +360,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "791": {
       "ID": 791,
@@ -296,7 +374,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "792": {
       "ID": 792,
@@ -307,7 +388,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "793": {
       "ID": 793,
@@ -318,7 +402,10 @@
       "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "794": {
       "ID": 794,
@@ -329,7 +416,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "795": {
       "ID": 795,
@@ -340,7 +430,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "796": {
       "ID": 796,
@@ -351,7 +444,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "797": {
       "ID": 797,
@@ -362,7 +458,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "798": {
       "ID": 798,
@@ -373,7 +472,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "799": {
       "ID": 799,
@@ -384,7 +486,10 @@
       "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "800": {
       "ID": 800,
@@ -395,7 +500,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "897": {
       "ID": 897,
@@ -406,7 +514,10 @@
       "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "898": {
       "ID": 898,
@@ -417,7 +528,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "899": {
       "ID": 899,
@@ -428,7 +542,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "900": {
       "ID": 900,
@@ -439,7 +556,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "901": {
       "ID": 901,
@@ -450,7 +570,10 @@
       "EnabledCount": 7,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "902": {
       "ID": 902,
@@ -461,7 +584,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1241": {
       "ID": 1241,
@@ -472,7 +598,10 @@
       "EnabledCount": 63,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1242": {
       "ID": 1242,
@@ -483,7 +612,10 @@
       "EnabledCount": 47,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1243": {
       "ID": 1243,
@@ -494,7 +626,10 @@
       "EnabledCount": 3,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1244": {
       "ID": 1244,
@@ -505,7 +640,10 @@
       "EnabledCount": 21,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1245": {
       "ID": 1245,
@@ -516,7 +654,10 @@
       "EnabledCount": 75,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1246": {
       "ID": 1246,
@@ -527,7 +668,10 @@
       "EnabledCount": 6,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1247": {
       "ID": 1247,
@@ -538,7 +682,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1248": {
       "ID": 1248,
@@ -549,7 +696,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1249": {
       "ID": 1249,
@@ -560,7 +710,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1250": {
       "ID": 1250,
@@ -571,7 +724,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1331": {
       "ID": 1331,
@@ -582,7 +738,10 @@
       "EnabledCount": 69,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1332": {
       "ID": 1332,
@@ -593,7 +752,10 @@
       "EnabledCount": 61,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1333": {
       "ID": 1333,
@@ -604,7 +766,10 @@
       "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1334": {
       "ID": 1334,
@@ -615,7 +780,10 @@
       "EnabledCount": 24,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1335": {
       "ID": 1335,
@@ -626,7 +794,10 @@
       "EnabledCount": 86,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1336": {
       "ID": 1336,
@@ -637,7 +808,10 @@
       "EnabledCount": 7,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1337": {
       "ID": 1337,
@@ -648,7 +822,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1338": {
       "ID": 1338,
@@ -659,7 +836,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1339": {
       "ID": 1339,
@@ -670,7 +850,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1340": {
       "ID": 1340,
@@ -681,7 +864,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1361": {
       "ID": 1361,
@@ -692,7 +878,10 @@
       "EnabledCount": 10,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1362": {
       "ID": 1362,
@@ -703,7 +892,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1363": {
       "ID": 1363,
@@ -714,7 +906,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1364": {
       "ID": 1364,
@@ -725,7 +920,10 @@
       "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1365": {
       "ID": 1365,
@@ -736,7 +934,10 @@
       "EnabledCount": 14,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1366": {
       "ID": 1366,
@@ -747,7 +948,10 @@
       "EnabledCount": 2,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 1507
     },
     "1367": {
       "ID": 1367,
@@ -758,7 +962,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1368": {
       "ID": 1368,
@@ -769,7 +976,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 1506
     },
     "1369": {
       "ID": 1369,
@@ -780,7 +990,10 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
     "1370": {
       "ID": 1370,
@@ -791,76 +1004,97 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
-    "1501": {
-      "ID": 1501,
+    "1533": {
+      "ID": 1533,
       "CosmicObjectID": 1,
       "Title": "SimpleThruster",
       "EquipmentItemModelID": 1,
-      "Count": 94,
-      "EnabledCount": 94,
+      "Count": 76,
+      "EnabledCount": 76,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
-    "1502": {
-      "ID": 1502,
+    "1534": {
+      "ID": 1534,
       "CosmicObjectID": 1,
       "Title": "SimpleTorquer",
       "EquipmentItemModelID": 2,
-      "Count": 90,
-      "EnabledCount": 90,
+      "Count": 72,
+      "EnabledCount": 72,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
-    "1503": {
-      "ID": 1503,
+    "1535": {
+      "ID": 1535,
       "CosmicObjectID": 1,
       "Title": "LightCannon120mm",
       "EquipmentItemModelID": 3,
-      "Count": 5,
-      "EnabledCount": 5,
+      "Count": 4,
+      "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
-    "1504": {
-      "ID": 1504,
+    "1536": {
+      "ID": 1536,
       "CosmicObjectID": 1,
       "Title": "CompactGenerator",
       "EquipmentItemModelID": 4,
-      "Count": 34,
-      "EnabledCount": 34,
+      "Count": 27,
+      "EnabledCount": 27,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
-    "1505": {
-      "ID": 1505,
+    "1537": {
+      "ID": 1537,
       "CosmicObjectID": 1,
       "Title": "SmallMelitFuelTank",
       "EquipmentItemModelID": 5,
-      "Count": 121,
-      "EnabledCount": 121,
+      "Count": 96,
+      "EnabledCount": 96,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 1538
     },
-    "1506": {
-      "ID": 1506,
+    "1538": {
+      "ID": 1538,
       "CosmicObjectID": 1,
       "Title": "SmallCargoContainer",
       "EquipmentItemModelID": 6,
-      "Count": 9,
-      "EnabledCount": 9,
+      "Count": 7,
+      "EnabledCount": 7,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 1539
     },
-    "1507": {
-      "ID": 1507,
+    "1539": {
+      "ID": 1539,
       "CosmicObjectID": 1,
       "Title": "ReserveCargoContainer",
       "EquipmentItemModelID": 6,
@@ -868,10 +1102,13 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
-    "1508": {
-      "ID": 1508,
+    "1540": {
+      "ID": 1540,
       "CosmicObjectID": 1,
       "Title": "AuxiliaryCargoContainer",
       "EquipmentItemModelID": 6,
@@ -879,10 +1116,13 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     },
-    "1509": {
-      "ID": 1509,
+    "1541": {
+      "ID": 1541,
       "CosmicObjectID": 1,
       "Title": "SmallConstructor",
       "EquipmentItemModelID": 13,
@@ -890,10 +1130,13 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 1538,
+      "DestinationEquipmentGroupID": 1539,
+      "OppositeEquipmentGroupID": 0
     },
-    "1510": {
-      "ID": 1510,
+    "1542": {
+      "ID": 1542,
       "CosmicObjectID": 1,
       "Title": "SmallDeconstructor",
       "EquipmentItemModelID": 14,
@@ -901,7 +1144,24 @@
       "EnabledCount": 1,
       "Enabled": true,
       "Active": false,
-      "LastRechargeStartTime": 0
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
+    },
+    "1543": {
+      "ID": 1543,
+      "CosmicObjectID": 1,
+      "Title": "UniversalRobot",
+      "EquipmentItemModelID": 21,
+      "Count": 10,
+      "EnabledCount": 10,
+      "Enabled": true,
+      "Active": false,
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
     }
   }
 }

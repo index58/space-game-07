@@ -129,7 +129,7 @@ const getAggregatedPilotTools = (input: PilotToolbarInput): AggregatedPilotTool[
 
 // Проверяет флаг типа предмета через справочник.
 const isPilotInstrument = (itemModel: ItemModelReference, referenceData: ReferenceDataMessage): boolean => {
-  return Boolean(referenceData.Itemtype.Items[String(itemModel.ItemtypeID)]?.IsPilotInstrument);
+  return Boolean(referenceData.ItemType.Items[String(itemModel.ItemTypeID)]?.IsPilotInstrument);
 };
 
 // Приводит объединенную модель к данным для отрисовки ячейки.

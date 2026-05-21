@@ -1,4 +1,4 @@
-package data
+﻿package data
 
 import (
 	"encoding/json"
@@ -8,12 +8,12 @@ import (
 	"testing"
 )
 
-// Проверяет, что добавление модели назначает идентификатор, вычисляет размеры тела и индексирует акроним.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРѕР±Р°РІР»РµРЅРёРµ РјРѕРґРµР»Рё РЅР°Р·РЅР°С‡Р°РµС‚ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ, РІС‹С‡РёСЃР»СЏРµС‚ СЂР°Р·РјРµСЂС‹ С‚РµР»Р° Рё РёРЅРґРµРєСЃРёСЂСѓРµС‚ Р°РєСЂРѕРЅРёРј.
 func TestCosmicObjectModelsAddAssignsIDCalculatesBodySizeAndIndexesModel(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
 	cosmicObjectModel, err := cosmicObjectModels.Add(&CosmicObjectModel{
-		TitleRu:            "Астероид 1",
+		TitleRu:            "РђСЃС‚РµСЂРѕРёРґ 1",
 		TitleEn:            "Asteroid 1",
 		Acronym:            "asteroid_0001",
 		TextureFilePath:    "assets/asteroids/asteroid_0001.png",
@@ -49,12 +49,12 @@ func TestCosmicObjectModelsAddAssignsIDCalculatesBodySizeAndIndexesModel(t *test
 	}
 }
 
-// Проверяет, что физическое тело модели описывается шестнадцатиточечным многоугольником.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ С„РёР·РёС‡РµСЃРєРѕРµ С‚РµР»Рѕ РјРѕРґРµР»Рё РѕРїРёСЃС‹РІР°РµС‚СЃСЏ С€РµСЃС‚РЅР°РґС†Р°С‚РёС‚РѕС‡РµС‡РЅС‹Рј РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРєРѕРј.
 func TestCosmicObjectModelsBuildsSixteenPointBodyPolygon(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
 	cosmicObjectModel, err := cosmicObjectModels.Add(&CosmicObjectModel{
-		TitleRu:            "РљРѕСЂР°Р±Р»СЊ",
+		TitleRu:            "Р С™Р С•РЎР‚Р В°Р В±Р В»РЎРЉ",
 		TitleEn:            "Ship",
 		Acronym:            "ship_test",
 		TextureScale:       4,
@@ -83,12 +83,12 @@ func TestCosmicObjectModelsBuildsSixteenPointBodyPolygon(t *testing.T) {
 	}
 }
 
-// Проверяет, что многоугольник тела смещается относительно центра текстуры.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРє С‚РµР»Р° СЃРјРµС‰Р°РµС‚СЃСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂР° С‚РµРєСЃС‚СѓСЂС‹.
 func TestCosmicObjectModelsOffsetsBodyPolygonFromTextureBodyOrigin(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
 	cosmicObjectModel, err := cosmicObjectModels.Add(&CosmicObjectModel{
-		TitleRu:            "РљРѕСЂР°Р±Р»СЊ СЃРѕ СЃРјРµС‰РµРЅРёРµРј",
+		TitleRu:            "Р С™Р С•РЎР‚Р В°Р В±Р В»РЎРЉ РЎРѓР С• РЎРѓР СР ВµРЎвЂ°Р ВµР Р…Р С‘Р ВµР С",
 		TitleEn:            "Offset Ship",
 		Acronym:            "ship_offset",
 		TextureWidth:       100,
@@ -118,31 +118,31 @@ func TestCosmicObjectModelsOffsetsBodyPolygonFromTextureBodyOrigin(t *testing.T)
 	}
 }
 
-// Проверяет, что повторяющиеся уникальные названия и акроним модели не допускаются.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕРІС‚РѕСЂСЏСЋС‰РёРµСЃСЏ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РЅР°Р·РІР°РЅРёСЏ Рё Р°РєСЂРѕРЅРёРј РјРѕРґРµР»Рё РЅРµ РґРѕРїСѓСЃРєР°СЋС‚СЃСЏ.
 func TestCosmicObjectModelsAddRejectsDuplicateUniqueFields(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
 
-	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "Астероид 1", TitleEn: "Asteroid 1", Acronym: "asteroid_0001", TextureScale: 4, CosmicObjectTypeID: 3}); err != nil {
+	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "РђСЃС‚РµСЂРѕРёРґ 1", TitleEn: "Asteroid 1", Acronym: "asteroid_0001", TextureScale: 4, CosmicObjectTypeID: 3}); err != nil {
 		t.Fatalf("first Add returned error: %v", err)
 	}
 
-	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "Астероид 1", TitleEn: "Asteroid 2", Acronym: "asteroid_0002", TextureScale: 4, CosmicObjectTypeID: 3}); err == nil {
+	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "РђСЃС‚РµСЂРѕРёРґ 1", TitleEn: "Asteroid 2", Acronym: "asteroid_0002", TextureScale: 4, CosmicObjectTypeID: 3}); err == nil {
 		t.Fatal("Add accepted duplicate TitleRu")
 	}
-	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "Астероид 2", TitleEn: "Asteroid 1", Acronym: "asteroid_0002", TextureScale: 4, CosmicObjectTypeID: 3}); err == nil {
+	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "РђСЃС‚РµСЂРѕРёРґ 2", TitleEn: "Asteroid 1", Acronym: "asteroid_0002", TextureScale: 4, CosmicObjectTypeID: 3}); err == nil {
 		t.Fatal("Add accepted duplicate TitleEn")
 	}
-	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "Астероид 2", TitleEn: "Asteroid 2", Acronym: "asteroid_0001", TextureScale: 4, CosmicObjectTypeID: 3}); err == nil {
+	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "РђСЃС‚РµСЂРѕРёРґ 2", TitleEn: "Asteroid 2", Acronym: "asteroid_0001", TextureScale: 4, CosmicObjectTypeID: 3}); err == nil {
 		t.Fatal("Add accepted duplicate Acronym")
 	}
 }
 
-// Проверяет, что сохранённые модели загружаются обратно с восстановленными основными полями.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Рµ РјРѕРґРµР»Рё Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РѕР±СЂР°С‚РЅРѕ СЃ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹РјРё РѕСЃРЅРѕРІРЅС‹РјРё РїРѕР»СЏРјРё.
 func TestCosmicObjectModelsSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "CosmicObjectModels.json")
 	cosmicObjectModels := NewCosmicObjectModels()
 	cosmicObjectModel, err := cosmicObjectModels.Add(&CosmicObjectModel{
-		TitleRu:            "Корабль",
+		TitleRu:            "РљРѕСЂР°Р±Р»СЊ",
 		TitleEn:            "Ship",
 		Acronym:            "ship_0001",
 		TextureBodyWidth:   88,
@@ -175,10 +175,10 @@ func TestCosmicObjectModelsSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
-// Проверяет, что JSON-представление моделей использует имена полей из Go-структур.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ JSON-РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РјРѕРґРµР»РµР№ РёСЃРїРѕР»СЊР·СѓРµС‚ РёРјРµРЅР° РїРѕР»РµР№ РёР· Go-СЃС‚СЂСѓРєС‚СѓСЂ.
 func TestCosmicObjectModelsJSONKeysMatchGoFieldNames(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
-	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "Корабль", TitleEn: "Ship", Acronym: "ship_0001", TextureScale: 4, CosmicObjectTypeID: 1}); err != nil {
+	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "ship_0001", TextureScale: 4, CosmicObjectTypeID: 1}); err != nil {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
@@ -210,7 +210,7 @@ func TestCosmicObjectModelsJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
-// Проверяет, что импорт старого JSON добавляет номера к повторяющимся названиям.
+// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РёРјРїРѕСЂС‚ СЃС‚Р°СЂРѕРіРѕ JSON РґРѕР±Р°РІР»СЏРµС‚ РЅРѕРјРµСЂР° Рє РїРѕРІС‚РѕСЂСЏСЋС‰РёРјСЃСЏ РЅР°Р·РІР°РЅРёСЏРј.
 func TestCosmicObjectModelsLoadFromLegacyJSONNumbersDuplicateTitles(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "legacy.json")
 	content := []byte(`[
@@ -223,7 +223,7 @@ func TestCosmicObjectModelsLoadFromLegacyJSONNumbersDuplicateTitles(t *testing.T
     "TextureObjectWidth": 882,
     "TextureObjectLength": 870,
     "CosmicObjectType": "asteroid",
-    "TitleRu": "Астероид",
+    "TitleRu": "РђСЃС‚РµСЂРѕРёРґ",
     "TitleEn": "Asteroid",
     "Acronym": "asteroid_0001",
     "Mass": 767.34,
@@ -239,7 +239,7 @@ func TestCosmicObjectModelsLoadFromLegacyJSONNumbersDuplicateTitles(t *testing.T
     "TextureObjectWidth": 804,
     "TextureObjectLength": 783,
     "CosmicObjectType": "asteroid",
-    "TitleRu": "Астероид",
+    "TitleRu": "РђСЃС‚РµСЂРѕРёРґ",
     "TitleEn": "Asteroid",
     "Acronym": "asteroid_0002",
     "Mass": 629.532,
@@ -252,7 +252,7 @@ func TestCosmicObjectModelsLoadFromLegacyJSONNumbersDuplicateTitles(t *testing.T
 	}
 
 	cosmicObjectTypes := NewCosmicObjectTypes()
-	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Астероид", TitleEn: "Asteroid", Acronym: "Asteroid"}); err != nil {
+	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "РђСЃС‚РµСЂРѕРёРґ", TitleEn: "Asteroid", Acronym: "Asteroid"}); err != nil {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
@@ -269,8 +269,8 @@ func TestCosmicObjectModelsLoadFromLegacyJSONNumbersDuplicateTitles(t *testing.T
 	if !ok {
 		t.Fatal("second model is not available by acronym")
 	}
-	if first.TitleRu != "Астероид 1" || second.TitleRu != "Астероид 2" {
-		t.Fatalf("TitleRu values = %q, %q; want Астероид 1, Астероид 2", first.TitleRu, second.TitleRu)
+	if first.TitleRu != "РђСЃС‚РµСЂРѕРёРґ 1" || second.TitleRu != "РђСЃС‚РµСЂРѕРёРґ 2" {
+		t.Fatalf("TitleRu values = %q, %q; want РђСЃС‚РµСЂРѕРёРґ 1, РђСЃС‚РµСЂРѕРёРґ 2", first.TitleRu, second.TitleRu)
 	}
 	if first.TitleEn != "Asteroid 1" || second.TitleEn != "Asteroid 2" {
 		t.Fatalf("TitleEn values = %q, %q; want Asteroid 1, Asteroid 2", first.TitleEn, second.TitleEn)

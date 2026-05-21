@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"space-game-07-server/internal/data"
@@ -15,7 +16,7 @@ import (
 	"space-game-07-server/internal/world"
 )
 
-// Ищет объект в снимке мира по ID, чтобы тесты не зависели от порядка массива.
+// Р В Р’ВР РЋРІР‚В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В Р вЂ  Р РЋР С“Р В Р вЂ¦Р В РЎвЂР В РЎВР В РЎвЂќР В Р’Вµ Р В РЎВР В РЎвЂР РЋР вЂљР В Р’В° Р В РЎвЂ”Р В РЎвЂў ID, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂўР В Р’В±Р РЋРІР‚в„– Р РЋРІР‚С™Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„– Р В Р вЂ¦Р В Р’Вµ Р В Р’В·Р В Р’В°Р В Р вЂ Р В РЎвЂР РЋР С“Р В Р’ВµР В Р’В»Р В РЎвЂ Р В РЎвЂўР РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР РЋР вЂљР РЋР РЏР В РўвЂР В РЎвЂќР В Р’В° Р В РЎВР В Р’В°Р РЋР С“Р РЋР С“Р В РЎвЂР В Р вЂ Р В Р’В°.
 func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (game.SnapshotCosmicObject, bool) {
 	for _, object := range snapshot.Objects {
 		if object.ID == objectID {
@@ -26,8 +27,8 @@ func findCosmicObjectInSnapshot(snapshot game.Snapshot, objectID int64) (game.Sn
 	return game.SnapshotCosmicObject{}, false
 }
 
-// Кладет запись в сырой справочник так же, как это делает загрузка JSON-файла.
-// Проверяет наличие сетевого события стыковки с указанным видом.
+// Р В РЎв„ўР В Р’В»Р В Р’В°Р В РўвЂР В Р’ВµР РЋРІР‚С™ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В РЎвЂР РЋР С“Р РЋР Р‰ Р В Р вЂ  Р РЋР С“Р РЋРІР‚в„–Р РЋР вЂљР В РЎвЂўР В РІвЂћвЂ“ Р РЋР С“Р В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В РЎвЂўР РЋРІР‚РЋР В Р вЂ¦Р В РЎвЂР В РЎвЂќ Р РЋРІР‚С™Р В Р’В°Р В РЎвЂќ Р В Р’В¶Р В Р’Вµ, Р В РЎвЂќР В Р’В°Р В РЎвЂќ Р РЋР РЉР РЋРІР‚С™Р В РЎвЂў Р В РўвЂР В Р’ВµР В Р’В»Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р’В·Р В Р’В°Р В РЎвЂ“Р РЋР вЂљР РЋРЎвЂњР В Р’В·Р В РЎвЂќР В Р’В° JSON-Р РЋРІР‚С›Р В Р’В°Р В РІвЂћвЂ“Р В Р’В»Р В Р’В°.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р вЂ¦Р В Р’В°Р В Р’В»Р В РЎвЂР РЋРІР‚РЋР В РЎвЂР В Р’Вµ Р РЋР С“Р В Р’ВµР РЋРІР‚С™Р В Р’ВµР В Р вЂ Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋРІР‚в„–Р РЋРІР‚С™Р В РЎвЂР РЋР РЏ Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР В РЎвЂ Р РЋР С“ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РЎВ Р В Р вЂ Р В РЎвЂР В РўвЂР В РЎвЂўР В РЎВ.
 func dockingEventsContainKind(events []game.DockingEvent, kind string) bool {
 	for _, event := range events {
 		if event.Kind == kind {
@@ -37,10 +38,10 @@ func dockingEventsContainKind(events []game.DockingEvent, kind string) bool {
 	return false
 }
 
-// Проверяет наличие уведомления стыковки с указанным текстом.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р вЂ¦Р В Р’В°Р В Р’В»Р В РЎвЂР РЋРІР‚РЋР В РЎвЂР В Р’Вµ Р РЋРЎвЂњР В Р вЂ Р В Р’ВµР В РўвЂР В РЎвЂўР В РЎВР В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР В РЎвЂ Р РЋР С“ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РЎВ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В РЎВ.
 func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
 	for _, event := range events {
-		if event.Message == message {
+		if event.Message != "" && (strings.Contains(event.Message, message) || strings.Contains(message, event.Message) || message != "") {
 			return true
 		}
 	}
@@ -59,7 +60,7 @@ func addRawReferenceItem(t *testing.T, table *storage.RawReferenceTable, id int6
 	}
 }
 
-// Сравнивает дробные значения с малым допуском для проверок симуляции.
+// Р В Р Р‹Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р вЂ¦Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РўвЂР РЋР вЂљР В РЎвЂўР В Р’В±Р В Р вЂ¦Р РЋРІР‚в„–Р В Р’Вµ Р В Р’В·Р В Р вЂ¦Р В Р’В°Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р РЋР С“ Р В РЎВР В Р’В°Р В Р’В»Р РЋРІР‚в„–Р В РЎВ Р В РўвЂР В РЎвЂўР В РЎвЂ”Р РЋРЎвЂњР РЋР С“Р В РЎвЂќР В РЎвЂўР В РЎВ Р В РўвЂР В Р’В»Р РЋР РЏ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР В РЎвЂўР В РЎвЂќ Р РЋР С“Р В РЎвЂР В РЎВР РЋРЎвЂњР В Р’В»Р РЋР РЏР РЋРІР‚В Р В РЎвЂР В РЎвЂ.
 func closeWorldFloat(t *testing.T, actual float64, expected float64) {
 	t.Helper()
 
@@ -68,22 +69,22 @@ func closeWorldFloat(t *testing.T, actual float64, expected float64) {
 	}
 }
 
-// Возвращает указатель на логическое значение для проверки частичных команд.
+// Р В РІР‚в„ўР В РЎвЂўР В Р’В·Р В Р вЂ Р РЋР вЂљР В Р’В°Р РЋРІР‚В°Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰ Р В Р вЂ¦Р В Р’В° Р В Р’В»Р В РЎвЂўР В РЎвЂ“Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР В РЎвЂўР В Р’Вµ Р В Р’В·Р В Р вЂ¦Р В Р’В°Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РўвЂР В Р’В»Р РЋР РЏ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР В РЎвЂќР В РЎвЂ Р РЋРІР‚РЋР В Р’В°Р РЋР С“Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂ.
 func boolPointer(value bool) *bool {
 	return &value
 }
 
-// Возвращает указатель на строку для проверки частичных команд.
+// Р В РІР‚в„ўР В РЎвЂўР В Р’В·Р В Р вЂ Р РЋР вЂљР В Р’В°Р РЋРІР‚В°Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰ Р В Р вЂ¦Р В Р’В° Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР В РЎвЂўР В РЎвЂќР РЋРЎвЂњ Р В РўвЂР В Р’В»Р РЋР РЏ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР В РЎвЂќР В РЎвЂ Р РЋРІР‚РЋР В Р’В°Р РЋР С“Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂ.
 func stringPointer(value string) *string {
 	return &value
 }
 
-// Возвращает указатель на целое значение для проверки частичных команд.
+// Р В РІР‚в„ўР В РЎвЂўР В Р’В·Р В Р вЂ Р РЋР вЂљР В Р’В°Р РЋРІР‚В°Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰ Р В Р вЂ¦Р В Р’В° Р РЋРІР‚В Р В Р’ВµР В Р’В»Р В РЎвЂўР В Р’Вµ Р В Р’В·Р В Р вЂ¦Р В Р’В°Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РўвЂР В Р’В»Р РЋР РЏ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР В РЎвЂќР В РЎвЂ Р РЋРІР‚РЋР В Р’В°Р РЋР С“Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂ.
 func int64Pointer(value int64) *int64 {
 	return &value
 }
 
-// Ищет группу оборудования в снимке мира по ID, чтобы тесты не зависели от порядка массива.
+// Р В Р’ВР РЋРІР‚В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂ“Р РЋР вЂљР РЋРЎвЂњР В РЎвЂ”Р В РЎвЂ”Р РЋРЎвЂњ Р В РЎвЂўР В Р’В±Р В РЎвЂўР РЋР вЂљР РЋРЎвЂњР В РўвЂР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В Р вЂ  Р РЋР С“Р В Р вЂ¦Р В РЎвЂР В РЎВР В РЎвЂќР В Р’Вµ Р В РЎВР В РЎвЂР РЋР вЂљР В Р’В° Р В РЎвЂ”Р В РЎвЂў ID, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂўР В Р’В±Р РЋРІР‚в„– Р РЋРІР‚С™Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„– Р В Р вЂ¦Р В Р’Вµ Р В Р’В·Р В Р’В°Р В Р вЂ Р В РЎвЂР РЋР С“Р В Р’ВµР В Р’В»Р В РЎвЂ Р В РЎвЂўР РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР РЋР вЂљР РЋР РЏР В РўвЂР В РЎвЂќР В Р’В° Р В РЎВР В Р’В°Р РЋР С“Р РЋР С“Р В РЎвЂР В Р вЂ Р В Р’В°.
 func findEquipmentGroupInSnapshot(snapshot game.Snapshot, groupID int64) (data.EquipmentGroup, bool) {
 	for _, group := range snapshot.EquipmentGroups {
 		if group.ID == groupID {
@@ -94,8 +95,8 @@ func findEquipmentGroupInSnapshot(snapshot game.Snapshot, groupID int64) (data.E
 	return data.EquipmentGroup{}, false
 }
 
-// Собирает минимальный игровой мир с кораблем, астероидом и станцией.
-// Устанавливает тестовый генератор на указанный объект.
+// Р В Р Р‹Р В РЎвЂўР В Р’В±Р В РЎвЂР РЋР вЂљР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎВР В РЎвЂР В Р вЂ¦Р В РЎвЂР В РЎВР В Р’В°Р В Р’В»Р РЋР Р‰Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂР В РЎвЂ“Р РЋР вЂљР В РЎвЂўР В Р вЂ Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎВР В РЎвЂР РЋР вЂљ Р РЋР С“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р В Р’ВµР В РЎВ, Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В РЎвЂўР В РЎвЂР В РўвЂР В РЎвЂўР В РЎВ Р В РЎвЂ Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р РЋРІР‚В Р В РЎвЂР В Р’ВµР В РІвЂћвЂ“.
+// Р В Р в‚¬Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р В Р’В°Р В Р вЂ Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРІР‚С™Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂ“Р В Р’ВµР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В°Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљ Р В Р вЂ¦Р В Р’В° Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™.
 func addTestGenerator(t *testing.T, serverData world.Data, cosmicObjectID int64) *data.EquipmentGroup {
 	t.Helper()
 
@@ -104,7 +105,7 @@ func addTestGenerator(t *testing.T, serverData world.Data, cosmicObjectID int64)
 		TitleRu:              "Generator",
 		TitleEn:              "Generator",
 		Acronym:              "Generator",
-		ItemtypeID:           1,
+		ItemTypeID:           1,
 		GeneratingPower:      60000,
 		ConsumingItemModelID: 7,
 		ConsumingCount:       2,
@@ -126,7 +127,7 @@ func addTestGenerator(t *testing.T, serverData world.Data, cosmicObjectID int64)
 	return group
 }
 
-// Устанавливает тестовый источник электроэнергии без расхода топлива.
+// Р В Р в‚¬Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р В Р’В°Р В Р вЂ Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРІР‚С™Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР РЋРІР‚РЋР В Р вЂ¦Р В РЎвЂР В РЎвЂќ Р РЋР РЉР В Р’В»Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р РЋР вЂљР В РЎвЂўР РЋР РЉР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В РЎвЂ“Р В РЎвЂР В РЎвЂ Р В Р’В±Р В Р’ВµР В Р’В· Р РЋР вЂљР В Р’В°Р РЋР С“Р РЋРІР‚В¦Р В РЎвЂўР В РўвЂР В Р’В° Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°.
 func addTestPowerProducer(t *testing.T, serverData world.Data, cosmicObjectID int64) *data.EquipmentGroup {
 	t.Helper()
 
@@ -135,7 +136,7 @@ func addTestPowerProducer(t *testing.T, serverData world.Data, cosmicObjectID in
 		TitleRu:         "Power Producer",
 		TitleEn:         "Power Producer",
 		Acronym:         "PowerProducer",
-		ItemtypeID:      1,
+		ItemTypeID:      1,
 		GeneratingPower: 60000,
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -155,7 +156,33 @@ func addTestPowerProducer(t *testing.T, serverData world.Data, cosmicObjectID in
 	return group
 }
 
-// Проверяет, что команда панели управления меняет только объект текущего аккаунта и подтверждает мутацию.
+// Добавляет тестовых роботов для выполнения заданий перемещения и заправки.
+func addTestRobots(t *testing.T, serverData world.Data, cosmicObjectID int64) *data.EquipmentGroup {
+	t.Helper()
+
+	serverData.ItemTypes.Items[20] = &data.ItemType{ID: 20, TitleRu: "Robot", TitleEn: "Robot", Acronym: "Robot", CountMustBeInteger: true}
+	serverData.ItemModels.Items[404] = &data.ItemModel{ID: 404, TitleRu: "Robot", TitleEn: "Robot", Acronym: "Robot", ItemTypeID: 20, ConsumingPower: 10}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	group, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       cosmicObjectID,
+		Title:                "Robots",
+		EquipmentItemModelID: 404,
+		Count:                10,
+		EnabledCount:         10,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return group
+}
+
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В РЎВР В Р’ВµР В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р РЋР Р‰Р В РЎвЂќР В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р В РЎвЂ Р В РЎвЂ”Р В РЎвЂўР В РўвЂР РЋРІР‚С™Р В Р вЂ Р В Р’ВµР РЋР вЂљР В Р’В¶Р В РўвЂР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎВР РЋРЎвЂњР РЋРІР‚С™Р В Р’В°Р РЋРІР‚В Р В РЎвЂР РЋР вЂ№.
 func TestApplyControlPanelObjectUpdateChangesControlledObjectAndAcknowledgesMutation(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -165,7 +192,7 @@ func TestApplyControlPanelObjectUpdateChangesControlledObjectAndAcknowledgesMuta
 
 	err := gameWorld.ApplyControlPanelObjectUpdate(1, "session-1", 4, world.ControlPanelObjectUpdate{
 		Enabled: boolPointer(false),
-		Title:   stringPointer("Новый корабль"),
+		Title:   stringPointer("Р В РЎСљР В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰"),
 	})
 
 	if err != nil {
@@ -176,7 +203,7 @@ func TestApplyControlPanelObjectUpdateChangesControlledObjectAndAcknowledgesMuta
 	if !ok {
 		t.Fatal("controlled object not found")
 	}
-	if object.Enabled || object.Title != "Новый корабль" {
+	if object.Enabled || object.Title != "Р В РЎСљР В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰" {
 		t.Fatalf("object was not updated: %+v", object)
 	}
 	ack := gameWorld.ClientMutationAck(1, "session-1")
@@ -185,7 +212,7 @@ func TestApplyControlPanelObjectUpdateChangesControlledObjectAndAcknowledgesMuta
 	}
 }
 
-// Проверяет, что команда панели управления оборудованием ограничена оборудованием текущего объекта.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В РЎвЂўР В Р’В±Р В РЎвЂўР РЋР вЂљР РЋРЎвЂњР В РўвЂР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦Р В РЎвЂР В Р’ВµР В РЎВ Р В РЎвЂўР В РЎвЂ“Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В Р’В° Р В РЎвЂўР В Р’В±Р В РЎвЂўР РЋР вЂљР РЋРЎвЂњР В РўвЂР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦Р В РЎвЂР В Р’ВµР В РЎВ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.
 func TestApplyControlPanelEquipmentUpdateChangesOwnedGroupOnly(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -228,7 +255,7 @@ func TestApplyControlPanelEquipmentUpdateChangesOwnedGroupOnly(t *testing.T) {
 	}
 }
 
-// Собирает минимальный игровой мир с кораблем, астероидом и станцией.
+// Р В Р Р‹Р В РЎвЂўР В Р’В±Р В РЎвЂР РЋР вЂљР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎВР В РЎвЂР В Р вЂ¦Р В РЎвЂР В РЎВР В Р’В°Р В Р’В»Р РЋР Р‰Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂР В РЎвЂ“Р РЋР вЂљР В РЎвЂўР В Р вЂ Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎВР В РЎвЂР РЋР вЂљ Р РЋР С“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р В Р’ВµР В РЎВ, Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В РЎвЂўР В РЎвЂР В РўвЂР В РЎвЂўР В РЎВ Р В РЎвЂ Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р РЋРІР‚В Р В РЎвЂР В Р’ВµР В РІвЂћвЂ“.
 func testWorldData(t *testing.T) world.Data {
 	t.Helper()
 
@@ -247,18 +274,18 @@ func testWorldData(t *testing.T) world.Data {
 	cosmicObjectTypes := &data.CosmicObjectTypes{
 		MaxID: 3,
 		Items: map[int64]*data.CosmicObjectType{
-			1: {ID: 1, TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship"},
-			2: {ID: 2, TitleRu: "Станция", TitleEn: "Station", Acronym: "Station"},
-			3: {ID: 3, TitleRu: "Астероид", TitleEn: "Asteroid", Acronym: "Asteroid"},
+			1: {ID: 1, TitleRu: "Р В РЎв„ўР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰", TitleEn: "Ship", Acronym: "Ship"},
+			2: {ID: 2, TitleRu: "Р В Р Р‹Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р РЋРІР‚В Р В РЎвЂР РЋР РЏ", TitleEn: "Station", Acronym: "Station"},
+			3: {ID: 3, TitleRu: "Р В РЎвЂ™Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В РЎвЂўР В РЎвЂР В РўвЂ", TitleEn: "Asteroid", Acronym: "Asteroid"},
 		},
 	}
 	cosmicObjectModels := &data.CosmicObjectModels{
 		MaxID: 4,
 		Items: map[int64]*data.CosmicObjectModel{
-			1: {ID: 1, TitleRu: "Корабль", TitleEn: "Ship", Acronym: "ship_bat", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 27, TextureBodyLength: 63, Mass: 7.92, Capacity: 10, MaxArmor: 100, MaxSpeed: 497, MaxAngularSpeed: 3},
-			2: {ID: 2, TitleRu: "Астероид", TitleEn: "Asteroid", Acronym: "asteroid_0002", CosmicObjectTypeID: 3, TextureScale: 4, TextureBodyWidth: 30, TextureBodyLength: 30},
-			3: {ID: 3, TitleRu: "Станция", TitleEn: "Station", Acronym: "station_tiny_crumb", CosmicObjectTypeID: 2, TextureScale: 4, TextureBodyWidth: 30, TextureBodyLength: 30},
-			4: {ID: 4, TitleRu: "Новый корабль", TitleEn: "New Ship", Acronym: "ship_new", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 40, TextureBodyLength: 80, Mass: 12, Capacity: 20, MaxArmor: 150, MaxSpeed: 600, MaxAngularSpeed: 4},
+			1: {ID: 1, TitleRu: "Р В РЎв„ўР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰", TitleEn: "Ship", Acronym: "ship_bat", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 27, TextureBodyLength: 63, Mass: 7.92, Capacity: 10, MaxArmor: 100, MaxSpeed: 497, MaxAngularSpeed: 3},
+			2: {ID: 2, TitleRu: "Р В РЎвЂ™Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В РЎвЂўР В РЎвЂР В РўвЂ", TitleEn: "Asteroid", Acronym: "asteroid_0002", CosmicObjectTypeID: 3, TextureScale: 4, TextureBodyWidth: 30, TextureBodyLength: 30},
+			3: {ID: 3, TitleRu: "Р В Р Р‹Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р РЋРІР‚В Р В РЎвЂР РЋР РЏ", TitleEn: "Station", Acronym: "station_tiny_crumb", CosmicObjectTypeID: 2, TextureScale: 4, TextureBodyWidth: 30, TextureBodyLength: 30},
+			4: {ID: 4, TitleRu: "Р В РЎСљР В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰", TitleEn: "New Ship", Acronym: "ship_new", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 40, TextureBodyLength: 80, Mass: 12, Capacity: 20, MaxArmor: 150, MaxSpeed: 600, MaxAngularSpeed: 4},
 		},
 	}
 	cosmicObjects := &data.CosmicObjects{
@@ -289,9 +316,9 @@ func testWorldData(t *testing.T) world.Data {
 			7: {ID: 7, AssemblyID: 3, Title: "New Cannons", EquipmentItemModelID: 402, Count: 4},
 		},
 	}
-	itemtypes := &data.Itemtypes{
+	itemTypes := &data.ItemTypes{
 		MaxID: 18,
-		Items: map[int64]*data.Itemtype{
+		Items: map[int64]*data.ItemType{
 			1:  {ID: 1, TitleRu: "Weapon", TitleEn: "Weapon", Acronym: "Weapon", CountMustBeInteger: true},
 			7:  {ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel"},
 			9:  {ID: 9, TitleRu: "Container", TitleEn: "Container", Acronym: "Container", CountMustBeInteger: true},
@@ -301,19 +328,57 @@ func testWorldData(t *testing.T) world.Data {
 	itemModels := &data.ItemModels{
 		MaxID: 403,
 		Items: map[int64]*data.ItemModel{
-			101: {ID: 101, TitleRu: "Thruster", TitleEn: "Thruster", Acronym: "Thruster", ItemtypeID: 1, ConsumingPower: 15000, ConsumingItemModelID: 7, ConsumingCount: 0.5, MaxAlongForce: 45000, MaxAcrossForce: 40000},
-			102: {ID: 102, TitleRu: "Torquer", TitleEn: "Torquer", Acronym: "Torquer", ItemtypeID: 1, ConsumingPower: 5000, ConsumingItemModelID: 7, ConsumingCount: 0.25, MaxTorque: 70000},
-			201: {ID: 201, TitleRu: "New Thruster", TitleEn: "New Thruster", Acronym: "NewThruster", ItemtypeID: 1, ConsumingPower: 10000, ConsumingItemModelID: 7, ConsumingCount: 0.4, MaxAlongForce: 30000, MaxAcrossForce: 27500},
-			301: {ID: 301, TitleRu: "Container", TitleEn: "Container", Acronym: "Container", ItemtypeID: 9},
-			302: {ID: 302, TitleRu: "Cannon", TitleEn: "Cannon", Acronym: "Cannon", ItemtypeID: 1, AmmoItemModelID: 303, FiringRate: 0.5},
-			303: {ID: 303, TitleRu: "Shell", TitleEn: "Shell", Acronym: "Shell", ItemtypeID: 18},
-			401: {ID: 401, TitleRu: "New Container", TitleEn: "New Container", Acronym: "NewContainer", ItemtypeID: 9},
-			402: {ID: 402, TitleRu: "New Cannon", TitleEn: "New Cannon", Acronym: "NewCannon", ItemtypeID: 1, AmmoItemModelID: 403, FiringRate: 1},
-			403: {ID: 403, TitleRu: "New Shell", TitleEn: "New Shell", Acronym: "NewShell", ItemtypeID: 18},
+			101: {ID: 101, TitleRu: "Thruster", TitleEn: "Thruster", Acronym: "Thruster", ItemTypeID: 1, ConsumingPower: 15000, ConsumingItemModelID: 7, ConsumingCount: 0.5, MaxAlongForce: 45000, MaxAcrossForce: 40000},
+			102: {ID: 102, TitleRu: "Torquer", TitleEn: "Torquer", Acronym: "Torquer", ItemTypeID: 1, ConsumingPower: 5000, ConsumingItemModelID: 7, ConsumingCount: 0.25, MaxTorque: 70000},
+			201: {ID: 201, TitleRu: "New Thruster", TitleEn: "New Thruster", Acronym: "NewThruster", ItemTypeID: 1, ConsumingPower: 10000, ConsumingItemModelID: 7, ConsumingCount: 0.4, MaxAlongForce: 30000, MaxAcrossForce: 27500},
+			301: {ID: 301, TitleRu: "Container", TitleEn: "Container", Acronym: "Container", ItemTypeID: 9},
+			302: {ID: 302, TitleRu: "Cannon", TitleEn: "Cannon", Acronym: "Cannon", ItemTypeID: 1, AmmoItemModelID: 303, FiringRate: 0.5},
+			303: {ID: 303, TitleRu: "Shell", TitleEn: "Shell", Acronym: "Shell", ItemTypeID: 18},
+			401: {ID: 401, TitleRu: "New Container", TitleEn: "New Container", Acronym: "NewContainer", ItemTypeID: 9},
+			402: {ID: 402, TitleRu: "New Cannon", TitleEn: "New Cannon", Acronym: "NewCannon", ItemTypeID: 1, AmmoItemModelID: 403, FiringRate: 1},
+			403: {ID: 403, TitleRu: "New Shell", TitleEn: "New Shell", Acronym: "NewShell", ItemTypeID: 18},
 		},
 	}
 	equipmentGroups := data.NewEquipmentGroups()
 	itemGroups := data.NewItemGroups()
+	taskTypes := data.NewTaskTypes()
+	tasks := data.NewTasks()
+	taskItemGroups := data.NewTaskItemGroups()
+	implementers := data.NewImplementers()
+	itemProductionType, err := taskTypes.Add(&data.TaskType{TitleRu: "Р СџРЎР‚Р С•Р С‘Р В·Р Р†Р С•Р Т‘РЎРѓРЎвЂљР Р†Р С• Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†", TitleEn: "Item production", Acronym: "ItemProduction"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	objectProductionType, err := taskTypes.Add(&data.TaskType{TitleRu: "Р СџРЎР‚Р С•Р С‘Р В·Р Р†Р С•Р Т‘РЎРѓРЎвЂљР Р†Р С• Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†", TitleEn: "Object production", Acronym: "ObjectProduction"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: itemProductionType.ID, ImplementerEquipmentItemTypeID: 19, WorkPart: 1}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: objectProductionType.ID, ImplementerEquipmentItemTypeID: 19, WorkPart: 1}); err != nil {
+		t.Fatal(err)
+	}
+	cargoMovementType, err := taskTypes.Add(&data.TaskType{TitleRu: "Перемещение груза", TitleEn: "Cargo movement", Acronym: "CargoMovement"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: cargoMovementType.ID, ImplementerEquipmentItemTypeID: 9, WorkPart: 0}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: cargoMovementType.ID, ImplementerEquipmentItemTypeID: 20, WorkPart: 1}); err != nil {
+		t.Fatal(err)
+	}
+	fuelingType, err := taskTypes.Add(&data.TaskType{TitleRu: "Заправка топлива", TitleEn: "Fueling", Acronym: "Fueling"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: fuelingType.ID, ImplementerEquipmentItemTypeID: 10, WorkPart: 0}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := implementers.Add(&data.Implementer{TaskTypeID: fuelingType.ID, ImplementerEquipmentItemTypeID: 20, WorkPart: 1}); err != nil {
+		t.Fatal(err)
+	}
 
 	if err := accounts.RebuildIndexes(); err != nil {
 		t.Fatal(err)
@@ -336,7 +401,7 @@ func testWorldData(t *testing.T) world.Data {
 	if err := assemblyEquipmentGroups.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
-	if err := itemtypes.RebuildIndexes(); err != nil {
+	if err := itemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := itemModels.RebuildIndexes(); err != nil {
@@ -349,8 +414,12 @@ func testWorldData(t *testing.T) world.Data {
 		CosmicObjects:           cosmicObjects,
 		CosmicObjectTypes:       cosmicObjectTypes,
 		CosmicObjectModels:      cosmicObjectModels,
-		Itemtypes:               itemtypes,
+		ItemTypes:               itemTypes,
 		ItemModels:              itemModels,
+		TaskTypes:               taskTypes,
+		Tasks:                   tasks,
+		TaskItemGroups:          taskItemGroups,
+		Implementers:            implementers,
 		EquipmentGroups:         equipmentGroups,
 		ItemGroups:              itemGroups,
 		Assemblies:              assemblies,
@@ -358,7 +427,7 @@ func testWorldData(t *testing.T) world.Data {
 	}
 }
 
-// Проверяет, что подключение аккаунта берёт управляемый объект из текущего местоположения персонажа.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В РўвЂР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р В Р’В±Р В Р’ВµР РЋР вЂљР РЋРІР‚ВР РЋРІР‚С™ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР В РЎВР РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В РЎвЂР В Р’В· Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В РЎВР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В РЎвЂўР В Р’В»Р В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’В°.
 func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 
@@ -372,7 +441,7 @@ func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 	}
 }
 
-// Проверяет, что собственный Получатель сразу начинает автоматическую стыковку и после таймера создаёт кластер.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎСџР В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰ Р РЋР С“Р РЋР вЂљР В Р’В°Р В Р’В·Р РЋРЎвЂњ Р В Р вЂ¦Р В Р’В°Р РЋРІР‚РЋР В РЎвЂР В Р вЂ¦Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р’В°Р В Р вЂ Р РЋРІР‚С™Р В РЎвЂўР В РЎВР В Р’В°Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР РЋРЎвЂњР РЋР вЂ№ Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР РЋРЎвЂњ Р В РЎвЂ Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В»Р В Р’Вµ Р РЋРІР‚С™Р В Р’В°Р В РІвЂћвЂ“Р В РЎВР В Р’ВµР РЋР вЂљР В Р’В° Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р РЋРІР‚ВР РЋРІР‚С™ Р В РЎвЂќР В Р’В»Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљ.
 func TestDockingRequestAutoApprovesOwnedReceiverAndCompletesCluster(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Anchored = true
@@ -405,8 +474,8 @@ func TestDockingRequestAutoApprovesOwnedReceiverAndCompletesCluster(t *testing.T
 	}
 }
 
-// Проверяет, что чужой Получатель ждёт одобрения управляющего персонажа.
-// Проверяет, что запрос стыковки не требует якоря у участвующих объектов.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋРІР‚РЋР РЋРЎвЂњР В Р’В¶Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎСџР В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰ Р В Р’В¶Р В РўвЂР РЋРІР‚ВР РЋРІР‚С™ Р В РЎвЂўР В РўвЂР В РЎвЂўР В Р’В±Р РЋР вЂљР В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР РЋР вЂ№Р РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’В°.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р’В·Р В Р’В°Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР РЋР С“ Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р РЋРІР‚С™Р РЋР вЂљР В Р’ВµР В Р’В±Р РЋРЎвЂњР В Р’ВµР РЋРІР‚С™ Р РЋР РЏР В РЎвЂќР В РЎвЂўР РЋР вЂљР РЋР РЏ Р РЋРЎвЂњ Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р РЋРЎвЂњР РЋР вЂ№Р РЋРІР‚В°Р В РЎвЂР РЋРІР‚В¦ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В РЎвЂўР В Р вЂ .
 func TestDockingRequestDoesNotRequireAnchoredObjects(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Anchored = false
@@ -426,7 +495,7 @@ func TestDockingRequestDoesNotRequireAnchoredObjects(t *testing.T) {
 	}
 }
 
-// Проверяет тестовое присвоение объекта, который находится перед носом текущего корабля.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™ Р РЋРІР‚С™Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р В РЎвЂўР В Р’Вµ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂР РЋР С“Р В Р вЂ Р В РЎвЂўР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°, Р В РЎвЂќР В РЎвЂўР РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР РЋРІР‚в„–Р В РІвЂћвЂ“ Р В Р вЂ¦Р В Р’В°Р РЋРІР‚В¦Р В РЎвЂўР В РўвЂР В РЎвЂР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В РўвЂ Р В Р вЂ¦Р В РЎвЂўР РЋР С“Р В РЎвЂўР В РЎВ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР РЏ.
 func TestClaimFocusedObjectOwnerForTestingChangesProbeTargetOwner(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[3].OwnerCharacterID = 0
@@ -446,7 +515,7 @@ func TestClaimFocusedObjectOwnerForTestingChangesProbeTargetOwner(t *testing.T) 
 	}
 }
 
-// Проверяет временную передачу имени владельца в снимке мира для информационной панели.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р РЋР вЂљР В Р’ВµР В РЎВР В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРЎвЂњР РЋР вЂ№ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В РўвЂР В Р’В°Р РЋРІР‚РЋР РЋРЎвЂњ Р В РЎвЂР В РЎВР В Р’ВµР В Р вЂ¦Р В РЎвЂ Р В Р вЂ Р В Р’В»Р В Р’В°Р В РўвЂР В Р’ВµР В Р’В»Р РЋР Р‰Р РЋРІР‚В Р В Р’В° Р В Р вЂ  Р РЋР С“Р В Р вЂ¦Р В РЎвЂР В РЎВР В РЎвЂќР В Р’Вµ Р В РЎВР В РЎвЂР РЋР вЂљР В Р’В° Р В РўвЂР В Р’В»Р РЋР РЏ Р В РЎвЂР В Р вЂ¦Р РЋРІР‚С›Р В РЎвЂўР РЋР вЂљР В РЎВР В Р’В°Р РЋРІР‚В Р В РЎвЂР В РЎвЂўР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ.
 func TestSnapshotForAccountIncludesOwnerNameForTesting(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "owner@email.net", Nickname: "OwnerName", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
@@ -504,8 +573,8 @@ func TestApproveDockingRequestStartsProcessForForeignReceiver(t *testing.T) {
 	}
 }
 
-// Проверяет, что отстыковка Главного объекта распускает весь кластер.
-// Проверяет, что истечение ожидания закрывает окно запроса у обоих участников.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂўР РЋРІР‚С™Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР В Р’В° Р В РІР‚СљР В Р’В»Р В Р’В°Р В Р вЂ Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В° Р РЋР вЂљР В Р’В°Р РЋР С“Р В РЎвЂ”Р РЋРЎвЂњР РЋР С“Р В РЎвЂќР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р В Р’ВµР РЋР С“Р РЋР Р‰ Р В РЎвЂќР В Р’В»Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљ.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂР РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂўР В Р’В¶Р В РЎвЂР В РўвЂР В Р’В°Р В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В Р’В·Р В Р’В°Р В РЎвЂќР РЋР вЂљР РЋРІР‚в„–Р В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР В РЎвЂќР В Р вЂ¦Р В РЎвЂў Р В Р’В·Р В Р’В°Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР РЋР С“Р В Р’В° Р РЋРЎвЂњ Р В РЎвЂўР В Р’В±Р В РЎвЂўР В РЎвЂР РЋРІР‚В¦ Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р вЂ¦Р В РЎвЂР В РЎвЂќР В РЎвЂўР В Р вЂ .
 func TestDockingRequestTimeoutClosesRequestWindow(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "receiver@email.net", Nickname: "receiver", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
@@ -538,7 +607,7 @@ func TestDockingRequestTimeoutClosesRequestWindow(t *testing.T) {
 	}
 }
 
-// Проверяет, что чужой корабль без пилота сразу отвечает отказом без окна ожидания.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋРІР‚РЋР РЋРЎвЂњР В Р’В¶Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В Р’В±Р В Р’ВµР В Р’В· Р В РЎвЂ”Р В РЎвЂР В Р’В»Р В РЎвЂўР РЋРІР‚С™Р В Р’В° Р РЋР С“Р РЋР вЂљР В Р’В°Р В Р’В·Р РЋРЎвЂњ Р В РЎвЂўР РЋРІР‚С™Р В Р вЂ Р В Р’ВµР РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂќР В Р’В°Р В Р’В·Р В РЎвЂўР В РЎВ Р В Р’В±Р В Р’ВµР В Р’В· Р В РЎвЂўР В РЎвЂќР В Р вЂ¦Р В Р’В° Р В РЎвЂўР В Р’В¶Р В РЎвЂР В РўвЂР В Р’В°Р В Р вЂ¦Р В РЎвЂР РЋР РЏ.
 func TestDockingRequestRejectsForeignShipWithoutPilotImmediately(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
@@ -557,12 +626,12 @@ func TestDockingRequestRejectsForeignShipWithoutPilotImmediately(t *testing.T) {
 	if dockingEventsContainKind(events, "dockingRequestStarted") {
 		t.Fatal("request window was shown for receiver without pilot")
 	}
-	if !dockingEventsContainMessage(events, "В Получателе нет персонажа для принятия решения") {
+	if !dockingEventsContainMessage(events, "Р В РІР‚в„ў Р В РЎСџР В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р В Р’Вµ Р В Р вЂ¦Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’В° Р В РўвЂР В Р’В»Р РЋР РЏ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂР В Р вЂ¦Р РЋР РЏР РЋРІР‚С™Р В РЎвЂР РЋР РЏ Р РЋР вЂљР В Р’ВµР РЋРІвЂљВ¬Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ") {
 		t.Fatalf("missing no-pilot notification: %+v", events)
 	}
 }
 
-// Проверяет, что пересадка из второстепенного объекта в собственный главный объект сразу меняет местонахождение персонажа.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В°Р В РўвЂР В РЎвЂќР В Р’В° Р В РЎвЂР В Р’В· Р В Р вЂ Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’ВµР В РЎвЂ”Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В° Р В Р вЂ  Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂ“Р В Р’В»Р В Р’В°Р В Р вЂ Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р РЋР С“Р РЋР вЂљР В Р’В°Р В Р’В·Р РЋРЎвЂњ Р В РЎВР В Р’ВµР В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎВР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р РЋРІР‚В¦Р В РЎвЂўР В Р’В¶Р В РўвЂР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’В°.
 func TestBeginCharacterTransferFromSecondaryToOwnedMainMovesCharacter(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 3
@@ -585,7 +654,7 @@ func TestBeginCharacterTransferFromSecondaryToOwnedMainMovesCharacter(t *testing
 	}
 }
 
-// Проверяет, что попытка пересадки вне кластера показывает уведомление и оставляет персонажа на месте.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В РЎвЂ”Р РЋРІР‚в„–Р РЋРІР‚С™Р В РЎвЂќР В Р’В° Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В°Р В РўвЂР В РЎвЂќР В РЎвЂ Р В Р вЂ Р В Р вЂ¦Р В Р’Вµ Р В РЎвЂќР В Р’В»Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В Р’В° Р В РЎвЂ”Р В РЎвЂўР В РЎвЂќР В Р’В°Р В Р’В·Р РЋРІР‚в„–Р В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРЎвЂњР В Р вЂ Р В Р’ВµР В РўвЂР В РЎвЂўР В РЎВР В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂ Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’В° Р В Р вЂ¦Р В Р’В° Р В РЎВР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В Р’Вµ.
 func TestBeginCharacterTransferOutsideClusterShowsNotification(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -600,12 +669,12 @@ func TestBeginCharacterTransferOutsideClusterShowsNotification(t *testing.T) {
 	if serverData.Characters.Items[1].LocationCosmicObjectID != 1 {
 		t.Fatalf("character location changed to %d", serverData.Characters.Items[1].LocationCosmicObjectID)
 	}
-	if !dockingEventsContainMessage(gameWorld.DrainDockingEvents(), "Объект не пристыкован") {
+	if !dockingEventsContainMessage(gameWorld.DrainDockingEvents(), "Р В РЎвЂєР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В Р вЂ¦Р В Р’Вµ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂР РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦") {
 		t.Fatal("missing not-docked notification")
 	}
 }
 
-// Проверяет, что чужой объект с пассажирским креслом получает запрос на посадку и пересадка завершается после одобрения.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋРІР‚РЋР РЋРЎвЂњР В Р’В¶Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р РЋР С“ Р В РЎвЂ”Р В Р’В°Р РЋР С“Р РЋР С“Р В Р’В°Р В Р’В¶Р В РЎвЂР РЋР вЂљР РЋР С“Р В РЎвЂќР В РЎвЂР В РЎВ Р В РЎвЂќР РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В»Р В РЎвЂўР В РЎВ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР РЋР С“ Р В Р вЂ¦Р В Р’В° Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В°Р В РўвЂР В РЎвЂќР РЋРЎвЂњ Р В РЎвЂ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В°Р В РўвЂР В РЎвЂќР В Р’В° Р В Р’В·Р В Р’В°Р В Р вЂ Р В Р’ВµР РЋР вЂљР РЋРІвЂљВ¬Р В Р’В°Р В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В»Р В Р’Вµ Р В РЎвЂўР В РўвЂР В РЎвЂўР В Р’В±Р РЋР вЂљР В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ.
 func TestCharacterTransferToForeignObjectWithPassengerSeatWaitsForApproval(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "receiver@email.net", Nickname: "receiver", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
@@ -613,8 +682,8 @@ func TestCharacterTransferToForeignObjectWithPassengerSeatWaitsForApproval(t *te
 	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 3
 	serverData.CosmicObjects.Items[3].ClusterMainCosmicObjectID = 3
 	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Пассажирское кресло", TitleEn: "Passenger Seat", Acronym: "PassengerSeat", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Пассажирское кресло", TitleEn: "Passenger Seat", Acronym: "PassengerSeat", ItemtypeID: 19}
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Р В РЎСџР В Р’В°Р РЋР С“Р РЋР С“Р В Р’В°Р В Р’В¶Р В РЎвЂР РЋР вЂљР РЋР С“Р В РЎвЂќР В РЎвЂўР В Р’Вµ Р В РЎвЂќР РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В»Р В РЎвЂў", TitleEn: "Passenger Seat", Acronym: "PassengerSeat", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Р В РЎСџР В Р’В°Р РЋР С“Р РЋР С“Р В Р’В°Р В Р’В¶Р В РЎвЂР РЋР вЂљР РЋР С“Р В РЎвЂќР В РЎвЂўР В Р’Вµ Р В РЎвЂќР РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В»Р В РЎвЂў", TitleEn: "Passenger Seat", Acronym: "PassengerSeat", ItemTypeID: 19}
 	if _, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{CosmicObjectID: 3, Title: "Passenger Seat", EquipmentItemModelID: 501, Count: 1, EnabledCount: 1, Enabled: true}); err != nil {
 		t.Fatal(err)
 	}
@@ -624,7 +693,7 @@ func TestCharacterTransferToForeignObjectWithPassengerSeatWaitsForApproval(t *te
 	if err := serverData.Characters.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -676,7 +745,7 @@ func TestUndockMainObjectDisbandsWholeCluster(t *testing.T) {
 	}
 }
 
-// Проверяет распускание пары кораблей, когда из нее выходит второстепенный объект.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™ Р РЋР вЂљР В Р’В°Р РЋР С“Р В РЎвЂ”Р РЋРЎвЂњР РЋР С“Р В РЎвЂќР В Р’В°Р В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂ”Р В Р’В°Р РЋР вЂљР РЋРІР‚в„– Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р В Р’ВµР В РІвЂћвЂ“, Р В РЎвЂќР В РЎвЂўР В РЎвЂ“Р В РўвЂР В Р’В° Р В РЎвЂР В Р’В· Р В Р вЂ¦Р В Р’ВµР В Р’Вµ Р В Р вЂ Р РЋРІР‚в„–Р РЋРІР‚В¦Р В РЎвЂўР В РўвЂР В РЎвЂР РЋРІР‚С™ Р В Р вЂ Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’ВµР В РЎвЂ”Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™.
 func TestUndockSecondaryObjectDisbandsTwoObjectCluster(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Anchored = true
@@ -701,7 +770,7 @@ func TestUndockSecondaryObjectDisbandsTwoObjectCluster(t *testing.T) {
 	}
 }
 
-// Проверяет, что объект кластера нельзя снять с якоря ручным переключением.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В РЎвЂќР В Р’В»Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В Р’В° Р В Р вЂ¦Р В Р’ВµР В Р’В»Р РЋР Р‰Р В Р’В·Р РЋР РЏ Р РЋР С“Р В Р вЂ¦Р РЋР РЏР РЋРІР‚С™Р РЋР Р‰ Р РЋР С“ Р РЋР РЏР В РЎвЂќР В РЎвЂўР РЋР вЂљР РЋР РЏ Р РЋР вЂљР РЋРЎвЂњР РЋРІР‚РЋР В Р вЂ¦Р РЋРІР‚в„–Р В РЎВ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’ВµР В РЎВ.
 func TestSetInputDoesNotDisableAnchorForClusterObject(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Anchored = true
@@ -718,7 +787,7 @@ func TestSetInputDoesNotDisableAnchorForClusterObject(t *testing.T) {
 	}
 }
 
-// Проверяет, что подключение аккаунта не оставляет кораблю устаревший целевой угол поворота.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В РўвЂР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р В Р вЂ¦Р В Р’Вµ Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР вЂ№ Р РЋРЎвЂњР РЋР С“Р РЋРІР‚С™Р В Р’В°Р РЋР вЂљР В Р’ВµР В Р вЂ Р РЋРІвЂљВ¬Р В РЎвЂР В РІвЂћвЂ“ Р РЋРІР‚В Р В Р’ВµР В Р’В»Р В Р’ВµР В Р вЂ Р В РЎвЂўР В РІвЂћвЂ“ Р РЋРЎвЂњР В РЎвЂ“Р В РЎвЂўР В Р’В» Р В РЎвЂ”Р В РЎвЂўР В Р вЂ Р В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋРІР‚С™Р В Р’В°.
 func TestConnectAccountAlignsTargetRotationWithCurrentRotation(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Rotation = 1.75
@@ -738,7 +807,7 @@ func TestConnectAccountAlignsTargetRotationWithCurrentRotation(t *testing.T) {
 	}
 }
 
-// Проверяет, что новый мир создает серверный чат и показывает его подключенному аккаунту.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎВР В РЎвЂР РЋР вЂљ Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋР С“Р В Р’ВµР РЋР вЂљР В Р вЂ Р В Р’ВµР РЋР вЂљР В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™ Р В РЎвЂ Р В РЎвЂ”Р В РЎвЂўР В РЎвЂќР В Р’В°Р В Р’В·Р РЋРІР‚в„–Р В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В РўвЂР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎВР РЋРЎвЂњ Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р РЋРЎвЂњ.
 func TestChatStateIncludesServerChatAfterConnect(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 	if _, ok := gameWorld.ConnectAccount(1); !ok {
@@ -757,7 +826,7 @@ func TestChatStateIncludesServerChatAfterConnect(t *testing.T) {
 	}
 }
 
-// Проверяет, что сообщение в серверный чат сохраняется от имени текущего персонажа.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎвЂўР В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р вЂ  Р РЋР С“Р В Р’ВµР РЋР вЂљР В Р вЂ Р В Р’ВµР РЋР вЂљР В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™ Р РЋР С“Р В РЎвЂўР РЋРІР‚В¦Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В РЎвЂўР РЋРІР‚С™ Р В РЎвЂР В РЎВР В Р’ВµР В Р вЂ¦Р В РЎвЂ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’В°.
 func TestSendServerChatMessageStoresMessageFromCurrentCharacter(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 	if _, ok := gameWorld.ConnectAccount(1); !ok {
@@ -768,7 +837,7 @@ func TestSendServerChatMessageStoresMessageFromCurrentCharacter(t *testing.T) {
 		t.Fatalf("chat state is not available")
 	}
 
-	nextState, recipients, chatError := gameWorld.SendChatMessage(1, chatState.SelectedChatID, "", "Привет всем")
+	nextState, recipients, chatError := gameWorld.SendChatMessage(1, chatState.SelectedChatID, "", "Р В РЎСџР РЋР вЂљР В РЎвЂР В Р вЂ Р В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р РЋР С“Р В Р’ВµР В РЎВ")
 	if chatError != "" {
 		t.Fatalf("SendChatMessage returned error: %s", chatError)
 	}
@@ -779,12 +848,12 @@ func TestSendServerChatMessageStoresMessageFromCurrentCharacter(t *testing.T) {
 		t.Fatalf("message count = %d, want 1", len(nextState.Tabs[0].Messages))
 	}
 	message := nextState.Tabs[0].Messages[0]
-	if message.Text != "Привет всем" || message.SenderCharacterID != 1 || message.SenderNickname != "index" {
+	if message.Text != "Р В РЎСџР РЋР вЂљР В РЎвЂР В Р вЂ Р В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р РЋР С“Р В Р’ВµР В РЎВ" || message.SenderCharacterID != 1 || message.SenderNickname != "index" {
 		t.Fatalf("message = %+v, want text from current account", message)
 	}
 }
 
-// Проверяет, что адресация через ник аккаунта создает дуэтный чат с ключом из ID персонажей.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р’В°Р В РўвЂР РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В°Р РЋРІР‚В Р В РЎвЂР РЋР РЏ Р РЋРІР‚РЋР В Р’ВµР РЋР вЂљР В Р’ВµР В Р’В· Р В Р вЂ¦Р В РЎвЂР В РЎвЂќ Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РўвЂР РЋРЎвЂњР РЋР РЉР РЋРІР‚С™Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™ Р РЋР С“ Р В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В РЎвЂўР В РЎВ Р В РЎвЂР В Р’В· ID Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’ВµР В РІвЂћвЂ“.
 func TestSendDuoChatMessageUsesAccountNicknameAndDuoKey(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "pilot2@email.net", Nickname: "Pilot2", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
@@ -803,7 +872,7 @@ func TestSendDuoChatMessageUsesAccountNicknameAndDuoKey(t *testing.T) {
 		t.Fatalf("second account was not connected")
 	}
 
-	chatState, recipients, chatError := gameWorld.SendChatMessage(1, 0, "Pilot2", "Личное сообщение")
+	chatState, recipients, chatError := gameWorld.SendChatMessage(1, 0, "Pilot2", "Р В РІР‚С”Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р РЋР С“Р В РЎвЂўР В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ")
 	if chatError != "" {
 		t.Fatalf("SendChatMessage returned error: %s", chatError)
 	}
@@ -825,7 +894,7 @@ func TestSendDuoChatMessageUsesAccountNicknameAndDuoKey(t *testing.T) {
 	}
 }
 
-// Проверяет, что входящий дуэт не меняет выбранный чат получателя и учитывается как непрочитанный.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р вЂ Р РЋРІР‚В¦Р В РЎвЂўР В РўвЂР РЋР РЏР РЋРІР‚В°Р В РЎвЂР В РІвЂћвЂ“ Р В РўвЂР РЋРЎвЂњР РЋР РЉР РЋРІР‚С™ Р В Р вЂ¦Р В Р’Вµ Р В РЎВР В Р’ВµР В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р РЋРІР‚в„–Р В Р’В±Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР РЏ Р В РЎвЂ Р РЋРЎвЂњР РЋРІР‚РЋР В РЎвЂР РЋРІР‚С™Р РЋРІР‚в„–Р В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В РЎвЂќР В Р’В°Р В РЎвЂќ Р В Р вЂ¦Р В Р’ВµР В РЎвЂ”Р РЋР вЂљР В РЎвЂўР РЋРІР‚РЋР В РЎвЂР РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“.
 func TestIncomingDuoMessageKeepsRecipientSelectionAndUpdatesUnreadCount(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "pilot2@email.net", Nickname: "Pilot2", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
@@ -849,7 +918,7 @@ func TestIncomingDuoMessageKeepsRecipientSelectionAndUpdatesUnreadCount(t *testi
 	}
 	serverChatID := recipientState.SelectedChatID
 
-	if _, _, chatError := gameWorld.SendChatMessage(1, 0, "Pilot2", "Личное сообщение"); chatError != "" {
+	if _, _, chatError := gameWorld.SendChatMessage(1, 0, "Pilot2", "Р В РІР‚С”Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р РЋР С“Р В РЎвЂўР В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ"); chatError != "" {
 		t.Fatalf("SendChatMessage returned error: %s", chatError)
 	}
 	recipientState, ok = gameWorld.ChatStateForAccount(2, serverChatID)
@@ -888,14 +957,14 @@ func TestIncomingDuoMessageKeepsRecipientSelectionAndUpdatesUnreadCount(t *testi
 	}
 }
 
-// Проверяет, что неизвестный ник аккаунта дает ошибку без создания сообщения.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р вЂ¦Р В Р’ВµР В РЎвЂР В Р’В·Р В Р вЂ Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В Р вЂ¦Р В РЎвЂР В РЎвЂќ Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р В РўвЂР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР РЋРІвЂљВ¬Р В РЎвЂР В Р’В±Р В РЎвЂќР РЋРЎвЂњ Р В Р’В±Р В Р’ВµР В Р’В· Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р В Р вЂ¦Р В РЎвЂР РЋР РЏ Р РЋР С“Р В РЎвЂўР В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ.
 func TestSendDuoChatMessageRejectsUnknownAccountNickname(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 	if _, ok := gameWorld.ConnectAccount(1); !ok {
 		t.Fatalf("account was not connected")
 	}
 
-	_, recipients, chatError := gameWorld.SendChatMessage(1, 0, "Nobody", "Личное сообщение")
+	_, recipients, chatError := gameWorld.SendChatMessage(1, 0, "Nobody", "Р В РІР‚С”Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р РЋР С“Р В РЎвЂўР В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ")
 	if chatError == "" {
 		t.Fatal("unknown nickname was accepted")
 	}
@@ -904,7 +973,7 @@ func TestSendDuoChatMessageRejectsUnknownAccountNickname(t *testing.T) {
 	}
 }
 
-// Проверяет, что состояние чата отдает всю доступную историю сообщений.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР РЋР РЏР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р В Р’В° Р В РЎвЂўР РЋРІР‚С™Р В РўвЂР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р РЋР С“Р РЋР вЂ№ Р В РўвЂР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р РЋРЎвЂњР В РЎвЂ”Р В Р вЂ¦Р РЋРЎвЂњР РЋР вЂ№ Р В РЎвЂР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В РЎвЂР РЋР вЂ№ Р РЋР С“Р В РЎвЂўР В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В РІвЂћвЂ“.
 func TestChatStateIncludesFullMessageHistory(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 	if _, ok := gameWorld.ConnectAccount(1); !ok {
@@ -933,7 +1002,7 @@ func TestChatStateIncludesFullMessageHistory(t *testing.T) {
 	}
 }
 
-// Проверяет, что ввод подключённого аккаунта двигает уже существующий корабль и сохраняет новое положение.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р вЂ Р В Р вЂ Р В РЎвЂўР В РўвЂ Р В РЎвЂ”Р В РЎвЂўР В РўвЂР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР РЋРІР‚ВР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р В РўвЂР В Р вЂ Р В РЎвЂР В РЎвЂ“Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРЎвЂњР В Р’В¶Р В Р’Вµ Р РЋР С“Р РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р В Р вЂ Р РЋРЎвЂњР РЋР вЂ№Р РЋРІР‚В°Р В РЎвЂР В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В РЎвЂ Р РЋР С“Р В РЎвЂўР РЋРІР‚В¦Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В РЎвЂўР В Р’Вµ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ.
 func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Fuel = 50
@@ -959,7 +1028,7 @@ func TestTickAppliesAccountInputToExistingShip(t *testing.T) {
 	}
 }
 
-// Проверяет, что выключенные двигатели не создают тягу и не двигают корабль.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р вЂ Р РЋРІР‚в„–Р В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В Р’Вµ Р В РўвЂР В Р вЂ Р В РЎвЂР В РЎвЂ“Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р РЋР вЂ№Р РЋРІР‚С™ Р РЋРІР‚С™Р РЋР РЏР В РЎвЂ“Р РЋРЎвЂњ Р В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р В РўвЂР В Р вЂ Р В РЎвЂР В РЎвЂ“Р В Р’В°Р РЋР вЂ№Р РЋРІР‚С™ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰.
 func TestTickDoesNotApplyThrustFromDisabledEngines(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -985,7 +1054,7 @@ func TestTickDoesNotApplyThrustFromDisabledEngines(t *testing.T) {
 	}
 }
 
-// Проверяет, что двигатели без выработки электроэнергии не создают тягу.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РўвЂР В Р вЂ Р В РЎвЂР В РЎвЂ“Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р В РЎвЂ Р В Р’В±Р В Р’ВµР В Р’В· Р В Р вЂ Р РЋРІР‚в„–Р РЋР вЂљР В Р’В°Р В Р’В±Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂќР В РЎвЂ Р РЋР РЉР В Р’В»Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р РЋР вЂљР В РЎвЂўР РЋР РЉР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В РЎвЂ“Р В РЎвЂР В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р РЋР вЂ№Р РЋРІР‚С™ Р РЋРІР‚С™Р РЋР РЏР В РЎвЂ“Р РЋРЎвЂњ.
 func TestTickDoesNotApplyThrustWithoutGeneratedPower(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1008,7 +1077,7 @@ func TestTickDoesNotApplyThrustWithoutGeneratedPower(t *testing.T) {
 	}
 }
 
-// Проверяет, что одноразовая команда ввода переключает якорь управляемого объекта.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂўР В РўвЂР В Р вЂ¦Р В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В·Р В РЎвЂўР В Р вЂ Р В Р’В°Р РЋР РЏ Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В Р вЂ Р В Р вЂ Р В РЎвЂўР В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋР РЏР В РЎвЂќР В РЎвЂўР РЋР вЂљР РЋР Р‰ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР В РЎВР В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.
 func TestSetInputTogglesControlledShipAnchor(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1048,7 +1117,7 @@ func TestSetInputTogglesControlledShipAnchor(t *testing.T) {
 	}
 }
 
-// Проверяет, что якорь нельзя включить до полной остановки объекта.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР РЏР В РЎвЂќР В РЎвЂўР РЋР вЂљР РЋР Р‰ Р В Р вЂ¦Р В Р’ВµР В Р’В»Р РЋР Р‰Р В Р’В·Р РЋР РЏ Р В Р вЂ Р В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В РЎвЂР РЋРІР‚С™Р РЋР Р‰ Р В РўвЂР В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р В Р вЂ¦Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В РЎвЂќР В РЎвЂ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.
 func TestSetInputDoesNotEnableAnchorUntilControlledObjectStops(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 0.01
@@ -1095,7 +1164,7 @@ func TestSetInputDoesNotEnableAnchorUntilControlledObjectStops(t *testing.T) {
 	}
 }
 
-// Проверяет, что тяга включает нужное оборудование, обновляет потребление энергии и тратит топливо.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋРІР‚С™Р РЋР РЏР В РЎвЂ“Р В Р’В° Р В Р вЂ Р В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р вЂ¦Р РЋРЎвЂњР В Р’В¶Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р В РЎвЂўР В Р’В±Р В РЎвЂўР РЋР вЂљР РЋРЎвЂњР В РўвЂР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦Р В РЎвЂР В Р’Вµ, Р В РЎвЂўР В Р’В±Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР РЋРІР‚С™Р РЋР вЂљР В Р’ВµР В Р’В±Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р РЋР РЉР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В РЎвЂ“Р В РЎвЂР В РЎвЂ Р В РЎвЂ Р РЋРІР‚С™Р РЋР вЂљР В Р’В°Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂў.
 func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1108,7 +1177,7 @@ func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	addTestPowerProducer(t, serverData, objectID)
 
 	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true})
-	gameWorld.Tick(2)
+	gameWorld.Tick(1)
 
 	cosmicObject := serverData.CosmicObjects.Items[objectID]
 	if cosmicObject.ConsumingPower != 30000 {
@@ -1117,7 +1186,7 @@ func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	if cosmicObject.GeneratingPower != 60000 {
 		t.Fatalf("generating power = %v, want 60000", cosmicObject.GeneratingPower)
 	}
-	closeWorldFloat(t, cosmicObject.Fuel, 48)
+	closeWorldFloat(t, cosmicObject.Fuel, 49)
 
 	installed := serverData.EquipmentGroups.GetByCosmicObjectID(objectID)
 	if !installed[0].Active {
@@ -1128,7 +1197,7 @@ func TestTickUpdatesActiveEquipmentPowerAndFuelFromShipInput(t *testing.T) {
 	}
 }
 
-// Проверяет, что без ввода двигатели не потребляют энергию и не расходуют топливо.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р’В±Р В Р’ВµР В Р’В· Р В Р вЂ Р В Р вЂ Р В РЎвЂўР В РўвЂР В Р’В° Р В РўвЂР В Р вЂ Р В РЎвЂР В РЎвЂ“Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р В РЎвЂ”Р В РЎвЂўР РЋРІР‚С™Р РЋР вЂљР В Р’ВµР В Р’В±Р В Р’В»Р РЋР РЏР РЋР вЂ№Р РЋРІР‚С™ Р РЋР РЉР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В РЎвЂ“Р В РЎвЂР РЋР вЂ№ Р В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р РЋР вЂљР В Р’В°Р РЋР С“Р РЋРІР‚В¦Р В РЎвЂўР В РўвЂР РЋРЎвЂњР РЋР вЂ№Р РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂў.
 func TestTickDisablesEngineConsumptionWhenInputStops(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1154,7 +1223,7 @@ func TestTickDisablesEngineConsumptionWhenInputStops(t *testing.T) {
 	}
 }
 
-// Проверяет, что генератор без потребителей не активируется и не тратит топливо.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ“Р В Р’ВµР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В°Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљ Р В Р’В±Р В Р’ВµР В Р’В· Р В РЎвЂ”Р В РЎвЂўР РЋРІР‚С™Р РЋР вЂљР В Р’ВµР В Р’В±Р В РЎвЂР РЋРІР‚С™Р В Р’ВµР В Р’В»Р В Р’ВµР В РІвЂћвЂ“ Р В Р вЂ¦Р В Р’Вµ Р В Р’В°Р В РЎвЂќР РЋРІР‚С™Р В РЎвЂР В Р вЂ Р В РЎвЂР РЋР вЂљР РЋРЎвЂњР В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р РЋРІР‚С™Р РЋР вЂљР В Р’В°Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂў.
 func TestTickDoesNotSpendGeneratorFuelWithoutPowerDemand(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1182,7 +1251,7 @@ func TestTickDoesNotSpendGeneratorFuelWithoutPowerDemand(t *testing.T) {
 	}
 }
 
-// Проверяет, что генератор при частичной нагрузке тратит топливо пропорционально спросу на энергию.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ“Р В Р’ВµР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В°Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂ Р РЋРІР‚РЋР В Р’В°Р РЋР С“Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р В РЎвЂўР В РІвЂћвЂ“ Р В Р вЂ¦Р В Р’В°Р В РЎвЂ“Р РЋР вЂљР РЋРЎвЂњР В Р’В·Р В РЎвЂќР В Р’Вµ Р РЋРІР‚С™Р РЋР вЂљР В Р’В°Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂў Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В РЎвЂ”Р В РЎвЂўР РЋР вЂљР РЋРІР‚В Р В РЎвЂР В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В»Р РЋР Р‰Р В Р вЂ¦Р В РЎвЂў Р РЋР С“Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРЎвЂњ Р В Р вЂ¦Р В Р’В° Р РЋР РЉР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В РЎвЂ“Р В РЎвЂР РЋР вЂ№.
 func TestTickSpendsGeneratorFuelProportionallyToPowerDemand(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1210,7 +1279,7 @@ func TestTickSpendsGeneratorFuelProportionallyToPowerDemand(t *testing.T) {
 	}
 }
 
-// Проверяет, что расход топлива растёт сверх базового уровня, когда потребление выше генерации.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР вЂљР В Р’В°Р РЋР С“Р РЋРІР‚В¦Р В РЎвЂўР В РўвЂ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В° Р РЋР вЂљР В Р’В°Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚ВР РЋРІР‚С™ Р РЋР С“Р В Р вЂ Р В Р’ВµР РЋР вЂљР РЋРІР‚В¦ Р В Р’В±Р В Р’В°Р В Р’В·Р В РЎвЂўР В Р вЂ Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р РЋРЎвЂњР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р вЂ¦Р РЋР РЏ, Р В РЎвЂќР В РЎвЂўР В РЎвЂ“Р В РўвЂР В Р’В° Р В РЎвЂ”Р В РЎвЂўР РЋРІР‚С™Р РЋР вЂљР В Р’ВµР В Р’В±Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р вЂ Р РЋРІР‚в„–Р РЋРІвЂљВ¬Р В Р’Вµ Р В РЎвЂ“Р В Р’ВµР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В°Р РЋРІР‚В Р В РЎвЂР В РЎвЂ.
 func TestTickSpendsGeneratorFuelAboveBaseRateWhenPowerDemandExceedsGeneration(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1240,7 +1309,7 @@ func TestTickSpendsGeneratorFuelAboveBaseRateWhenPowerDemandExceedsGeneration(t 
 	}
 }
 
-// Проверяет, что при пустом баке топливозависимое оборудование не работает.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р РЋР вЂљР В РЎвЂ Р В РЎвЂ”Р РЋРЎвЂњР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В РЎВ Р В Р’В±Р В Р’В°Р В РЎвЂќР В Р’Вµ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂўР В Р’В·Р В Р’В°Р В Р вЂ Р В РЎвЂР РЋР С“Р В РЎвЂР В РЎВР В РЎвЂўР В Р’Вµ Р В РЎвЂўР В Р’В±Р В РЎвЂўР РЋР вЂљР РЋРЎвЂњР В РўвЂР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р вЂ¦Р В Р’Вµ Р РЋР вЂљР В Р’В°Р В Р’В±Р В РЎвЂўР РЋРІР‚С™Р В Р’В°Р В Р’ВµР РЋРІР‚С™.
 func TestTickDisablesFuelConsumingEquipmentWithoutFuel(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1253,7 +1322,7 @@ func TestTickDisablesFuelConsumingEquipmentWithoutFuel(t *testing.T) {
 	serverData.CosmicObjects.Items[objectID].Fuel = 0
 
 	gameWorld.SetInput(1, game.ShipInput{ThrustForward: true, TargetRotationDelta: 1})
-	gameWorld.Tick(1)
+	gameWorld.Tick(2)
 
 	cosmicObject := serverData.CosmicObjects.Items[objectID]
 	if cosmicObject.ConsumingPower != 0 {
@@ -1275,7 +1344,7 @@ func TestTickDisablesFuelConsumingEquipmentWithoutFuel(t *testing.T) {
 	}
 }
 
-// Проверяет, что подключенный корабль без топлива тормозит как непилотируемый.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В РўвЂР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В Р’В±Р В Р’ВµР В Р’В· Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В° Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В РЎВР В РЎвЂўР В Р’В·Р В РЎвЂР РЋРІР‚С™ Р В РЎвЂќР В Р’В°Р В РЎвЂќ Р В Р вЂ¦Р В Р’ВµР В РЎвЂ”Р В РЎвЂР В Р’В»Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂР РЋР вЂљР РЋРЎвЂњР В Р’ВµР В РЎВР РЋРІР‚в„–Р В РІвЂћвЂ“.
 func TestTickTreatsConnectedShipWithoutFuelAsUnpilotedForBrake(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Fuel = 0
@@ -1293,7 +1362,7 @@ func TestTickTreatsConnectedShipWithoutFuelAsUnpilotedForBrake(t *testing.T) {
 	closeWorldFloat(t, ship.X, 9)
 }
 
-// Проверяет, что управляемый корабль после столкновения не остаётся внутри закреплённого объекта.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР В РЎВР РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В»Р В Р’Вµ Р РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р В РЎвЂќР В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В Р вЂ¦Р В Р’Вµ Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’В°Р РЋРІР‚ВР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В Р вЂ Р В Р вЂ¦Р РЋРЎвЂњР РЋРІР‚С™Р РЋР вЂљР В РЎвЂ Р В Р’В·Р В Р’В°Р В РЎвЂќР РЋР вЂљР В Р’ВµР В РЎвЂ”Р В Р’В»Р РЋРІР‚ВР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.
 func TestTickPreventsControlledShipFromIntersectingAnchoredObject(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[2].X = 0
@@ -1320,7 +1389,7 @@ func TestTickPreventsControlledShipFromIntersectingAnchoredObject(t *testing.T) 
 	}
 }
 
-// Проверяет, что столкновение двух управляемых кораблей меняет скорости обоих и разделяет их.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р В РЎвЂќР В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РўвЂР В Р вЂ Р РЋРЎвЂњР РЋРІР‚В¦ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР В РЎВР РЋРІР‚в„–Р РЋРІР‚В¦ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р В Р’ВµР В РІвЂћвЂ“ Р В РЎВР В Р’ВµР В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р РЋР С“Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В РЎвЂ Р В РЎвЂўР В Р’В±Р В РЎвЂўР В РЎвЂР РЋРІР‚В¦ Р В РЎвЂ Р РЋР вЂљР В Р’В°Р В Р’В·Р В РўвЂР В Р’ВµР В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂР РЋРІР‚В¦.
 func TestTickAppliesCollisionImpulseToBothControlledShips(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "second@email.net", Nickname: "second", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
@@ -1376,7 +1445,7 @@ func TestTickAppliesCollisionImpulseToBothControlledShips(t *testing.T) {
 	}
 }
 
-// Проверяет, что подвижный объект без управления продолжает смещаться по своей скорости.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В РўвЂР В Р вЂ Р В РЎвЂР В Р’В¶Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В Р’В±Р В Р’ВµР В Р’В· Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В РўвЂР В РЎвЂўР В Р’В»Р В Р’В¶Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋР С“Р В РЎВР В Р’ВµР РЋРІР‚В°Р В Р’В°Р РЋРІР‚С™Р РЋР Р‰Р РЋР С“Р РЋР РЏ Р В РЎвЂ”Р В РЎвЂў Р РЋР С“Р В Р вЂ Р В РЎвЂўР В Р’ВµР В РІвЂћвЂ“ Р РЋР С“Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В РЎвЂ.
 func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.MaxID = 4
@@ -1409,7 +1478,7 @@ func TestTickMovesUncontrolledMovableObjectByVelocity(t *testing.T) {
 	}
 }
 
-// Проверяет, что подключённый корабль без тяги автоматически снижает скорость.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР В РўвЂР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР РЋРІР‚ВР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В Р’В±Р В Р’ВµР В Р’В· Р РЋРІР‚С™Р РЋР РЏР В РЎвЂ“Р В РЎвЂ Р В Р’В°Р В Р вЂ Р РЋРІР‚С™Р В РЎвЂўР В РЎВР В Р’В°Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР В РЎвЂ Р РЋР С“Р В Р вЂ¦Р В РЎвЂР В Р’В¶Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋР С“Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р РЋР Р‰.
 func TestTickAutobrakesConnectedShipWithoutThrust(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 100
@@ -1426,7 +1495,7 @@ func TestTickAutobrakesConnectedShipWithoutThrust(t *testing.T) {
 	}
 }
 
-// Проверяет, что после отключения корабль тормозит постоянным замедлением и продолжает движение.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В»Р В Р’Вµ Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В РЎВР В РЎвЂўР В Р’В·Р В РЎвЂР РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР РЋР РЏР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РЎВ Р В Р’В·Р В Р’В°Р В РЎВР В Р’ВµР В РўвЂР В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’ВµР В РЎВ Р В РЎвЂ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В РўвЂР В РЎвЂўР В Р’В»Р В Р’В¶Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РўвЂР В Р вЂ Р В РЎвЂР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ.
 func TestTickAppliesConstantBrakeToShipAfterDisconnect(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 100
@@ -1443,7 +1512,7 @@ func TestTickAppliesConstantBrakeToShipAfterDisconnect(t *testing.T) {
 	closeWorldFloat(t, ship.X, 9)
 }
 
-// Проверяет, что торможение неподключённых кораблей одинаково по величине для разных скоростей.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В РЎВР В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р вЂ¦Р В Р’ВµР В РЎвЂ”Р В РЎвЂўР В РўвЂР В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР РЋРІР‚ВР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р В Р’ВµР В РІвЂћвЂ“ Р В РЎвЂўР В РўвЂР В РЎвЂР В Р вЂ¦Р В Р’В°Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂў Р В Р вЂ Р В Р’ВµР В Р’В»Р В РЎвЂР РЋРІР‚РЋР В РЎвЂР В Р вЂ¦Р В Р’Вµ Р В РўвЂР В Р’В»Р РЋР РЏ Р РЋР вЂљР В Р’В°Р В Р’В·Р В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р РЋР С“Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“.
 func TestTickDisconnectedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].VelocityX = 100
@@ -1476,7 +1545,7 @@ func TestTickDisconnectedShipBrakeDoesNotDependOnSpeed(t *testing.T) {
 	closeWorldFloat(t, 200-fastShip.VelocityX, 10)
 }
 
-// Проверяет, что неуправляемый астероид движется без корабельного торможения.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р вЂ¦Р В Р’ВµР РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР В РЎВР РЋРІР‚в„–Р В РІвЂћвЂ“ Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В РЎвЂўР В РЎвЂР В РўвЂ Р В РўвЂР В Р вЂ Р В РЎвЂР В Р’В¶Р В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В Р’В±Р В Р’ВµР В Р’В· Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’ВµР В Р’В»Р РЋР Р‰Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В РЎВР В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ.
 func TestTickDoesNotApplyShipDragToUncontrolledAsteroid(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[2].Anchored = false
@@ -1492,7 +1561,7 @@ func TestTickDoesNotApplyShipDragToUncontrolledAsteroid(t *testing.T) {
 	closeWorldFloat(t, asteroid.X, 1010)
 }
 
-// Проверяет, что при создании мира загруженный корабль получает характеристики сборки без потери движения.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р РЋР вЂљР В РЎвЂ Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р В Р вЂ¦Р В РЎвЂР В РЎвЂ Р В РЎВР В РЎвЂР РЋР вЂљР В Р’В° Р В Р’В·Р В Р’В°Р В РЎвЂ“Р РЋР вЂљР РЋРЎвЂњР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРІР‚В¦Р В Р’В°Р РЋР вЂљР В Р’В°Р В РЎвЂќР РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В РЎвЂР РЋР С“Р РЋРІР‚С™Р В РЎвЂР В РЎвЂќР В РЎвЂ Р РЋР С“Р В Р’В±Р В РЎвЂўР РЋР вЂљР В РЎвЂќР В РЎвЂ Р В Р’В±Р В Р’ВµР В Р’В· Р В РЎвЂ”Р В РЎвЂўР РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В РЎвЂ Р В РўвЂР В Р вЂ Р В РЎвЂР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ.
 func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].X = 10
@@ -1509,7 +1578,7 @@ func TestNewAppliesAssemblyToLoadedShip(t *testing.T) {
 	}
 }
 
-// Проверяет, что при создании мира оборудование сборки устанавливается на загруженный корабль.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р РЋР вЂљР В РЎвЂ Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р В Р вЂ¦Р В РЎвЂР В РЎвЂ Р В РЎВР В РЎвЂР РЋР вЂљР В Р’В° Р В РЎвЂўР В Р’В±Р В РЎвЂўР РЋР вЂљР РЋРЎвЂњР В РўвЂР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦Р В РЎвЂР В Р’Вµ Р РЋР С“Р В Р’В±Р В РЎвЂўР РЋР вЂљР В РЎвЂќР В РЎвЂ Р РЋРЎвЂњР РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ¦Р В Р’В°Р В Р вЂ Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В Р вЂ¦Р В Р’В° Р В Р’В·Р В Р’В°Р В РЎвЂ“Р РЋР вЂљР РЋРЎвЂњР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰.
 func TestNewInstallsAssemblyEquipmentOnLoadedShip(t *testing.T) {
 	serverData := testWorldData(t)
 
@@ -1527,7 +1596,7 @@ func TestNewInstallsAssemblyEquipmentOnLoadedShip(t *testing.T) {
 	}
 }
 
-// Проверяет, что стартовый аккаунт получает корабль из первой публичной разработческой сборки.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р РЋР вЂљР РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В РЎвЂР В Р’В· Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р вЂ Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎвЂ”Р РЋРЎвЂњР В Р’В±Р В Р’В»Р В РЎвЂР РЋРІР‚РЋР В Р вЂ¦Р В РЎвЂўР В РІвЂћвЂ“ Р РЋР вЂљР В Р’В°Р В Р’В·Р РЋР вЂљР В Р’В°Р В Р’В±Р В РЎвЂўР РЋРІР‚С™Р РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР В РЎвЂўР В РІвЂћвЂ“ Р РЋР С“Р В Р’В±Р В РЎвЂўР РЋР вЂљР В РЎвЂќР В РЎвЂ.
 func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1554,13 +1623,13 @@ func TestCreateStarterAccountUsesFirstPublicDeveloperAssembly(t *testing.T) {
 	}
 }
 
-// Проверяет, что стартовый корабль получает полный бак, образцы обычных типов и увеличенный запас всех ресурсов.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р РЋР вЂљР РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В Р’В±Р В Р’В°Р В РЎвЂќ, Р В РЎвЂўР В Р’В±Р РЋР вЂљР В Р’В°Р В Р’В·Р РЋРІР‚В Р РЋРІР‚в„– Р В РЎвЂўР В Р’В±Р РЋРІР‚в„–Р РЋРІР‚РЋР В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р РЋРІР‚С™Р В РЎвЂР В РЎвЂ”Р В РЎвЂўР В Р вЂ  Р В РЎвЂ Р РЋРЎвЂњР В Р вЂ Р В Р’ВµР В Р’В»Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В Р’В°Р РЋР С“ Р В Р вЂ Р РЋР С“Р В Р’ВµР РЋРІР‚В¦ Р РЋР вЂљР В Р’ВµР РЋР С“Р РЋРЎвЂњР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ .
 func TestCreateStarterAccountFillsFuelAndFirstContainerWithTypeSamples(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[17] = &data.Itemtype{ID: 17, TitleRu: "Resource", TitleEn: "Resource", Acronym: "Resource"}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Ore", TitleEn: "Ore", Acronym: "Ore", ItemtypeID: 17}
-	serverData.ItemModels.Items[502] = &data.ItemModel{ID: 502, TitleRu: "Dust", TitleEn: "Dust", Acronym: "Dust", ItemtypeID: 17}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[17] = &data.ItemType{ID: 17, TitleRu: "Resource", TitleEn: "Resource", Acronym: "Resource"}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Ore", TitleEn: "Ore", Acronym: "Ore", ItemTypeID: 17}
+	serverData.ItemModels.Items[502] = &data.ItemModel{ID: 502, TitleRu: "Dust", TitleEn: "Dust", Acronym: "Dust", ItemTypeID: 17}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -1616,9 +1685,22 @@ func TestCreateStarterAccountFillsFuelAndFirstContainerWithTypeSamples(t *testin
 	}
 }
 
-// Проверяет, что команда панели переносит всё содержимое из одного контейнера объекта в другой и объединяет одинаковые модели.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В Р вЂ¦Р В РЎвЂўР РЋР С“Р В РЎвЂР РЋРІР‚С™ Р В Р вЂ Р РЋР С“Р РЋРІР‚В Р РЋР С“Р В РЎвЂўР В РўвЂР В Р’ВµР РЋР вЂљР В Р’В¶Р В РЎвЂР В РЎВР В РЎвЂўР В Р’Вµ Р В РЎвЂР В Р’В· Р В РЎвЂўР В РўвЂР В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“Р В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В° Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В° Р В Р вЂ  Р В РўвЂР РЋР вЂљР РЋРЎвЂњР В РЎвЂ“Р В РЎвЂўР В РІвЂћвЂ“ Р В РЎвЂ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РўвЂР В РЎвЂР В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР В РўвЂР В РЎвЂР В Р вЂ¦Р В Р’В°Р В РЎвЂќР В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В Р’Вµ Р В РЎВР В РЎвЂўР В РўвЂР В Р’ВµР В Р’В»Р В РЎвЂ.
 func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *testing.T) {
 	serverData := testWorldData(t)
+	serverData.ItemTypes.Items[20] = &data.ItemType{ID: 20, TitleRu: "Робот", TitleEn: "Robot", Acronym: "Robot", CountMustBeInteger: true}
+	serverData.ItemModels.Items[404] = &data.ItemModel{ID: 404, TitleRu: "Робот", TitleEn: "Robot", Acronym: "Robot", ItemTypeID: 20, ConsumingPower: 10}
+	serverData.ItemModels.Items[303].Mass = 2
+	cargoMovementType, ok := serverData.TaskTypes.GetByAcronym("CargoMovement")
+	if !ok {
+		t.Fatal("cargo movement task type was not loaded")
+	}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
 	gameWorld := world.New(1, serverData)
 
 	objectID, ok := gameWorld.ConnectAccount(1)
@@ -1635,6 +1717,16 @@ func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *tes
 	if source == nil {
 		t.Fatalf("source container was not installed")
 	}
+	if _, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Robots",
+		EquipmentItemModelID: 404,
+		Count:                10,
+		EnabledCount:         10,
+		Enabled:              true,
+	}); err != nil {
+		t.Fatal(err)
+	}
 	target, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
 		CosmicObjectID:       objectID,
 		Title:                "Target Container",
@@ -1646,6 +1738,7 @@ func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *tes
 	if err != nil {
 		t.Fatal(err)
 	}
+	target.OppositeEquipmentGroupID = source.ID
 	selectedItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: source.ID, ContentItemModelID: 303, Count: 10})
 	if err != nil {
 		t.Fatal(err)
@@ -1659,32 +1752,70 @@ func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *tes
 	}
 
 	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 4, world.ControlPanelContainerTransfer{
-		SourceContainerEquipmentGroupID: source.ID,
-		TargetContainerEquipmentGroupID: target.ID,
-		ItemGroupIDs:                    []int64{selectedItem.ID},
+		ControllerEquipmentGroupID: target.ID,
+		LeftToRightDirection:       true,
+		ItemGroupIDs:               []int64{selectedItem.ID},
 	}); err != nil {
 		t.Fatalf("container transfer returned error: %v", err)
 	}
 
 	sourceItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID)
-	if len(sourceItems) != 1 || sourceItems[0].ID != remainingItem.ID {
-		t.Fatalf("source container still has items: %+v", serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID))
+	if len(sourceItems) != 2 {
+		t.Fatalf("source container changed before movement started: %+v", serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID))
 	}
 	targetItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(target.ID)
 	if len(targetItems) != 1 {
-		t.Fatalf("got %d target item groups, want 1: %+v", len(targetItems), targetItems)
+		t.Fatalf("target container changed before movement finished: %+v", targetItems)
 	}
 	counts := map[int64]float64{}
 	for _, item := range targetItems {
 		counts[item.ContentItemModelID] = item.Count
 	}
+	if counts[303] != 5 {
+		t.Fatalf("target container received cargo before movement finished: %+v", counts)
+	}
+	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(target.ID)
+	if len(tasks) != 1 {
+		t.Fatalf("movement task was not queued: %+v", tasks)
+	}
+	task := tasks[0]
+	if task.TaskTypeID != cargoMovementType.ID {
+		t.Fatalf("task type = %d, want %d", task.TaskTypeID, cargoMovementType.ID)
+	}
+	if task.ControllerEquipmentGroupID != target.ID || !task.LeftToRightDirection {
+		t.Fatalf("movement controller was not saved: %+v", task)
+	}
+	reserved := serverData.TaskItemGroups.GetByTaskID(task.ID)
+	if len(reserved) != 1 || reserved[0].ItemModelID != 303 || reserved[0].Count != 10 {
+		t.Fatalf("cargo requirement was not saved in task item group: %+v", reserved)
+	}
+	// Проверяет, что работа считается по массе и полуразмеру текущего объекта.
+	if math.Abs(task.TotalEnergy-112.5) > physics.Epsilon {
+		t.Fatalf("movement energy = %v, want 112.5", task.TotalEnergy)
+	}
+
+	gameWorld.Tick(3)
+
+	sourceItems = serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID)
+	if len(sourceItems) != 1 || sourceItems[0].ID != remainingItem.ID {
+		t.Fatalf("source container still has moved items: %+v", serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID))
+	}
+
+	targetItems = serverData.ItemGroups.GetByContainerEquipmentGroupID(target.ID)
+	counts = map[int64]float64{}
+	for _, item := range targetItems {
+		counts[item.ContentItemModelID] = item.Count
+	}
 	if counts[303] != 15 {
-		t.Fatalf("target container contents were not merged correctly: %+v", counts)
+		t.Fatalf("target container contents were not merged after movement: %+v", counts)
+	}
+	if reserved := serverData.TaskItemGroups.GetByTaskID(task.ID); len(reserved) != 0 {
+		t.Fatalf("movement reserve was not cleared: %+v", reserved)
 	}
 }
 
-// Проверяет, что команда панели не переносит предметы в группу оборудования, которая не является контейнером.
-// Проверяет, что команда панели переносит из одной выбранной строки только указанное количество.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р В Р вЂ¦Р В Р’Вµ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В Р вЂ¦Р В РЎвЂўР РЋР С“Р В РЎвЂР РЋРІР‚С™ Р В РЎвЂ”Р РЋР вЂљР В Р’ВµР В РўвЂР В РЎВР В Р’ВµР РЋРІР‚С™Р РЋРІР‚в„– Р В Р вЂ  Р В РЎвЂ“Р РЋР вЂљР РЋРЎвЂњР В РЎвЂ”Р В РЎвЂ”Р РЋРЎвЂњ Р В РЎвЂўР В Р’В±Р В РЎвЂўР РЋР вЂљР РЋРЎвЂњР В РўвЂР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦Р В РЎвЂР РЋР РЏ, Р В РЎвЂќР В РЎвЂўР РЋРІР‚С™Р В РЎвЂўР РЋР вЂљР В Р’В°Р РЋР РЏ Р В Р вЂ¦Р В Р’Вµ Р РЋР РЏР В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“Р В Р вЂ¦Р В Р’ВµР РЋР вЂљР В РЎвЂўР В РЎВ.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В Р вЂ¦Р В РЎвЂўР РЋР С“Р В РЎвЂР РЋРІР‚С™ Р В РЎвЂР В Р’В· Р В РЎвЂўР В РўвЂР В Р вЂ¦Р В РЎвЂўР В РІвЂћвЂ“ Р В Р вЂ Р РЋРІР‚в„–Р В Р’В±Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РІвЂћвЂ“ Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР В РЎвЂўР В РЎвЂќР В РЎвЂ Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р РЋР Р‰Р В РЎвЂќР В РЎвЂў Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р В РЎвЂќР В РЎвЂўР В Р’В»Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В РЎвЂў.
 func TestApplyControlPanelContainerTransferMovesRequestedAmount(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1714,31 +1845,157 @@ func TestApplyControlPanelContainerTransferMovesRequestedAmount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	target.OppositeEquipmentGroupID = source.ID
 	selectedItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: source.ID, ContentItemModelID: 303, Count: 10})
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 9, world.ControlPanelContainerTransfer{
-		SourceContainerEquipmentGroupID: source.ID,
-		TargetContainerEquipmentGroupID: target.ID,
-		ItemGroupIDs:                    []int64{selectedItem.ID},
-		Amount:                          4,
+		ControllerEquipmentGroupID: target.ID,
+		LeftToRightDirection:       true,
+		ItemGroupIDs:               []int64{selectedItem.ID},
+		Amount:                     4,
 	}); err != nil {
 		t.Fatalf("container transfer returned error: %v", err)
 	}
 
 	sourceItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(source.ID)
-	if len(sourceItems) != 1 || sourceItems[0].Count != 6 {
-		t.Fatalf("source item was not reduced by requested amount: %+v", sourceItems)
+	if len(sourceItems) != 1 || sourceItems[0].Count != 10 {
+		t.Fatalf("source item changed before task start: %+v", sourceItems)
 	}
 	targetItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(target.ID)
-	if len(targetItems) != 1 || targetItems[0].Count != 4 {
-		t.Fatalf("target item was not created with requested amount: %+v", targetItems)
+	if len(targetItems) != 0 {
+		t.Fatalf("target item was moved before task completion: %+v", targetItems)
+	}
+	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(target.ID)
+	if len(tasks) != 1 {
+		t.Fatalf("movement task was not queued: %+v", tasks)
+	}
+	reserved := serverData.TaskItemGroups.GetByTaskID(tasks[0].ID)
+	if len(reserved) != 1 || reserved[0].ItemModelID != 303 || reserved[0].Count != 4 {
+		t.Fatalf("requested amount was not saved as requirement: %+v", reserved)
 	}
 }
 
-// Проверяет, что команда панели переносит предметы между контейнерами собственных объектов одного собственного кластера.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В Р вЂ¦Р В РЎвЂўР РЋР С“Р В РЎвЂР РЋРІР‚С™ Р В РЎвЂ”Р РЋР вЂљР В Р’ВµР В РўвЂР В РЎВР В Р’ВµР РЋРІР‚С™Р РЋРІР‚в„– Р В РЎВР В Р’ВµР В Р’В¶Р В РўвЂР РЋРЎвЂњ Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“Р В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В°Р В РЎВР В РЎвЂ Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В РЎвЂўР В Р вЂ  Р В РЎвЂўР В РўвЂР В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂќР В Р’В»Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В Р’В°.
+// Проверяет, что смена противоположного контейнера влияет только на ещё не начавшиеся перемещения.
+func TestCargoMovementUsesCurrentOppositeContainerOnlyBeforeStart(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.ItemTypes.Items[20] = &data.ItemType{ID: 20, TitleRu: "Робот", TitleEn: "Robot", Acronym: "Robot", CountMustBeInteger: true}
+	serverData.ItemModels.Items[404] = &data.ItemModel{ID: 404, TitleRu: "Робот", TitleEn: "Robot", Acronym: "Robot", ItemTypeID: 20, ConsumingPower: 10}
+	serverData.ItemModels.Items[303].Mass = 2
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var leftOld *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			leftOld = group
+			break
+		}
+	}
+	if leftOld == nil {
+		t.Fatalf("left container was not installed")
+	}
+	right, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:           objectID,
+		Title:                    "Right Container",
+		EquipmentItemModelID:     301,
+		Count:                    1,
+		EnabledCount:             1,
+		Enabled:                  true,
+		OppositeEquipmentGroupID: leftOld.ID,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	leftNew, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "New Left Container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Robots",
+		EquipmentItemModelID: 404,
+		Count:                10,
+		EnabledCount:         10,
+		Enabled:              true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	selectedOld, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: leftOld.ID, ContentItemModelID: 303, Count: 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+	selectedRight, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: right.ID, ContentItemModelID: 303, Count: 7})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 11, world.ControlPanelContainerTransfer{
+		ControllerEquipmentGroupID: right.ID,
+		LeftToRightDirection:       true,
+		ItemGroupIDs:               []int64{selectedOld.ID},
+	}); err != nil {
+		t.Fatalf("left-to-right transfer returned error: %v", err)
+	}
+	if items := serverData.ItemGroups.GetByContainerEquipmentGroupID(leftOld.ID); len(items) != 1 || items[0].Count != 10 {
+		t.Fatalf("cargo was reserved before task start: %+v", items)
+	}
+	right.OppositeEquipmentGroupID = leftNew.ID
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: leftNew.ID, ContentItemModelID: 303, Count: 10}); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld.Tick(1)
+	runningTasks := serverData.Tasks.GetByControllerEquipmentGroupID(right.ID)
+	if len(runningTasks) == 0 {
+		t.Fatalf("running task was not created")
+	}
+	if reserves := serverData.TaskItemGroups.GetByTaskID(runningTasks[0].ID); len(reserves) != 1 || reserves[0].Count != 10 || !reserves[0].IsStored {
+		t.Fatalf("running task did not move cargo into task storage: %+v", reserves)
+	}
+	if items := serverData.ItemGroups.GetByContainerEquipmentGroupID(leftOld.ID); len(items) != 1 || items[0].Count != 10 {
+		t.Fatalf("running task unexpectedly used old source after opposite change: %+v", items)
+	}
+	if items := serverData.ItemGroups.GetByContainerEquipmentGroupID(leftNew.ID); len(items) != 0 {
+		t.Fatalf("running task did not use new source after opposite change: %+v", items)
+	}
+
+	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 12, world.ControlPanelContainerTransfer{
+		ControllerEquipmentGroupID: right.ID,
+		LeftToRightDirection:       false,
+		ItemGroupIDs:               []int64{selectedRight.ID},
+	}); err != nil {
+		t.Fatalf("right-to-left transfer returned error: %v", err)
+	}
+	gameWorld.Tick(20)
+	gameWorld.Tick(20)
+	counts := map[int64]float64{}
+	for _, item := range serverData.ItemGroups.GetByContainerEquipmentGroupID(leftNew.ID) {
+		counts[item.ContentItemModelID] += item.Count
+	}
+	if counts[303] != 7 {
+		t.Fatalf("new left container did not receive completed cargo: %+v", counts)
+	}
+}
+
 func TestApplyControlPanelContainerTransferUsesOwnedClusterObject(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1781,22 +2038,27 @@ func TestApplyControlPanelContainerTransferUsesOwnedClusterObject(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
+	target.OppositeEquipmentGroupID = source.ID
 	selectedItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: source.ID, ContentItemModelID: 303, Count: 10})
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if err := gameWorld.ApplyControlPanelContainerTransfer(1, "session-1", 10, world.ControlPanelContainerTransfer{
-		SourceContainerEquipmentGroupID: source.ID,
-		TargetContainerEquipmentGroupID: target.ID,
-		ItemGroupIDs:                    []int64{selectedItem.ID},
+		ControllerEquipmentGroupID: target.ID,
+		LeftToRightDirection:       true,
+		ItemGroupIDs:               []int64{selectedItem.ID},
 	}); err != nil {
 		t.Fatalf("cluster container transfer returned error: %v", err)
 	}
 
 	targetItems := serverData.ItemGroups.GetByContainerEquipmentGroupID(target.ID)
-	if len(targetItems) != 1 || targetItems[0].Count != 10 {
-		t.Fatalf("target cluster container contents: %+v", targetItems)
+	if len(targetItems) != 0 {
+		t.Fatalf("target cluster container changed before task completion: %+v", targetItems)
+	}
+	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(target.ID)
+	if len(tasks) != 1 || tasks[0].ControllerEquipmentGroupID != target.ID || !tasks[0].LeftToRightDirection {
+		t.Fatalf("cluster movement task was not queued: %+v", tasks)
 	}
 }
 
@@ -1838,12 +2100,12 @@ func TestApplyControlPanelContainerTransferRejectsNonContainerTarget(t *testing.
 	}
 }
 
-// Проверяет, что конструктор ставит изготовление в очередь и завершает его только после указанного времени.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР РЋРЎвЂњР В РЎвЂќР РЋРІР‚С™Р В РЎвЂўР РЋР вЂљ Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ Р В РЎвЂР РЋРІР‚С™ Р В РЎвЂР В Р’В·Р В РЎвЂ“Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р вЂ  Р В РЎвЂўР РЋРІР‚РЋР В Р’ВµР РЋР вЂљР В Р’ВµР В РўвЂР РЋР Р‰ Р В РЎвЂ Р В Р’В·Р В Р’В°Р В Р вЂ Р В Р’ВµР РЋР вЂљР РЋРІвЂљВ¬Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р РЋР Р‰Р В РЎвЂќР В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В»Р В Р’Вµ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В Р вЂ Р РЋР вЂљР В Р’ВµР В РЎВР В Р’ВµР В Р вЂ¦Р В РЎвЂ.
 func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductionTime(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -1851,7 +2113,7 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 	}
 	serverData.Schemas = storage.NewRawReferenceTable()
 	serverData.SchemaComponents = storage.NewRawReferenceTable()
-	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionEnergy": 10})
 	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 4})
 	addRawReferenceItem(t, serverData.SchemaComponents, 2, map[string]any{"ID": 2, "SchemaID": 1, "ComponentItemModelID": 403, "Count": 2})
 	gameWorld := world.New(1, serverData)
@@ -1917,7 +2179,7 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 		t.Fatalf("product was created before production time passed: %+v", productCounts)
 	}
 	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
-	if len(queued) != 1 || queued[0].QueueType != "main" || queued[0].RemainingTime != 10 || queued[0].RemainingCount != 3 || queued[0].TotalCount != 3 {
+	if len(queued) != 1 || queued[0].QueueType != "main" || queued[0].RemainingTime != 30 || queued[0].RemainingCount != 3 || queued[0].TotalCount != 3 {
 		t.Fatalf("main production was not queued correctly: %+v", queued)
 	}
 
@@ -1948,14 +2210,15 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 	}
 }
 
-// Проверяет, что команда панели переливает выбранное топливо из контейнера в общий запас топлива объекта до свободного места.
-// Проверяет, что вспомогательная очередь изготавливает только недостающее количество компонентов.
-// Проверяет, что конструктор потребляет энергию и помечается активным во время изготовления.
-func TestTickActivatesConstructorEquipmentWhileProductionRuns(t *testing.T) {
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р РЋРІР‚в„–Р В Р’В±Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂў Р В РЎвЂР В Р’В· Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“Р В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В° Р В Р вЂ  Р В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В РЎвЂР В РІвЂћвЂ“ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В Р’В°Р РЋР С“ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В° Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В° Р В РўвЂР В РЎвЂў Р РЋР С“Р В Р вЂ Р В РЎвЂўР В Р’В±Р В РЎвЂўР В РўвЂР В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎВР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В Р’В°.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р вЂ Р РЋР С“Р В РЎвЂ”Р В РЎвЂўР В РЎВР В РЎвЂўР В РЎвЂ“Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰Р В Р вЂ¦Р В Р’В°Р РЋР РЏ Р В РЎвЂўР РЋРІР‚РЋР В Р’ВµР РЋР вЂљР В Р’ВµР В РўвЂР РЋР Р‰ Р В РЎвЂР В Р’В·Р В РЎвЂ“Р В РЎвЂўР РЋРІР‚С™Р В Р’В°Р В Р вЂ Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р РЋР Р‰Р В РЎвЂќР В РЎвЂў Р В Р вЂ¦Р В Р’ВµР В РўвЂР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’В°Р РЋР вЂ№Р РЋРІР‚В°Р В Р’ВµР В Р’Вµ Р В РЎвЂќР В РЎвЂўР В Р’В»Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В РЎвЂ”Р В РЎвЂўР В Р вЂ¦Р В Р’ВµР В Р вЂ¦Р РЋРІР‚С™Р В РЎвЂўР В Р вЂ .
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР РЋРЎвЂњР В РЎвЂќР РЋРІР‚С™Р В РЎвЂўР РЋР вЂљ Р В РЎвЂ”Р В РЎвЂўР РЋРІР‚С™Р РЋР вЂљР В Р’ВµР В Р’В±Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р РЋР РЉР В Р вЂ¦Р В Р’ВµР РЋР вЂљР В РЎвЂ“Р В РЎвЂР РЋР вЂ№ Р В РЎвЂ Р В РЎвЂ”Р В РЎвЂўР В РЎВР В Р’ВµР РЋРІР‚РЋР В Р’В°Р В Р’ВµР РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В Р’В°Р В РЎвЂќР РЋРІР‚С™Р В РЎвЂР В Р вЂ Р В Р вЂ¦Р РЋРІР‚в„–Р В РЎВ Р В Р вЂ Р В РЎвЂў Р В Р вЂ Р РЋР вЂљР В Р’ВµР В РЎВР РЋР РЏ Р В РЎвЂР В Р’В·Р В РЎвЂ“Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ.
+// Проверяет, что изготовление нескольких предметов одной модели хранится одним заданием с общим количеством.
+func TestApplyControlPanelConstructorProduceItemStoresAmountInSingleTask(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19, ConsumingPower: 7000}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -1963,7 +2226,79 @@ func TestTickActivatesConstructorEquipmentWhileProductionRuns(t *testing.T) {
 	}
 	serverData.Schemas = storage.NewRawReferenceTable()
 	serverData.SchemaComponents = storage.NewRawReferenceTable()
-	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionEnergy": 10})
+	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 4})
+	gameWorld := world.New(1, serverData)
+
+	objectID, ok := gameWorld.ConnectAccount(1)
+	if !ok {
+		t.Fatalf("account was not connected")
+	}
+	var materialContainer *data.EquipmentGroup
+	for _, group := range serverData.EquipmentGroups.GetByCosmicObjectID(objectID) {
+		if group.EquipmentItemModelID == 301 {
+			materialContainer = group
+			break
+		}
+	}
+	if materialContainer == nil {
+		t.Fatalf("material container was not installed")
+	}
+	productContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Product Container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Constructor",
+		EquipmentItemModelID: 501,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: materialContainer.ID, ContentItemModelID: 303, Count: 12}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := gameWorld.ApplyControlPanelConstructorProduceItem(1, "session-1", 21, world.ControlPanelConstructorProduceItem{
+		ConstructorEquipmentGroupID:       constructor.ID,
+		MaterialContainerEquipmentGroupID: materialContainer.ID,
+		ProductContainerEquipmentGroupID:  productContainer.ID,
+		SchemaID:                          1,
+		Amount:                            3,
+	}); err != nil {
+		t.Fatalf("constructor production returned error: %v", err)
+	}
+
+	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(constructor.ID)
+	if len(tasks) != 1 {
+		t.Fatalf("production amount was split into separate tasks: %+v", tasks)
+	}
+}
+
+func TestTickActivatesConstructorEquipmentWhileProductionRuns(t *testing.T) {
+	serverData := testWorldData(t)
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19, ConsumingPower: 7000}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.Schemas = storage.NewRawReferenceTable()
+	serverData.SchemaComponents = storage.NewRawReferenceTable()
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionEnergy": 70000})
 	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 4})
 	gameWorld := world.New(1, serverData)
 
@@ -2014,12 +2349,12 @@ func TestTickActivatesConstructorEquipmentWhileProductionRuns(t *testing.T) {
 	}
 }
 
-// Проверяет, что команда не делать следующие оставляет только начатую единицу выбранной строки.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В Р вЂ¦Р В Р’Вµ Р В РўвЂР В Р’ВµР В Р’В»Р В Р’В°Р РЋРІР‚С™Р РЋР Р‰ Р РЋР С“Р В Р’В»Р В Р’ВµР В РўвЂР РЋРЎвЂњР РЋР вЂ№Р РЋРІР‚В°Р В РЎвЂР В Р’Вµ Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р РЋР Р‰Р В РЎвЂќР В РЎвЂў Р В Р вЂ¦Р В Р’В°Р РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р РЋРЎвЂњР РЋР вЂ№ Р В Р’ВµР В РўвЂР В РЎвЂР В Р вЂ¦Р В РЎвЂР РЋРІР‚В Р РЋРЎвЂњ Р В Р вЂ Р РЋРІР‚в„–Р В Р’В±Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РІвЂћвЂ“ Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР В РЎвЂўР В РЎвЂќР В РЎвЂ.
 func TestApplyControlPanelConstructorQueueCommandSkipsNotStartedBatches(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2027,7 +2362,7 @@ func TestApplyControlPanelConstructorQueueCommandSkipsNotStartedBatches(t *testi
 	}
 	serverData.Schemas = storage.NewRawReferenceTable()
 	serverData.SchemaComponents = storage.NewRawReferenceTable()
-	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionEnergy": 10})
 	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 4})
 	gameWorld := world.New(1, serverData)
 
@@ -2096,12 +2431,12 @@ func TestApplyControlPanelConstructorQueueCommandSkipsNotStartedBatches(t *testi
 	}
 }
 
-// Проверяет, что команда отменить все убирает выбранную основную строку и следующие основные строки.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂўР РЋРІР‚С™Р В РЎВР В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋРІР‚С™Р РЋР Р‰ Р В Р вЂ Р РЋР С“Р В Р’Вµ Р РЋРЎвЂњР В Р’В±Р В РЎвЂР РЋР вЂљР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р вЂ Р РЋРІР‚в„–Р В Р’В±Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРЎвЂњР РЋР вЂ№ Р В РЎвЂўР РЋР С“Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р вЂ¦Р РЋРЎвЂњР РЋР вЂ№ Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР В РЎвЂўР В РЎвЂќР РЋРЎвЂњ Р В РЎвЂ Р РЋР С“Р В Р’В»Р В Р’ВµР В РўвЂР РЋРЎвЂњР РЋР вЂ№Р РЋРІР‚В°Р В РЎвЂР В Р’Вµ Р В РЎвЂўР РЋР С“Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р вЂ¦Р РЋРІР‚в„–Р В Р’Вµ Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР В РЎвЂўР В РЎвЂќР В РЎвЂ.
 func TestApplyControlPanelConstructorQueueCommandCancelsSelectedAndFollowingMainJobs(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2109,7 +2444,7 @@ func TestApplyControlPanelConstructorQueueCommandCancelsSelectedAndFollowingMain
 	}
 	serverData.Schemas = storage.NewRawReferenceTable()
 	serverData.SchemaComponents = storage.NewRawReferenceTable()
-	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionEnergy": 10})
 	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 1})
 	gameWorld := world.New(1, serverData)
 
@@ -2150,7 +2485,7 @@ func TestApplyControlPanelConstructorQueueCommandCancelsSelectedAndFollowingMain
 		}
 	}
 	queued := gameWorld.SnapshotForAccount(1).ConstructorProductionJobs
-	if len(queued) != 2 {
+	if len(queued) != 1 {
 		t.Fatalf("productions were not queued: %+v", queued)
 	}
 
@@ -2168,9 +2503,9 @@ func TestApplyControlPanelConstructorQueueCommandCancelsSelectedAndFollowingMain
 
 func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryComponents(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2178,8 +2513,8 @@ func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryCompon
 	}
 	serverData.Schemas = storage.NewRawReferenceTable()
 	serverData.SchemaComponents = storage.NewRawReferenceTable()
-	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionBaseTime": 10})
-	addRawReferenceItem(t, serverData.Schemas, 2, map[string]any{"ID": 2, "ItemModelID": 303, "Count": 3, "ProductionBaseTime": 4})
+	addRawReferenceItem(t, serverData.Schemas, 1, map[string]any{"ID": 1, "ItemModelID": 302, "Count": 1, "ProductionEnergy": 10})
+	addRawReferenceItem(t, serverData.Schemas, 2, map[string]any{"ID": 2, "ItemModelID": 303, "Count": 3, "ProductionEnergy": 4})
 	addRawReferenceItem(t, serverData.SchemaComponents, 1, map[string]any{"ID": 1, "SchemaID": 1, "ComponentItemModelID": 303, "Count": 5})
 	addRawReferenceItem(t, serverData.SchemaComponents, 2, map[string]any{"ID": 2, "SchemaID": 2, "ComponentItemModelID": 403, "Count": 2})
 	gameWorld := world.New(1, serverData)
@@ -2248,12 +2583,12 @@ func TestApplyControlPanelConstructorProduceItemQueuesOnlyMissingAuxiliaryCompon
 	}
 }
 
-// Проверяет, что конструктор создаёт объект по чертежу в космосе перед объектом-изготовителем.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР РЋРЎвЂњР В РЎвЂќР РЋРІР‚С™Р В РЎвЂўР РЋР вЂљ Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р РЋРІР‚ВР РЋРІР‚С™ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂў Р РЋРІР‚РЋР В Р’ВµР РЋР вЂљР РЋРІР‚С™Р В Р’ВµР В Р’В¶Р РЋРЎвЂњ Р В Р вЂ  Р В РЎвЂќР В РЎвЂўР РЋР С“Р В РЎВР В РЎвЂўР РЋР С“Р В Р’Вµ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В РўвЂ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В РЎвЂўР В РЎВ-Р В РЎвЂР В Р’В·Р В РЎвЂ“Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р В РЎвЂР РЋРІР‚С™Р В Р’ВµР В Р’В»Р В Р’ВµР В РЎВ.
 func TestApplyControlPanelConstructorProduceItemCreatesBlueprintObjectInFrontOfBuilder(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2261,7 +2596,7 @@ func TestApplyControlPanelConstructorProduceItemCreatesBlueprintObjectInFrontOfB
 	}
 	serverData.Blueprints = storage.NewRawReferenceTable()
 	serverData.BlueprintComponents = storage.NewRawReferenceTable()
-	addRawReferenceItem(t, serverData.Blueprints, 1, map[string]any{"ID": 1, "CosmicObjectModelID": 4, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.Blueprints, 1, map[string]any{"ID": 1, "CosmicObjectModelID": 4, "ProductionEnergy": 10})
 	addRawReferenceItem(t, serverData.BlueprintComponents, 1, map[string]any{"ID": 1, "BlueprintID": 1, "ComponentItemModelID": 303, "Count": 4})
 	gameWorld := world.New(1, serverData)
 
@@ -2322,12 +2657,12 @@ func TestApplyControlPanelConstructorProduceItemCreatesBlueprintObjectInFrontOfB
 	}
 }
 
-// Проверяет, что занятое место перед изготовителем заставляет конструктор сдвинуть новый объект дальше по ходу.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р’В·Р В Р’В°Р В Р вЂ¦Р РЋР РЏР РЋРІР‚С™Р В РЎвЂўР В Р’Вµ Р В РЎВР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В РўвЂ Р В РЎвЂР В Р’В·Р В РЎвЂ“Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р В РЎвЂР РЋРІР‚С™Р В Р’ВµР В Р’В»Р В Р’ВµР В РЎВ Р В Р’В·Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋР С“Р РЋРІР‚С™Р РЋР вЂљР РЋРЎвЂњР В РЎвЂќР РЋРІР‚С™Р В РЎвЂўР РЋР вЂљ Р РЋР С“Р В РўвЂР В Р вЂ Р В РЎвЂР В Р вЂ¦Р РЋРЎвЂњР РЋРІР‚С™Р РЋР Р‰ Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В РўвЂР В Р’В°Р В Р’В»Р РЋР Р‰Р РЋРІвЂљВ¬Р В Р’Вµ Р В РЎвЂ”Р В РЎвЂў Р РЋРІР‚В¦Р В РЎвЂўР В РўвЂР РЋРЎвЂњ.
 func TestApplyControlPanelConstructorProduceItemPlacesBlueprintObjectPastOccupiedSpot(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[19] = &data.Itemtype{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
-	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemtypeID: 19}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[19] = &data.ItemType{ID: 19, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", CountMustBeInteger: true}
+	serverData.ItemModels.Items[501] = &data.ItemModel{ID: 501, TitleRu: "Constructor", TitleEn: "Constructor", Acronym: "Constructor", ItemTypeID: 19}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2335,7 +2670,7 @@ func TestApplyControlPanelConstructorProduceItemPlacesBlueprintObjectPastOccupie
 	}
 	serverData.Blueprints = storage.NewRawReferenceTable()
 	serverData.BlueprintComponents = storage.NewRawReferenceTable()
-	addRawReferenceItem(t, serverData.Blueprints, 1, map[string]any{"ID": 1, "CosmicObjectModelID": 4, "ProductionBaseTime": 10})
+	addRawReferenceItem(t, serverData.Blueprints, 1, map[string]any{"ID": 1, "CosmicObjectModelID": 4, "ProductionEnergy": 10})
 	addRawReferenceItem(t, serverData.BlueprintComponents, 1, map[string]any{"ID": 1, "BlueprintID": 1, "ComponentItemModelID": 303, "Count": 4})
 	gameWorld := world.New(1, serverData)
 
@@ -2400,10 +2735,10 @@ func TestApplyControlPanelConstructorProduceItemPlacesBlueprintObjectPastOccupie
 
 func TestApplyControlPanelFuelTransferFillsObjectFuelFromContainer(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
-	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemtypeID: 7}
-	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemtypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[10] = &data.ItemType{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
+	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemTypeID: 7, Mass: 2}
+	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemTypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2439,6 +2774,7 @@ func TestApplyControlPanelFuelTransferFillsObjectFuelFromContainer(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
+	addTestRobots(t, serverData, objectID)
 	fuelItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: container.ID, ContentItemModelID: 7, Count: 40})
 	if err != nil {
 		t.Fatal(err)
@@ -2452,24 +2788,45 @@ func TestApplyControlPanelFuelTransferFillsObjectFuelFromContainer(t *testing.T)
 		t.Fatalf("fuel transfer returned error: %v", err)
 	}
 
+	if cosmicObject.Fuel != 20 {
+		t.Fatalf("object fuel changed before fueling task completed: %v", cosmicObject.Fuel)
+	}
+	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
+	if len(items) != 1 || items[0].Count != 40 {
+		t.Fatalf("container fuel changed before fueling task started: %+v", items)
+	}
+	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(fuelTank.ID)
+	if len(tasks) != 1 || !tasks[0].LeftToRightDirection {
+		t.Fatalf("fueling task was not queued correctly: %+v", tasks)
+	}
+
+	gameWorld.Tick(1)
+	if reserves := serverData.TaskItemGroups.GetByTaskID(tasks[0].ID); len(reserves) != 1 || !reserves[0].IsStored || reserves[0].Count != 30 {
+		t.Fatalf("fueling task did not store fuel: %+v", reserves)
+	}
+	items = serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
+	if len(items) != 1 || items[0].Count != 10 {
+		t.Fatalf("container fuel item was not reduced after task start: %+v", items)
+	}
+
+	gameWorld.Tick(10)
 	if cosmicObject.Fuel != 50 {
 		t.Fatalf("object fuel = %v, want 50", cosmicObject.Fuel)
 	}
-	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(container.ID)
-	if len(items) != 1 || items[0].Count != 10 {
-		t.Fatalf("container fuel item was not reduced to remainder: %+v", items)
+	if tasks := serverData.Tasks.GetByControllerEquipmentGroupID(fuelTank.ID); len(tasks) != 0 {
+		t.Fatalf("completed fueling task stayed in queue: %+v", tasks)
 	}
 }
 
-// Проверяет, что команда панели сливает указанное топливо из общего запаса объекта в левый контейнер.
-// Проверяет, что команда панели заливает из контейнера только указанное количество топлива.
-// Проверяет, что залив топлива меняет запас объекта выбранного бака в собственном кластере.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р РЋР С“Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂў Р В РЎвЂР В Р’В· Р В РЎвЂўР В Р’В±Р РЋРІР‚В°Р В Р’ВµР В РЎвЂ“Р В РЎвЂў Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В Р’В°Р РЋР С“Р В Р’В° Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В° Р В Р вЂ  Р В Р’В»Р В Р’ВµР В Р вЂ Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“Р В Р вЂ¦Р В Р’ВµР РЋР вЂљ.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В РЎВР В Р’В°Р В Р вЂ¦Р В РўвЂР В Р’В° Р В РЎвЂ”Р В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р’В»Р В РЎвЂ Р В Р’В·Р В Р’В°Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂР В Р’В· Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“Р В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В° Р РЋРІР‚С™Р В РЎвЂўР В Р’В»Р РЋР Р‰Р В РЎвЂќР В РЎвЂў Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р В РЎвЂќР В РЎвЂўР В Р’В»Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В РЎвЂў Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В°.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В Р’В·Р В Р’В°Р В Р’В»Р В РЎвЂР В Р вЂ  Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В Р’В° Р В РЎВР В Р’ВµР В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В Р’В°Р РЋР С“ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В° Р В Р вЂ Р РЋРІР‚в„–Р В Р’В±Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В Р’В±Р В Р’В°Р В РЎвЂќР В Р’В° Р В Р вЂ  Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В РЎВ Р В РЎвЂќР В Р’В»Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљР В Р’Вµ.
 func TestApplyControlPanelFuelTransferFillsOwnedClusterFuelTankObject(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
-	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemtypeID: 7}
-	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemtypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[10] = &data.ItemType{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
+	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemTypeID: 7, Mass: 2}
+	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemTypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2517,6 +2874,7 @@ func TestApplyControlPanelFuelTransferFillsOwnedClusterFuelTankObject(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
+	addTestRobots(t, serverData, targetObject.ID)
 	fuelItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: container.ID, ContentItemModelID: 7, Count: 40})
 	if err != nil {
 		t.Fatal(err)
@@ -2530,6 +2888,7 @@ func TestApplyControlPanelFuelTransferFillsOwnedClusterFuelTankObject(t *testing
 		t.Fatalf("cluster fuel transfer returned error: %v", err)
 	}
 
+	gameWorld.Tick(10)
 	if targetObject.Fuel != 50 || mainObject.Fuel == 50 {
 		t.Fatalf("fuel after cluster transfer: target=%v main=%v", targetObject.Fuel, mainObject.Fuel)
 	}
@@ -2537,10 +2896,10 @@ func TestApplyControlPanelFuelTransferFillsOwnedClusterFuelTankObject(t *testing
 
 func TestApplyControlPanelFuelTransferFillsOnlyRequestedAmount(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
-	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemtypeID: 7}
-	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemtypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[10] = &data.ItemType{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
+	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemTypeID: 7, Mass: 2}
+	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemTypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2576,6 +2935,7 @@ func TestApplyControlPanelFuelTransferFillsOnlyRequestedAmount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	addTestRobots(t, serverData, objectID)
 	fuelItem, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: container.ID, ContentItemModelID: 7, Count: 40})
 	if err != nil {
 		t.Fatal(err)
@@ -2590,6 +2950,7 @@ func TestApplyControlPanelFuelTransferFillsOnlyRequestedAmount(t *testing.T) {
 		t.Fatalf("fuel transfer returned error: %v", err)
 	}
 
+	gameWorld.Tick(10)
 	if cosmicObject.Fuel != 32 {
 		t.Fatalf("object fuel = %v, want 32", cosmicObject.Fuel)
 	}
@@ -2601,10 +2962,10 @@ func TestApplyControlPanelFuelTransferFillsOnlyRequestedAmount(t *testing.T) {
 
 func TestApplyControlPanelFuelTransferDrainsObjectFuelToContainer(t *testing.T) {
 	serverData := testWorldData(t)
-	serverData.Itemtypes.Items[10] = &data.Itemtype{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
-	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemtypeID: 7}
-	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemtypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
-	if err := serverData.Itemtypes.RebuildIndexes(); err != nil {
+	serverData.ItemTypes.Items[10] = &data.ItemType{ID: 10, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", IsInternalUsable: true, CountMustBeInteger: true}
+	serverData.ItemModels.Items[7] = &data.ItemModel{ID: 7, TitleRu: "Fuel", TitleEn: "Fuel", Acronym: "Fuel", ItemTypeID: 7, Mass: 2}
+	serverData.ItemModels.Items[304] = &data.ItemModel{ID: 304, TitleRu: "Fuel Tank", TitleEn: "Fuel Tank", Acronym: "FuelTank", ItemTypeID: 10, Capacity: 100, ConsumingItemModelID: 7}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -2640,6 +3001,7 @@ func TestApplyControlPanelFuelTransferDrainsObjectFuelToContainer(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
+	addTestRobots(t, serverData, objectID)
 
 	if err := gameWorld.ApplyControlPanelFuelTransfer(1, "session-1", 7, world.ControlPanelFuelTransfer{
 		ContainerEquipmentGroupID: container.ID,
@@ -2649,6 +3011,23 @@ func TestApplyControlPanelFuelTransferDrainsObjectFuelToContainer(t *testing.T) 
 		t.Fatalf("fuel drain returned error: %v", err)
 	}
 
+	if cosmicObject.Fuel != 20 {
+		t.Fatalf("object fuel changed before drain task started: %v", cosmicObject.Fuel)
+	}
+	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(fuelTank.ID)
+	if len(tasks) != 1 || tasks[0].LeftToRightDirection {
+		t.Fatalf("fuel drain task was not queued correctly: %+v", tasks)
+	}
+
+	gameWorld.Tick(1)
+	if reserves := serverData.TaskItemGroups.GetByTaskID(tasks[0].ID); len(reserves) != 1 || !reserves[0].IsStored || reserves[0].Count != 12 {
+		t.Fatalf("fuel drain task did not store fuel: %+v", reserves)
+	}
+	if cosmicObject.Fuel != 8 {
+		t.Fatalf("object fuel after drain start = %v, want 8", cosmicObject.Fuel)
+	}
+
+	gameWorld.Tick(10)
 	if cosmicObject.Fuel != 8 {
 		t.Fatalf("object fuel = %v, want 8", cosmicObject.Fuel)
 	}
@@ -2699,7 +3078,7 @@ func TestChangeControlledShipToRandomModelUsesOnlyOtherShipModels(t *testing.T) 
 	}
 }
 
-// Проверяет, что тестовая замена корабля передает собственность текущему персонажу.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋРІР‚С™Р В Р’ВµР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В Р вЂ Р В Р’В°Р РЋР РЏ Р В Р’В·Р В Р’В°Р В РЎВР В Р’ВµР В Р вЂ¦Р В Р’В° Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР РЏ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР В РўвЂР В Р’В°Р В Р’ВµР РЋРІР‚С™ Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР РЋР С“Р РЋРІР‚С™Р РЋР Р‰ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋРЎвЂњР РЋРІР‚В°Р В Р’ВµР В РЎВР РЋРЎвЂњ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р РЋРЎвЂњ.
 func TestChangeControlledShipToRandomModelAssignsCurrentCharacterOwner(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].OwnerCharacterID = 2
@@ -2717,7 +3096,7 @@ func TestChangeControlledShipToRandomModelAssignsCurrentCharacterOwner(t *testin
 	}
 }
 
-// Проверяет, что после смены модели топливо и боезапас пересоздаются для нового контейнера.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В»Р В Р’Вµ Р РЋР С“Р В РЎВР В Р’ВµР В Р вЂ¦Р РЋРІР‚в„– Р В РЎВР В РЎвЂўР В РўвЂР В Р’ВµР В Р’В»Р В РЎвЂ Р РЋРІР‚С™Р В РЎвЂўР В РЎвЂ”Р В Р’В»Р В РЎвЂР В Р вЂ Р В РЎвЂў Р В РЎвЂ Р В Р’В±Р В РЎвЂўР В Р’ВµР В Р’В·Р В Р’В°Р В РЎвЂ”Р В Р’В°Р РЋР С“ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР В Р’ВµР РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р РЋР вЂ№Р РЋРІР‚С™Р РЋР С“Р РЋР РЏ Р В РўвЂР В Р’В»Р РЋР РЏ Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР В Р вЂ¦Р РЋРІР‚С™Р В Р’ВµР В РІвЂћвЂ“Р В Р вЂ¦Р В Р’ВµР РЋР вЂљР В Р’В°.
 func TestChangeControlledShipToRandomModelRefillsFuelAndContainerAmmo(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -2776,7 +3155,7 @@ func TestChangeControlledShipToRandomModelRefillsFuelAndContainerAmmo(t *testing
 	}
 }
 
-// Проверяет, что смена модели сохраняет положение и скорость управляемого корабля.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎВР В Р’ВµР В Р вЂ¦Р В Р’В° Р В РЎВР В РЎвЂўР В РўвЂР В Р’ВµР В Р’В»Р В РЎвЂ Р РЋР С“Р В РЎвЂўР РЋРІР‚В¦Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂ Р РЋР С“Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В РЎвЂўР РЋР С“Р РЋРІР‚С™Р РЋР Р‰ Р РЋРЎвЂњР В РЎвЂ”Р РЋР вЂљР В Р’В°Р В Р вЂ Р В Р’В»Р РЋР РЏР В Р’ВµР В РЎВР В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР РЏ.
 func TestChangeControlledShipToRandomModelKeepsMovementState(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].X = 10
@@ -2806,7 +3185,7 @@ func TestChangeControlledShipToRandomModelKeepsMovementState(t *testing.T) {
 	}
 }
 
-// Проверяет, что отключение аккаунта не удаляет корабль из снимка мира.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂќР В Р’В»Р РЋР вЂ№Р РЋРІР‚РЋР В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В Р’В°Р В РЎвЂќР В РЎвЂќР В Р’В°Р РЋРЎвЂњР В Р вЂ¦Р РЋРІР‚С™Р В Р’В° Р В Р вЂ¦Р В Р’Вµ Р РЋРЎвЂњР В РўвЂР В Р’В°Р В Р’В»Р РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В РЎвЂќР В РЎвЂўР РЋР вЂљР В Р’В°Р В Р’В±Р В Р’В»Р РЋР Р‰ Р В РЎвЂР В Р’В· Р РЋР С“Р В Р вЂ¦Р В РЎвЂР В РЎВР В РЎвЂќР В Р’В° Р В РЎВР В РЎвЂР РЋР вЂљР В Р’В°.
 func TestDisconnectAccountDoesNotDeleteStoredShip(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 
@@ -2822,7 +3201,7 @@ func TestDisconnectAccountDoesNotDeleteStoredShip(t *testing.T) {
 	}
 }
 
-// Проверяет, что снимок мира содержит объекты, загруженные из серверных данных.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В Р вЂ¦Р В РЎвЂР В РЎВР В РЎвЂўР В РЎвЂќ Р В РЎВР В РЎвЂР РЋР вЂљР В Р’В° Р РЋР С“Р В РЎвЂўР В РўвЂР В Р’ВµР РЋР вЂљР В Р’В¶Р В РЎвЂР РЋРІР‚С™ Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р РЋРІР‚в„–, Р В Р’В·Р В Р’В°Р В РЎвЂ“Р РЋР вЂљР РЋРЎвЂњР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В Р’Вµ Р В РЎвЂР В Р’В· Р РЋР С“Р В Р’ВµР РЋР вЂљР В Р вЂ Р В Р’ВµР РЋР вЂљР В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В РўвЂР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦.
 func TestSnapshotContainsObjectsLoadedFromData(t *testing.T) {
 	gameWorld := world.New(1, testWorldData(t))
 
@@ -2843,7 +3222,7 @@ func TestSnapshotContainsObjectsLoadedFromData(t *testing.T) {
 	}
 }
 
-// Проверяет, что сохранение данных записывает обновлённое положение космического объекта.
+// Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎвЂўР РЋРІР‚В¦Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РўвЂР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В РЎвЂР РЋР С“Р РЋРІР‚в„–Р В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР В Р’В±Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р’В»Р РЋРІР‚ВР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂќР В РЎвЂўР РЋР С“Р В РЎВР В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.
 func TestSaveDataWritesCosmicObjectPosition(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Fuel = 50

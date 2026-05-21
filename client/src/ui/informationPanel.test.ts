@@ -51,7 +51,7 @@ const referenceData = {
       "2": { ID: 2, Acronym: "Asteroid" },
     },
   },
-  Itemtype: { MaxID: 0, Items: {} },
+  ItemType: { MaxID: 0, Items: {} },
   CosmicObjectModel: {
     MaxID: 20,
     Items: {

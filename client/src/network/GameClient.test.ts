@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { GameClient } from "./GameClient";
 import type { ClientInputState } from "./protocol";
 
@@ -479,7 +479,7 @@ describe("GameClient", () => {
     socket.onopen?.();
     const objectMutation = client.sendControlPanelObjectUpdate({ enabled: false });
     const equipmentMutation = client.sendControlPanelEquipmentUpdate({ equipmentGroupId: 12, enabledCount: 3, title: "Renamed equipment" });
-    const containerMutation = client.sendControlPanelContainerTransfer({ sourceContainerEquipmentGroupId: 21, targetContainerEquipmentGroupId: 22, itemGroupIds: [31], amount: 4 });
+    const containerMutation = client.sendControlPanelContainerTransfer({ controllerEquipmentGroupId: 22, leftToRightDirection: true, sourceContainerEquipmentGroupId: 21, targetContainerEquipmentGroupId: 22, itemGroupIds: [31], amount: 4 });
     const fuelMutation = client.sendControlPanelFuelTransfer({ containerEquipmentGroupId: 21, fuelTankEquipmentGroupId: 23, itemGroupIds: [32], amount: 12 });
     const constructorMutation = client.sendControlPanelConstructorProduceItem({ constructorEquipmentGroupId: 24, materialContainerEquipmentGroupId: 21, productContainerEquipmentGroupId: 22, schemaId: 41, amount: 3 });
     const blueprintMutation = client.sendControlPanelConstructorProduceItem({ constructorEquipmentGroupId: 24, materialContainerEquipmentGroupId: 21, blueprintId: 51, amount: 1 });
@@ -510,6 +510,8 @@ describe("GameClient", () => {
       type: "controlPanelContainerTransfer",
       clientSessionId: "session-1",
       mutationSeq: 3,
+      controllerEquipmentGroupId: 22,
+      leftToRightDirection: true,
       sourceContainerEquipmentGroupId: 21,
       targetContainerEquipmentGroupId: 22,
       itemGroupIds: [31],

@@ -17,8 +17,8 @@ import type {
   DockingNotification,
   DockingWindowState,
   EquipmentGroup,
-  EquipmentGroupRelation,
   ReferenceDataMessage,
+  Task,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
 import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, ControlPanelUsageSelectValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
@@ -155,6 +155,10 @@ export class GameScene extends Phaser.Scene {
   private controlPanelContainerTransferSourceGroupId: number | null = null;
   // Получатель ожидающего подтверждения переноса между контейнерами.
   private controlPanelContainerTransferTargetGroupId: number | null = null;
+  // Правый контейнер, управляющий ожидающим подтверждения перемещением.
+  private controlPanelContainerTransferControllerGroupId: number | null = null;
+  // Направление ожидающего подтверждения перемещения относительно правого контейнера.
+  private controlPanelContainerTransferLeftToRightDirection = true;
   // Строка содержимого, ожидающая частичного переноса между контейнерами.
   private controlPanelContainerTransferItemGroupIds: number[] = [];
   // Максимальное количество топлива, доступное для залива в бак.
@@ -279,12 +283,15 @@ export class GameScene extends Phaser.Scene {
     const inputSettingsDropdownScroll = this.getSettingsDropdownScrollState();
     const serverSelfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
     const effectiveEquipmentGroups = snapshot ? applyControlPanelPendingToEquipmentGroups(snapshot.equipmentGroups ?? [], this.controlPanelPending) : [];
+    const snapshotTasks = snapshot?.tasks ?? [];
+    const snapshotTaskItemGroups = snapshot?.taskItemGroups ?? [];
+    const constructorProductionJobs = this.constructorProductionJobsFromTasks(snapshotTasks, effectiveEquipmentGroups);
     const selfObject = applyControlPanelPendingToObject(serverSelfObject, this.controlPanelPending);
     if (this.inputController.consumeFocusedObjectOwnerClaimRequest() && snapshot && selfObject && this.referenceData && getInformationPanelView({ selfObject, objects: snapshot.objects, referenceData: this.referenceData })) {
       this.gameClient?.requestFocusedObjectOwnerClaim();
     }
-    this.syncControlPanelUsageSelection(selfObject?.ID ?? null, snapshot?.objects ?? [], effectiveEquipmentGroups, snapshot?.equipmentGroupRelations ?? []);
-    this.syncControlPanelConstructorMainJobSelection(snapshot?.constructorProductionJobs ?? []);
+    this.syncControlPanelUsageSelection(selfObject?.ID ?? null, snapshot?.objects ?? [], effectiveEquipmentGroups);
+    this.syncControlPanelConstructorMainJobSelection(constructorProductionJobs);
     this.controlPanelFuelFillMaxAmount = this.getControlPanelFuelFillMaxAmount(snapshot?.objects ?? [], effectiveEquipmentGroups, snapshot?.itemGroups ?? []);
     this.inputController.syncControlPanelObject(selfObject);
     if (this.controlPanelFuelDrainDialogOpen || this.controlPanelFuelFillDialogOpen || this.controlPanelContainerTransferDialogOpen || this.controlPanelConstructorProduceDialogOpen) {
@@ -310,7 +317,9 @@ export class GameScene extends Phaser.Scene {
         equipmentGroups: effectiveEquipmentGroups,
         equipmentGroupRelations: snapshot?.equipmentGroupRelations ?? [],
         itemGroups: snapshot?.itemGroups ?? [],
-        constructorProductionJobs: snapshot?.constructorProductionJobs ?? [],
+        tasks: snapshotTasks,
+        taskItemGroups: snapshotTaskItemGroups,
+        constructorProductionJobs,
         selectedPilotToolIndex: this.selectedPilotToolIndex,
         referenceData: this.referenceData,
         textureFilePath: null,
@@ -405,7 +414,9 @@ export class GameScene extends Phaser.Scene {
       equipmentGroups: effectiveEquipmentGroups,
       equipmentGroupRelations: snapshot.equipmentGroupRelations ?? [],
       itemGroups: snapshot.itemGroups ?? [],
-      constructorProductionJobs: snapshot.constructorProductionJobs ?? [],
+      tasks: snapshotTasks,
+      taskItemGroups: snapshotTaskItemGroups,
+      constructorProductionJobs,
       selectedPilotToolIndex: this.selectedPilotToolIndex,
       referenceData: this.referenceData,
       textureFilePath: this.modelForObject(selfObject)?.TextureFilePath ?? null,
@@ -739,7 +750,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Синхронизирует реальный выбор использования с первым доступным значением, которое показывает UI.
-  private syncControlPanelUsageSelection(objectId: number | null, objects: CosmicObject[], equipmentGroups: EquipmentGroup[], equipmentGroupRelations: EquipmentGroupRelation[]): void {
+  private syncControlPanelUsageSelection(objectId: number | null, objects: CosmicObject[], equipmentGroups: EquipmentGroup[]): void {
     const selection = normalizeControlPanelUsageSelection({
       objectId,
       objects,
@@ -758,9 +769,9 @@ export class GameScene extends Phaser.Scene {
     });
 
     const rightEquipmentGroupId = selection.rightEquipmentGroupId;
-    const relatedLeftContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, rightEquipmentGroupId, "Opposite");
-    const relatedSourceContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, rightEquipmentGroupId, "Source");
-    const relatedDestinationContainerGroupId = this.relatedEquipmentGroupId(equipmentGroupRelations, rightEquipmentGroupId, "Destination");
+    const relatedLeftContainerGroupId = this.relatedEquipmentGroupId(rightEquipmentGroupId, "Opposite");
+    const relatedSourceContainerGroupId = this.relatedEquipmentGroupId(rightEquipmentGroupId, "Source");
+    const relatedDestinationContainerGroupId = this.relatedEquipmentGroupId(rightEquipmentGroupId, "Destination");
     const relatedSelection = applyActiveControlPanelUsageRelations({
       selection,
       rightEquipmentActive: this.getControlPanelEquipmentGroup(rightEquipmentGroupId ?? 0)?.Active ?? false,
@@ -778,11 +789,11 @@ export class GameScene extends Phaser.Scene {
     this.selectedControlPanelConstructorProductObjectId = relatedSelection.constructorProductObjectId;
     this.selectedControlPanelConstructorProductContainerGroupId = relatedSelection.constructorProductGroupId;
     this.selectedControlPanelConstructorMaterialContainerGroupId = normalizeSelectedControlPanelGroupId(
-      equipmentGroups.filter((group) => group.CosmicObjectID === this.selectedControlPanelConstructorMaterialObjectId && this.isEquipmentGroupItemtype(group, "Container")),
+      equipmentGroups.filter((group) => group.CosmicObjectID === this.selectedControlPanelConstructorMaterialObjectId && this.isEquipmentGroupItemType(group, "Container")),
       this.selectedControlPanelConstructorMaterialContainerGroupId,
     );
     this.selectedControlPanelConstructorProductContainerGroupId = normalizeSelectedControlPanelGroupId(
-      equipmentGroups.filter((group) => group.CosmicObjectID === this.selectedControlPanelConstructorProductObjectId && this.isEquipmentGroupItemtype(group, "Container")),
+      equipmentGroups.filter((group) => group.CosmicObjectID === this.selectedControlPanelConstructorProductObjectId && this.isEquipmentGroupItemType(group, "Container")),
       this.selectedControlPanelConstructorProductContainerGroupId,
     );
   }
@@ -801,19 +812,22 @@ export class GameScene extends Phaser.Scene {
 
   // Отправляет завершенное редактирование названия объекта, если текст отличается от серверного снимка.
   // Возвращает связанную группу оборудования по сохранённому виду связи.
-  private relatedEquipmentGroupId(equipmentGroupRelations: EquipmentGroupRelation[], equipmentGroupId: number | null, relationTypeAcronym: "Source" | "Destination" | "Opposite"): number | null {
-    if (!equipmentGroupId || !this.referenceData?.RelationType) {
-      return null;
-    }
-    const relationType = Object.values(this.referenceData.RelationType.Items).find((item) => item.Acronym === relationTypeAcronym);
-    if (!relationType) {
+  private relatedEquipmentGroupId(equipmentGroupId: number | null, relationTypeAcronym: "Source" | "Destination" | "Opposite"): number | null {
+    if (!equipmentGroupId) {
       return null;
     }
     const draft = this.controlPanelEquipmentGroupRelationDrafts[this.equipmentGroupRelationDraftKey(equipmentGroupId, relationTypeAcronym)];
     if (draft) {
       return draft;
     }
-    return equipmentGroupRelations.find((relation) => relation.EquipmentGroupID === equipmentGroupId && relation.RelationTypeID === relationType.ID)?.RelatedEquipmentGroupID ?? null;
+    const group = this.getControlPanelEquipmentGroup(equipmentGroupId);
+    if (relationTypeAcronym === "Source") {
+      return group?.SourceEquipmentGroupID || null;
+    }
+    if (relationTypeAcronym === "Destination") {
+      return group?.DestinationEquipmentGroupID || null;
+    }
+    return group?.OppositeEquipmentGroupID || null;
   }
 
   // Сохраняет выбор контейнера для текущей правой группы оборудования.
@@ -1174,6 +1188,14 @@ export class GameScene extends Phaser.Scene {
       this.selectedControlPanelConstructorMainJobId = Number(action.value);
       return true;
     }
+    if (action.controlId.startsWith("control-panel-container-queue-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorMainJobId = Number(action.value);
+      return true;
+    }
+    if (action.controlId.startsWith("control-panel-fuel-queue-") && typeof action.value === "string") {
+      this.selectedControlPanelConstructorMainJobId = Number(action.value);
+      return true;
+    }
     if (action.controlId === "control-panel-constructor-skip-next") {
       this.sendControlPanelConstructorQueueCommand("skipNext");
       return true;
@@ -1187,6 +1209,38 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId === "control-panel-constructor-cancel-all") {
+      this.sendControlPanelConstructorQueueCommand("cancelAll");
+      return true;
+    }
+    if (action.controlId === "control-panel-container-skip-next") {
+      this.sendControlPanelConstructorQueueCommand("skipNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-container-skip-all-next") {
+      this.sendControlPanelConstructorQueueCommand("skipAllNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-container-cancel") {
+      this.sendControlPanelConstructorQueueCommand("cancel");
+      return true;
+    }
+    if (action.controlId === "control-panel-container-cancel-all") {
+      this.sendControlPanelConstructorQueueCommand("cancelAll");
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-skip-next") {
+      this.sendControlPanelConstructorQueueCommand("skipNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-skip-all-next") {
+      this.sendControlPanelConstructorQueueCommand("skipAllNext");
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-cancel") {
+      this.sendControlPanelConstructorQueueCommand("cancel");
+      return true;
+    }
+    if (action.controlId === "control-panel-fuel-cancel-all") {
       this.sendControlPanelConstructorQueueCommand("cancelAll");
       return true;
     }
@@ -1215,11 +1269,11 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
     if (action.controlId === "control-panel-container-transfer-to-right") {
-      this.startControlPanelContainerTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftItemGroupIds);
+      this.startControlPanelContainerTransfer(this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, true, this.selectedControlPanelUsageLeftItemGroupIds);
       return true;
     }
     if (action.controlId === "control-panel-container-transfer-to-left") {
-      this.startControlPanelContainerTransfer(this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightItemGroupIds);
+      this.startControlPanelContainerTransfer(this.selectedControlPanelUsageRightEquipmentGroupId, this.selectedControlPanelUsageLeftContainerGroupId, this.selectedControlPanelUsageRightEquipmentGroupId, false, this.selectedControlPanelUsageRightItemGroupIds);
       return true;
     }
     if (action.controlId === "control-panel-container-transfer-cancel") {
@@ -1229,7 +1283,7 @@ export class GameScene extends Phaser.Scene {
     }
     if (action.controlId === "control-panel-container-transfer-ok") {
       this.controlPanelFuelDrainAmount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 0, this.controlPanelContainerTransferMaxAmount);
-      this.sendControlPanelContainerTransfer(this.controlPanelContainerTransferSourceGroupId, this.controlPanelContainerTransferTargetGroupId, this.controlPanelContainerTransferItemGroupIds, this.controlPanelFuelDrainAmount);
+      this.sendControlPanelContainerTransfer(this.controlPanelContainerTransferSourceGroupId, this.controlPanelContainerTransferTargetGroupId, this.controlPanelContainerTransferControllerGroupId, this.controlPanelContainerTransferLeftToRightDirection, this.controlPanelContainerTransferItemGroupIds, this.controlPanelFuelDrainAmount);
       this.controlPanelContainerTransferDialogOpen = false;
       this.inputController.blurControlPanelFuelDrainAmount();
       return true;
@@ -1449,9 +1503,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Запускает перенос между контейнерами сразу или через окно количества для одной строки.
-  private startControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, itemGroupIds: number[]): void {
+  private startControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, controllerEquipmentGroupId: number | null, leftToRightDirection: boolean, itemGroupIds: number[]): void {
     if (itemGroupIds.length !== 1) {
-      this.sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId, targetContainerEquipmentGroupId, itemGroupIds);
+      this.sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId, targetContainerEquipmentGroupId, controllerEquipmentGroupId, leftToRightDirection, itemGroupIds);
       return;
     }
     const itemGroup = this.gameUi.state().itemGroups.find((group) => group.ID === itemGroupIds[0]);
@@ -1460,6 +1514,8 @@ export class GameScene extends Phaser.Scene {
     }
     this.controlPanelContainerTransferSourceGroupId = sourceContainerEquipmentGroupId;
     this.controlPanelContainerTransferTargetGroupId = targetContainerEquipmentGroupId;
+    this.controlPanelContainerTransferControllerGroupId = controllerEquipmentGroupId;
+    this.controlPanelContainerTransferLeftToRightDirection = leftToRightDirection;
     this.controlPanelContainerTransferItemGroupIds = itemGroupIds;
     this.controlPanelContainerTransferMaxAmount = itemGroup.Count;
     this.controlPanelFuelDrainAmount = itemGroup.Count;
@@ -1507,7 +1563,7 @@ export class GameScene extends Phaser.Scene {
   // Возвращает контейнер, содержимое которого сейчас показано в правой части использования.
   private getControlPanelUsageRightContentContainerGroupId(): number | null {
     const rightGroup = this.selectedControlPanelUsageRightEquipmentGroupId ? this.getControlPanelEquipmentGroup(this.selectedControlPanelUsageRightEquipmentGroupId) : null;
-    if (rightGroup && this.isEquipmentGroupItemtype(rightGroup, "Constructor")) {
+    if (rightGroup && this.isEquipmentGroupItemType(rightGroup, "Constructor")) {
       return this.selectedControlPanelConstructorMaterialContainerGroupId;
     }
     return this.selectedControlPanelUsageRightEquipmentGroupId;
@@ -1535,11 +1591,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Отправляет перенос между двумя выбранными контейнерами панели управления.
-  private sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, itemGroupIds: number[], amount = 0): void {
-    if (!sourceContainerEquipmentGroupId || !targetContainerEquipmentGroupId || sourceContainerEquipmentGroupId === targetContainerEquipmentGroupId || itemGroupIds.length === 0) {
+  private sendControlPanelContainerTransfer(sourceContainerEquipmentGroupId: number | null, targetContainerEquipmentGroupId: number | null, controllerEquipmentGroupId: number | null, leftToRightDirection: boolean, itemGroupIds: number[], amount = 0): void {
+    if (!sourceContainerEquipmentGroupId || !targetContainerEquipmentGroupId || !controllerEquipmentGroupId || sourceContainerEquipmentGroupId === targetContainerEquipmentGroupId || itemGroupIds.length === 0) {
       return;
     }
     this.gameClient?.sendControlPanelContainerTransfer({
+      controllerEquipmentGroupId,
+      leftToRightDirection,
       sourceContainerEquipmentGroupId,
       targetContainerEquipmentGroupId,
       itemGroupIds,
@@ -1620,14 +1678,97 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // Создает старую форму строк очереди из новой таблицы заданий для существующих компонентов UI.
+  private constructorProductionJobsFromTasks(tasks: Task[], equipmentGroups: EquipmentGroup[]): ConstructorProductionJob[] {
+    const itemProductionTypeId = this.taskTypeId("ItemProduction");
+    const objectProductionTypeId = this.taskTypeId("ObjectProduction");
+    return tasks
+      .filter((task) => task.TaskTypeID === itemProductionTypeId || task.TaskTypeID === objectProductionTypeId)
+      .sort((left, right) => left.ID - right.ID)
+      .map((task) => {
+        const schema = task.SchemaID > 0 ? this.referenceData?.Schema.Items[String(task.SchemaID)] : undefined;
+        const blueprint = task.BlueprintID > 0 ? this.referenceData?.Blueprint.Items[String(task.BlueprintID)] : undefined;
+        const amount = task.Count > 0 ? task.Count : 1;
+        const remainingAmount = this.remainingTaskCount(task.RemainingEnergy, task.TotalEnergy, amount);
+        const remainingTime = this.taskEnergyToSeconds(task, task.RemainingEnergy, equipmentGroups);
+        const totalTime = this.taskEnergyToSeconds(task, task.TotalEnergy, equipmentGroups);
+        return {
+          id: task.ID,
+          constructorEquipmentGroupId: task.ControllerEquipmentGroupID,
+          queueType: task.ParentTaskID > 0 ? "auxiliary" : "main",
+          schemaId: task.SchemaID,
+          blueprintId: task.BlueprintID,
+          productItemModelId: schema?.ItemModelID ?? 0,
+          productCosmicObjectModelId: blueprint?.CosmicObjectModelID ?? 0,
+          productCount: schema?.Count ?? (blueprint ? 1 : 0),
+          remainingCount: (schema?.Count ?? (blueprint ? 1 : 0)) * remainingAmount,
+          totalCount: (schema?.Count ?? (blueprint ? 1 : 0)) * amount,
+          remainingTime,
+          totalTime,
+          running: task.RemainingEnergy < task.TotalEnergy || (this.gameUi.state().taskItemGroups ?? []).some((group) => group.TaskID === task.ID),
+          parentJobId: task.ParentTaskID,
+        };
+      });
+  }
+
+  // Оценивает оставшееся количество результата по доле невыполненной работы.
+  private remainingTaskCount(remainingEnergy: number, totalEnergy: number, amount: number): number {
+    if (amount <= 0) {
+      return 1;
+    }
+    if (totalEnergy <= 0) {
+      return amount;
+    }
+    if (remainingEnergy <= 0) {
+      return 0;
+    }
+    const completed = Math.floor(((totalEnergy - remainingEnergy) / totalEnergy) * amount + 1e-9);
+    return Math.max(0, amount - completed);
+  }
+
+  // Возвращает числовой код типа задания по акрониму.
+  private taskTypeId(acronym: string): number | null {
+    const taskType = Object.values(this.referenceData?.TaskType?.Items ?? {}).find((item) => item.Acronym === acronym);
+    return taskType?.ID ?? null;
+  }
+
+  // Переводит работу задания в секунды по доступной мощности исполнителей.
+  private taskEnergyToSeconds(task: Task, energy: number, equipmentGroups: EquipmentGroup[]): number {
+    const power = this.taskWorkPower(task, equipmentGroups);
+    return power > 0 ? energy / power : energy;
+  }
+
+  // Считает мощность так же, как сервер, но использует только данные последнего снимка.
+  private taskWorkPower(task: Task, equipmentGroups: EquipmentGroup[]): number {
+    const controller = equipmentGroups.find((group) => group.ID === task.ControllerEquipmentGroupID);
+    if (!controller || !this.referenceData) {
+      return 0;
+    }
+    let power = 0;
+    const implementers = Object.values(this.referenceData.Implementer?.Items ?? {}).filter((item) => item.TaskTypeID === task.TaskTypeID);
+    for (const implementer of implementers) {
+      for (const group of equipmentGroups.filter((item) => item.CosmicObjectID === controller.CosmicObjectID)) {
+        const model = this.referenceData.ItemModel.Items[String(group.EquipmentItemModelID)];
+        if (!model || model.ItemTypeID !== implementer.ImplementerEquipmentItemTypeID) {
+          continue;
+        }
+        const enabledCount = Math.max(0, group.Enabled ? group.EnabledCount : 0);
+        const modelPower = typeof model.ConsumingPower === "number" && model.ConsumingPower > 0 ? model.ConsumingPower : 1;
+        const efficiency = typeof model.Efficiency === "number" && model.Efficiency > 0 ? model.Efficiency : 1;
+        power += modelPower * enabledCount * implementer.WorkPart * efficiency;
+      }
+    }
+    return power;
+  }
+
   private getControlPanelEquipmentGroup(groupId: number): EquipmentGroup | null {
     return this.gameUi.state().equipmentGroups.find((group) => group.ID === groupId) ?? null;
   }
 
   // Возвращает первую группу указанного типа на выбранном объекте.
-  private firstControlPanelGroupIdOnObject(objectId: number | null, itemtypeAcronym: string): number | null {
+  private firstControlPanelGroupIdOnObject(objectId: number | null, itemTypeAcronym: string): number | null {
     return this.gameUi.state().equipmentGroups
-      .filter((group) => group.CosmicObjectID === objectId && this.isEquipmentGroupItemtype(group, itemtypeAcronym))
+      .filter((group) => group.CosmicObjectID === objectId && this.isEquipmentGroupItemType(group, itemTypeAcronym))
       .sort((left, right) => left.ID - right.ID)[0]?.ID ?? null;
   }
 
@@ -1671,17 +1812,17 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Проверяет тип модели оборудования по стабильному акрониму.
-  private isEquipmentGroupItemtype(group: EquipmentGroup, itemtypeAcronym: string): boolean {
+  private isEquipmentGroupItemType(group: EquipmentGroup, itemTypeAcronym: string): boolean {
     const itemModel = this.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
-    const itemtype = this.referenceData?.Itemtype.Items[String(itemModel?.ItemtypeID)];
-    return itemtype?.Acronym === itemtypeAcronym;
+    const itemType = this.referenceData?.ItemType.Items[String(itemModel?.ItemTypeID)];
+    return itemType?.Acronym === itemTypeAcronym;
   }
 
   // Проверяет, что оборудование можно выбрать в правой панели использования.
   private isEquipmentGroupInternalUsable(group: EquipmentGroup): boolean {
     const itemModel = this.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
-    const itemtype = this.referenceData?.Itemtype.Items[String(itemModel?.ItemtypeID)];
-    return Boolean(itemtype?.IsInternalUsable);
+    const itemType = this.referenceData?.ItemType.Items[String(itemModel?.ItemTypeID)];
+    return Boolean(itemType?.IsInternalUsable);
   }
 
   // Возвращает effective-признак включения группы оборудования из снимка с учетом pending.

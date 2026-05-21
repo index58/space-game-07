@@ -88,7 +88,7 @@ export const getGameUiControlLayoutSignature = (
     equipmentIds: state.equipmentGroups.map((group) => `${group.ID}:${group.CosmicObjectID}:${group.EquipmentItemModelID}`).join(","),
     itemGroupIds: state.itemGroups.map((group) => `${group.ID}:${group.ContainerEquipmentGroupID}:${group.ContentItemModelID}:${group.Count}`).join(","),
     constructorProductionJobs: state.constructorProductionJobs.map((job) => `${job.id}:${job.constructorEquipmentGroupId}:${job.queueType}:${job.schemaId}:${job.blueprintId}:${job.productItemModelId}:${job.productCosmicObjectModelId}:${job.remainingCount}:${job.totalCount}:${job.remainingTime}:${job.totalTime}:${Number(job.running)}:${job.parentJobId}`).join(","),
-    itemtypeInternalUsable: Object.values(state.referenceData?.Itemtype.Items ?? {}).sort((left, right) => left.ID - right.ID).map((itemtype) => `${itemtype.ID}:${itemtype.IsInternalUsable}`).join(","),
+    itemTypeInternalUsable: Object.values(state.referenceData?.ItemType.Items ?? {}).sort((left, right) => left.ID - right.ID).map((itemType) => `${itemType.ID}:${itemType.IsInternalUsable}`).join(","),
     schemas: Object.values(state.referenceData?.Schema.Items ?? {}).sort((left, right) => left.ID - right.ID).map((schema) => `${schema.ID}:${schema.ItemModelID}`).join(","),
     blueprints: Object.values(state.referenceData?.Blueprint.Items ?? {}).sort((left, right) => left.ID - right.ID).map((blueprint) => `${blueprint.ID}:${blueprint.CosmicObjectModelID}`).join(","),
     equipmentListScroll: scrollSignature(state.controlPanelEquipmentListScroll),

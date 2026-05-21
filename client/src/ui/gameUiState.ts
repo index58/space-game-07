@@ -1,7 +1,7 @@
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
-import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, DockingNotification, DockingWindowState, EquipmentGroup, EquipmentGroupRelation, ItemGroup, ReferenceDataMessage } from "../network/protocol";
+import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, DockingNotification, DockingWindowState, EquipmentGroup, EquipmentGroupRelation, ItemGroup, ReferenceDataMessage, Task, TaskItemGroup } from "../network/protocol";
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiControlState } from "../ui-kit/types";
 
@@ -25,6 +25,10 @@ export type GameUiState = {
   // Р“СЂСѓРїРїС‹ РїСЂРµРґРјРµС‚РѕРІ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРµСЂРІРµСЂРЅРѕРіРѕ СЃРЅРёРјРєР°, Р»РµР¶Р°С‰РёРµ РІРЅСѓС‚СЂРё РєРѕРЅС‚РµР№РЅРµСЂРѕРІ.
   itemGroups: ItemGroup[];
   // Задания изготовления в очередях конструкторов.
+  // Задания оборудования в очередях.
+  tasks?: Task[];
+  // Предметы, зарезервированные заданиями.
+  taskItemGroups?: TaskItemGroup[];
   constructorProductionJobs: ConstructorProductionJob[];
   // Выбранный индекс среди десяти ячеек панели пилота.
   selectedPilotToolIndex: number;
@@ -194,6 +198,8 @@ const initialGameUiState: GameUiState = {
   equipmentGroups: [],
   equipmentGroupRelations: [],
   itemGroups: [],
+  tasks: [],
+  taskItemGroups: [],
   constructorProductionJobs: [],
   selectedPilotToolIndex: 0,
   referenceData: null,

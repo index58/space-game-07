@@ -7,137 +7,137 @@ import (
 	"os"
 )
 
-// Хранит данные одного типа предмета.
-type Itemtype struct {
-	ID                    int64  `json:"ID"`                    // Уникальный числовой идентификатор записи.
-	TitleRu               string `json:"TitleRu"`               // Русское название для интерфейса и данных.
-	TitleEn               string `json:"TitleEn"`               // Английское название для интерфейса и данных.
-	Acronym               string `json:"Acronym"`               // Неизменяемый строковый идентификатор для логики и ссылок.
-	IsEquipmentForShip    bool   `json:"IsEquipmentForShip"`    // Разрешает устанавливать предмет этого типа на корабль.
-	IsEquipmentForStation bool   `json:"IsEquipmentForStation"` // Разрешает устанавливать предмет этого типа на станцию.
-	IsPilotInstrument     bool   `json:"IsPilotInstrument"`     // Разрешает назначать предмет этого типа в панель пилота.
-	IsInternalUsable      bool   `json:"IsInternalUsable"`      // Разрешает внутреннее использование предмета этого типа из панели управления оборудованием.
-	CountMustBeInteger    bool   `json:"CountMustBeInteger"`    // Требует хранить количество только целыми единицами.
+// РҐСЂР°РЅРёС‚ РґР°РЅРЅС‹Рµ РѕРґРЅРѕРіРѕ С‚РёРїР° РїСЂРµРґРјРµС‚Р°.
+type ItemType struct {
+	ID                    int64  `json:"ID"`                    // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
+	TitleRu               string `json:"TitleRu"`               // Р СѓСЃСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
+	TitleEn               string `json:"TitleEn"`               // РђРЅРіР»РёР№СЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
+	Acronym               string `json:"Acronym"`               // РќРµРёР·РјРµРЅСЏРµРјС‹Р№ СЃС‚СЂРѕРєРѕРІС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ Р»РѕРіРёРєРё Рё СЃСЃС‹Р»РѕРє.
+	IsEquipmentForShip    bool   `json:"IsEquipmentForShip"`    // Р Р°Р·СЂРµС€Р°РµС‚ СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ РїСЂРµРґРјРµС‚ СЌС‚РѕРіРѕ С‚РёРїР° РЅР° РєРѕСЂР°Р±Р»СЊ.
+	IsEquipmentForStation bool   `json:"IsEquipmentForStation"` // Р Р°Р·СЂРµС€Р°РµС‚ СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ РїСЂРµРґРјРµС‚ СЌС‚РѕРіРѕ С‚РёРїР° РЅР° СЃС‚Р°РЅС†РёСЋ.
+	IsPilotInstrument     bool   `json:"IsPilotInstrument"`     // Р Р°Р·СЂРµС€Р°РµС‚ РЅР°Р·РЅР°С‡Р°С‚СЊ РїСЂРµРґРјРµС‚ СЌС‚РѕРіРѕ С‚РёРїР° РІ РїР°РЅРµР»СЊ РїРёР»РѕС‚Р°.
+	IsInternalUsable      bool   `json:"IsInternalUsable"`      // Р Р°Р·СЂРµС€Р°РµС‚ РІРЅСѓС‚СЂРµРЅРЅРµРµ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РїСЂРµРґРјРµС‚Р° СЌС‚РѕРіРѕ С‚РёРїР° РёР· РїР°РЅРµР»Рё СѓРїСЂР°РІР»РµРЅРёСЏ РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµРј.
+	CountMustBeInteger    bool   `json:"CountMustBeInteger"`    // РўСЂРµР±СѓРµС‚ С…СЂР°РЅРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕР»СЊРєРѕ С†РµР»С‹РјРё РµРґРёРЅРёС†Р°РјРё.
 }
 
-// Хранит типы предметов и быстрые индексы по уникальным полям.
-type Itemtypes struct {
-	MaxID int64               `json:"MaxID"` // Последний выданный идентификатор для новых записей.
-	Items map[int64]*Itemtype `json:"Items"` // Основное хранилище записей по числовому идентификатору.
+// РҐСЂР°РЅРёС‚ С‚РёРїС‹ РїСЂРµРґРјРµС‚РѕРІ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕ СѓРЅРёРєР°Р»СЊРЅС‹Рј РїРѕР»СЏРј.
+type ItemTypes struct {
+	MaxID int64               `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РЅРѕРІС‹С… Р·Р°РїРёСЃРµР№.
+	Items map[int64]*ItemType `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
 
-	ByTitleRu map[string]*Itemtype `json:"-"` // Быстрый поиск записи по русскому названию.
-	ByTitleEn map[string]*Itemtype `json:"-"` // Быстрый поиск записи по английскому названию.
-	ByAcronym map[string]*Itemtype `json:"-"` // Быстрый поиск записи по акрониму.
+	ByTitleRu map[string]*ItemType `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ СЂСѓСЃСЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
+	ByTitleEn map[string]*ItemType `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РЅРіР»РёР№СЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
+	ByAcronym map[string]*ItemType `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
 }
 
-// Создаёт пустое хранилище типов предметов с подготовленными индексами.
-func NewItemtypes() *Itemtypes {
-	itemtypes := &Itemtypes{}
-	itemtypes.ensureMaps()
-	return itemtypes
+// РЎРѕР·РґР°С‘С‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ С‚РёРїРѕРІ РїСЂРµРґРјРµС‚РѕРІ СЃ РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
+func NewItemTypes() *ItemTypes {
+	itemTypes := &ItemTypes{}
+	itemTypes.ensureMaps()
+	return itemTypes
 }
 
-// Добавляет новый тип предмета и назначает новый ID.
-func (itemtypes *Itemtypes) Add(itemtype *Itemtype) (*Itemtype, error) {
-	if itemtype == nil {
-		return nil, errors.New("itemtype is nil")
+// Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ С‚РёРї РїСЂРµРґРјРµС‚Р° Рё РЅР°Р·РЅР°С‡Р°РµС‚ РЅРѕРІС‹Р№ ID.
+func (itemTypes *ItemTypes) Add(itemType *ItemType) (*ItemType, error) {
+	if itemType == nil {
+		return nil, errors.New("itemType is nil")
 	}
-	itemtypes.ensureMaps()
-	if err := itemtypes.validateRequiredFields(itemtype); err != nil {
+	itemTypes.ensureMaps()
+	if err := itemTypes.validateRequiredFields(itemType); err != nil {
 		return nil, err
 	}
-	if err := itemtypes.ensureUniqueForNewType(itemtype); err != nil {
+	if err := itemTypes.ensureUniqueForNewType(itemType); err != nil {
 		return nil, err
 	}
 
-	itemtypes.MaxID++
-	itemtype.ID = itemtypes.MaxID
-	itemtypes.Items[itemtype.ID] = itemtype
-	itemtypes.addIndexes(itemtype)
-	return itemtype, nil
+	itemTypes.MaxID++
+	itemType.ID = itemTypes.MaxID
+	itemTypes.Items[itemType.ID] = itemType
+	itemTypes.addIndexes(itemType)
+	return itemType, nil
 }
 
-// Возвращает тип предмета по ID.
-func (itemtypes *Itemtypes) Get(id int64) (*Itemtype, bool) {
-	itemtypes.ensureMaps()
-	itemtype, ok := itemtypes.Items[id]
-	return itemtype, ok
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РёРї РїСЂРµРґРјРµС‚Р° РїРѕ ID.
+func (itemTypes *ItemTypes) Get(id int64) (*ItemType, bool) {
+	itemTypes.ensureMaps()
+	itemType, ok := itemTypes.Items[id]
+	return itemType, ok
 }
 
-// Удаляет тип предмета и все его быстрые индексы.
-func (itemtypes *Itemtypes) Delete(id int64) bool {
-	itemtypes.ensureMaps()
-	itemtype, ok := itemtypes.Items[id]
+// РЈРґР°Р»СЏРµС‚ С‚РёРї РїСЂРµРґРјРµС‚Р° Рё РІСЃРµ РµРіРѕ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+func (itemTypes *ItemTypes) Delete(id int64) bool {
+	itemTypes.ensureMaps()
+	itemType, ok := itemTypes.Items[id]
 	if !ok {
 		return false
 	}
 
-	itemtypes.deleteIndexes(itemtype)
-	delete(itemtypes.Items, id)
+	itemTypes.deleteIndexes(itemType)
+	delete(itemTypes.Items, id)
 	return true
 }
 
-// Возвращает тип предмета по уникальному русскому названию.
-func (itemtypes *Itemtypes) GetByTitleRu(titleRu string) (*Itemtype, bool) {
-	itemtypes.ensureMaps()
-	itemtype, ok := itemtypes.ByTitleRu[titleRu]
-	return itemtype, ok
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РёРї РїСЂРµРґРјРµС‚Р° РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ СЂСѓСЃСЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
+func (itemTypes *ItemTypes) GetByTitleRu(titleRu string) (*ItemType, bool) {
+	itemTypes.ensureMaps()
+	itemType, ok := itemTypes.ByTitleRu[titleRu]
+	return itemType, ok
 }
 
-// Возвращает тип предмета по уникальному английскому названию.
-func (itemtypes *Itemtypes) GetByTitleEn(titleEn string) (*Itemtype, bool) {
-	itemtypes.ensureMaps()
-	itemtype, ok := itemtypes.ByTitleEn[titleEn]
-	return itemtype, ok
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РёРї РїСЂРµРґРјРµС‚Р° РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ Р°РЅРіР»РёР№СЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
+func (itemTypes *ItemTypes) GetByTitleEn(titleEn string) (*ItemType, bool) {
+	itemTypes.ensureMaps()
+	itemType, ok := itemTypes.ByTitleEn[titleEn]
+	return itemType, ok
 }
 
-// Возвращает тип предмета по уникальному акрониму.
-func (itemtypes *Itemtypes) GetByAcronym(acronym string) (*Itemtype, bool) {
-	itemtypes.ensureMaps()
-	itemtype, ok := itemtypes.ByAcronym[acronym]
-	return itemtype, ok
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РёРї РїСЂРµРґРјРµС‚Р° РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ Р°РєСЂРѕРЅРёРјСѓ.
+func (itemTypes *ItemTypes) GetByAcronym(acronym string) (*ItemType, bool) {
+	itemTypes.ensureMaps()
+	itemType, ok := itemTypes.ByAcronym[acronym]
+	return itemType, ok
 }
 
-// Пересобирает быстрые индексы после загрузки из JSON.
-func (itemtypes *Itemtypes) RebuildIndexes() error {
-	itemtypes.ensureItems()
-	itemtypes.ByTitleRu = make(map[string]*Itemtype)
-	itemtypes.ByTitleEn = make(map[string]*Itemtype)
-	itemtypes.ByAcronym = make(map[string]*Itemtype)
+// РџРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РёР· JSON.
+func (itemTypes *ItemTypes) RebuildIndexes() error {
+	itemTypes.ensureItems()
+	itemTypes.ByTitleRu = make(map[string]*ItemType)
+	itemTypes.ByTitleEn = make(map[string]*ItemType)
+	itemTypes.ByAcronym = make(map[string]*ItemType)
 
 	var maxID int64
-	for id, itemtype := range itemtypes.Items {
-		if itemtype == nil {
-			return fmt.Errorf("itemtype with ID %d is nil", id)
+	for id, itemType := range itemTypes.Items {
+		if itemType == nil {
+			return fmt.Errorf("itemType with ID %d is nil", id)
 		}
-		if itemtype.ID != id {
-			return fmt.Errorf("itemtype map key %d does not match type ID %d", id, itemtype.ID)
+		if itemType.ID != id {
+			return fmt.Errorf("itemType map key %d does not match type ID %d", id, itemType.ID)
 		}
-		if err := itemtypes.validateRequiredFields(itemtype); err != nil {
-			return fmt.Errorf("itemtype with ID %d is invalid: %w", id, err)
+		if err := itemTypes.validateRequiredFields(itemType); err != nil {
+			return fmt.Errorf("itemType with ID %d is invalid: %w", id, err)
 		}
 		if id > maxID {
 			maxID = id
 		}
-		if err := itemtypes.ensureUniqueForNewType(itemtype); err != nil {
+		if err := itemTypes.ensureUniqueForNewType(itemType); err != nil {
 			return err
 		}
-		itemtypes.addIndexes(itemtype)
+		itemTypes.addIndexes(itemType)
 	}
-	if itemtypes.MaxID < maxID {
-		itemtypes.MaxID = maxID
+	if itemTypes.MaxID < maxID {
+		itemTypes.MaxID = maxID
 	}
 	return nil
 }
 
-// Загружает типы предметов из JSON-файла и пересобирает быстрые индексы.
-func (itemtypes *Itemtypes) LoadFromFile(path string) error {
+// Р—Р°РіСЂСѓР¶Р°РµС‚ С‚РёРїС‹ РїСЂРµРґРјРµС‚РѕРІ РёР· JSON-С„Р°Р№Р»Р° Рё РїРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+func (itemTypes *ItemTypes) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
 
-	loaded := Itemtypes{}
+	loaded := ItemTypes{}
 	if err := json.Unmarshal(content, &loaded); err != nil {
 		return err
 	}
@@ -145,75 +145,75 @@ func (itemtypes *Itemtypes) LoadFromFile(path string) error {
 		return err
 	}
 
-	*itemtypes = loaded
+	*itemTypes = loaded
 	return nil
 }
 
-// Сохраняет типы предметов в JSON-файл без вспомогательных индексов.
-func (itemtypes *Itemtypes) SaveToFile(path string) error {
-	itemtypes.ensureMaps()
-	return saveTableWithOrderedItems(path, itemtypes.MaxID, itemtypes.Items)
+// РЎРѕС…СЂР°РЅСЏРµС‚ С‚РёРїС‹ РїСЂРµРґРјРµС‚РѕРІ РІ JSON-С„Р°Р№Р» Р±РµР· РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РёРЅРґРµРєСЃРѕРІ.
+func (itemTypes *ItemTypes) SaveToFile(path string) error {
+	itemTypes.ensureMaps()
+	return saveTableWithOrderedItems(path, itemTypes.MaxID, itemTypes.Items)
 }
 
-// Подготавливает основное хранилище и все индексы.
-func (itemtypes *Itemtypes) ensureMaps() {
-	itemtypes.ensureItems()
-	if itemtypes.ByTitleRu == nil {
-		itemtypes.ByTitleRu = make(map[string]*Itemtype)
+// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё РІСЃРµ РёРЅРґРµРєСЃС‹.
+func (itemTypes *ItemTypes) ensureMaps() {
+	itemTypes.ensureItems()
+	if itemTypes.ByTitleRu == nil {
+		itemTypes.ByTitleRu = make(map[string]*ItemType)
 	}
-	if itemtypes.ByTitleEn == nil {
-		itemtypes.ByTitleEn = make(map[string]*Itemtype)
+	if itemTypes.ByTitleEn == nil {
+		itemTypes.ByTitleEn = make(map[string]*ItemType)
 	}
-	if itemtypes.ByAcronym == nil {
-		itemtypes.ByAcronym = make(map[string]*Itemtype)
-	}
-}
-
-// Подготавливает основную map типов предметов.
-func (itemtypes *Itemtypes) ensureItems() {
-	if itemtypes.Items == nil {
-		itemtypes.Items = make(map[int64]*Itemtype)
+	if itemTypes.ByAcronym == nil {
+		itemTypes.ByAcronym = make(map[string]*ItemType)
 	}
 }
 
-// Проверяет обязательные поля типа предмета.
-func (itemtypes *Itemtypes) validateRequiredFields(itemtype *Itemtype) error {
-	if itemtype.TitleRu == "" {
+// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅСѓСЋ map С‚РёРїРѕРІ РїСЂРµРґРјРµС‚РѕРІ.
+func (itemTypes *ItemTypes) ensureItems() {
+	if itemTypes.Items == nil {
+		itemTypes.Items = make(map[int64]*ItemType)
+	}
+}
+
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ С‚РёРїР° РїСЂРµРґРјРµС‚Р°.
+func (itemTypes *ItemTypes) validateRequiredFields(itemType *ItemType) error {
+	if itemType.TitleRu == "" {
 		return errors.New("title ru is empty")
 	}
-	if itemtype.TitleEn == "" {
+	if itemType.TitleEn == "" {
 		return errors.New("title en is empty")
 	}
-	if itemtype.Acronym == "" {
+	if itemType.Acronym == "" {
 		return errors.New("acronym is empty")
 	}
 	return nil
 }
 
-// Проверяет уникальные поля перед добавлением в индексы.
-func (itemtypes *Itemtypes) ensureUniqueForNewType(itemtype *Itemtype) error {
-	if existing, ok := itemtypes.ByTitleRu[itemtype.TitleRu]; ok && existing.ID != itemtype.ID {
-		return fmt.Errorf("title ru %q already exists", itemtype.TitleRu)
+// РџСЂРѕРІРµСЂСЏРµС‚ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РїРѕР»СЏ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј РІ РёРЅРґРµРєСЃС‹.
+func (itemTypes *ItemTypes) ensureUniqueForNewType(itemType *ItemType) error {
+	if existing, ok := itemTypes.ByTitleRu[itemType.TitleRu]; ok && existing.ID != itemType.ID {
+		return fmt.Errorf("title ru %q already exists", itemType.TitleRu)
 	}
-	if existing, ok := itemtypes.ByTitleEn[itemtype.TitleEn]; ok && existing.ID != itemtype.ID {
-		return fmt.Errorf("title en %q already exists", itemtype.TitleEn)
+	if existing, ok := itemTypes.ByTitleEn[itemType.TitleEn]; ok && existing.ID != itemType.ID {
+		return fmt.Errorf("title en %q already exists", itemType.TitleEn)
 	}
-	if existing, ok := itemtypes.ByAcronym[itemtype.Acronym]; ok && existing.ID != itemtype.ID {
-		return fmt.Errorf("acronym %q already exists", itemtype.Acronym)
+	if existing, ok := itemTypes.ByAcronym[itemType.Acronym]; ok && existing.ID != itemType.ID {
+		return fmt.Errorf("acronym %q already exists", itemType.Acronym)
 	}
 	return nil
 }
 
-// Добавляет тип предмета во все быстрые индексы.
-func (itemtypes *Itemtypes) addIndexes(itemtype *Itemtype) {
-	itemtypes.ByTitleRu[itemtype.TitleRu] = itemtype
-	itemtypes.ByTitleEn[itemtype.TitleEn] = itemtype
-	itemtypes.ByAcronym[itemtype.Acronym] = itemtype
+// Р”РѕР±Р°РІР»СЏРµС‚ С‚РёРї РїСЂРµРґРјРµС‚Р° РІРѕ РІСЃРµ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+func (itemTypes *ItemTypes) addIndexes(itemType *ItemType) {
+	itemTypes.ByTitleRu[itemType.TitleRu] = itemType
+	itemTypes.ByTitleEn[itemType.TitleEn] = itemType
+	itemTypes.ByAcronym[itemType.Acronym] = itemType
 }
 
-// Удаляет тип предмета из всех быстрых индексов.
-func (itemtypes *Itemtypes) deleteIndexes(itemtype *Itemtype) {
-	delete(itemtypes.ByTitleRu, itemtype.TitleRu)
-	delete(itemtypes.ByTitleEn, itemtype.TitleEn)
-	delete(itemtypes.ByAcronym, itemtype.Acronym)
+// РЈРґР°Р»СЏРµС‚ С‚РёРї РїСЂРµРґРјРµС‚Р° РёР· РІСЃРµС… Р±С‹СЃС‚СЂС‹С… РёРЅРґРµРєСЃРѕРІ.
+func (itemTypes *ItemTypes) deleteIndexes(itemType *ItemType) {
+	delete(itemTypes.ByTitleRu, itemType.TitleRu)
+	delete(itemTypes.ByTitleEn, itemType.TitleEn)
+	delete(itemTypes.ByAcronym, itemType.Acronym)
 }

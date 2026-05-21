@@ -9,7 +9,7 @@ const referenceDataPayload = () => ({
   type: "referenceData",
   NpcClan: emptyTable(),
   CosmicObjectType: emptyTable(),
-  Itemtype: emptyTable(),
+  ItemType: emptyTable(),
   CosmicObjectModel: {
     MaxID: 23,
     Items: {

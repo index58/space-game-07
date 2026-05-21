@@ -59,13 +59,13 @@ const referenceData = (): ReferenceDataMessage => ({
   type: "referenceData",
   NpcClan: { MaxID: 0, Items: {} },
   CosmicObjectType: { MaxID: 0, Items: {} },
-  Itemtype: { MaxID: 0, Items: {} },
+  ItemType: { MaxID: 0, Items: {} },
   CosmicObjectModel: { MaxID: 0, Items: {} },
   ItemModel: {
     MaxID: 2,
     Items: {
-      "100": { ID: 100, ItemtypeID: 1, Acronym: "Fuel" },
-      "200": { ID: 200, ItemtypeID: 2, Acronym: "FuelTank", ConsumingItemModelID: 100 },
+      "100": { ID: 100, ItemTypeID: 1, Acronym: "Fuel" },
+      "200": { ID: 200, ItemTypeID: 2, Acronym: "FuelTank", ConsumingItemModelID: 100 },
     },
   },
   Blueprint: { MaxID: 0, Items: {} },
