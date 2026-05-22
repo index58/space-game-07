@@ -54,15 +54,15 @@
       "ID": 8,
       "CharacterID": 1,
       "ChatID": 1,
-      "LastReadMessageID": 71,
-      "ReadTime": "2026-05-23T00:52:52.7354426+03:00"
+      "LastReadMessageID": 72,
+      "ReadTime": "2026-05-23T02:18:18.2287531+03:00"
     },
     "9": {
       "ID": 9,
       "CharacterID": 1,
       "ChatID": 3,
       "LastReadMessageID": 70,
-      "ReadTime": "2026-05-17T18:58:15.2101084+03:00"
+      "ReadTime": "2026-05-23T02:18:17.2929038+03:00"
     },
     "10": {
       "ID": 10,
@@ -76,7 +76,7 @@
       "CharacterID": 10,
       "ChatID": 1,
       "LastReadMessageID": 71,
-      "ReadTime": "2026-05-23T00:52:52.7589602+03:00"
+      "ReadTime": "2026-05-23T01:58:35.0939889+03:00"
     }
   }
 }

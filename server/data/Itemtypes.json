@@ -118,7 +118,7 @@
       "Acronym": "Constructor",
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
-      "IsPilotInstrument": true,
+      "IsPilotInstrument": false,
       "IsInternalUsable": true,
       "CountMustBeInteger": true
     },
@@ -129,7 +129,7 @@
       "Acronym": "Deconstructor",
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
-      "IsPilotInstrument": true,
+      "IsPilotInstrument": false,
       "IsInternalUsable": true,
       "CountMustBeInteger": true
     },
@@ -162,7 +162,7 @@
       "Acronym": "Beacon",
       "IsEquipmentForShip": true,
       "IsEquipmentForStation": true,
-      "IsPilotInstrument": true,
+      "IsPilotInstrument": false,
       "IsInternalUsable": false,
       "CountMustBeInteger": true
     },

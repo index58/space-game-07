@@ -101,7 +101,7 @@ const getAggregatedPilotTools = (input: PilotToolbarInput): AggregatedPilotTool[
   const byModelId = new Map<number, AggregatedPilotTool>();
 
   for (const group of input.equipmentGroups) {
-    if (group.CosmicObjectID !== input.selfObject.ID || group.EnabledCount <= 0) {
+    if (group.CosmicObjectID !== input.selfObject.ID || group.Count <= 0) {
       continue;
     }
 

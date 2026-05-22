@@ -1,5 +1,5 @@
 {
-  "MaxID": 71,
+  "MaxID": 72,
   "Items": {
     "1": {
       "ID": 1,
@@ -639,6 +639,15 @@
       "Text": "ghjktyj",
       "Color": "D8F3FF",
       "SentTime": "2026-05-20T18:55:42.8506006+03:00"
+    },
+    "72": {
+      "ID": 72,
+      "ChatID": 1,
+      "SenderCharacterID": 1,
+      "MessageTypeID": 1,
+      "Text": "Привет",
+      "Color": "D8F3FF",
+      "SentTime": "2026-05-23T02:15:31.0351282+03:00"
     }
   }
 }

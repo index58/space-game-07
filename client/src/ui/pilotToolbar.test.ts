@@ -82,6 +82,7 @@ const referenceData: ReferenceDataMessage = {
 };
 
 describe("pilot toolbar", () => {
+  // Проверяет объединение одинаковых моделей и суммирование включенных единиц.
   it("groups pilot tools by item model and sums enabled counts", () => {
     const toolbar = getPilotToolbarView({
       selfObject: emptyObject(),
@@ -111,12 +112,33 @@ describe("pilot toolbar", () => {
     expect(toolbar.magazine).toBeNull();
   });
 
+  // Проверяет, что установленная модель остается на панели даже при нуле включенных единиц.
+  it("keeps disabled pilot instrument models on toolbar", () => {
+    const toolbar = getPilotToolbarView({
+      selfObject: emptyObject(),
+      equipmentGroups: [
+        { ...group(5, 101, 0), Count: 2 },
+        { ...group(6, 201, 0), Count: 2 },
+      ],
+      referenceData,
+      selectedToolIndex: 0,
+    });
+
+    expect(toolbar.slots[0].tool).toMatchObject({
+      itemModelId: 101,
+      enabledCount: 0,
+    });
+    expect(toolbar.slots[1].tool).toBeNull();
+  });
+
+  // Проверяет кольцевой переход выбранной ячейки через начало и конец панели.
   it("wraps selected tool index over available tools", () => {
     expect(getNextPilotToolIndex(0, -1)).toBe(9);
     expect(getNextPilotToolIndex(9, 1)).toBe(0);
     expect(getNextPilotToolIndex(4, 1)).toBe(5);
   });
 
+  // Проверяет, что выбранной может быть пустая ячейка панели.
   it("can select an empty slot", () => {
     const toolbar = getPilotToolbarView({
       selfObject: emptyObject(),
