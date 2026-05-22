@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Обмен</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #000;
+      }
+
+      :root {
+        --hud-surface-bg: rgba(18, 34, 46, 0.9);
+        --hud-surface-soft-bg: rgba(18, 34, 46, 0.78);
+        --hud-surface-solid-bg: rgb(18, 34, 46);
+        --hud-surface-border: rgba(238, 250, 255, 0.48);
+        --hud-control-padding-x: 0.9vh;
+        --hud-button-height: 2.8vh;
+        --hud-dropdown-min-height: 2.35vh;
+        --hud-dropdown-padding-y: 0.35vh;
+        --hud-list-padding: 0.35vh;
+        --hud-tab-inactive-text: rgba(168, 174, 178, 0.86);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .space-background {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(circle at 8% 18%, rgba(216, 243, 255, 0.9) 0 1px, transparent 1.5px),
+          radial-gradient(circle at 31% 42%, rgba(216, 243, 255, 0.72) 0 1px, transparent 1.5px),
+          radial-gradient(circle at 62% 24%, rgba(216, 243, 255, 0.76) 0 1px, transparent 1.5px),
+          radial-gradient(circle at 82% 71%, rgba(216, 243, 255, 0.58) 0 1px, transparent 1.5px),
+          #000;
+      }
+
+      .game-window-layer {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: min(132vh, calc(100vw - 2vh));
+        height: min(74vh, calc(100vh - 2vh));
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
+      .ui-kit-control {
+        box-sizing: border-box;
+        color: #d8f3ff;
+        font-family: Consolas, monospace;
+        pointer-events: none;
+      }
+
+      .ui-kit-button,
+      .ui-kit-dropdown,
+      .ui-kit-list,
+      .ui-kit-modal {
+        background: var(--hud-surface-bg);
+      }
+
+      .ui-kit-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        align-self: center;
+        height: var(--hud-button-height);
+        min-height: var(--hud-button-height);
+        max-height: var(--hud-button-height);
+        width: max-content;
+        min-width: max-content;
+        padding: 0 1.05vh;
+        color: #d8f3ff;
+        background: rgba(126, 212, 255, 0.16);
+        white-space: nowrap;
+        line-height: 1;
+      }
+
+      .ui-kit-dropdown {
+        position: relative;
+        min-width: 12vh;
+        min-height: var(--hud-dropdown-min-height);
+        padding: var(--hud-dropdown-padding-y) calc(var(--hud-control-padding-x) + 1.45vh) var(--hud-dropdown-padding-y) var(--hud-control-padding-x);
+        background: rgb(0, 0, 0);
+      }
+
+      .ui-kit-dropdown::after {
+        content: "";
+        position: absolute;
+        right: var(--hud-control-padding-x);
+        top: 50%;
+        width: 0;
+        height: 0;
+        transform: translateY(-30%);
+        border-left: 0.35vh solid transparent;
+        border-right: 0.35vh solid transparent;
+        border-top: 0.45vh solid rgba(216, 243, 255, 0.82);
+      }
+
+      .ui-kit-dropdown__value {
+        display: flex;
+        align-items: center;
+        min-height: calc(var(--hud-dropdown-min-height) - (var(--hud-dropdown-padding-y) * 2));
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .ui-kit-list {
+        position: relative;
+        display: grid;
+        gap: 0;
+        min-height: 0;
+        padding: var(--hud-list-padding);
+        overflow: hidden;
+        background: rgb(0, 0, 0);
+      }
+
+      .ui-kit-list__content {
+        display: grid;
+        grid-auto-rows: var(--hud-dropdown-min-height);
+        gap: 0;
+        align-content: start;
+        min-height: 0;
+      }
+
+      .ui-kit-list__item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) max-content;
+        column-gap: 1vh;
+        align-items: center;
+        min-height: var(--hud-dropdown-min-height);
+        padding: 0.45vh var(--hud-control-padding-x);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .ui-kit-list__item-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .ui-kit-list__item-secondary {
+        justify-self: end;
+      }
+
+      .ui-kit-modal {
+        position: relative;
+        --hud-modal-title-height: 2.4vh;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        width: 100%;
+        height: 100%;
+        padding: 0.8vh;
+        border: 0.14vh solid var(--hud-surface-border);
+        overflow: hidden;
+        background: var(--hud-surface-solid-bg);
+      }
+
+      .ui-kit-modal__title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--hud-modal-title-height);
+        margin-bottom: 0.7vh;
+        color: #eefaff;
+        font: 1.25vh/1 Consolas, monospace;
+        text-align: center;
+      }
+
+      .ui-kit-modal__body {
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .trade {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 3.2vh minmax(0, 1fr);
+        gap: 1.4vh;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+        color: #d8f3ff;
+        font: 1.05vh/1.3 Consolas, monospace;
+      }
+
+      .trade__column {
+        display: grid;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .trade__column--left {
+        grid-template-rows: auto minmax(0, 1fr) auto auto minmax(0, 1fr) auto;
+        gap: 0.8vh;
+      }
+
+      .trade__column--right {
+        grid-template-rows: auto minmax(0, 1fr) auto auto minmax(0, 1fr);
+        gap: 0.8vh;
+      }
+
+      .trade__column--middle {
+        grid-template-rows: auto minmax(0, 1fr) auto auto minmax(0, 1fr);
+        gap: 0.8vh;
+      }
+
+      .trade__select-pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0.8vh;
+        min-width: 0;
+      }
+
+      .trade__list-spacer {
+        min-height: 0;
+      }
+
+      .trade__list-fill {
+        display: grid;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .trade__list-fill > .ui-kit-list {
+        width: 100%;
+        height: 100%;
+      }
+
+      .trade__marker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--hud-dropdown-min-height);
+        color: #d8f3ff;
+        background: var(--hud-surface-bg);
+      }
+
+      .trade__status {
+        display: flex;
+        align-items: center;
+        min-height: var(--hud-dropdown-min-height);
+        color: rgba(216, 243, 255, 0.78);
+      }
+
+      .trade__status--center {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .trade__space-warning {
+        visibility: hidden;
+        min-height: var(--hud-dropdown-min-height);
+        color: #ffb3b3;
+      }
+
+      .trade__actions {
+        display: flex;
+        gap: 0.8vh;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @media (max-width: 900px) {
+        .game-window-layer {
+          width: calc(100vw - 2vh);
+          height: calc(100vh - 2vh);
+        }
+
+        .trade {
+          grid-template-columns: 1fr;
+          grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="space-background" aria-hidden="true"></div>
+    <div class="game-window-layer game-window-layer--trade">
+      <section id="trade-modal" class="ui-kit-control ui-kit-modal" aria-label="Обмен">
+        <div class="ui-kit-modal__title">Обмен</div>
+        <div class="ui-kit-modal__body">
+          <div class="trade">
+            <div class="trade__column trade__column--left">
+              <div>OrionPilot</div>
+              <div class="ui-kit-control ui-kit-list">
+                <div class="ui-kit-list__content">
+                  <div class="ui-kit-control ui-kit-list__item">
+                    <span class="ui-kit-list__item-label">Медная руда</span>
+                    <span class="ui-kit-list__item-secondary">80</span>
+                  </div>
+                  <div class="ui-kit-control ui-kit-list__item">
+                    <span class="ui-kit-list__item-label">Малый робот</span>
+                    <span class="ui-kit-list__item-secondary">2</span>
+                  </div>
+                </div>
+              </div>
+              <div class="trade__status trade__status--center">Не подтверждено</div>
+              <div>МойНикнейм</div>
+              <div class="ui-kit-control ui-kit-list">
+                <div class="ui-kit-list__content">
+                  <div class="ui-kit-control ui-kit-list__item">
+                    <span class="ui-kit-list__item-label">Титановые пластины</span>
+                    <span class="ui-kit-list__item-secondary">15</span>
+                  </div>
+                  <div class="ui-kit-control ui-kit-list__item">
+                    <span class="ui-kit-list__item-label">Топливо</span>
+                    <span class="ui-kit-list__item-secondary">40</span>
+                  </div>
+                </div>
+              </div>
+              <div class="trade__actions">
+                <div class="ui-kit-control ui-kit-button">Подтвердить</div>
+                <div class="ui-kit-control ui-kit-button">Отмена</div>
+              </div>
+            </div>
+
+            <div class="trade__column trade__column--middle">
+              <div></div>
+              <div class="trade__marker">&gt;</div>
+              <div></div>
+              <div></div>
+              <div class="ui-kit-control ui-kit-button">&lt;</div>
+            </div>
+
+            <div class="trade__column trade__column--right">
+              <div class="trade__select-pair">
+                <div class="ui-kit-control ui-kit-dropdown">
+                  <div class="ui-kit-dropdown__value">Корабль: Starter</div>
+                </div>
+                <div class="ui-kit-control ui-kit-dropdown">
+                  <div class="ui-kit-dropdown__value">Контейнер: Склад 1</div>
+                </div>
+              </div>
+              <div class="trade__list-fill">
+                <div class="ui-kit-control ui-kit-list">
+                  <div class="ui-kit-list__content">
+                    <div class="ui-kit-control ui-kit-list__item">
+                      <span class="ui-kit-list__item-label">Железная руда</span>
+                      <span class="ui-kit-list__item-secondary">120</span>
+                    </div>
+                    <div class="ui-kit-control ui-kit-list__item">
+                      <span class="ui-kit-list__item-label">Кремний</span>
+                      <span class="ui-kit-list__item-secondary">64</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="trade__space-warning">Недостаточно места</div>
+              <div class="trade__select-pair">
+                <div class="ui-kit-control ui-kit-dropdown">
+                  <div class="ui-kit-dropdown__value">Корабль: Starter</div>
+                </div>
+                <div class="ui-kit-control ui-kit-dropdown">
+                  <div class="ui-kit-dropdown__value">Контейнер: Грузовой</div>
+                </div>
+              </div>
+              <div class="trade__list-fill">
+                <div class="ui-kit-control ui-kit-list">
+                  <div class="ui-kit-list__content">
+                    <div class="ui-kit-control ui-kit-list__item">
+                      <span class="ui-kit-list__item-label">Титановые пластины</span>
+                      <span class="ui-kit-list__item-secondary">15</span>
+                    </div>
+                    <div class="ui-kit-control ui-kit-list__item">
+                      <span class="ui-kit-list__item-label">Топливо</span>
+                      <span class="ui-kit-list__item-secondary">40</span>
+                    </div>
+                    <div class="ui-kit-control ui-kit-list__item">
+                      <span class="ui-kit-list__item-label">Медицинский набор</span>
+                      <span class="ui-kit-list__item-secondary">1</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

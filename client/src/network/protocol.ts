@@ -40,6 +40,29 @@ export type DockingCommandMessage = {
   type: "dockingRequest" | "dockingApprove" | "dockingReject" | "dockingUndock" | "landingBegin" | "landingApprove" | "landingReject" | "landingRequest";
 };
 
+export type ExchangeSimpleCommandMessage = {
+  // Вид команды обмена без дополнительных данных.
+  type: "exchangeRequest" | "exchangeApprove" | "exchangeReject" | "exchangeCancel" | "exchangeConfirm";
+};
+
+export type ExchangeContainerCommandMessage = {
+  // Вид команды выбора контейнера в окне обмена.
+  type: "exchangeSelectReceiver" | "exchangeSelectSource";
+  // Выбранная группа оборудования контейнера.
+  containerEquipmentGroupId: number;
+};
+
+export type ExchangeAddItemsCommandMessage = {
+  // Вид команды добавления предметов в очередь обмена.
+  type: "exchangeAddItems";
+  // Выбранные строки предметов контейнера-источника.
+  itemGroupIds: number[];
+  // Количество предметов из одной выбранной строки.
+  amount: number;
+};
+
+export type ExchangeCommandMessage = ExchangeSimpleCommandMessage | ExchangeContainerCommandMessage | ExchangeAddItemsCommandMessage;
+
 export type DockingEventKind = "dockingRequestStarted" | "dockingProcessStarted" | "dockingFinished" | "dockingNotification" | "landingRequestStarted" | "landingFinished" | "landingTargetSelection";
 
 export type DockingEventMessage = {
@@ -57,9 +80,62 @@ export type DockingEventMessage = {
   targetIds?: number[];
 };
 
+export type ExchangeQueueItem = {
+  // Строка задания, связанная с визуальной строкой.
+  taskItemGroupId: number;
+  // Модель предметов в строке.
+  itemModelId: number;
+  // Количество предметов в строке.
+  count: number;
+  // Доля выполненного перемещения.
+  progress: number;
+  // Готова ли строка к финальному переносу.
+  isReady: boolean;
+};
+
+export type ExchangeStateMessage = {
+  // Объект текущего игрока.
+  selfObjectId: number;
+  // Объект второго игрока.
+  otherObjectId: number;
+  // Никнейм текущего игрока.
+  selfNickname: string;
+  // Никнейм второго игрока.
+  otherNickname: string;
+  // Контейнер-приемник текущего игрока.
+  selfReceiverContainerEquipmentGroupId: number;
+  // Контейнер-источник текущего игрока.
+  selfSourceContainerEquipmentGroupId: number;
+  // Подтвердил ли текущий игрок.
+  selfConfirmed: boolean;
+  // Подтвердил ли второй игрок.
+  otherConfirmed: boolean;
+  // Нужно ли показать нехватку места текущему игроку.
+  notEnoughSpace: boolean;
+  // Предметы, которые текущий игрок отдает.
+  selfQueue: ExchangeQueueItem[];
+  // Предметы, которые второй игрок отдает.
+  otherQueue: ExchangeQueueItem[];
+};
+
+export type ExchangeEventMessage = {
+  // Вид сообщения обмена.
+  type: "exchangeEvent";
+  // Событие, определяющее окно или уведомление.
+  kind: "exchangeRequestStarted" | "exchangeRejected" | "exchangeCancelled" | "exchangeFinished" | "exchangeNotification" | "exchangeState";
+  // Роль текущего клиента в окне обмена.
+  role?: "sender" | "receiver";
+  // Текст уведомления.
+  message?: string;
+  // Длительность окна ожидания или процесса в секундах.
+  duration?: number;
+  // Текущее состояние окна.
+  state?: ExchangeStateMessage;
+};
+
 export type DockingWindowState = {
   // Фаза, от которой зависит текст маленького окна.
-  kind: "request" | "process" | "landingRequest";
+  kind: "request" | "process" | "landingRequest" | "exchangeRequest";
   // Роль текущего клиента в парном окне.
   role: "sender" | "receiver";
   // Время появления окна в миллисекундах игрового кадра.
@@ -515,6 +591,8 @@ export type TaskItemGroup = {
   Count: number;
   // Хранится ли указанное количество предметов во временном хранилище задания.
   IsStored: boolean;
+  // Готовность строки к финальному обмену.
+  IsReadyToExchange?: boolean;
 };
 
 export type TaskTypeReference = Record<string, unknown> & {

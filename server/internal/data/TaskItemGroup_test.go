@@ -28,3 +28,17 @@ func TestTaskItemGroupsIndexByTask(t *testing.T) {
 		t.Fatal("task item group is not indexed by task")
 	}
 }
+
+// Проверяет, что готовность строки обмена сохраняется вместе с резервом.
+func TestTaskItemGroupStoresExchangeReadyFlag(t *testing.T) {
+	groups := NewTaskItemGroups()
+
+	group, err := groups.Add(&TaskItemGroup{TaskID: 7, ItemModelID: 30, Count: 1, IsReadyToExchange: true})
+	if err != nil {
+		t.Fatalf("Add returned error: %v", err)
+	}
+
+	if !group.IsReadyToExchange {
+		t.Fatal("exchange ready flag was not stored")
+	}
+}

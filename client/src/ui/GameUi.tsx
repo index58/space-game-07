@@ -51,6 +51,7 @@ export const GameUi = (props: GameUiProps) => (
       <ControlPanelModal state={props.state} />
       <ControlPanelConstructorRecipeTooltip state={props.state} />
       <LandingTargetModal state={props.state} />
+      <ExchangeModal state={props.state} />
       <DockingOverlay state={props.state} />
       <GameCursor state={props.state} />
     </Show>
@@ -82,7 +83,7 @@ const DockingOverlay = (props: DockingOverlayProps) => (
         <div class="docking-window">
           <div class="docking-window__title">{getDockingWindowTitle(windowState())}</div>
           <div class="docking-window__text">{getDockingWindowText(windowState())}</div>
-          <Show when={windowState().kind === "request" && windowState().role === "receiver"}>
+          <Show when={(windowState().kind === "request" || windowState().kind === "exchangeRequest") && windowState().role === "receiver"}>
             <div class="docking-window__hints">
               <div class="docking-window__hint">
                 <span class="docking-window__hint-action docking-window__hint-action--approve">Одобрить</span>
@@ -142,7 +143,7 @@ const LandingTargetModal = (props: DockingOverlayProps) => {
 
 // Возвращает заголовок маленького окна по фазе стыковки.
 const getDockingWindowTitle = (state: NonNullable<GameUiState["dockingWindow"]>): string =>
-  state.kind === "landingRequest" ? "Запрос посадки" : state.kind === "request" ? "Запрос стыковки" : "Стыковка";
+  state.kind === "landingRequest" ? "Запрос посадки" : state.kind === "exchangeRequest" ? "Запрос обмена" : state.kind === "request" ? "Запрос стыковки" : "Стыковка";
 
 // Возвращает текст маленького окна по роли текущего клиента.
 const getDockingWindowText = (state: NonNullable<GameUiState["dockingWindow"]>): string => {
@@ -151,6 +152,9 @@ const getDockingWindowText = (state: NonNullable<GameUiState["dockingWindow"]>):
   }
   if (state.kind === "landingRequest") {
     return state.role === "sender" ? "Ожидание ответа" : "Входящий запрос на посадку";
+  }
+  if (state.kind === "exchangeRequest") {
+    return state.role === "sender" ? "Ожидание ответа" : "Входящий запрос на обмен";
   }
   return state.role === "sender" ? "Ожидание ответа" : "Входящий запрос";
 };
@@ -288,7 +292,7 @@ type ControlPanelModalProps = {
 
 type GameWindowLayerProps = {
   // Вид окна, который задаёт необходимые отличия поверх общего каркаса.
-  variant: "settings" | "showcase" | "control-panel";
+  variant: "settings" | "showcase" | "control-panel" | "exchange";
   // Содержимое окна в общем экранном слое.
   children: JSX.Element;
 };
@@ -343,6 +347,19 @@ type ControlPanelConstructorQueueRow = {
   count: string;
   // Заполнение полосы текущего запуска в процентах.
   unitProgressPercent: number;
+};
+
+type ExchangeQueueRow = {
+  // ID строки очереди обмена.
+  id: number;
+  // Видимое название предмета.
+  title: string;
+  // Текст количества предметов.
+  count: string;
+  // Заполнение строки перемещения в процентах.
+  progressPercent: number;
+  // Показывает, что строка готова к финальному переносу.
+  ready: boolean;
 };
 
 type GameFormRowLabelProps = {
@@ -1182,6 +1199,78 @@ const ControlPanelConstructorRecipePanel = (props: { state: Accessor<GameUiState
   );
 };
 
+// Показывает согласованное окно обмена предметами между игроками.
+const ExchangeModal = (props: DockingOverlayProps) => {
+  const state = () => props.state().exchangeState;
+  const receiverContainers = createMemo(() => getExchangeContainers(props.state(), props.state().selectedExchangeReceiverObjectId ?? null));
+  const sourceContainers = createMemo(() => getExchangeContainers(props.state(), props.state().selectedExchangeSourceObjectId ?? null));
+  const receiverContainerId = () => state()?.selfReceiverContainerEquipmentGroupId || receiverContainers()[0]?.ID || 0;
+  const sourceContainerId = () => state()?.selfSourceContainerEquipmentGroupId || sourceContainers()[0]?.ID || 0;
+  const receiverRows = createMemo(() => getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, receiverContainerId()));
+  const sourceRows = createMemo(() => getControlPanelContainerContentRows(props.state().itemGroups, props.state().referenceData?.ItemModel.Items, sourceContainerId()));
+  const objectOptions = createMemo(() => getExchangeObjectOptions(props.state()));
+  const receiverLocked = () => Boolean(state()?.selfConfirmed);
+  const sourceLocked = () => Boolean(state()?.otherConfirmed);
+  const cancelLocked = () => Boolean(state()?.selfConfirmed && state()?.otherConfirmed);
+
+  return (
+    <Show when={state()}>
+      {(exchange) => (
+        <GameWindowLayer variant="exchange">
+          <Modal id="exchange-modal" title="Обмен" closeButton={false}>
+            <div class="exchange-window">
+              <div class="exchange-window__left">
+                <div class="exchange-window__nickname">{exchange().otherNickname}</div>
+                <ExchangeQueueList id="exchange-other-queue" rows={getExchangeQueueRows(props.state(), exchange().otherQueue)} inactive={exchange().selfConfirmed} scroll={props.state().listScroll["exchange-other-queue"]} />
+                <div class="exchange-window__actions">
+                  <Show when={!exchange().selfConfirmed} fallback={<div class="exchange-window__confirmed">✓ Подтверждено</div>}>
+                    <Button id="exchange-confirm-button" label="Подтвердить" />
+                  </Show>
+                  <Button id="exchange-cancel-button" label="Отмена" state={cancelLocked() ? "disabled" : "normal"} />
+                </div>
+                <div class="exchange-window__nickname">{exchange().selfNickname}</div>
+                <ExchangeQueueList id="exchange-self-queue" rows={getExchangeQueueRows(props.state(), exchange().selfQueue)} inactive={exchange().otherConfirmed} scroll={props.state().listScroll["exchange-self-queue"]} />
+                <div class={`exchange-window__status ${exchange().otherConfirmed ? "is-confirmed" : ""}`}>{exchange().otherConfirmed ? "✓ Подтверждено" : "Не подтверждено"}</div>
+              </div>
+              <div class="exchange-window__middle">
+                <div class="exchange-window__arrow exchange-window__arrow--top">&gt;</div>
+                <Button id="exchange-move-to-queue-button" label="<" ariaLabel="Переместить выбранные предметы в мою очередь" state={sourceLocked() || (props.state().selectedExchangeSourceItemGroupIds ?? []).length === 0 ? "disabled" : "normal"} />
+              </div>
+              <div class="exchange-window__right">
+                <div class={`exchange-window__selects ${receiverLocked() ? "is-disabled" : ""}`}>
+                  <Dropdown id="exchange-receiver-object-select" selectedValue={String(props.state().selectedExchangeReceiverObjectId ?? exchange().selfObjectId)} open={props.state().openExchangeSelect === "receiverObject"} options={objectOptions()} />
+                  <Dropdown id="exchange-receiver-container-select" selectedValue={String(receiverContainerId())} open={props.state().openExchangeSelect === "receiverContainer"} options={receiverContainers().map(exchangeContainerOption)} />
+                </div>
+                <ControlPanelContainerContent listId="exchange-receiver-list" rows={receiverRows()} selectedIds={[]} scroll={props.state().listScroll["exchange-receiver-list"]} />
+                <div class={`exchange-window__space ${exchange().notEnoughSpace ? "is-visible" : ""}`}>Недостаточно места</div>
+                <div class={`exchange-window__selects ${sourceLocked() ? "is-disabled" : ""}`}>
+                  <Dropdown id="exchange-source-object-select" selectedValue={String(props.state().selectedExchangeSourceObjectId ?? exchange().selfObjectId)} open={props.state().openExchangeSelect === "sourceObject"} options={objectOptions()} />
+                  <Dropdown id="exchange-source-container-select" selectedValue={String(sourceContainerId())} open={props.state().openExchangeSelect === "sourceContainer"} options={sourceContainers().map(exchangeContainerOption)} />
+                </div>
+                <ControlPanelContainerContent listId="exchange-source-list" rows={sourceRows()} selectedIds={props.state().selectedExchangeSourceItemGroupIds ?? []} scroll={props.state().listScroll["exchange-source-list"]} />
+              </div>
+            </div>
+            <Show when={props.state().controlPanelContainerTransferDialogOpen}>
+              <ControlPanelFuelAmountDialog
+                id="exchange-add-items-dialog"
+                title="Перенос предметов"
+                okId="exchange-add-items-ok"
+                cancelId="exchange-add-items-cancel"
+                amount={props.state().controlPanelFuelDrainAmount}
+                maxAmount={props.state().controlPanelContainerTransferMaxAmount}
+                text={props.state().controlPanelFuelDrainAmountText}
+                selectionStart={props.state().controlPanelFuelDrainAmountSelectionStart}
+                selectionEnd={props.state().controlPanelFuelDrainAmountSelectionEnd}
+                focused={props.state().controlPanelFuelDrainAmountFocused}
+              />
+            </Show>
+          </Modal>
+        </GameWindowLayer>
+      )}
+    </Show>
+  );
+};
+
 // Проверяет, выбран ли рецепт текущей вкладки конструктора для включения кнопки запуска.
 const canMakeSelectedConstructorRecipe = (state: GameUiState): boolean =>
   state.selectedControlPanelConstructorTab === "objects"
@@ -1330,6 +1419,61 @@ const ControlPanelConstructorQueueList = (props: { id: string; rows: ControlPane
 );
 
 // Показывает общий запас топлива объекта в виде вертикального бака.
+// Показывает очередь обмена с прогрессом строк.
+const ExchangeQueueList = (props: { id: string; rows: ExchangeQueueRow[]; inactive: boolean; scroll?: GameUiState["chatScroll"] }) => (
+  <ListBox
+    id={props.id}
+    selectedValue=""
+    items={props.rows.map((row) => ({
+      value: String(row.id),
+      label: row.title,
+      labelPrefix: row.ready ? "✓" : undefined,
+      secondaryLabel: row.count,
+      className: ["control-panel-constructor-queue__item", "exchange-queue__item", props.inactive ? "is-inactive" : "", row.ready ? "is-ready" : ""].filter(Boolean).join(" "),
+      style: {
+        "--constructor-queue-unit-progress": `${row.ready ? 0 : row.progressPercent}%`,
+      },
+    }))}
+    scroll={props.scroll}
+  />
+);
+
+// Возвращает предметы очереди обмена в формате общего списка.
+const getExchangeQueueRows = (state: GameUiState, queue: NonNullable<GameUiState["exchangeState"]>["selfQueue"]): ExchangeQueueRow[] =>
+  queue.map((row) => ({
+    id: row.taskItemGroupId,
+    title: getReferenceTitle(state.referenceData?.ItemModel.Items[String(row.itemModelId)]) ?? emptyValue(),
+    count: formatMetric(row.count),
+    progressPercent: clampNumber(row.progress * 100, 0, 100),
+    ready: row.isReady,
+  }));
+
+// Возвращает контейнеры выбранного объекта для выпадающего списка обмена.
+const getExchangeContainers = (state: GameUiState, objectId: number | null): EquipmentGroup[] =>
+  state.equipmentGroups
+    .filter((group) => group.CosmicObjectID === objectId && isExchangeContainerEquipmentGroup(state, group))
+    .sort((left, right) => left.ID - right.ID);
+
+// Возвращает объекты своего кластера для выпадающих списков обмена.
+const getExchangeObjectOptions = (state: GameUiState) =>
+  getAvailableClusterObjectIDs(state.selfObject?.ID ?? 0, state.objects)
+    .map((objectId) => state.objects.find((object) => object.ID === objectId))
+    .filter((object): object is CosmicObject => Boolean(object))
+    .map((object) => ({ value: String(object.ID), label: object.Title || `Объект ${object.ID}` }));
+
+// Преобразует контейнер в пункт выпадающего списка обмена.
+const exchangeContainerOption = (group: EquipmentGroup) => ({
+  value: String(group.ID),
+  label: group.Title || `Контейнер ${group.ID}`,
+});
+
+// Проверяет, что группа оборудования является контейнером.
+const isExchangeContainerEquipmentGroup = (state: GameUiState, group: EquipmentGroup): boolean => {
+  const itemModel = state.referenceData?.ItemModel.Items[String(group.EquipmentItemModelID)];
+  const itemType = state.referenceData?.ItemType.Items[String(itemModel?.ItemTypeID)];
+  return itemType?.Acronym === "Container";
+};
+
 const ControlPanelFuelTank = (props: { object: { Fuel: number; MaxFuel: number } | null }) => {
   const fuel = () => props.object?.Fuel ?? 0;
   const maxFuel = () => props.object?.MaxFuel ?? 0;

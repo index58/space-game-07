@@ -63,6 +63,7 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initi
 	if payload, err := EncodeInputSettingsMessage(hub.world.AccountInputSettings(accountID)); err == nil {
 		client.send <- payload
 	}
+	hub.enqueueInitialExchangeEvents(client)
 
 	hub.mu.Lock()
 	hub.clients[client] = struct{}{}
@@ -111,6 +112,7 @@ func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 		}
 	}
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
+	hub.sendExchangeEvents(hub.world.DrainExchangeEvents())
 }
 
 // РџСЂРёРЅРёРјР°РµС‚ РІРІРѕРґ РѕС‚ РєР»РёРµРЅС‚Р° Рё РїРµСЂРµРґР°РµС‚ РїРѕСЃР»РµРґРЅРёР№ РІР°Р»РёРґРЅС‹Р№ РїР°РєРµС‚ РІ РјРёСЂ.
@@ -154,6 +156,30 @@ func (hub *Hub) readLoop(client *Client) {
 			}
 			if DecodeDockingUndockMessage(payload) {
 				hub.handleDockingUndock(client)
+			}
+			if DecodeExchangeSimpleMessage(payload, "exchangeRequest") {
+				hub.handleExchangeRequest(client)
+			}
+			if DecodeExchangeSimpleMessage(payload, "exchangeApprove") {
+				hub.handleExchangeApprove(client)
+			}
+			if DecodeExchangeSimpleMessage(payload, "exchangeReject") {
+				hub.handleExchangeReject(client)
+			}
+			if DecodeExchangeSimpleMessage(payload, "exchangeCancel") {
+				hub.handleExchangeCancel(client)
+			}
+			if message, ok := DecodeExchangeContainerMessage(payload, "exchangeSelectReceiver"); ok {
+				hub.handleExchangeSelectReceiver(client, message)
+			}
+			if message, ok := DecodeExchangeContainerMessage(payload, "exchangeSelectSource"); ok {
+				hub.handleExchangeSelectSource(client, message)
+			}
+			if message, ok := DecodeExchangeAddItemsMessage(payload); ok {
+				hub.handleExchangeAddItems(client, message)
+			}
+			if DecodeExchangeSimpleMessage(payload, "exchangeConfirm") {
+				hub.handleExchangeConfirm(client)
 			}
 			if DecodeLandingBeginMessage(payload) {
 				hub.handleLandingBegin(client)
@@ -404,12 +430,38 @@ func (hub *Hub) sendDockingError(client *Client, message string) {
 	payload, err := EncodeDockingEventMessage(game.DockingEvent{
 		Type:    "dockingEvent",
 		Kind:    "dockingNotification",
-		Message: message,
+		Message: dockingErrorText(message),
 	})
 	if err != nil {
 		return
 	}
 	hub.sendToClient(client, payload)
+}
+
+// Переводит технические причины отказа стыковки и пересадки в текст для игрока.
+func dockingErrorText(message string) string {
+	switch message {
+	case "object already participates in docking":
+		return "Объект уже участвует в стыковке"
+	case "object participates in exchange":
+		return "Объект участвует в обмене"
+	case "object is not docked":
+		return "Объект не пристыкован"
+	case "docking request not found":
+		return "Запрос стыковки не найден"
+	case "landing request not found":
+		return "Запрос пересадки не найден"
+	case "sender object not found":
+		return "Объект отправителя не найден"
+	case "controlled object not found":
+		return "Управляемый объект не найден"
+	case "current character not found":
+		return "Текущий персонаж не найден"
+	case "docking target not found":
+		return "Объект для стыковки не найден"
+	default:
+		return message
+	}
 }
 
 // handleInputSettingsRequest РІРѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РёРµ СЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё Р°РєРєР°СѓРЅС‚Р° Р±РµР· РёР·РјРµРЅРµРЅРёСЏ РјРёСЂР°.

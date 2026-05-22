@@ -73,6 +73,9 @@ type World struct {
 	dockingProcesses               []dockingProcess           // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘Р Вµ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘, РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏРЎвЂ°Р С‘Р ВµРЎРѓРЎРЏ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р† Р С—Р В°Р СРЎРЏРЎвЂљР С‘.
 	landingRequests                []landingRequest           // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В·Р В°Р С—РЎР‚Р С•РЎРѓРЎвЂ№ Р С—Р С•РЎРѓР В°Р Т‘Р С”Р С‘ Р С—Р ВµРЎР‚РЎРѓР С•Р Р…Р В°Р В¶Р В°, Р С•Р В¶Р С‘Р Т‘Р В°РЎР‹РЎвЂ°Р С‘Р Вµ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В°.
 	dockingEvents                  []game.DockingEvent        // Р СњР В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљРЎРѓР С”Р С‘Р Вµ РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘РЎРЏ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘ Р Т‘Р С• Р В±Р В»Р С‘Р В¶Р В°Р в„–РЎв‚¬Р ВµР в„– РЎР‚Р В°РЎРѓРЎРѓРЎвЂ№Р В»Р С”Р С‘.
+	exchangeRequests               []exchangeRequest          // Ожидающие ответы на запросы обмена.
+	exchangeSessions               []exchangeSession          // Открытые и выполняющиеся обмены.
+	exchangeEvents                 []game.ExchangeEvent       // Накопленные клиентские события обмена.
 }
 
 type constructorProductionJob struct {
@@ -362,7 +365,7 @@ func (world *World) SendDockingRequest(accountID int64) error {
 		return nil
 	}
 	if !world.dockingReceiverHasDecisionMakerLocked(receiver.ID) {
-		world.addDockingNotificationLocked([]int64{sender.ID}, "Р вЂ™ Р СџР С•Р В»РЎС“РЎвЂЎР В°РЎвЂљР ВµР В»Р Вµ Р Р…Р ВµРЎвЂљ Р С—Р ВµРЎР‚РЎРѓР С•Р Р…Р В°Р В¶Р В° Р Т‘Р В»РЎРЏ Р С—РЎР‚Р С‘Р Р…РЎРЏРЎвЂљР С‘РЎРЏ РЎР‚Р ВµРЎв‚¬Р ВµР Р…Р С‘РЎРЏ")
+		world.addDockingNotificationLocked([]int64{sender.ID}, "В Получателе нет персонажа для принятия решения")
 		return nil
 	}
 	world.dockingRequests = append(world.dockingRequests, dockingRequest{
@@ -396,13 +399,13 @@ func (world *World) ApproveDockingRequest(accountID int64) error {
 	if err := world.validateDockingSenderLocked(sender); err != nil {
 		world.removeDockingRequestLocked(requestIndex)
 		world.closeDockingRequestWindowLocked(request)
-		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Р Р€РЎРѓР В»Р С•Р Р†Р С‘РЎРЏ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘ Р В±Р С•Р В»РЎРЉРЎв‚¬Р Вµ Р Р…Р Вµ Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…РЎРЏРЎР‹РЎвЂљРЎРѓРЎРЏ")
+		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Условия стыковки больше не выполняются")
 		return err
 	}
 	if err := world.validateDockingReceiverLocked(receiver); err != nil {
 		world.removeDockingRequestLocked(requestIndex)
 		world.closeDockingRequestWindowLocked(request)
-		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Р Р€РЎРѓР В»Р С•Р Р†Р С‘РЎРЏ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘ Р В±Р С•Р В»РЎРЉРЎв‚¬Р Вµ Р Р…Р Вµ Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…РЎРЏРЎР‹РЎвЂљРЎРѓРЎРЏ")
+		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Условия стыковки больше не выполняются")
 		return err
 	}
 	world.removeDockingRequestLocked(requestIndex)
@@ -426,7 +429,7 @@ func (world *World) RejectDockingRequest(accountID int64) error {
 	request := world.dockingRequests[requestIndex]
 	world.removeDockingRequestLocked(requestIndex)
 	world.closeDockingRequestWindowLocked(request)
-	world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Р С›РЎвЂљР С”Р В°Р В· Р Р…Р В° Р В·Р В°Р С—РЎР‚Р С•РЎРѓ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘")
+	world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Отказ на запрос стыковки")
 	return nil
 }
 
@@ -439,6 +442,9 @@ func (world *World) UndockControlledObject(accountID int64) error {
 	if err != nil {
 		return err
 	}
+	if world.exchangeClusterIsBusyLocked(cosmicObject.ID) {
+		return errors.New("object participates in exchange")
+	}
 	mainID := cosmicObject.ClusterMainCosmicObjectID
 	if mainID <= 0 {
 		return errors.New("object is not docked")
@@ -446,7 +452,7 @@ func (world *World) UndockControlledObject(accountID int64) error {
 	notificationObjectIDs := world.clusterObjectIDsLocked(mainID)
 	if mainID == cosmicObject.ID {
 		world.disbandClusterLocked(mainID)
-		world.addDockingNotificationLocked(notificationObjectIDs, "Р С›Р В±РЎР‰Р ВµР С”РЎвЂљ Р С•РЎвЂљРЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р В°Р Р…")
+		world.addDockingNotificationLocked(notificationObjectIDs, "Объект отстыкован")
 		return nil
 	}
 	cosmicObject.ClusterMainCosmicObjectID = 0
@@ -454,7 +460,7 @@ func (world *World) UndockControlledObject(accountID int64) error {
 	if len(world.clusterObjectIDsLocked(mainID)) <= 1 {
 		world.disbandClusterLocked(mainID)
 	}
-	world.addDockingNotificationLocked(notificationObjectIDs, "Р С›Р В±РЎР‰Р ВµР С”РЎвЂљ Р С•РЎвЂљРЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р В°Р Р…")
+	world.addDockingNotificationLocked(notificationObjectIDs, "Объект отстыкован")
 	return nil
 }
 
@@ -472,7 +478,7 @@ func (world *World) BeginCharacterTransfer(accountID int64) error {
 		return err
 	}
 	if sender.ClusterMainCosmicObjectID <= 0 {
-		world.addDockingNotificationLocked([]int64{sender.ID}, "Р С›Р В±РЎР‰Р ВµР С”РЎвЂљ Р Р…Р Вµ Р С—РЎР‚Р С‘РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р В°Р Р…")
+		world.addDockingNotificationLocked([]int64{sender.ID}, "Объект не пристыкован")
 		return nil
 	}
 	targetID, ok := world.autoLandingTargetIDLocked(sender)
@@ -497,7 +503,7 @@ func (world *World) RequestCharacterLanding(accountID int64, targetID int64) err
 		return err
 	}
 	if sender.ClusterMainCosmicObjectID <= 0 {
-		world.addDockingNotificationLocked([]int64{sender.ID}, "Р С›Р В±РЎР‰Р ВµР С”РЎвЂљ Р Р…Р Вµ Р С—РЎР‚Р С‘РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р В°Р Р…")
+		world.addDockingNotificationLocked([]int64{sender.ID}, "Объект не пристыкован")
 		return nil
 	}
 	return world.requestCharacterLandingLocked(character.ID, sender.ID, targetID)
@@ -818,7 +824,7 @@ func (world *World) requestCharacterLandingLocked(characterID int64, senderID in
 		return nil
 	}
 	if !world.cosmicObjectHasPassengerSeatLocked(receiver.ID) {
-		world.addDockingNotificationLocked([]int64{sender.ID}, "Р вЂ™ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР Вµ Р Р…Р В°Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘РЎРЏ Р Р…Р Вµ РЎС“РЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С• Р С—Р В°РЎРѓРЎРѓР В°Р В¶Р С‘РЎР‚РЎРѓР С”Р С•Р Вµ Р С”РЎР‚Р ВµРЎРѓР В»Р С•")
+		world.addDockingNotificationLocked([]int64{sender.ID}, "В объекте назначения не установлено пассажирское кресло")
 		return nil
 	}
 	if world.landingRequestIndexByReceiverLocked(receiver.ID) >= 0 {
@@ -2299,12 +2305,34 @@ func (world *World) consumeItemModelFromContainerLocked(containerID int64, itemM
 		itemGroup.Count -= consumed
 		remaining -= consumed
 		if itemGroup.Count <= physics.Epsilon {
-			delete(world.data.ItemGroups.Items, itemGroup.ID)
+			world.deleteItemGroupLocked(itemGroup)
 		}
 	}
 }
 
 // addItemModelToContainerLocked Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљ Р С—РЎР‚Р С•Р Т‘РЎС“Р С”РЎвЂ Р С‘РЎР‹ Р Р† РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“РЎР‹РЎвЂ°РЎС“РЎР‹ Р С–РЎР‚РЎС“Р С—Р С—РЎС“ Р С‘Р В»Р С‘ РЎРѓР С•Р В·Р Т‘Р В°Р ВµРЎвЂљ Р Р…Р С•Р Р†РЎС“РЎР‹; Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµРЎвЂљРЎРѓРЎРЏ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р С—Р С•Р Т‘ mutex.
+// Удаляет группу предметов и сразу очищает быстрый индекс контейнера.
+func (world *World) deleteItemGroupLocked(itemGroup *data.ItemGroup) {
+	if itemGroup == nil || world.data.ItemGroups == nil {
+		return
+	}
+	delete(world.data.ItemGroups.Items, itemGroup.ID)
+	groups := world.data.ItemGroups.ByContainerEquipmentGroupID[itemGroup.ContainerEquipmentGroupID]
+	for index, indexedGroup := range groups {
+		if indexedGroup == nil || indexedGroup.ID != itemGroup.ID {
+			continue
+		}
+		groups = append(groups[:index], groups[index+1:]...)
+		break
+	}
+	if len(groups) == 0 {
+		delete(world.data.ItemGroups.ByContainerEquipmentGroupID, itemGroup.ContainerEquipmentGroupID)
+		return
+	}
+	world.data.ItemGroups.ByContainerEquipmentGroupID[itemGroup.ContainerEquipmentGroupID] = groups
+}
+
+// Добавляет предметы в существующую группу контейнера или создает новую.
 func (world *World) addItemModelToContainerLocked(containerID int64, itemModelID int64, amount float64) error {
 	for _, itemGroup := range world.data.ItemGroups.GetByContainerEquipmentGroupID(containerID) {
 		if itemGroup.ContentItemModelID == itemModelID {
@@ -2372,7 +2400,7 @@ func (world *World) fillFuelFromContainerLocked(cosmicObject *data.CosmicObject,
 		remainingAmount -= moved
 		itemGroup.Count -= moved
 		if itemGroup.Count <= physics.Epsilon {
-			delete(world.data.ItemGroups.Items, itemGroup.ID)
+			world.deleteItemGroupLocked(itemGroup)
 		}
 	}
 	return nil
@@ -2468,8 +2496,10 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	defer world.mu.Unlock()
 
 	world.stepTasksLocked(dtSeconds)
+	world.stepExchangeSessionsLocked(dtSeconds)
 	world.stepMovableObjects(dtSeconds, world.inputsByObjectID())
 	world.resolveAllCollisions()
+	world.stepExchangeRequestsLocked(dtSeconds)
 	world.stepDockingRequestsLocked(dtSeconds)
 	world.stepDockingProcessesLocked(dtSeconds)
 
@@ -2490,7 +2520,7 @@ func (world *World) stepDockingRequestsLocked(dtSeconds float64) {
 			continue
 		}
 		world.closeDockingRequestWindowLocked(request)
-		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Р ВРЎРѓРЎвЂљР ВµР С”Р В»Р С• Р Р†РЎР‚Р ВµР СРЎРЏ Р С•Р В¶Р С‘Р Т‘Р В°Р Р…Р С‘РЎРЏ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В° Р Р…Р В° Р В·Р В°Р С—РЎР‚Р С•РЎРѓ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘")
+		world.addDockingNotificationLocked([]int64{request.SenderCosmicObjectID, request.ReceiverCosmicObjectID}, "Истекло время ожидания ответа на запрос стыковки")
 	}
 	world.dockingRequests = remaining
 }
@@ -2531,7 +2561,8 @@ func (world *World) completeDockingProcessLocked(process dockingProcess) {
 		}
 	}
 	world.addDockingWindowEventsLocked("dockingFinished", sender.ID, receiver.ID, 0)
-	world.addDockingNotificationLocked(world.clusterObjectIDsLocked(mainID), "Р С›Р В±РЎР‰Р ВµР С”РЎвЂљ Р С—РЎР‚Р С‘РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р В°Р Р…")
+	world.openExchangeAfterDockingLocked(sender.ID, receiver.ID)
+	world.addDockingNotificationLocked(world.clusterObjectIDsLocked(mainID), "Объект пристыкован")
 }
 
 // stepConstructorProductionJobsLocked Р С—РЎР‚Р С•Р Т‘Р Р†Р С‘Р С–Р В°Р ВµРЎвЂљ Р С—Р С• Р С•Р Т‘Р Р…Р С•Р СРЎС“ Р В·Р В°Р Т‘Р В°Р Р…Р С‘РЎР‹ Р Р…Р В° Р С”Р В°Р В¶Р Т‘РЎвЂ№Р в„– Р С”Р С•Р Р…РЎРѓРЎвЂљРЎР‚РЎС“Р С”РЎвЂљР С•РЎР‚ Р В·Р В° РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎв‚¬Р В°Р С– Р СР С‘РЎР‚Р В°.
@@ -2542,6 +2573,9 @@ func (world *World) stepTasksLocked(dtSeconds float64) {
 	}
 	controllerIDs := world.controllerIDsWithTasksLocked()
 	for _, controllerID := range controllerIDs {
+		if world.exchangePausesControllerLocked(controllerID) {
+			continue
+		}
 		task := world.activeTaskLocked(controllerID)
 		if task == nil {
 			continue

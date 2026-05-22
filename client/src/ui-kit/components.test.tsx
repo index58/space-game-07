@@ -38,7 +38,7 @@ describe("ui-kit components", () => {
     dispose = render(() => (
       <>
         <Dropdown id="select" label="Mode" open={true} selectedValue="b" options={[{ value: "a", label: "A" }, { value: "b", label: "B" }]} />
-        <ListBox id="list" selectedValue="2" scrollOffsetPx={12} items={[{ value: "1", label: "One" }, { value: "2", label: "Two" }]} />
+        <ListBox id="list" selectedValue="2" scrollOffsetPx={12} items={[{ value: "1", label: "One", labelPrefix: "✓" }, { value: "2", label: "Two" }]} />
         <TreeView id="tree" selectedValue="child" nodes={[{ value: "root", label: "Root", children: [{ value: "child", label: "Child" }] }]} />
         <VirtualList id="virtual" startIndex={10} items={Array.from({ length: 3 }, (_, index) => ({ value: String(index), label: `Item ${index}` }))} />
       </>
@@ -46,6 +46,7 @@ describe("ui-kit components", () => {
 
     expect(document.body.querySelector(".ui-kit-dropdown__menu")).not.toBeNull();
     expect(root.querySelector<HTMLElement>("#list .ui-kit-list__content")?.style.transform).toBe("translateY(-12px)");
+    expect(root.querySelector("#list-1 .ui-kit-list__item-label-prefix")?.textContent).toBe("✓");
     expect(root.querySelector(".ui-kit-list__item.is-selected")?.textContent).toBe("Two");
     expect(root.querySelector(".ui-kit-tree__item.is-selected")?.textContent).toBe("Child");
     expect(root.querySelector(".ui-kit-virtual-list__index")?.textContent).toBe("10");
@@ -264,6 +265,17 @@ describe("ui-kit components", () => {
     expect(closeButton?.className).toBe("ui-kit-control ui-kit-button ui-kit-modal__close");
     expect(closeButton?.getAttribute("aria-label")).toBe("Закрыть окно");
     expect(closeButton?.textContent).toBe("");
+  });
+
+  // Проверяет, что общий шаблон окна может скрывать кнопку закрытия для окон с собственными действиями.
+  it("can hide shared modal close button", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <Modal id="modal" title="Panel" closeButton={false}>Body</Modal>, root);
+
+    expect(root.querySelector("#modal-close-button")).toBeNull();
+    expect(root.querySelector(".ui-kit-modal__title")?.textContent).toBe("Panel");
   });
 
   // Проверяет, что обычная полоса прокрутки не получает overlay-приоритет раскрытого списка.

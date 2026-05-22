@@ -318,6 +318,223 @@ describe("GameUi", () => {
     expect(root.querySelector(".docking-window__hint")?.classList.contains("docking-window__hint-key")).toBe(false);
   });
 
+  // Проверяет, что входящий запрос обмена виден второму игроку и использует те же клавиши ответа.
+  it("shows exchange request window for receiver", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      dockingWindow: { kind: "exchangeRequest", role: "receiver", startedAtMs: 0, durationMs: 10000 } as GameUiState["dockingWindow"],
+    })} />, root);
+
+    expect(root.querySelector(".docking-window__title")?.textContent).toBe("Запрос обмена");
+    expect(root.querySelector(".docking-window__text")?.textContent).toBe("Входящий запрос на обмен");
+    expect(Array.from(root.querySelectorAll(".docking-window__hint-key")).map((key) => key.textContent)).toEqual(["Alt", "1", "Alt", "2"]);
+    expect(root.querySelector(".docking-window__fill")?.classList.contains("is-decreasing")).toBe(true);
+    expect((root.querySelector(".docking-window__fill") as HTMLElement | null)?.style.animationDuration).toBe("10s");
+  });
+
+  // Проверяет, что окно обмена показывает общий выбор количества для переноса в очередь.
+  it("renders exchange amount dialog", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      exchangeState: {
+        selfObjectId: 1,
+        otherObjectId: 2,
+        selfNickname: "Pilot1",
+        otherNickname: "Pilot2",
+        selfReceiverContainerEquipmentGroupId: 0,
+        selfSourceContainerEquipmentGroupId: 0,
+        selfConfirmed: false,
+        otherConfirmed: false,
+        notEnoughSpace: false,
+        selfQueue: [],
+        otherQueue: [],
+      },
+      controlPanelContainerTransferDialogOpen: true,
+      controlPanelContainerTransferMaxAmount: 7,
+      controlPanelFuelDrainAmount: 3,
+      controlPanelFuelDrainAmountText: "3",
+      controlPanelFuelDrainAmountSelectionStart: 1,
+      controlPanelFuelDrainAmountSelectionEnd: 1,
+    })} />, root);
+
+    expect(root.querySelector("#exchange-add-items-dialog .control-panel-fuel-drain-dialog__title")?.textContent).toBe("Перенос предметов");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-input .ui-kit-text-input__text")?.textContent).toBe("3");
+    expect(root.querySelector("#control-panel-fuel-drain-amount-slider .ui-kit-slider__fill")).not.toBeNull();
+    expect(root.querySelector("#exchange-add-items-ok")?.textContent).toBe("ОК");
+    expect(root.querySelector("#exchange-add-items-cancel")?.textContent).toBe("Отмена");
+  });
+
+  // Проверяет, что списки предметов обмена используют общий шаблон списка с прокруткой.
+  it("renders exchange item lists with shared scrollbars", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      exchangeState: {
+        selfObjectId: 1,
+        otherObjectId: 2,
+        selfNickname: "Pilot1",
+        otherNickname: "Pilot2",
+        selfReceiverContainerEquipmentGroupId: 10,
+        selfSourceContainerEquipmentGroupId: 11,
+        selfConfirmed: false,
+        otherConfirmed: false,
+        notEnoughSpace: false,
+        selfQueue: [],
+        otherQueue: [],
+      },
+      referenceData: {
+        ...referenceData,
+        ItemModel: {
+          MaxID: 1,
+          Items: {
+            "1": { ID: 1, ItemTypeID: 1, Acronym: "Melit", TitleRu: "Мелит" },
+          },
+        },
+      } as ReferenceDataMessage,
+      itemGroups: [
+        { ID: 101, ContainerEquipmentGroupID: 10, ContentItemModelID: 1, Count: 5 },
+        { ID: 201, ContainerEquipmentGroupID: 11, ContentItemModelID: 1, Count: 7 },
+      ],
+      listScroll: {
+        "exchange-receiver-list": { visible: true, thumbTopPercent: 20, thumbHeightPercent: 40, contentOffsetPx: 12, dragging: false },
+        "exchange-source-list": { visible: true, thumbTopPercent: 30, thumbHeightPercent: 35, contentOffsetPx: 18, dragging: true },
+      },
+    })} />, root);
+
+    expect(root.querySelector<HTMLElement>("#exchange-receiver-list .ui-kit-list__content")?.style.transform).toBe("translateY(-12px)");
+    expect(root.querySelector("#exchange-receiver-list-scrollbar")).not.toBeNull();
+    expect(root.querySelector<HTMLElement>("#exchange-source-list .ui-kit-list__content")?.style.transform).toBe("translateY(-18px)");
+    expect(Array.from(root.querySelector("#exchange-source-list-scrollbar")?.classList ?? [])).toContain("is-dragging");
+  });
+
+  // Проверяет, что окно обмена показывает подтверждение второго игрока под моей очередью.
+  it("shows other player confirmation status in exchange window", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      exchangeState: {
+        selfObjectId: 1,
+        otherObjectId: 2,
+        selfNickname: "Pilot1",
+        otherNickname: "Pilot2",
+        selfReceiverContainerEquipmentGroupId: 0,
+        selfSourceContainerEquipmentGroupId: 0,
+        selfConfirmed: false,
+        otherConfirmed: true,
+        notEnoughSpace: false,
+        selfQueue: [],
+        otherQueue: [],
+      },
+    })} />, root);
+
+    expect(root.querySelector(".exchange-window__status")?.textContent).toBe("✓ Подтверждено");
+    expect(root.querySelector(".exchange-window__status")?.classList.contains("is-confirmed")).toBe(true);
+  });
+
+  // Проверяет, что очереди обмена используют общий шаблон очереди с нижней полосой прогресса и прокруткой.
+  it("renders exchange queues with shared queue progress and scrollbars", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      exchangeState: {
+        selfObjectId: 1,
+        otherObjectId: 2,
+        selfNickname: "Pilot1",
+        otherNickname: "Pilot2",
+        selfReceiverContainerEquipmentGroupId: 0,
+        selfSourceContainerEquipmentGroupId: 0,
+        selfConfirmed: false,
+        otherConfirmed: false,
+        notEnoughSpace: false,
+        selfQueue: [{ taskItemGroupId: 301, itemModelId: 1, count: 4, progress: 0.5, isReady: true }],
+        otherQueue: [{ taskItemGroupId: 401, itemModelId: 1, count: 2, progress: 0.25, isReady: false }],
+      },
+      referenceData: {
+        ...referenceData,
+        ItemModel: {
+          MaxID: 1,
+          Items: {
+            "1": { ID: 1, ItemTypeID: 1, Acronym: "Melit", TitleRu: "Мелит" },
+          },
+        },
+      } as ReferenceDataMessage,
+      listScroll: {
+        "exchange-self-queue": { visible: true, thumbTopPercent: 10, thumbHeightPercent: 40, contentOffsetPx: 16, dragging: true },
+        "exchange-other-queue": { visible: true, thumbTopPercent: 20, thumbHeightPercent: 45, contentOffsetPx: 12, dragging: false },
+      },
+    })} />, root);
+
+    expect(root.querySelector("#exchange-self-queue-301")?.classList.contains("control-panel-constructor-queue__item")).toBe(true);
+    expect(root.querySelector("#exchange-self-queue-301 .ui-kit-list__item-label-prefix")?.textContent).toBe("✓");
+    expect(root.querySelector("#exchange-self-queue-301")?.getAttribute("style")).toContain("--constructor-queue-unit-progress: 0%");
+    expect(root.querySelector("#exchange-other-queue-401")?.getAttribute("style")).toContain("--constructor-queue-unit-progress: 25%");
+    expect(root.querySelector<HTMLElement>("#exchange-self-queue .ui-kit-list__content")?.style.transform).toBe("translateY(-16px)");
+    expect(Array.from(root.querySelector("#exchange-self-queue-scrollbar")?.classList ?? [])).toContain("is-dragging");
+    expect(root.querySelector("#exchange-other-queue-scrollbar")).not.toBeNull();
+  });
+
+  // Проверяет, что собственное подтверждение показывается зеленым текстом с галочкой.
+  it("renders self confirmation with check mark", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      exchangeState: {
+        selfObjectId: 1,
+        otherObjectId: 2,
+        selfNickname: "Pilot1",
+        otherNickname: "Pilot2",
+        selfReceiverContainerEquipmentGroupId: 0,
+        selfSourceContainerEquipmentGroupId: 0,
+        selfConfirmed: true,
+        otherConfirmed: false,
+        notEnoughSpace: false,
+        selfQueue: [],
+        otherQueue: [],
+      },
+    })} />, root);
+
+    expect(root.querySelector(".exchange-window__confirmed")?.textContent).toBe("✓ Подтверждено");
+  });
+
+  // Проверяет, что после двух подтверждений отмена обмена становится недоступной на время переноса.
+  it("disables exchange cancel button while items are moving", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      exchangeState: {
+        selfObjectId: 1,
+        otherObjectId: 2,
+        selfNickname: "Pilot1",
+        otherNickname: "Pilot2",
+        selfReceiverContainerEquipmentGroupId: 0,
+        selfSourceContainerEquipmentGroupId: 0,
+        selfConfirmed: true,
+        otherConfirmed: true,
+        notEnoughSpace: false,
+        selfQueue: [],
+        otherQueue: [],
+      },
+    })} />, root);
+
+    expect(root.querySelector("#exchange-cancel-button")?.classList.contains("is-disabled")).toBe(true);
+  });
+
   it("does not render docking window after docking finish clears state", () => {
     const root = document.createElement("div");
     document.body.append(root);

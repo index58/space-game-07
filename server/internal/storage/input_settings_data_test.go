@@ -16,6 +16,7 @@ func TestServerDataContainsDockingInputActions(t *testing.T) {
 
 	expected := map[string]string{
 		"DockingRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:Equal",
+		"ExchangeRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:KeyE",
 		"ApproveRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:Digit1",
 		"RejectRequest":  "KeyboardEvent.altKey&&KeyboardEvent.code:Digit2",
 		"DockingUndock":  "KeyboardEvent.altKey&&KeyboardEvent.code:Minus",

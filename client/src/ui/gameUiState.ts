@@ -1,7 +1,7 @@
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import type { ChatContextMenuState, ChatScrollState, GameCursorState } from "../game/InputController";
-import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, DockingNotification, DockingWindowState, EquipmentGroup, EquipmentGroupRelation, ItemGroup, ReferenceDataMessage, Task, TaskItemGroup } from "../network/protocol";
+import type { ChatStateMessage, ConnectionStatus, ConstructorProductionJob, CosmicObject, DockingNotification, DockingWindowState, EquipmentGroup, EquipmentGroupRelation, ExchangeStateMessage, ItemGroup, ReferenceDataMessage, Task, TaskItemGroup } from "../network/protocol";
 import { createInitialUiKitDemoState, type UiKitDemoState } from "../ui-kit/showcaseState";
 import type { GameUiControlState } from "../ui-kit/types";
 
@@ -10,6 +10,7 @@ export type ControlPanelTabValue = "object" | "equipment" | "pilotTools" | "sche
 export type ControlPanelEquipmentSubTabValue = "setup" | "usage";
 export type ControlPanelConstructorTabValue = "items" | "objects";
 export type ControlPanelUsageSelectValue = "leftObject" | "left" | "rightObject" | "right" | "constructorMaterialObject" | "constructorMaterials" | "constructorProductObject" | "constructorProducts";
+export type ExchangeSelectValue = "receiverObject" | "receiverContainer" | "sourceObject" | "sourceContainer";
 
 export type GameUiState = {
   // Состояние сетевого подключения.
@@ -58,6 +59,16 @@ export type GameUiState = {
   dockingNotifications?: DockingNotification[];
   // Список объектов назначения для окна выбора пересадки.
   landingTargetObjectIds?: number[];
+  // Состояние открытого обмена, если сервер уже создал окно.
+  exchangeState?: ExchangeStateMessage | null;
+  // Открытый выпадающий список окна обмена.
+  openExchangeSelect?: ExchangeSelectValue | null;
+  // Объект, выбранный для контейнера-приемника.
+  selectedExchangeReceiverObjectId?: number | null;
+  // Объект, выбранный для контейнера-источника.
+  selectedExchangeSourceObjectId?: number | null;
+  // Строки контейнера-источника, выделенные мышью для перемещения в очередь.
+  selectedExchangeSourceItemGroupIds?: number[];
   // Выбранный объект назначения для пересадки.
   selectedLandingTargetObjectId?: number | null;
   // Открытое игровое меню вкладки, если игрок вызвал его правым кликом.
@@ -219,6 +230,11 @@ const initialGameUiState: GameUiState = {
   dockingWindow: null,
   dockingNotifications: [],
   landingTargetObjectIds: [],
+  exchangeState: null,
+  openExchangeSelect: null,
+  selectedExchangeReceiverObjectId: null,
+  selectedExchangeSourceObjectId: null,
+  selectedExchangeSourceItemGroupIds: [],
   selectedLandingTargetObjectId: null,
   chatContextMenu: null,
   gameCursor: { visible: false, x: 0, y: 0 },

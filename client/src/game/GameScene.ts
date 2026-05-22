@@ -17,11 +17,13 @@ import type {
   DockingNotification,
   DockingWindowState,
   EquipmentGroup,
+  ExchangeEventMessage,
+  ExchangeStateMessage,
   ReferenceDataMessage,
   Task,
 } from "../network/protocol";
 import { fetchReferenceData } from "../network/referenceData";
-import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, ControlPanelUsageSelectValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
+import type { ControlPanelConstructorTabValue, ControlPanelEquipmentSubTabValue, ControlPanelTabValue, ControlPanelUsageSelectValue, ExchangeSelectValue, GameUiController, GameUiState, SettingsTabValue } from "../ui/gameUiState";
 import { getInformationPanelView } from "../ui/informationPanel";
 import { getInputBindingMap, getInputSettingsLeftColumnRowCount, getMergedInputSettingValues, toInputSettingsPayload } from "../ui/inputSettings";
 import { getNextPilotToolIndex } from "../ui/pilotToolbar";
@@ -52,6 +54,16 @@ const SETTINGS_DROPDOWN_VIEWPORT_HEIGHT_VH = 22;
 const CONTROL_PANEL_EQUIPMENT_LIST_ITEM_HEIGHT_VH = 2.35;
 // Время показа маленького уведомления стыковки.
 const DOCKING_NOTIFICATION_DURATION_MS = 5000;
+// Базовая длительность окна запроса обмена для обратной полоски.
+const EXCHANGE_REQUEST_DURATION_MS = 10000;
+
+// Защищает анимацию запроса обмена от пустой длительности.
+const getExchangeRequestDurationMs = (durationSeconds: number | undefined): number => {
+  if (durationSeconds === undefined || durationSeconds <= 0) {
+    return EXCHANGE_REQUEST_DURATION_MS;
+  }
+  return durationSeconds * 1000;
+};
 
 // Связывает Phaser-отрисовку, сетевой клиент, ввод и SolidJS UI-слой.
 export class GameScene extends Phaser.Scene {
@@ -215,6 +227,20 @@ export class GameScene extends Phaser.Scene {
   private landingTargetObjectIds: number[] = [];
   // Текущий выбор в окне пересадки.
   private selectedLandingTargetObjectId: number | null = null;
+  // Текущее состояние окна обмена от сервера.
+  private exchangeState: ExchangeStateMessage | null = null;
+  // Роль входящего или исходящего запроса обмена до открытия окна.
+  private exchangeRequestRole: "sender" | "receiver" | null = null;
+  // Открытый выпадающий список обмена.
+  private openExchangeSelect: ExchangeSelectValue | null = null;
+  // Выбранный объект для контейнера-приемника обмена.
+  private selectedExchangeReceiverObjectId: number | null = null;
+  // Выбранный объект для контейнера-источника обмена.
+  private selectedExchangeSourceObjectId: number | null = null;
+  // Выделенные строки контейнера-источника обмена.
+  private selectedExchangeSourceItemGroupIds: number[] = [];
+  // Опорная строка источника обмена для выбора диапазона через Shift.
+  private selectedExchangeSourceAnchorItemGroupId: number | null = null;
 
   constructor(
     // Мост передачи состояния из Phaser в SolidJS UI.
@@ -261,6 +287,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.consumeDockingActions();
     this.syncDockingEventFromServer(time);
+    this.syncExchangeEventFromServer(time);
     this.dockingNotifications = this.dockingNotifications.filter((notification) => notification.expiresAtMs > time);
     if (this.inputController.consumeBodyPolygonDebugToggleRequest()) {
       this.bodyPolygonDebugVisible = !this.bodyPolygonDebugVisible;
@@ -319,6 +346,7 @@ export class GameScene extends Phaser.Scene {
     this.commitControlPanelEquipmentTitleIfNeeded(selectedControlPanelEquipmentGroup);
 
     this.zoomScale = getViewportZoomScale(this.zoomLevel, this.scale.height);
+    this.inputController.setExchangeVisible(this.exchangeState !== null);
 
     if (status !== "connected" || !snapshot || !selfObject) {
       this.renderWaiting(status);
@@ -346,6 +374,11 @@ export class GameScene extends Phaser.Scene {
         dockingWindow: this.dockingWindow,
         dockingNotifications: this.dockingNotifications,
         landingTargetObjectIds: this.landingTargetObjectIds,
+        exchangeState: this.exchangeState,
+        openExchangeSelect: this.openExchangeSelect,
+        selectedExchangeReceiverObjectId: this.selectedExchangeReceiverObjectId,
+        selectedExchangeSourceObjectId: this.selectedExchangeSourceObjectId,
+        selectedExchangeSourceItemGroupIds: this.selectedExchangeSourceItemGroupIds,
         selectedLandingTargetObjectId: this.selectedLandingTargetObjectId,
         chatContextMenu: null,
         gameCursor: this.inputController.getGameCursor(),
@@ -445,6 +478,11 @@ export class GameScene extends Phaser.Scene {
       dockingWindow: this.dockingWindow,
       dockingNotifications: this.dockingNotifications,
       landingTargetObjectIds: this.landingTargetObjectIds,
+      exchangeState: this.exchangeState,
+      openExchangeSelect: this.openExchangeSelect,
+      selectedExchangeReceiverObjectId: this.selectedExchangeReceiverObjectId,
+      selectedExchangeSourceObjectId: this.selectedExchangeSourceObjectId,
+      selectedExchangeSourceItemGroupIds: this.selectedExchangeSourceItemGroupIds,
       selectedLandingTargetObjectId: this.selectedLandingTargetObjectId,
       chatContextMenu: this.inputController.getChatContextMenu(),
       gameCursor: this.inputController.getGameCursor(),
@@ -899,6 +937,10 @@ export class GameScene extends Phaser.Scene {
         action = this.inputController.consumeGameUiAction();
         continue;
       }
+      if (this.consumeExchangeUiAction(action)) {
+        action = this.inputController.consumeGameUiAction();
+        continue;
+      }
       if (this.inputController.isSettingsVisible() && this.consumeSettingsUiAction(action)) {
         action = this.inputController.consumeGameUiAction();
         continue;
@@ -952,19 +994,25 @@ export class GameScene extends Phaser.Scene {
       if (action === "request") {
         this.gameClient?.sendDockingRequest();
       } else if (action === "approve") {
-        if (this.dockingWindow?.kind === "landingRequest") {
+        if (this.exchangeRequestRole === "receiver") {
+          this.gameClient?.sendExchangeApprove();
+        } else if (this.dockingWindow?.kind === "landingRequest") {
           this.gameClient?.sendLandingApprove();
         } else {
           this.gameClient?.sendDockingApprove();
         }
       } else if (action === "reject") {
-        if (this.dockingWindow?.kind === "landingRequest") {
+        if (this.exchangeRequestRole === "receiver") {
+          this.gameClient?.sendExchangeReject();
+        } else if (this.dockingWindow?.kind === "landingRequest") {
           this.gameClient?.sendLandingReject();
         } else {
           this.gameClient?.sendDockingReject();
         }
       } else if (action === "landing") {
         this.gameClient?.sendLandingBegin();
+      } else if (action === "exchange") {
+        this.gameClient?.sendExchangeRequest();
       } else {
         this.gameClient?.sendDockingUndock();
       }
@@ -1008,6 +1056,62 @@ export class GameScene extends Phaser.Scene {
       startedAtMs: nowMs,
       durationMs: Math.max(0, (event.duration ?? 0) * 1000),
     };
+  }
+
+  // Обновляет окно обмена по событиям сервера.
+  private syncExchangeEventFromServer(nowMs: number): void {
+    for (const event of this.gameClient?.consumeExchangeEvents() ?? []) {
+      this.applyExchangeEvent(event, nowMs);
+    }
+  }
+
+  // Применяет одно событие обмена к локальному состоянию HUD.
+  private applyExchangeEvent(event: ExchangeEventMessage, nowMs: number): void {
+    if (event.kind === "exchangeRequestStarted") {
+      this.exchangeRequestRole = event.role ?? null;
+      if (event.role) {
+        this.dockingWindow = {
+          kind: "exchangeRequest",
+          role: event.role,
+          startedAtMs: nowMs,
+          durationMs: getExchangeRequestDurationMs(event.duration),
+        };
+      }
+      return;
+    }
+    if (event.kind === "exchangeState" && event.state) {
+      this.exchangeRequestRole = null;
+      this.dockingWindow = null;
+      this.exchangeState = event.state;
+      this.syncExchangeSelectionFromState(event.state);
+      return;
+    }
+    if (event.kind === "exchangeNotification" && event.message) {
+      this.dockingNotifications = [
+        ...this.dockingNotifications,
+        { id: this.nextDockingNotificationID++, message: event.message, expiresAtMs: this.time.now + DOCKING_NOTIFICATION_DURATION_MS },
+      ];
+      return;
+    }
+    if (event.kind === "exchangeRejected" || event.kind === "exchangeCancelled" || event.kind === "exchangeFinished") {
+      this.exchangeRequestRole = null;
+      this.dockingWindow = null;
+      this.exchangeState = null;
+      this.openExchangeSelect = null;
+      this.selectedExchangeSourceItemGroupIds = [];
+      this.selectedExchangeSourceAnchorItemGroupId = null;
+    }
+  }
+
+  // Синхронизирует выбранные выпадающие списки с серверным состоянием.
+  private syncExchangeSelectionFromState(state: ExchangeStateMessage): void {
+    this.selectedExchangeReceiverObjectId = this.objectIDForEquipmentGroup(state.selfReceiverContainerEquipmentGroupId) ?? state.selfObjectId;
+    this.selectedExchangeSourceObjectId = this.objectIDForEquipmentGroup(state.selfSourceContainerEquipmentGroupId) ?? state.selfObjectId;
+  }
+
+  // Возвращает объект, на котором стоит группа оборудования.
+  private objectIDForEquipmentGroup(groupId: number): number | null {
+    return this.gameUi.state().equipmentGroups.find((group) => group.ID === groupId)?.CosmicObjectID ?? null;
   }
 
   // Применяет колесо мыши к обычным спискам общего UI.
@@ -2055,6 +2159,222 @@ export class GameScene extends Phaser.Scene {
     return false;
   }
 
+  // Обрабатывает мышиные действия окна обмена.
+  private consumeExchangeUiAction(action: GameUiAction): boolean {
+    if (!this.exchangeState) {
+      return false;
+    }
+    if (action.kind === "scrollbar" && action.controlId.endsWith("-scrollbar") && this.consumeListScrollbarAction(action)) {
+      return true;
+    }
+    if (action.kind === "slider" && action.controlId === "control-panel-fuel-drain-amount-slider") {
+      this.updateControlPanelFuelDrainAmountFromSlider(action);
+      return true;
+    }
+    if (action.type !== "click") {
+      return false;
+    }
+    const receiverLocked = this.exchangeState.selfConfirmed;
+    const sourceLocked = this.exchangeState.otherConfirmed;
+    const cancelLocked = receiverLocked && sourceLocked;
+    if (action.controlId === "exchange-modal-close-button" || action.controlId === "exchange-cancel-button") {
+      if (cancelLocked) {
+        return true;
+      }
+      this.gameClient?.sendExchangeCancel();
+      return true;
+    }
+    if (action.controlId === "exchange-confirm-button") {
+      this.gameClient?.sendExchangeConfirm();
+      return true;
+    }
+    if (action.controlId === "exchange-move-to-queue-button") {
+      if (sourceLocked) {
+        return true;
+      }
+      this.startExchangeAddItems();
+      return true;
+    }
+    if (action.controlId === "exchange-add-items-cancel") {
+      this.controlPanelContainerTransferDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId === "exchange-add-items-ok") {
+      const amount = clamp(this.inputController.getControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount), 1, this.controlPanelContainerTransferMaxAmount);
+      if (this.controlPanelContainerTransferSourceGroupId && this.exchangeState.selfSourceContainerEquipmentGroupId !== this.controlPanelContainerTransferSourceGroupId) {
+        this.gameClient?.sendExchangeSelectSource(this.controlPanelContainerTransferSourceGroupId);
+      }
+      this.gameClient?.sendExchangeAddItems(this.controlPanelContainerTransferItemGroupIds, amount);
+      this.selectedExchangeSourceItemGroupIds = [];
+      this.selectedExchangeSourceAnchorItemGroupId = null;
+      this.controlPanelContainerTransferDialogOpen = false;
+      this.inputController.blurControlPanelFuelDrainAmount();
+      return true;
+    }
+    if (action.controlId.startsWith("exchange-source-list-") && typeof action.value === "string") {
+      if (sourceLocked) {
+        return true;
+      }
+      const itemGroupID = Number(action.value);
+      const selection = this.updateExchangeSourceItemSelection(itemGroupID, action);
+      this.selectedExchangeSourceItemGroupIds = selection.selectedIds;
+      this.selectedExchangeSourceAnchorItemGroupId = selection.anchorId;
+      return true;
+    }
+    if (action.controlId === "exchange-receiver-object-select") {
+      if (receiverLocked) {
+        return true;
+      }
+      this.openExchangeSelect = this.openExchangeSelect === "receiverObject" ? null : "receiverObject";
+      return true;
+    }
+    if (action.controlId === "exchange-receiver-container-select") {
+      if (receiverLocked) {
+        return true;
+      }
+      this.openExchangeSelect = this.openExchangeSelect === "receiverContainer" ? null : "receiverContainer";
+      return true;
+    }
+    if (action.controlId === "exchange-source-object-select") {
+      if (sourceLocked) {
+        return true;
+      }
+      this.openExchangeSelect = this.openExchangeSelect === "sourceObject" ? null : "sourceObject";
+      return true;
+    }
+    if (action.controlId === "exchange-source-container-select") {
+      if (sourceLocked) {
+        return true;
+      }
+      this.openExchangeSelect = this.openExchangeSelect === "sourceContainer" ? null : "sourceContainer";
+      return true;
+    }
+    if (typeof action.value !== "string") {
+      return false;
+    }
+    if (action.controlId.startsWith("exchange-receiver-object-select-")) {
+      if (receiverLocked) {
+        return true;
+      }
+      this.selectedExchangeReceiverObjectId = Number(action.value);
+      this.openExchangeSelect = null;
+      return true;
+    }
+    if (action.controlId.startsWith("exchange-source-object-select-")) {
+      if (sourceLocked) {
+        return true;
+      }
+      this.selectedExchangeSourceObjectId = Number(action.value);
+      this.openExchangeSelect = null;
+      this.selectedExchangeSourceItemGroupIds = [];
+      this.selectedExchangeSourceAnchorItemGroupId = null;
+      return true;
+    }
+    if (action.controlId.startsWith("exchange-receiver-container-select-")) {
+      if (receiverLocked) {
+        return true;
+      }
+      this.openExchangeSelect = null;
+      this.gameClient?.sendExchangeSelectReceiver(Number(action.value));
+      return true;
+    }
+    if (action.controlId.startsWith("exchange-source-container-select-")) {
+      if (sourceLocked) {
+        return true;
+      }
+      this.openExchangeSelect = null;
+      this.selectedExchangeSourceItemGroupIds = [];
+      this.selectedExchangeSourceAnchorItemGroupId = null;
+      this.gameClient?.sendExchangeSelectSource(Number(action.value));
+      return true;
+    }
+    return false;
+  }
+
+  // Открывает выбор количества для одной строки обмена или сразу отправляет несколько строк.
+  private startExchangeAddItems(): void {
+    if (!this.exchangeState || this.selectedExchangeSourceItemGroupIds.length === 0) {
+      return;
+    }
+    const sourceContainerID = this.currentExchangeSourceContainerID();
+    if (this.selectedExchangeSourceItemGroupIds.length !== 1) {
+      if (sourceContainerID && this.exchangeState.selfSourceContainerEquipmentGroupId !== sourceContainerID) {
+        this.gameClient?.sendExchangeSelectSource(sourceContainerID);
+      }
+      this.gameClient?.sendExchangeAddItems(this.selectedExchangeSourceItemGroupIds, 1);
+      this.selectedExchangeSourceItemGroupIds = [];
+      this.selectedExchangeSourceAnchorItemGroupId = null;
+      return;
+    }
+    const itemGroup = this.gameUi.state().itemGroups.find((group) => group.ID === this.selectedExchangeSourceItemGroupIds[0]);
+    if (!itemGroup || itemGroup.Count <= 0) {
+      return;
+    }
+    this.controlPanelContainerTransferSourceGroupId = sourceContainerID;
+    this.controlPanelContainerTransferItemGroupIds = [...this.selectedExchangeSourceItemGroupIds];
+    this.controlPanelContainerTransferMaxAmount = itemGroup.Count;
+    this.controlPanelFuelDrainAmount = itemGroup.Count;
+    this.controlPanelContainerTransferDialogOpen = true;
+    this.controlPanelFuelDrainDialogOpen = false;
+    this.controlPanelFuelFillDialogOpen = false;
+    this.controlPanelConstructorProduceDialogOpen = false;
+    this.controlPanelItemDeconstructionDialogOpen = false;
+    this.inputController.setControlPanelFuelDrainAmount(this.controlPanelFuelDrainAmount);
+  }
+
+  // Возвращает фактически выбранный или показанный по умолчанию контейнер-источник обмена.
+  private currentExchangeSourceContainerID(): number | null {
+    if (!this.exchangeState) {
+      return null;
+    }
+    if (this.exchangeState.selfSourceContainerEquipmentGroupId > 0) {
+      return this.exchangeState.selfSourceContainerEquipmentGroupId;
+    }
+    const objectID = this.selectedExchangeSourceObjectId ?? this.exchangeState.selfObjectId;
+    const state = this.gameUi.state();
+    return state.equipmentGroups
+      .filter((group) => group.CosmicObjectID === objectID && this.isExchangeContainerEquipmentGroup(group.EquipmentItemModelID))
+      .sort((left, right) => left.ID - right.ID)[0]?.ID ?? null;
+  }
+
+  // Возвращает фактически выбранный или показанный по умолчанию контейнер-приемник обмена.
+  private currentExchangeReceiverContainerID(): number | null {
+    if (!this.exchangeState) {
+      return null;
+    }
+    if (this.exchangeState.selfReceiverContainerEquipmentGroupId > 0) {
+      return this.exchangeState.selfReceiverContainerEquipmentGroupId;
+    }
+    const objectID = this.selectedExchangeReceiverObjectId ?? this.exchangeState.selfObjectId;
+    const state = this.gameUi.state();
+    return state.equipmentGroups
+      .filter((group) => group.CosmicObjectID === objectID && this.isExchangeContainerEquipmentGroup(group.EquipmentItemModelID))
+      .sort((left, right) => left.ID - right.ID)[0]?.ID ?? null;
+  }
+
+  // Возвращает новый выбор строк источника обмена с учётом Ctrl и Shift.
+  private updateExchangeSourceItemSelection(clickedId: number, action: GameUiAction): { selectedIds: number[]; anchorId: number } {
+    const sourceContainerID = this.currentExchangeSourceContainerID();
+    const orderedIds = this.gameUi.state().itemGroups
+      .filter((itemGroup) => itemGroup.ContainerEquipmentGroupID === sourceContainerID)
+      .map((itemGroup) => itemGroup.ID);
+    return applyControlPanelListSelection({
+      orderedIds,
+      selectedIds: this.selectedExchangeSourceItemGroupIds,
+      clickedId,
+      anchorId: this.selectedExchangeSourceAnchorItemGroupId,
+      action,
+    });
+  }
+
+  // Проверяет, что модель оборудования является контейнером для окна обмена.
+  private isExchangeContainerEquipmentGroup(equipmentItemModelID: number): boolean {
+    const itemModel = this.gameUi.state().referenceData?.ItemModel.Items[String(equipmentItemModelID)];
+    const itemType = this.gameUi.state().referenceData?.ItemType.Items[String(itemModel?.ItemTypeID)];
+    return itemType?.Acronym === "Container";
+  }
+
   // Пересчитывает сдвиг списка действий по положению его ползунка.
   private consumeSettingsInputScrollbarAction(action: GameUiAction): boolean {
     const scrollState = this.getSettingsInputScrollState();
@@ -2312,6 +2632,18 @@ export class GameScene extends Phaser.Scene {
     if (listId === "control-panel-usage-right-container-content") {
       return this.getControlPanelContainerItemGroupCount(this.getControlPanelUsageRightContentContainerGroupId());
     }
+    if (listId === "exchange-receiver-list") {
+      return this.getControlPanelContainerItemGroupCount(this.currentExchangeReceiverContainerID());
+    }
+    if (listId === "exchange-source-list") {
+      return this.getControlPanelContainerItemGroupCount(this.currentExchangeSourceContainerID());
+    }
+    if (listId === "exchange-other-queue") {
+      return this.exchangeState?.otherQueue.length ?? 0;
+    }
+    if (listId === "exchange-self-queue") {
+      return this.exchangeState?.selfQueue.length ?? 0;
+    }
     if (listId === "control-panel-constructor-schema-list") {
       return Object.keys(this.referenceData?.Schema.Items ?? {}).length;
     }
@@ -2401,6 +2733,10 @@ const scrollableListIds = new Set([
   "control-panel-fuel-queue",
   "control-panel-deconstructor-main-queue",
   "control-panel-deconstructor-required-queue",
+  "exchange-receiver-list",
+  "exchange-source-list",
+  "exchange-other-queue",
+  "exchange-self-queue",
 ]);
 
 const controlPanelSelectableTaskQueueTypeAcronyms = new Set([

@@ -10,11 +10,12 @@ import (
 
 // TaskItemGroup хранит предметы, зарезервированные для задания.
 type TaskItemGroup struct {
-	ID          int64   `json:"ID"`          // Уникальный числовой идентификатор записи.
-	TaskID      int64   `json:"TaskID"`      // Задание, для которого зарезервированы предметы.
-	ItemModelID int64   `json:"ItemModelID"` // Модель зарезервированных предметов.
-	Count       float64 `json:"Count"`       // Количество зарезервированных предметов.
-	IsStored    bool    `json:"IsStored"`    // Хранится ли указанное количество предметов во временном хранилище задания.
+	ID                int64   `json:"ID"`                // Уникальный числовой идентификатор записи.
+	TaskID            int64   `json:"TaskID"`            // Задание, для которого зарезервированы предметы.
+	ItemModelID       int64   `json:"ItemModelID"`       // Модель зарезервированных предметов.
+	Count             float64 `json:"Count"`             // Количество зарезервированных предметов.
+	IsStored          bool    `json:"IsStored"`          // Хранится ли указанное количество предметов во временном хранилище задания.
+	IsReadyToExchange bool    `json:"IsReadyToExchange"` // Готовность строки к финальному обмену.
 }
 
 // TaskItemGroups хранит резервы заданий и быстрые индексы.

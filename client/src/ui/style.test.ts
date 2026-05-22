@@ -266,6 +266,50 @@ describe("HUD styles", () => {
     expect(crossRight).toContain("rotate(-45deg)");
   });
 
+  // Проверяет, что окно обмена ограничено по высоте экрана и не растягивается содержимым списков.
+  it("keeps exchange window inside a compact fixed-height layer", () => {
+    const layer = readCssBlock(".game-window-layer--exchange");
+    const body = readCssBlock(".game-window-layer--exchange .ui-kit-modal__body");
+    const exchangeWindow = readCssBlock(".exchange-window");
+    const middle = readCssBlock(".exchange-window__middle");
+    const topArrow = readCssBlock(".exchange-window__arrow--top");
+    const bottomButton = readCssBlock(".exchange-window__middle #exchange-move-to-queue-button");
+
+    expect(layer).toContain("width: min(92vw, 96vh);");
+    expect(layer).toContain("height: min(72vh, calc(100vh - 4vh));");
+    expect(body).toContain("height: 100%;");
+    expect(exchangeWindow).toContain("height: 100%;");
+    expect(exchangeWindow).toContain("min-height: 0;");
+    expect(exchangeWindow).not.toContain("min-height: 52vh;");
+    expect(middle).toContain("grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);");
+    expect(topArrow).toContain("grid-row: 1;");
+    expect(bottomButton).toContain("grid-row: 2;");
+    expect(bottomButton).toContain("align-self: center;");
+  });
+
+  // Проверяет, что очередь обмена не рисует отдельный полноразмерный прогресс поверх строки.
+  it("keeps exchange queue progress on the shared bottom strip", () => {
+    const sharedQueueProgress = readCssBlock(".control-panel-constructor-queue__item::after");
+    const exchangeReadyCheck = readCssBlock(".exchange-queue__item .ui-kit-list__item-label-prefix");
+
+    expect(sharedQueueProgress).toContain("bottom: 0;");
+    expect(sharedQueueProgress).toContain("height: 0.32vh;");
+    expect(sharedQueueProgress).toContain("background: rgb(89, 202, 255);");
+    expect(exchangeReadyCheck).toContain("color: rgb(89, 202, 255);");
+    expect(css).not.toContain(".exchange-queue__item::before");
+    expect(css).not.toContain(".exchange-queue__item.is-ready .ui-kit-list__item-label");
+  });
+
+  // Проверяет, что подтверждение обмена зеленое, а заблокированная очередь не становится бледной.
+  it("styles exchange confirmation without fading confirmed queues", () => {
+    const disabledSelects = readCssBlock(".exchange-window__selects.is-disabled");
+    const confirmed = readCssBlock(".exchange-window__confirmed,\n.exchange-window__status.is-confirmed");
+
+    expect(disabledSelects).toContain("opacity: 0.52;");
+    expect(css).not.toContain(".exchange-queue__item.is-inactive {\n  opacity: 0.52;");
+    expect(confirmed).toContain("color: #8fffb0;");
+  });
+
   // Проверяет, что размеры выпадающего списка берутся из одного места, а не переопределяются отдельно в настройках.
   it("shares compact dropdown sizing between ui kit showcase and settings", () => {
     const theme = readCssBlock(":root");

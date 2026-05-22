@@ -1,4 +1,4 @@
-﻿package ws
+package ws
 
 import (
 	"encoding/json"
@@ -45,6 +45,47 @@ func TestBroadcastUsesTransferredCharacterObject(t *testing.T) {
 	}
 	if snapshot.SelfObjectID != 2 {
 		t.Fatalf("self object ID = %v, want 2", snapshot.SelfObjectID)
+	}
+}
+
+// Проверяет, что новое подключение получает текущее окно уже открытого обмена.
+func TestInitialExchangeEventsQueuedForReconnect(t *testing.T) {
+	serverData := testHubExchangeWorldData(t)
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("sender account was not connected")
+	}
+	if _, ok := gameWorld.ConnectAccount(2); !ok {
+		t.Fatal("receiver account was not connected")
+	}
+	if err := gameWorld.SendExchangeRequest(1); err != nil {
+		t.Fatalf("send exchange request: %v", err)
+	}
+	if err := gameWorld.ApproveExchangeRequest(2); err != nil {
+		t.Fatalf("approve exchange request: %v", err)
+	}
+	_ = gameWorld.DrainExchangeEvents()
+	hub := NewHub(gameWorld)
+	client := &Client{
+		accountID: 1,
+		objectID:  1,
+		send:      make(chan []byte, 1),
+		done:      make(chan struct{}),
+	}
+
+	hub.enqueueInitialExchangeEvents(client)
+
+	var event game.ExchangeEvent
+	select {
+	case payload := <-client.send:
+		if err := json.Unmarshal(payload, &event); err != nil {
+			t.Fatalf("exchange event decode returned error: %v", err)
+		}
+	default:
+		t.Fatal("exchange event was not queued")
+	}
+	if event.Kind != "exchangeState" || event.Role != "sender" {
+		t.Fatalf("exchange reconnect event = %+v", event)
 	}
 }
 
@@ -106,4 +147,69 @@ func testHubWorldData(t *testing.T) world.Data {
 		CosmicObjectTypes:  cosmicObjectTypes,
 		CosmicObjectModels: cosmicObjectModels,
 	}
+}
+
+// Собирает минимальный мир с двумя игроками и контейнерами для проверки повторного подключения к обмену.
+func testHubExchangeWorldData(t *testing.T) world.Data {
+	t.Helper()
+
+	serverData := testHubWorldData(t)
+	serverData.Accounts.MaxID = 2
+	serverData.Accounts.Items[2] = &data.Account{ID: 2, Email: "receiver@email.net", Nickname: "receiver", PasswordHash: "hash", Token: "token-2", CurrentCharacterID: 2}
+	serverData.Characters.MaxID = 2
+	serverData.Characters.Items[2] = &data.Character{ID: 2, AccountID: 2, LocationCosmicObjectID: 2}
+	serverData.CosmicObjects.Items[1].ClusterMainCosmicObjectID = 2
+	serverData.CosmicObjects.Items[2].OwnerCharacterID = 2
+	serverData.CosmicObjects.Items[2].ClusterMainCosmicObjectID = 2
+	itemTypes := &data.ItemTypes{
+		MaxID: 1,
+		Items: map[int64]*data.ItemType{
+			1: {ID: 1, TitleRu: "Контейнер", TitleEn: "Container", Acronym: "Container"},
+		},
+	}
+	itemModels := &data.ItemModels{
+		MaxID: 1,
+		Items: map[int64]*data.ItemModel{
+			1: {ID: 1, TitleRu: "Контейнер", TitleEn: "Container", Acronym: "Container", ItemTypeID: 1},
+		},
+	}
+	taskTypes := &data.TaskTypes{
+		MaxID: 1,
+		Items: map[int64]*data.TaskType{
+			1: {ID: 1, TitleRu: "Обмен", TitleEn: "Exchange", Acronym: "Exchange"},
+		},
+	}
+	equipmentGroups := &data.EquipmentGroups{
+		MaxID: 2,
+		Items: map[int64]*data.EquipmentGroup{
+			1: {ID: 1, CosmicObjectID: 1, Title: "Left container", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true},
+			2: {ID: 2, CosmicObjectID: 2, Title: "Right container", EquipmentItemModelID: 1, Count: 1, EnabledCount: 1, Enabled: true},
+		},
+	}
+	if err := serverData.Accounts.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.Characters.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.CosmicObjects.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := itemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := itemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := taskTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := equipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	serverData.ItemTypes = itemTypes
+	serverData.ItemModels = itemModels
+	serverData.TaskTypes = taskTypes
+	serverData.EquipmentGroups = equipmentGroups
+	return serverData
 }

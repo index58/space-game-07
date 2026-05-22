@@ -278,6 +278,25 @@ describe("GameClient", () => {
     client.destroy();
   });
 
+  // Проверяет, что события обмена сохраняются до обработки сценой.
+  it("keeps exchange events in arrival order until scene consumes them", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onmessage?.({ data: JSON.stringify({ type: "exchangeEvent", kind: "exchangeRequestStarted", role: "receiver" }) });
+    socket.onmessage?.({ data: JSON.stringify({ type: "exchangeEvent", kind: "exchangeState", state: { selfObjectId: 1, otherObjectId: 2, selfNickname: "me", otherNickname: "other", selfReceiverContainerEquipmentGroupId: 0, selfSourceContainerEquipmentGroupId: 0, selfConfirmed: false, otherConfirmed: false, notEnoughSpace: false, selfQueue: [], otherQueue: [] } }) });
+
+    expect(client.consumeExchangeEvents().map((event) => event.kind)).toEqual(["exchangeRequestStarted", "exchangeState"]);
+    expect(client.consumeExchangeEvents()).toEqual([]);
+
+    client.destroy();
+  });
+
   it("accumulates target rotation delta between input sends", () => {
     vi.useFakeTimers();
     FakeWebSocket.instances = [];
@@ -466,6 +485,36 @@ describe("GameClient", () => {
   });
 
   // Проверяет, что команды панели управления получают общий ID сессии и возрастающие номера мутаций.
+  // Проверяет, что команды обмена отправляются отдельными сетевыми сообщениями.
+  it("sends exchange commands", () => {
+    FakeWebSocket.instances = [];
+    const client = new GameClient({
+      socketFactory: (url) => new FakeWebSocket(url),
+      reconnectDelayMs: 1000,
+      inputIntervalMs: 1000,
+    });
+    const socket = FakeWebSocket.instances[0];
+
+    socket.onopen?.();
+    client.sendExchangeRequest();
+    client.sendExchangeSelectReceiver(21);
+    client.sendExchangeSelectSource(22);
+    client.sendExchangeAddItems([31, 32], 7);
+    client.sendExchangeConfirm();
+    client.sendExchangeCancel();
+
+    expect(socket.sent.map((payload) => JSON.parse(payload))).toEqual([
+      { type: "exchangeRequest" },
+      { type: "exchangeSelectReceiver", containerEquipmentGroupId: 21 },
+      { type: "exchangeSelectSource", containerEquipmentGroupId: 22 },
+      { type: "exchangeAddItems", itemGroupIds: [31, 32], amount: 7 },
+      { type: "exchangeConfirm" },
+      { type: "exchangeCancel" },
+    ]);
+
+    client.destroy();
+  });
+
   it("sends control panel mutations with shared session and increasing sequence", () => {
     FakeWebSocket.instances = [];
     const client = new GameClient({

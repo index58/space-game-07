@@ -557,6 +557,115 @@ body {
   border: 0;
 }
 
+.game-window-layer--exchange {
+  width: min(92vw, 96vh);
+  height: min(72vh, calc(100vh - 4vh));
+}
+
+.exchange-window {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.2vh minmax(0, 1fr);
+  gap: 0.8vh;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.exchange-window__left,
+.exchange-window__right {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.exchange-window__left {
+  grid-template-rows: auto minmax(0, 1fr) auto auto minmax(0, 1fr) auto;
+  gap: 0.55vh;
+}
+
+.exchange-window__right {
+  grid-template-rows: auto minmax(0, 1fr) auto auto minmax(0, 1fr);
+  gap: 0.55vh;
+}
+
+.exchange-window__middle {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  justify-items: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+.exchange-window__arrow--top {
+  align-self: center;
+  grid-row: 1;
+}
+
+.exchange-window__middle #exchange-move-to-queue-button {
+  align-self: center;
+  grid-row: 2;
+}
+
+.exchange-window__nickname,
+.exchange-window__status,
+.exchange-window__confirmed,
+.exchange-window__space,
+.exchange-window__arrow {
+  color: rgba(216, 243, 255, 0.82);
+  font: 1.25vh/1 Consolas, monospace;
+  text-align: center;
+}
+
+.exchange-window__actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8vh;
+  min-height: var(--hud-button-height);
+}
+
+.exchange-window__selects {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.55vh;
+  min-width: 0;
+}
+
+.exchange-window__selects .ui-kit-dropdown,
+.exchange-window__right .control-panel-container-content,
+.exchange-window__right .ui-kit-list,
+.exchange-window__left .ui-kit-list {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.exchange-window__selects.is-disabled {
+  opacity: 0.52;
+}
+
+.exchange-window__confirmed,
+.exchange-window__status.is-confirmed {
+  color: #8fffb0;
+}
+
+.exchange-window__space {
+  visibility: hidden;
+  color: #ffb7b7;
+}
+
+.exchange-window__space.is-visible {
+  visibility: visible;
+}
+
+.exchange-queue__item .ui-kit-list__item-label-prefix {
+  margin-right: 0.45vh;
+  color: rgb(89, 202, 255);
+}
+
 .ui-kit-dropdown__menu-viewport {
   display: grid;
   position: relative;
@@ -932,6 +1041,10 @@ body {
 .game-window-layer .ui-kit-modal__body {
   min-height: 0;
   overflow: hidden;
+}
+
+.game-window-layer--exchange .ui-kit-modal__body {
+  height: 100%;
 }
 
 .settings-modal {

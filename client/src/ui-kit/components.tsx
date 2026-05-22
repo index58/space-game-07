@@ -6,6 +6,8 @@ export type UiKitOption = {
   value: string;
   // Видимый текст пункта.
   label: string;
+  // Короткий отдельный маркер перед основным текстом строки.
+  labelPrefix?: string;
   // Текст подсказки, показываемой браузером при наведении.
   title?: string;
   // Дополнительный текст справа для двухколоночных списков.
@@ -246,6 +248,8 @@ type ModalProps = {
   id: string;
   // Заголовок окна.
   title: string;
+  // Показывает стандартную кнопку закрытия в заголовке.
+  closeButton?: boolean;
   // Содержимое окна.
   children: JSX.Element;
 };
@@ -357,7 +361,12 @@ export const ListBox = (props: ListBoxProps) => (
       <For each={props.items}>
         {(item) => (
           <div id={`${props.id}-${item.value}`} data-ui-kind="list" data-ui-value={item.value} title={item.title} style={item.style} class={`ui-kit-control ui-kit-list__item ${item.className ?? ""} ${isListBoxItemSelected(props, item.value) ? "is-selected" : ""}`}>
-            <span class="ui-kit-list__item-label">{item.label}</span>
+            <span class="ui-kit-list__item-label">
+              <Show when={item.labelPrefix !== undefined}>
+                <span class="ui-kit-list__item-label-prefix">{item.labelPrefix}</span>
+              </Show>
+              {item.label}
+            </span>
             <Show when={item.secondaryLabel !== undefined}>
               <span class="ui-kit-list__item-secondary">{item.secondaryLabel}</span>
             </Show>
@@ -533,7 +542,9 @@ export const ContextMenu = (props: ContextMenuProps) => (
 export const Modal = (props: ModalProps) => (
   <div id={props.id} data-ui-kind="modal" class="ui-kit-control ui-kit-modal">
     <div class="ui-kit-modal__title">{props.title}</div>
-    <Button id={`${props.id}-close-button`} label="" className="ui-kit-modal__close" ariaLabel="Закрыть окно" zIndex={1200} />
+    <Show when={props.closeButton !== false}>
+      <Button id={`${props.id}-close-button`} label="" className="ui-kit-modal__close" ariaLabel="Закрыть окно" zIndex={1200} />
+    </Show>
     <div class="ui-kit-modal__body">{props.children}</div>
   </div>
 );

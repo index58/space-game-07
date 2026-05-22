@@ -18,6 +18,8 @@ import type {
   ControlPanelMutationRef,
   DockingCommandMessage,
   DockingEventMessage,
+  ExchangeCommandMessage,
+  ExchangeEventMessage,
   ControlPanelObjectUpdateMessage,
   InputSettingsErrorMessage,
   InputSettingsMessage,
@@ -229,6 +231,22 @@ const isDockingEventMessage = (message: unknown): message is DockingEventMessage
     (event.targetIds === undefined || Array.isArray(event.targetIds));
 };
 
+// Проверяет пакет обмена перед передачей в игровой HUD.
+const isExchangeEventMessage = (message: unknown): message is ExchangeEventMessage => {
+  if (!message || typeof message !== "object") {
+    return false;
+  }
+
+  const event = message as ExchangeEventMessage;
+
+  return event.type === "exchangeEvent" &&
+    typeof event.kind === "string" &&
+    (event.role === undefined || event.role === "sender" || event.role === "receiver") &&
+    (event.message === undefined || typeof event.message === "string") &&
+    (event.duration === undefined || typeof event.duration === "number") &&
+    (event.state === undefined || typeof event.state === "object");
+};
+
 // Сохраняет секрет, если окружение предоставляет браузерное хранилище.
 const storeAccountToken = (token: string): void => {
   if (typeof localStorage === "undefined") {
@@ -280,6 +298,12 @@ export class GameClient {
   private latestDockingEventSeq = 0;
   // Очередь событий стыковки, чтобы быстрые события не затирали друг друга.
   private dockingEvents: DockingEventMessage[] = [];
+  // Последнее событие обмена для игрового HUD.
+  private latestExchangeEvent: ExchangeEventMessage | null = null;
+  // Порядковый номер события обмена для обработки одинаковых сообщений.
+  private latestExchangeEventSeq = 0;
+  // Очередь событий обмена, чтобы быстрые события не затирали друг друга.
+  private exchangeEvents: ExchangeEventMessage[] = [];
   // Последнее состояние управления, готовое к отправке.
   private latestInput: ClientInputState = emptyInput();
   // Последний выданный порядковый номер пакета ввода.
@@ -379,6 +403,23 @@ export class GameClient {
     return events;
   }
 
+  // Возвращает последнее событие обмена от сервера.
+  getLatestExchangeEvent(): ExchangeEventMessage | null {
+    return this.latestExchangeEvent;
+  }
+
+  // Возвращает счетчик событий обмена.
+  getLatestExchangeEventSeq(): number {
+    return this.latestExchangeEventSeq;
+  }
+
+  // Возвращает накопленные события обмена в порядке прихода.
+  consumeExchangeEvents(): ExchangeEventMessage[] {
+    const events = this.exchangeEvents;
+    this.exchangeEvents = [];
+    return events;
+  }
+
   // Обновляет состояние клавиш и накапливает относительный поворот мыши до отправки.
   setInput(input: ClientInputState): void {
     this.latestInput = {
@@ -458,6 +499,46 @@ export class GameClient {
     }
 
     this.socket.send(JSON.stringify({ type: "landingRequest", targetObjectId }));
+  }
+
+  // Отправляет запрос обмена отдельной WebSocket-командой.
+  sendExchangeRequest(): void {
+    this.sendExchangeCommand({ type: "exchangeRequest" });
+  }
+
+  // Отправляет одобрение входящего запроса обмена.
+  sendExchangeApprove(): void {
+    this.sendExchangeCommand({ type: "exchangeApprove" });
+  }
+
+  // Отправляет отказ от входящего запроса обмена.
+  sendExchangeReject(): void {
+    this.sendExchangeCommand({ type: "exchangeReject" });
+  }
+
+  // Отправляет отмену открытого обмена.
+  sendExchangeCancel(): void {
+    this.sendExchangeCommand({ type: "exchangeCancel" });
+  }
+
+  // Отправляет подтверждение своей стороны обмена.
+  sendExchangeConfirm(): void {
+    this.sendExchangeCommand({ type: "exchangeConfirm" });
+  }
+
+  // Отправляет выбор контейнера-приемника обмена.
+  sendExchangeSelectReceiver(containerEquipmentGroupId: number): void {
+    this.sendExchangeCommand({ type: "exchangeSelectReceiver", containerEquipmentGroupId });
+  }
+
+  // Отправляет выбор контейнера-источника обмена.
+  sendExchangeSelectSource(containerEquipmentGroupId: number): void {
+    this.sendExchangeCommand({ type: "exchangeSelectSource", containerEquipmentGroupId });
+  }
+
+  // Отправляет выбранные строки контейнера в очередь обмена.
+  sendExchangeAddItems(itemGroupIds: number[], amount: number): void {
+    this.sendExchangeCommand({ type: "exchangeAddItems", itemGroupIds, amount });
   }
 
   // Отправляет текстовую команду отдельно от потокового управления кораблем.
@@ -763,6 +844,13 @@ export class GameClient {
       this.latestDockingEvent = parsed;
       this.latestDockingEventSeq++;
       this.dockingEvents.push(parsed);
+      return;
+    }
+
+    if (isExchangeEventMessage(parsed)) {
+      this.latestExchangeEvent = parsed;
+      this.latestExchangeEventSeq++;
+      this.exchangeEvents.push(parsed);
     }
   }
 
@@ -773,6 +861,15 @@ export class GameClient {
     }
 
     const payload: DockingCommandMessage = { type };
+    this.socket.send(JSON.stringify(payload));
+  }
+
+  // Сериализует одноразовую команду обмена, если соединение открыто.
+  private sendExchangeCommand(payload: ExchangeCommandMessage): void {
+    if (this.status !== "connected" || !this.socket) {
+      return;
+    }
+
     this.socket.send(JSON.stringify(payload));
   }
 

@@ -191,6 +191,22 @@ func TestDecodeControlPanelContainerTransferMessageUsesAgreedJSONFields(t *testi
 	}
 }
 
+// Проверяет, что команда добавления в обмен читает выбранное количество.
+func TestDecodeExchangeAddItemsMessageUsesAmount(t *testing.T) {
+	message, ok := transport.DecodeExchangeAddItemsMessage([]byte(`{
+		"type": "exchangeAddItems",
+		"itemGroupIds": [21],
+		"amount": 4
+	}`))
+
+	if !ok {
+		t.Fatalf("exchange add items message was not decoded")
+	}
+	if len(message.ItemGroupIDs) != 1 || message.ItemGroupIDs[0] != 21 || message.Amount != 4 {
+		t.Fatalf("exchange add items fields were decoded incorrectly: %+v", message)
+	}
+}
+
 // РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕРјР°РЅРґР° С‡Р°С‚Р° С‡РёС‚Р°РµС‚ РІС‹Р±СЂР°РЅРЅСѓСЋ РІРєР»Р°РґРєСѓ Рё Р°РґСЂРµСЃРЅС‹Р№ РЅРёРє РёР· JSON.
 // РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕРјР°РЅРґР° РїРµСЂРµРЅРѕСЃР° С‚РѕРїР»РёРІР° С‡РёС‚Р°РµС‚СЃСЏ РёР· СЃРѕРіР»Р°СЃРѕРІР°РЅРЅС‹С… JSON-РїРѕР»РµР№.
 func TestDecodeControlPanelFuelTransferMessageUsesAgreedJSONFields(t *testing.T) {

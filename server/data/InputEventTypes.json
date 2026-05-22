@@ -1,5 +1,5 @@
 {
-  "MaxID": 186,
+  "MaxID": 187,
   "Items": {
     "1": {
       "ID": 1,
@@ -1674,6 +1674,15 @@
       "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.code:Digit2",
       "SystemIntegerValue": 0,
       "Description": "Первичное нажатие клавиши 2 при удержанном Alt."
+    },
+    "187": {
+      "ID": 187,
+      "TitleRu": "Alt E",
+      "TitleEn": "Alt E",
+      "Acronym": "KeyboardAltKeyE",
+      "SystemStringValue": "KeyboardEvent.altKey\u0026\u0026KeyboardEvent.code:KeyE",
+      "SystemIntegerValue": 0,
+      "Description": "Первичное нажатие клавиши E при удержанном Alt."
     }
   }
 }

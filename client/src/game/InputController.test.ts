@@ -328,7 +328,21 @@ describe("InputController", () => {
     expect(controller.consumeDockingAction()).toBe("request");
   });
 
-  // Проверяет, что новая базовая клавиша отправляет запрос стыковки без Shift.
+  // Проверяет, что запрос обмена может прийти из переназначенной настройки ввода.
+  it("uses input settings for exchange request", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+    controller.updateInputBindings({
+      ExchangeRequest: "KeyboardEvent.altKey&&KeyboardEvent.code:KeyR",
+    });
+
+    pressModifiedKey("KeyR", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("exchange");
+  });
+
+  // Проверяет, что базовая клавиша отправляет запрос стыковки без Shift.
   it("returns docking request once from Alt Equal", () => {
     const canvas = document.createElement("canvas");
     const controller = new InputController(canvas);
@@ -386,6 +400,35 @@ describe("InputController", () => {
 
     expect(controller.consumeDockingAction()).toBe("landing");
     expect(controller.consumeDockingAction()).toBeNull();
+  });
+
+  // Проверяет, что базовое сочетание запускает запрос обмена.
+  it("returns exchange request once from Alt KeyE", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    pressModifiedKey("KeyE", { altKey: true });
+
+    expect(controller.consumeDockingAction()).toBe("exchange");
+    expect(controller.consumeDockingAction()).toBeNull();
+  });
+
+  // Проверяет, что открытое окно обмена удерживает игровой указатель видимым.
+  it("shows game cursor while exchange window is open", () => {
+    const canvas = document.createElement("canvas");
+    const controller = new InputController(canvas);
+    setPointerLockElement(canvas);
+
+    expect(controller.getGameCursor().visible).toBe(false);
+
+    controller.setExchangeVisible(true);
+
+    expect(controller.getGameCursor().visible).toBe(true);
+
+    controller.setExchangeVisible(false);
+
+    expect(controller.getGameCursor().visible).toBe(false);
   });
 
   // Проверяет, что начало пересадки работает с клавишей деления на цифровом блоке.

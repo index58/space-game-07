@@ -8,7 +8,7 @@ import { isFreshKeyboardBinding, isFreshKeyboardEventBinding, isFreshKeyDown, to
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
 
-export type DockingAction = "request" | "approve" | "reject" | "undock" | "landing";
+export type DockingAction = "request" | "approve" | "reject" | "undock" | "landing" | "exchange";
 
 export type ChatSelectAction = {
   // Чат, который игрок выбрал игровым указателем.
@@ -154,6 +154,8 @@ export class InputController {
   private settingsVisible = false;
   // Показывает окно панели управления объектом.
   private controlPanelVisible = false;
+  // Показывает окно обмена предметами.
+  private exchangeVisible = false;
   // Накопленная прокрутка окна настроек игровым колесом.
   private settingsWheelDeltaY = 0;
   // Текущие системные привязки действий, полученные из настроек аккаунта.
@@ -700,6 +702,9 @@ export class InputController {
     if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.LandingBegin)) {
       return "landing";
     }
+    if (isFreshKeyboardEventBinding(event, wasPressed, this.inputBindings.ExchangeRequest)) {
+      return "exchange";
+    }
     return getDefaultDockingActionFromKey(event, wasPressed);
   }
 
@@ -716,6 +721,11 @@ export class InputController {
   // Возвращает видимость панели управления.
   isControlPanelVisible(): boolean {
     return this.controlPanelVisible;
+  }
+
+  // Обновляет внешний признак открытого окна обмена.
+  setExchangeVisible(visible: boolean): void {
+    this.exchangeVisible = visible;
   }
 
   // Закрывает окно настроек после внешнего UI-действия.
@@ -998,7 +1008,7 @@ export class InputController {
 
   // Показывает, что игровой указатель нужен для текущего UI-взаимодействия.
   private isGameCursorVisible(): boolean {
-    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible || this.settingsVisible || this.controlPanelVisible);
+    return this.isPointerLocked() && (this.chatInputFocused || this.chatContextMenu !== null || this.uiKitShowcaseVisible || this.settingsVisible || this.controlPanelVisible || this.exchangeVisible);
   }
 
   // Переключает окно настроек так, чтобы остальные модальные окна были закрыты.
@@ -1692,6 +1702,9 @@ const getDefaultDockingActionFromKey = (event: KeyboardEvent, wasPressed: boolea
   }
   if (event.code === "Slash" || event.code === "NumpadDivide") {
     return "landing";
+  }
+  if (event.code === "KeyE") {
+    return "exchange";
   }
   return null;
 };

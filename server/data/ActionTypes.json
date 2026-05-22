@@ -1,5 +1,5 @@
 {
-  "MaxID": 30,
+  "MaxID": 31,
   "Items": {
     "1": {
       "ID": 1,
@@ -210,6 +210,13 @@
       "TitleEn": "Undock",
       "Acronym": "DockingUndock",
       "Description": "Отправляет одноразовую команду отстыковки управляемого объекта от кластера."
+    },
+    "31": {
+      "ID": 31,
+      "TitleRu": "Отправить запрос на обмен",
+      "TitleEn": "Send exchange request",
+      "Acronym": "ExchangeRequest",
+      "Description": "Отправляет одноразовую команду запроса обмена от управляемого объекта."
     }
   }
 }
