@@ -1,5 +1,5 @@
 {
-    "MaxID":  21,
+    "MaxID":  22,
     "Items":  {
                   "1":  {
                             "ID":  1,
@@ -608,6 +608,35 @@
                              "ArmorRepairSpeed":  4,
                              "Complexity":  180,
                              "ItemTypeID":  13,
+                             "Efficiency":  1
+                         },
+                  "22":  {
+                             "ID":  22,
+                             "TitleRu":  "Простой бур",
+                             "TitleEn":  "Simple Drill",
+                             "Acronym":  "SimpleDrill",
+                             "IconFilePath":  "",
+                             "Mass":  650,
+                             "Volume":  3,
+                             "Capacity":  0,
+                             "MaxArmor":  70,
+                             "ConsumingPower":  12000,
+                             "GeneratingPower":  0,
+                             "AmmoItemModelID":  0,
+                             "FiringRate":  0,
+                             "MagazineCapacity":  0,
+                             "RechargeTime":  0,
+                             "Range":  500,
+                             "Damage":  60,
+                             "ConsumingItemModelID":  0,
+                             "ConsumingCount":  0,
+                             "MaxAlongForce":  0,
+                             "MaxAcrossForce":  0,
+                             "MaxTorque":  0,
+                             "MaxEquipmentCount":  8,
+                             "ArmorRepairSpeed":  0,
+                             "Complexity":  160,
+                             "ItemTypeID":  3,
                              "Efficiency":  1
                          }
               }

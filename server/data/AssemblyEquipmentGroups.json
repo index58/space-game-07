@@ -1,5 +1,5 @@
 {
-    "MaxID":  5104,
+    "MaxID":  5568,
     "Items":  {
                   "1":  {
                             "ID":  1,
@@ -35728,6 +35728,3254 @@
                                "Title":  "UniversalRobot",
                                "EquipmentItemModelID":  21,
                                "Count":  10
+                           },
+                  "5105":  {
+                               "ID":  5105,
+                               "AssemblyID":  1,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5106":  {
+                               "ID":  5106,
+                               "AssemblyID":  2,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5107":  {
+                               "ID":  5107,
+                               "AssemblyID":  3,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5108":  {
+                               "ID":  5108,
+                               "AssemblyID":  4,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5109":  {
+                               "ID":  5109,
+                               "AssemblyID":  5,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5110":  {
+                               "ID":  5110,
+                               "AssemblyID":  6,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5111":  {
+                               "ID":  5111,
+                               "AssemblyID":  7,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5112":  {
+                               "ID":  5112,
+                               "AssemblyID":  8,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5113":  {
+                               "ID":  5113,
+                               "AssemblyID":  9,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5114":  {
+                               "ID":  5114,
+                               "AssemblyID":  10,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5115":  {
+                               "ID":  5115,
+                               "AssemblyID":  11,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5116":  {
+                               "ID":  5116,
+                               "AssemblyID":  12,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5117":  {
+                               "ID":  5117,
+                               "AssemblyID":  13,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5118":  {
+                               "ID":  5118,
+                               "AssemblyID":  14,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5119":  {
+                               "ID":  5119,
+                               "AssemblyID":  15,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5120":  {
+                               "ID":  5120,
+                               "AssemblyID":  16,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5121":  {
+                               "ID":  5121,
+                               "AssemblyID":  17,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5122":  {
+                               "ID":  5122,
+                               "AssemblyID":  18,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5123":  {
+                               "ID":  5123,
+                               "AssemblyID":  19,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5124":  {
+                               "ID":  5124,
+                               "AssemblyID":  20,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5125":  {
+                               "ID":  5125,
+                               "AssemblyID":  21,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5126":  {
+                               "ID":  5126,
+                               "AssemblyID":  22,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5127":  {
+                               "ID":  5127,
+                               "AssemblyID":  23,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5128":  {
+                               "ID":  5128,
+                               "AssemblyID":  24,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5129":  {
+                               "ID":  5129,
+                               "AssemblyID":  25,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5130":  {
+                               "ID":  5130,
+                               "AssemblyID":  26,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5131":  {
+                               "ID":  5131,
+                               "AssemblyID":  27,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5132":  {
+                               "ID":  5132,
+                               "AssemblyID":  28,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5133":  {
+                               "ID":  5133,
+                               "AssemblyID":  29,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5134":  {
+                               "ID":  5134,
+                               "AssemblyID":  30,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5135":  {
+                               "ID":  5135,
+                               "AssemblyID":  31,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5136":  {
+                               "ID":  5136,
+                               "AssemblyID":  32,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5137":  {
+                               "ID":  5137,
+                               "AssemblyID":  33,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5138":  {
+                               "ID":  5138,
+                               "AssemblyID":  34,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5139":  {
+                               "ID":  5139,
+                               "AssemblyID":  35,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5140":  {
+                               "ID":  5140,
+                               "AssemblyID":  36,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5141":  {
+                               "ID":  5141,
+                               "AssemblyID":  37,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5142":  {
+                               "ID":  5142,
+                               "AssemblyID":  38,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5143":  {
+                               "ID":  5143,
+                               "AssemblyID":  39,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5144":  {
+                               "ID":  5144,
+                               "AssemblyID":  40,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5145":  {
+                               "ID":  5145,
+                               "AssemblyID":  41,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5146":  {
+                               "ID":  5146,
+                               "AssemblyID":  42,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5147":  {
+                               "ID":  5147,
+                               "AssemblyID":  43,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5148":  {
+                               "ID":  5148,
+                               "AssemblyID":  44,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5149":  {
+                               "ID":  5149,
+                               "AssemblyID":  45,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5150":  {
+                               "ID":  5150,
+                               "AssemblyID":  46,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5151":  {
+                               "ID":  5151,
+                               "AssemblyID":  47,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5152":  {
+                               "ID":  5152,
+                               "AssemblyID":  48,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5153":  {
+                               "ID":  5153,
+                               "AssemblyID":  49,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5154":  {
+                               "ID":  5154,
+                               "AssemblyID":  50,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5155":  {
+                               "ID":  5155,
+                               "AssemblyID":  51,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5156":  {
+                               "ID":  5156,
+                               "AssemblyID":  52,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5157":  {
+                               "ID":  5157,
+                               "AssemblyID":  53,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5158":  {
+                               "ID":  5158,
+                               "AssemblyID":  54,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5159":  {
+                               "ID":  5159,
+                               "AssemblyID":  55,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5160":  {
+                               "ID":  5160,
+                               "AssemblyID":  56,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5161":  {
+                               "ID":  5161,
+                               "AssemblyID":  57,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5162":  {
+                               "ID":  5162,
+                               "AssemblyID":  58,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5163":  {
+                               "ID":  5163,
+                               "AssemblyID":  59,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5164":  {
+                               "ID":  5164,
+                               "AssemblyID":  60,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5165":  {
+                               "ID":  5165,
+                               "AssemblyID":  61,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5166":  {
+                               "ID":  5166,
+                               "AssemblyID":  62,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5167":  {
+                               "ID":  5167,
+                               "AssemblyID":  63,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5168":  {
+                               "ID":  5168,
+                               "AssemblyID":  64,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5169":  {
+                               "ID":  5169,
+                               "AssemblyID":  65,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5170":  {
+                               "ID":  5170,
+                               "AssemblyID":  66,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5171":  {
+                               "ID":  5171,
+                               "AssemblyID":  67,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5172":  {
+                               "ID":  5172,
+                               "AssemblyID":  68,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5173":  {
+                               "ID":  5173,
+                               "AssemblyID":  69,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5174":  {
+                               "ID":  5174,
+                               "AssemblyID":  70,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5175":  {
+                               "ID":  5175,
+                               "AssemblyID":  71,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5176":  {
+                               "ID":  5176,
+                               "AssemblyID":  72,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5177":  {
+                               "ID":  5177,
+                               "AssemblyID":  73,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5178":  {
+                               "ID":  5178,
+                               "AssemblyID":  74,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5179":  {
+                               "ID":  5179,
+                               "AssemblyID":  75,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5180":  {
+                               "ID":  5180,
+                               "AssemblyID":  76,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5181":  {
+                               "ID":  5181,
+                               "AssemblyID":  77,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5182":  {
+                               "ID":  5182,
+                               "AssemblyID":  78,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5183":  {
+                               "ID":  5183,
+                               "AssemblyID":  79,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5184":  {
+                               "ID":  5184,
+                               "AssemblyID":  80,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5185":  {
+                               "ID":  5185,
+                               "AssemblyID":  81,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5186":  {
+                               "ID":  5186,
+                               "AssemblyID":  82,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5187":  {
+                               "ID":  5187,
+                               "AssemblyID":  83,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5188":  {
+                               "ID":  5188,
+                               "AssemblyID":  84,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5189":  {
+                               "ID":  5189,
+                               "AssemblyID":  85,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5190":  {
+                               "ID":  5190,
+                               "AssemblyID":  86,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5191":  {
+                               "ID":  5191,
+                               "AssemblyID":  87,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5192":  {
+                               "ID":  5192,
+                               "AssemblyID":  88,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5193":  {
+                               "ID":  5193,
+                               "AssemblyID":  89,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5194":  {
+                               "ID":  5194,
+                               "AssemblyID":  90,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5195":  {
+                               "ID":  5195,
+                               "AssemblyID":  91,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5196":  {
+                               "ID":  5196,
+                               "AssemblyID":  92,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5197":  {
+                               "ID":  5197,
+                               "AssemblyID":  93,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5198":  {
+                               "ID":  5198,
+                               "AssemblyID":  94,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5199":  {
+                               "ID":  5199,
+                               "AssemblyID":  95,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5200":  {
+                               "ID":  5200,
+                               "AssemblyID":  96,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5201":  {
+                               "ID":  5201,
+                               "AssemblyID":  97,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5202":  {
+                               "ID":  5202,
+                               "AssemblyID":  98,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5203":  {
+                               "ID":  5203,
+                               "AssemblyID":  99,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5204":  {
+                               "ID":  5204,
+                               "AssemblyID":  100,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5205":  {
+                               "ID":  5205,
+                               "AssemblyID":  101,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5206":  {
+                               "ID":  5206,
+                               "AssemblyID":  102,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5207":  {
+                               "ID":  5207,
+                               "AssemblyID":  103,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5208":  {
+                               "ID":  5208,
+                               "AssemblyID":  104,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5209":  {
+                               "ID":  5209,
+                               "AssemblyID":  105,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5210":  {
+                               "ID":  5210,
+                               "AssemblyID":  106,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5211":  {
+                               "ID":  5211,
+                               "AssemblyID":  107,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5212":  {
+                               "ID":  5212,
+                               "AssemblyID":  108,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5213":  {
+                               "ID":  5213,
+                               "AssemblyID":  109,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5214":  {
+                               "ID":  5214,
+                               "AssemblyID":  110,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5215":  {
+                               "ID":  5215,
+                               "AssemblyID":  111,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5216":  {
+                               "ID":  5216,
+                               "AssemblyID":  112,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5217":  {
+                               "ID":  5217,
+                               "AssemblyID":  113,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5218":  {
+                               "ID":  5218,
+                               "AssemblyID":  114,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5219":  {
+                               "ID":  5219,
+                               "AssemblyID":  115,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5220":  {
+                               "ID":  5220,
+                               "AssemblyID":  116,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5221":  {
+                               "ID":  5221,
+                               "AssemblyID":  117,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5222":  {
+                               "ID":  5222,
+                               "AssemblyID":  118,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5223":  {
+                               "ID":  5223,
+                               "AssemblyID":  119,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5224":  {
+                               "ID":  5224,
+                               "AssemblyID":  120,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5225":  {
+                               "ID":  5225,
+                               "AssemblyID":  121,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5226":  {
+                               "ID":  5226,
+                               "AssemblyID":  122,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5227":  {
+                               "ID":  5227,
+                               "AssemblyID":  123,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5228":  {
+                               "ID":  5228,
+                               "AssemblyID":  124,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5229":  {
+                               "ID":  5229,
+                               "AssemblyID":  125,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5230":  {
+                               "ID":  5230,
+                               "AssemblyID":  126,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5231":  {
+                               "ID":  5231,
+                               "AssemblyID":  127,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5232":  {
+                               "ID":  5232,
+                               "AssemblyID":  128,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5233":  {
+                               "ID":  5233,
+                               "AssemblyID":  129,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5234":  {
+                               "ID":  5234,
+                               "AssemblyID":  130,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5235":  {
+                               "ID":  5235,
+                               "AssemblyID":  131,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5236":  {
+                               "ID":  5236,
+                               "AssemblyID":  132,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5237":  {
+                               "ID":  5237,
+                               "AssemblyID":  133,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5238":  {
+                               "ID":  5238,
+                               "AssemblyID":  134,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5239":  {
+                               "ID":  5239,
+                               "AssemblyID":  135,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5240":  {
+                               "ID":  5240,
+                               "AssemblyID":  136,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5241":  {
+                               "ID":  5241,
+                               "AssemblyID":  137,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5242":  {
+                               "ID":  5242,
+                               "AssemblyID":  138,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5243":  {
+                               "ID":  5243,
+                               "AssemblyID":  139,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5244":  {
+                               "ID":  5244,
+                               "AssemblyID":  140,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5245":  {
+                               "ID":  5245,
+                               "AssemblyID":  141,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5246":  {
+                               "ID":  5246,
+                               "AssemblyID":  142,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5247":  {
+                               "ID":  5247,
+                               "AssemblyID":  143,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5248":  {
+                               "ID":  5248,
+                               "AssemblyID":  144,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5249":  {
+                               "ID":  5249,
+                               "AssemblyID":  145,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5250":  {
+                               "ID":  5250,
+                               "AssemblyID":  146,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5251":  {
+                               "ID":  5251,
+                               "AssemblyID":  147,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5252":  {
+                               "ID":  5252,
+                               "AssemblyID":  148,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5253":  {
+                               "ID":  5253,
+                               "AssemblyID":  149,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5254":  {
+                               "ID":  5254,
+                               "AssemblyID":  150,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5255":  {
+                               "ID":  5255,
+                               "AssemblyID":  151,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5256":  {
+                               "ID":  5256,
+                               "AssemblyID":  152,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5257":  {
+                               "ID":  5257,
+                               "AssemblyID":  153,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5258":  {
+                               "ID":  5258,
+                               "AssemblyID":  154,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5259":  {
+                               "ID":  5259,
+                               "AssemblyID":  155,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5260":  {
+                               "ID":  5260,
+                               "AssemblyID":  156,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5261":  {
+                               "ID":  5261,
+                               "AssemblyID":  157,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5262":  {
+                               "ID":  5262,
+                               "AssemblyID":  158,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5263":  {
+                               "ID":  5263,
+                               "AssemblyID":  159,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5264":  {
+                               "ID":  5264,
+                               "AssemblyID":  160,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5265":  {
+                               "ID":  5265,
+                               "AssemblyID":  161,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5266":  {
+                               "ID":  5266,
+                               "AssemblyID":  162,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5267":  {
+                               "ID":  5267,
+                               "AssemblyID":  163,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5268":  {
+                               "ID":  5268,
+                               "AssemblyID":  164,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5269":  {
+                               "ID":  5269,
+                               "AssemblyID":  165,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5270":  {
+                               "ID":  5270,
+                               "AssemblyID":  166,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5271":  {
+                               "ID":  5271,
+                               "AssemblyID":  167,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5272":  {
+                               "ID":  5272,
+                               "AssemblyID":  168,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5273":  {
+                               "ID":  5273,
+                               "AssemblyID":  169,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5274":  {
+                               "ID":  5274,
+                               "AssemblyID":  170,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5275":  {
+                               "ID":  5275,
+                               "AssemblyID":  171,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5276":  {
+                               "ID":  5276,
+                               "AssemblyID":  172,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5277":  {
+                               "ID":  5277,
+                               "AssemblyID":  173,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5278":  {
+                               "ID":  5278,
+                               "AssemblyID":  174,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5279":  {
+                               "ID":  5279,
+                               "AssemblyID":  175,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5280":  {
+                               "ID":  5280,
+                               "AssemblyID":  176,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5281":  {
+                               "ID":  5281,
+                               "AssemblyID":  177,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5282":  {
+                               "ID":  5282,
+                               "AssemblyID":  178,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5283":  {
+                               "ID":  5283,
+                               "AssemblyID":  179,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5284":  {
+                               "ID":  5284,
+                               "AssemblyID":  180,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5285":  {
+                               "ID":  5285,
+                               "AssemblyID":  181,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5286":  {
+                               "ID":  5286,
+                               "AssemblyID":  182,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5287":  {
+                               "ID":  5287,
+                               "AssemblyID":  183,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5288":  {
+                               "ID":  5288,
+                               "AssemblyID":  184,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5289":  {
+                               "ID":  5289,
+                               "AssemblyID":  185,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5290":  {
+                               "ID":  5290,
+                               "AssemblyID":  186,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5291":  {
+                               "ID":  5291,
+                               "AssemblyID":  187,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5292":  {
+                               "ID":  5292,
+                               "AssemblyID":  188,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5293":  {
+                               "ID":  5293,
+                               "AssemblyID":  189,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5294":  {
+                               "ID":  5294,
+                               "AssemblyID":  190,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5295":  {
+                               "ID":  5295,
+                               "AssemblyID":  191,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5296":  {
+                               "ID":  5296,
+                               "AssemblyID":  192,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5297":  {
+                               "ID":  5297,
+                               "AssemblyID":  193,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5298":  {
+                               "ID":  5298,
+                               "AssemblyID":  194,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5299":  {
+                               "ID":  5299,
+                               "AssemblyID":  195,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5300":  {
+                               "ID":  5300,
+                               "AssemblyID":  196,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5301":  {
+                               "ID":  5301,
+                               "AssemblyID":  197,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5302":  {
+                               "ID":  5302,
+                               "AssemblyID":  198,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5303":  {
+                               "ID":  5303,
+                               "AssemblyID":  199,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5304":  {
+                               "ID":  5304,
+                               "AssemblyID":  200,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5305":  {
+                               "ID":  5305,
+                               "AssemblyID":  201,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5306":  {
+                               "ID":  5306,
+                               "AssemblyID":  202,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5307":  {
+                               "ID":  5307,
+                               "AssemblyID":  203,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5308":  {
+                               "ID":  5308,
+                               "AssemblyID":  204,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5309":  {
+                               "ID":  5309,
+                               "AssemblyID":  205,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5310":  {
+                               "ID":  5310,
+                               "AssemblyID":  206,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5311":  {
+                               "ID":  5311,
+                               "AssemblyID":  207,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5312":  {
+                               "ID":  5312,
+                               "AssemblyID":  208,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5313":  {
+                               "ID":  5313,
+                               "AssemblyID":  209,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5314":  {
+                               "ID":  5314,
+                               "AssemblyID":  210,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5315":  {
+                               "ID":  5315,
+                               "AssemblyID":  211,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5316":  {
+                               "ID":  5316,
+                               "AssemblyID":  212,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5317":  {
+                               "ID":  5317,
+                               "AssemblyID":  213,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5318":  {
+                               "ID":  5318,
+                               "AssemblyID":  214,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5319":  {
+                               "ID":  5319,
+                               "AssemblyID":  215,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5320":  {
+                               "ID":  5320,
+                               "AssemblyID":  216,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5321":  {
+                               "ID":  5321,
+                               "AssemblyID":  217,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5322":  {
+                               "ID":  5322,
+                               "AssemblyID":  218,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5323":  {
+                               "ID":  5323,
+                               "AssemblyID":  219,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5324":  {
+                               "ID":  5324,
+                               "AssemblyID":  220,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5325":  {
+                               "ID":  5325,
+                               "AssemblyID":  221,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5326":  {
+                               "ID":  5326,
+                               "AssemblyID":  222,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5327":  {
+                               "ID":  5327,
+                               "AssemblyID":  223,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5328":  {
+                               "ID":  5328,
+                               "AssemblyID":  224,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5329":  {
+                               "ID":  5329,
+                               "AssemblyID":  225,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5330":  {
+                               "ID":  5330,
+                               "AssemblyID":  226,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5331":  {
+                               "ID":  5331,
+                               "AssemblyID":  227,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5332":  {
+                               "ID":  5332,
+                               "AssemblyID":  228,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5333":  {
+                               "ID":  5333,
+                               "AssemblyID":  229,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5334":  {
+                               "ID":  5334,
+                               "AssemblyID":  230,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5335":  {
+                               "ID":  5335,
+                               "AssemblyID":  231,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5336":  {
+                               "ID":  5336,
+                               "AssemblyID":  232,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5337":  {
+                               "ID":  5337,
+                               "AssemblyID":  233,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5338":  {
+                               "ID":  5338,
+                               "AssemblyID":  234,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5339":  {
+                               "ID":  5339,
+                               "AssemblyID":  235,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5340":  {
+                               "ID":  5340,
+                               "AssemblyID":  236,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5341":  {
+                               "ID":  5341,
+                               "AssemblyID":  237,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5342":  {
+                               "ID":  5342,
+                               "AssemblyID":  238,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5343":  {
+                               "ID":  5343,
+                               "AssemblyID":  239,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5344":  {
+                               "ID":  5344,
+                               "AssemblyID":  240,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5345":  {
+                               "ID":  5345,
+                               "AssemblyID":  241,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5346":  {
+                               "ID":  5346,
+                               "AssemblyID":  242,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5347":  {
+                               "ID":  5347,
+                               "AssemblyID":  243,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5348":  {
+                               "ID":  5348,
+                               "AssemblyID":  244,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5349":  {
+                               "ID":  5349,
+                               "AssemblyID":  245,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5350":  {
+                               "ID":  5350,
+                               "AssemblyID":  246,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5351":  {
+                               "ID":  5351,
+                               "AssemblyID":  247,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5352":  {
+                               "ID":  5352,
+                               "AssemblyID":  248,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5353":  {
+                               "ID":  5353,
+                               "AssemblyID":  249,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5354":  {
+                               "ID":  5354,
+                               "AssemblyID":  250,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5355":  {
+                               "ID":  5355,
+                               "AssemblyID":  251,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5356":  {
+                               "ID":  5356,
+                               "AssemblyID":  252,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5357":  {
+                               "ID":  5357,
+                               "AssemblyID":  253,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5358":  {
+                               "ID":  5358,
+                               "AssemblyID":  254,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5359":  {
+                               "ID":  5359,
+                               "AssemblyID":  255,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5360":  {
+                               "ID":  5360,
+                               "AssemblyID":  256,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5361":  {
+                               "ID":  5361,
+                               "AssemblyID":  257,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5362":  {
+                               "ID":  5362,
+                               "AssemblyID":  258,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5363":  {
+                               "ID":  5363,
+                               "AssemblyID":  259,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5364":  {
+                               "ID":  5364,
+                               "AssemblyID":  260,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5365":  {
+                               "ID":  5365,
+                               "AssemblyID":  261,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5366":  {
+                               "ID":  5366,
+                               "AssemblyID":  262,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5367":  {
+                               "ID":  5367,
+                               "AssemblyID":  263,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5368":  {
+                               "ID":  5368,
+                               "AssemblyID":  264,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5369":  {
+                               "ID":  5369,
+                               "AssemblyID":  265,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5370":  {
+                               "ID":  5370,
+                               "AssemblyID":  266,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5371":  {
+                               "ID":  5371,
+                               "AssemblyID":  267,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5372":  {
+                               "ID":  5372,
+                               "AssemblyID":  268,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5373":  {
+                               "ID":  5373,
+                               "AssemblyID":  269,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5374":  {
+                               "ID":  5374,
+                               "AssemblyID":  270,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5375":  {
+                               "ID":  5375,
+                               "AssemblyID":  271,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5376":  {
+                               "ID":  5376,
+                               "AssemblyID":  272,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5377":  {
+                               "ID":  5377,
+                               "AssemblyID":  273,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5378":  {
+                               "ID":  5378,
+                               "AssemblyID":  274,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5379":  {
+                               "ID":  5379,
+                               "AssemblyID":  275,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5380":  {
+                               "ID":  5380,
+                               "AssemblyID":  276,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5381":  {
+                               "ID":  5381,
+                               "AssemblyID":  277,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5382":  {
+                               "ID":  5382,
+                               "AssemblyID":  278,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5383":  {
+                               "ID":  5383,
+                               "AssemblyID":  279,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5384":  {
+                               "ID":  5384,
+                               "AssemblyID":  280,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5385":  {
+                               "ID":  5385,
+                               "AssemblyID":  281,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5386":  {
+                               "ID":  5386,
+                               "AssemblyID":  282,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5387":  {
+                               "ID":  5387,
+                               "AssemblyID":  283,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5388":  {
+                               "ID":  5388,
+                               "AssemblyID":  284,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5389":  {
+                               "ID":  5389,
+                               "AssemblyID":  285,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5390":  {
+                               "ID":  5390,
+                               "AssemblyID":  286,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5391":  {
+                               "ID":  5391,
+                               "AssemblyID":  287,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5392":  {
+                               "ID":  5392,
+                               "AssemblyID":  288,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5393":  {
+                               "ID":  5393,
+                               "AssemblyID":  289,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5394":  {
+                               "ID":  5394,
+                               "AssemblyID":  290,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5395":  {
+                               "ID":  5395,
+                               "AssemblyID":  291,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5396":  {
+                               "ID":  5396,
+                               "AssemblyID":  292,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5397":  {
+                               "ID":  5397,
+                               "AssemblyID":  293,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5398":  {
+                               "ID":  5398,
+                               "AssemblyID":  294,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5399":  {
+                               "ID":  5399,
+                               "AssemblyID":  295,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5400":  {
+                               "ID":  5400,
+                               "AssemblyID":  296,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5401":  {
+                               "ID":  5401,
+                               "AssemblyID":  297,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5402":  {
+                               "ID":  5402,
+                               "AssemblyID":  298,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5403":  {
+                               "ID":  5403,
+                               "AssemblyID":  299,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5404":  {
+                               "ID":  5404,
+                               "AssemblyID":  300,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5405":  {
+                               "ID":  5405,
+                               "AssemblyID":  301,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5406":  {
+                               "ID":  5406,
+                               "AssemblyID":  302,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5407":  {
+                               "ID":  5407,
+                               "AssemblyID":  303,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5408":  {
+                               "ID":  5408,
+                               "AssemblyID":  304,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5409":  {
+                               "ID":  5409,
+                               "AssemblyID":  305,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5410":  {
+                               "ID":  5410,
+                               "AssemblyID":  306,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5411":  {
+                               "ID":  5411,
+                               "AssemblyID":  307,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5412":  {
+                               "ID":  5412,
+                               "AssemblyID":  308,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5413":  {
+                               "ID":  5413,
+                               "AssemblyID":  309,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5414":  {
+                               "ID":  5414,
+                               "AssemblyID":  310,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5415":  {
+                               "ID":  5415,
+                               "AssemblyID":  311,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5416":  {
+                               "ID":  5416,
+                               "AssemblyID":  312,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5417":  {
+                               "ID":  5417,
+                               "AssemblyID":  313,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5418":  {
+                               "ID":  5418,
+                               "AssemblyID":  314,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5419":  {
+                               "ID":  5419,
+                               "AssemblyID":  315,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5420":  {
+                               "ID":  5420,
+                               "AssemblyID":  316,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5421":  {
+                               "ID":  5421,
+                               "AssemblyID":  317,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5422":  {
+                               "ID":  5422,
+                               "AssemblyID":  318,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5423":  {
+                               "ID":  5423,
+                               "AssemblyID":  319,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5424":  {
+                               "ID":  5424,
+                               "AssemblyID":  320,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5425":  {
+                               "ID":  5425,
+                               "AssemblyID":  321,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5426":  {
+                               "ID":  5426,
+                               "AssemblyID":  322,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5427":  {
+                               "ID":  5427,
+                               "AssemblyID":  323,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5428":  {
+                               "ID":  5428,
+                               "AssemblyID":  324,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5429":  {
+                               "ID":  5429,
+                               "AssemblyID":  325,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5430":  {
+                               "ID":  5430,
+                               "AssemblyID":  326,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5431":  {
+                               "ID":  5431,
+                               "AssemblyID":  327,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5432":  {
+                               "ID":  5432,
+                               "AssemblyID":  328,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5433":  {
+                               "ID":  5433,
+                               "AssemblyID":  329,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5434":  {
+                               "ID":  5434,
+                               "AssemblyID":  330,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5435":  {
+                               "ID":  5435,
+                               "AssemblyID":  331,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5436":  {
+                               "ID":  5436,
+                               "AssemblyID":  332,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5437":  {
+                               "ID":  5437,
+                               "AssemblyID":  333,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5438":  {
+                               "ID":  5438,
+                               "AssemblyID":  334,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5439":  {
+                               "ID":  5439,
+                               "AssemblyID":  335,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5440":  {
+                               "ID":  5440,
+                               "AssemblyID":  336,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5441":  {
+                               "ID":  5441,
+                               "AssemblyID":  337,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5442":  {
+                               "ID":  5442,
+                               "AssemblyID":  338,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5443":  {
+                               "ID":  5443,
+                               "AssemblyID":  339,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5444":  {
+                               "ID":  5444,
+                               "AssemblyID":  340,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5445":  {
+                               "ID":  5445,
+                               "AssemblyID":  341,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5446":  {
+                               "ID":  5446,
+                               "AssemblyID":  342,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5447":  {
+                               "ID":  5447,
+                               "AssemblyID":  343,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5448":  {
+                               "ID":  5448,
+                               "AssemblyID":  344,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5449":  {
+                               "ID":  5449,
+                               "AssemblyID":  345,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5450":  {
+                               "ID":  5450,
+                               "AssemblyID":  346,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5451":  {
+                               "ID":  5451,
+                               "AssemblyID":  347,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5452":  {
+                               "ID":  5452,
+                               "AssemblyID":  348,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5453":  {
+                               "ID":  5453,
+                               "AssemblyID":  349,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5454":  {
+                               "ID":  5454,
+                               "AssemblyID":  350,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5455":  {
+                               "ID":  5455,
+                               "AssemblyID":  351,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5456":  {
+                               "ID":  5456,
+                               "AssemblyID":  352,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5457":  {
+                               "ID":  5457,
+                               "AssemblyID":  353,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5458":  {
+                               "ID":  5458,
+                               "AssemblyID":  354,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5459":  {
+                               "ID":  5459,
+                               "AssemblyID":  355,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5460":  {
+                               "ID":  5460,
+                               "AssemblyID":  356,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5461":  {
+                               "ID":  5461,
+                               "AssemblyID":  357,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5462":  {
+                               "ID":  5462,
+                               "AssemblyID":  358,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5463":  {
+                               "ID":  5463,
+                               "AssemblyID":  359,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5464":  {
+                               "ID":  5464,
+                               "AssemblyID":  360,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5465":  {
+                               "ID":  5465,
+                               "AssemblyID":  361,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5466":  {
+                               "ID":  5466,
+                               "AssemblyID":  362,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5467":  {
+                               "ID":  5467,
+                               "AssemblyID":  363,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5468":  {
+                               "ID":  5468,
+                               "AssemblyID":  364,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5469":  {
+                               "ID":  5469,
+                               "AssemblyID":  365,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5470":  {
+                               "ID":  5470,
+                               "AssemblyID":  366,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5471":  {
+                               "ID":  5471,
+                               "AssemblyID":  367,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5472":  {
+                               "ID":  5472,
+                               "AssemblyID":  368,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5473":  {
+                               "ID":  5473,
+                               "AssemblyID":  369,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5474":  {
+                               "ID":  5474,
+                               "AssemblyID":  370,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5475":  {
+                               "ID":  5475,
+                               "AssemblyID":  371,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5476":  {
+                               "ID":  5476,
+                               "AssemblyID":  372,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5477":  {
+                               "ID":  5477,
+                               "AssemblyID":  373,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5478":  {
+                               "ID":  5478,
+                               "AssemblyID":  374,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5479":  {
+                               "ID":  5479,
+                               "AssemblyID":  375,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5480":  {
+                               "ID":  5480,
+                               "AssemblyID":  376,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5481":  {
+                               "ID":  5481,
+                               "AssemblyID":  377,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5482":  {
+                               "ID":  5482,
+                               "AssemblyID":  378,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5483":  {
+                               "ID":  5483,
+                               "AssemblyID":  379,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5484":  {
+                               "ID":  5484,
+                               "AssemblyID":  380,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5485":  {
+                               "ID":  5485,
+                               "AssemblyID":  381,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5486":  {
+                               "ID":  5486,
+                               "AssemblyID":  382,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5487":  {
+                               "ID":  5487,
+                               "AssemblyID":  383,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5488":  {
+                               "ID":  5488,
+                               "AssemblyID":  384,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5489":  {
+                               "ID":  5489,
+                               "AssemblyID":  385,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5490":  {
+                               "ID":  5490,
+                               "AssemblyID":  386,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5491":  {
+                               "ID":  5491,
+                               "AssemblyID":  387,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5492":  {
+                               "ID":  5492,
+                               "AssemblyID":  388,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5493":  {
+                               "ID":  5493,
+                               "AssemblyID":  389,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5494":  {
+                               "ID":  5494,
+                               "AssemblyID":  390,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5495":  {
+                               "ID":  5495,
+                               "AssemblyID":  391,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5496":  {
+                               "ID":  5496,
+                               "AssemblyID":  392,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5497":  {
+                               "ID":  5497,
+                               "AssemblyID":  393,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5498":  {
+                               "ID":  5498,
+                               "AssemblyID":  394,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5499":  {
+                               "ID":  5499,
+                               "AssemblyID":  395,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5500":  {
+                               "ID":  5500,
+                               "AssemblyID":  396,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5501":  {
+                               "ID":  5501,
+                               "AssemblyID":  397,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5502":  {
+                               "ID":  5502,
+                               "AssemblyID":  398,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5503":  {
+                               "ID":  5503,
+                               "AssemblyID":  399,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5504":  {
+                               "ID":  5504,
+                               "AssemblyID":  400,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5505":  {
+                               "ID":  5505,
+                               "AssemblyID":  401,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5506":  {
+                               "ID":  5506,
+                               "AssemblyID":  402,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5507":  {
+                               "ID":  5507,
+                               "AssemblyID":  403,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5508":  {
+                               "ID":  5508,
+                               "AssemblyID":  404,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5509":  {
+                               "ID":  5509,
+                               "AssemblyID":  405,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5510":  {
+                               "ID":  5510,
+                               "AssemblyID":  406,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5511":  {
+                               "ID":  5511,
+                               "AssemblyID":  407,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5512":  {
+                               "ID":  5512,
+                               "AssemblyID":  408,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5513":  {
+                               "ID":  5513,
+                               "AssemblyID":  409,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5514":  {
+                               "ID":  5514,
+                               "AssemblyID":  410,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5515":  {
+                               "ID":  5515,
+                               "AssemblyID":  411,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5516":  {
+                               "ID":  5516,
+                               "AssemblyID":  412,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5517":  {
+                               "ID":  5517,
+                               "AssemblyID":  413,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5518":  {
+                               "ID":  5518,
+                               "AssemblyID":  414,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5519":  {
+                               "ID":  5519,
+                               "AssemblyID":  415,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5520":  {
+                               "ID":  5520,
+                               "AssemblyID":  416,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5521":  {
+                               "ID":  5521,
+                               "AssemblyID":  417,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5522":  {
+                               "ID":  5522,
+                               "AssemblyID":  418,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5523":  {
+                               "ID":  5523,
+                               "AssemblyID":  419,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5524":  {
+                               "ID":  5524,
+                               "AssemblyID":  420,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5525":  {
+                               "ID":  5525,
+                               "AssemblyID":  421,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5526":  {
+                               "ID":  5526,
+                               "AssemblyID":  422,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5527":  {
+                               "ID":  5527,
+                               "AssemblyID":  423,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5528":  {
+                               "ID":  5528,
+                               "AssemblyID":  424,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5529":  {
+                               "ID":  5529,
+                               "AssemblyID":  425,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5530":  {
+                               "ID":  5530,
+                               "AssemblyID":  426,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5531":  {
+                               "ID":  5531,
+                               "AssemblyID":  427,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5532":  {
+                               "ID":  5532,
+                               "AssemblyID":  428,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5533":  {
+                               "ID":  5533,
+                               "AssemblyID":  429,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5534":  {
+                               "ID":  5534,
+                               "AssemblyID":  430,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5535":  {
+                               "ID":  5535,
+                               "AssemblyID":  431,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5536":  {
+                               "ID":  5536,
+                               "AssemblyID":  432,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5537":  {
+                               "ID":  5537,
+                               "AssemblyID":  433,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5538":  {
+                               "ID":  5538,
+                               "AssemblyID":  434,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5539":  {
+                               "ID":  5539,
+                               "AssemblyID":  435,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5540":  {
+                               "ID":  5540,
+                               "AssemblyID":  436,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5541":  {
+                               "ID":  5541,
+                               "AssemblyID":  437,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5542":  {
+                               "ID":  5542,
+                               "AssemblyID":  438,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5543":  {
+                               "ID":  5543,
+                               "AssemblyID":  439,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5544":  {
+                               "ID":  5544,
+                               "AssemblyID":  440,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5545":  {
+                               "ID":  5545,
+                               "AssemblyID":  441,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5546":  {
+                               "ID":  5546,
+                               "AssemblyID":  442,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5547":  {
+                               "ID":  5547,
+                               "AssemblyID":  443,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5548":  {
+                               "ID":  5548,
+                               "AssemblyID":  444,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5549":  {
+                               "ID":  5549,
+                               "AssemblyID":  445,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5550":  {
+                               "ID":  5550,
+                               "AssemblyID":  446,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5551":  {
+                               "ID":  5551,
+                               "AssemblyID":  447,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5552":  {
+                               "ID":  5552,
+                               "AssemblyID":  448,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5553":  {
+                               "ID":  5553,
+                               "AssemblyID":  449,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5554":  {
+                               "ID":  5554,
+                               "AssemblyID":  450,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5555":  {
+                               "ID":  5555,
+                               "AssemblyID":  451,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5556":  {
+                               "ID":  5556,
+                               "AssemblyID":  452,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5557":  {
+                               "ID":  5557,
+                               "AssemblyID":  453,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5558":  {
+                               "ID":  5558,
+                               "AssemblyID":  454,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5559":  {
+                               "ID":  5559,
+                               "AssemblyID":  455,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5560":  {
+                               "ID":  5560,
+                               "AssemblyID":  456,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5561":  {
+                               "ID":  5561,
+                               "AssemblyID":  457,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5562":  {
+                               "ID":  5562,
+                               "AssemblyID":  458,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5563":  {
+                               "ID":  5563,
+                               "AssemblyID":  459,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5564":  {
+                               "ID":  5564,
+                               "AssemblyID":  460,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5565":  {
+                               "ID":  5565,
+                               "AssemblyID":  461,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5566":  {
+                               "ID":  5566,
+                               "AssemblyID":  462,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5567":  {
+                               "ID":  5567,
+                               "AssemblyID":  463,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
+                           },
+                  "5568":  {
+                               "ID":  5568,
+                               "AssemblyID":  464,
+                               "Title":  "SimpleDrill",
+                               "EquipmentItemModelID":  22,
+                               "Count":  1
                            }
               }
 }
