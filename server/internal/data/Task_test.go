@@ -14,6 +14,9 @@ func TestTasksAddAssignsIDAndIndexesByController(t *testing.T) {
 	if task.ID != 1 {
 		t.Fatalf("task ID = %d, want 1", task.ID)
 	}
+	if task.BatchCount != 1 {
+		t.Fatalf("task batch count = %d, want 1", task.BatchCount)
+	}
 	if byController := tasks.GetByControllerEquipmentGroupID(10); len(byController) != 1 || byController[0] != task {
 		t.Fatal("task is not indexed by controller equipment group")
 	}

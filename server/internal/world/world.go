@@ -1174,6 +1174,7 @@ func (world *World) ApplyControlPanelContainerTransfer(accountID int64, sessionI
 			RemainingEnergy:            totalEnergy,
 			TotalEnergy:                totalEnergy,
 			LeftToRightDirection:       transfer.LeftToRightDirection,
+			BatchCount:                 1,
 		})
 		if err != nil {
 			return err
@@ -1255,7 +1256,7 @@ func (world *World) ApplyControlPanelFuelTransfer(accountID int64, sessionID str
 				TaskTypeID:                      taskType.ID,
 				RemainingEnergy:                 totalEnergy,
 				TotalEnergy:                     totalEnergy,
-				Count:                           amount,
+				BatchCount:                      1,
 				LeftToRightDirection:            true,
 				SourceContainerEquipmentGroupID: container.ID,
 				FuelTankEquipmentGroupID:        fuelTankGroup.ID,
@@ -1282,7 +1283,7 @@ func (world *World) ApplyControlPanelFuelTransfer(accountID int64, sessionID str
 			TaskTypeID:                      taskType.ID,
 			RemainingEnergy:                 totalEnergy,
 			TotalEnergy:                     totalEnergy,
-			Count:                           amount,
+			BatchCount:                      1,
 			LeftToRightDirection:            false,
 			SourceContainerEquipmentGroupID: container.ID,
 			FuelTankEquipmentGroupID:        fuelTankGroup.ID,
@@ -1350,7 +1351,7 @@ func (world *World) ApplyControlPanelItemDeconstruction(accountID int64, session
 			TaskTypeID:                      taskType.ID,
 			RemainingEnergy:                 schema.ProductionEnergy * batches,
 			TotalEnergy:                     schema.ProductionEnergy * batches,
-			Count:                           batches,
+			BatchCount:                      int64(batches),
 			SchemaID:                        schema.ID,
 			SourceContainerEquipmentGroupID: sourceContainer.ID,
 			TargetContainerEquipmentGroupID: targetContainer.ID,
@@ -1522,7 +1523,7 @@ func (world *World) trimTaskToStartedCountLocked(task *data.Task) {
 			_ = world.data.ItemGroups.RebuildIndexes()
 		}
 	}
-	task.Count = startedCount
+	task.BatchCount = int64(startedCount)
 	task.TotalEnergy = perUnitEnergy * startedCount
 	task.RemainingEnergy = math.Max(0, task.TotalEnergy-elapsedEnergy)
 }
@@ -2006,7 +2007,7 @@ func (world *World) addConstructorTasksLocked(plannedJobs []constructorProductio
 			TaskTypeID:                 taskType.ID,
 			RemainingEnergy:            totalEnergy * float64(batches),
 			TotalEnergy:                totalEnergy * float64(batches),
-			Count:                      float64(batches),
+			BatchCount:                 batches,
 			SchemaID:                   job.SchemaID,
 			BlueprintID:                job.BlueprintID,
 		})
@@ -2128,16 +2129,12 @@ func (world *World) relatedContainerEquipmentLocked(objectID int64, equipmentGro
 	return world.controlledContainerEquipmentLocked(objectID, relatedEquipmentGroupID)
 }
 
-// constructorRelatedContainerOrFallbackLocked Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…РЎвЂ№Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р С‘Р В»Р С‘ РЎРѓРЎвЂљР В°РЎР‚Р С•Р Вµ Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘Р Вµ Р С”Р С•Р СР В°Р Р…Р Т‘РЎвЂ№ Р Т‘Р В»РЎРЏ РЎРѓР С•Р Р†Р СР ВµРЎРѓРЎвЂљР С‘Р СР С•РЎРѓРЎвЂљР С‘.
+// constructorRelatedContainerOrFallbackLocked возвращает явно выбранный контейнер или сохраненную связь оборудования.
 func (world *World) constructorRelatedContainerOrFallbackLocked(objectID int64, constructorID int64, relationTypeAcronym string, fallbackContainerID int64) (*data.EquipmentGroup, error) {
-	container, err := world.relatedContainerEquipmentLocked(objectID, constructorID, relationTypeAcronym)
-	if err == nil {
-		return container, nil
+	if fallbackContainerID > 0 {
+		return world.controlledContainerEquipmentLocked(objectID, fallbackContainerID)
 	}
-	if fallbackContainerID <= 0 {
-		return nil, err
-	}
-	return world.controlledContainerEquipmentLocked(objectID, fallbackContainerID)
+	return world.relatedContainerEquipmentLocked(objectID, constructorID, relationTypeAcronym)
 }
 
 func (world *World) controlledEquipmentitemTypeLocked(objectID int64, groupID int64, itemTypeAcronym string) (*data.EquipmentGroup, error) {
@@ -2906,12 +2903,12 @@ func (world *World) taskRequirementsLocked(task *data.Task) (map[int64]float64, 
 	return requiredByModel, true
 }
 
-// taskCount возвращает количество результата задания с учетом старых сохранений без этого поля.
+// taskCount возвращает количество партий задания с учетом сохранений без этого поля.
 func taskCount(task *data.Task) float64 {
-	if task == nil || task.Count <= 0 {
+	if task == nil || task.BatchCount <= 0 {
 		return 1
 	}
-	return task.Count
+	return float64(task.BatchCount)
 }
 
 // taskComponentsLocked возвращает список расходников задания.

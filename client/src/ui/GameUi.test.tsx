@@ -1025,7 +1025,7 @@ describe("GameUi", () => {
         { ID: 21, ContainerEquipmentGroupID: 10, ContentItemModelID: 3, Count: 4 },
       ],
       tasks: [
-        { ID: 31, ControllerEquipmentGroupID: 11, ParentTaskID: 0, TaskTypeID: 3, RemainingEnergy: 5, TotalEnergy: 10, Count: 1, SchemaID: 0, BlueprintID: 0, LeftToRightDirection: true },
+        { ID: 31, ControllerEquipmentGroupID: 11, ParentTaskID: 0, TaskTypeID: 3, RemainingEnergy: 5, TotalEnergy: 10, SchemaID: 0, BlueprintID: 0, LeftToRightDirection: true, BatchCount: 1 },
       ],
       taskItemGroups: [
         { ID: 41, TaskID: 31, ItemModelID: 3, Count: 4, IsStored: true },

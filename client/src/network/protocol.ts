@@ -488,14 +488,14 @@ export type Task = {
   RemainingEnergy: number;
   // Полный объем работы в джоулях.
   TotalEnergy: number;
-  // Количество единиц результата, которое должно выполнить задание.
-  Count: number;
   // Схема для производства предметов.
   SchemaID: number;
   // Чертеж для производства объектов.
   BlueprintID: number;
   // Направление работы слева направо для заданий с парным интерфейсом.
   LeftToRightDirection: boolean;
+  // Количество партий, которое должно выполнить задание.
+  BatchCount: number;
   // Контейнер, из которого предметы были зарезервированы.
   SourceContainerEquipmentGroupID?: number;
   // Контейнер, куда нужно положить результат перемещения.

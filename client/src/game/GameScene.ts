@@ -1823,7 +1823,7 @@ export class GameScene extends Phaser.Scene {
       .map((task) => {
         const schema = task.SchemaID > 0 ? this.referenceData?.Schema.Items[String(task.SchemaID)] : undefined;
         const blueprint = task.BlueprintID > 0 ? this.referenceData?.Blueprint.Items[String(task.BlueprintID)] : undefined;
-        const amount = task.Count > 0 ? task.Count : 1;
+        const amount = task.BatchCount > 0 ? task.BatchCount : 1;
         const remainingAmount = this.remainingTaskCount(task.RemainingEnergy, task.TotalEnergy, amount);
         const remainingTime = this.taskEnergyToSeconds(task, task.RemainingEnergy, equipmentGroups);
         const totalTime = this.taskEnergyToSeconds(task, task.TotalEnergy, equipmentGroups);

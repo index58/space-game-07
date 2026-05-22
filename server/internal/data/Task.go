@@ -16,10 +16,10 @@ type Task struct {
 	TaskTypeID                      int64   `json:"TaskTypeID"`                      // Тип выполняемой работы.
 	RemainingEnergy                 float64 `json:"RemainingEnergy"`                 // Остаток работы в джоулях.
 	TotalEnergy                     float64 `json:"TotalEnergy"`                     // Полный объем работы в джоулях.
-	Count                           float64 `json:"Count"`                           // Количество единиц результата, которое должно выполнить задание.
 	SchemaID                        int64   `json:"SchemaID"`                        // Схема для изготовления предмета.
 	BlueprintID                     int64   `json:"BlueprintID"`                     // Чертеж для изготовления объекта.
 	LeftToRightDirection            bool    `json:"LeftToRightDirection"`            // Направление работы слева направо для заданий с парным интерфейсом.
+	BatchCount                      int64   `json:"BatchCount"`                      // Количество партий, которое должно выполнить задание.
 	SourceContainerEquipmentGroupID int64   `json:"SourceContainerEquipmentGroupID"` // Контейнер, из которого предметы были зарезервированы.
 	TargetContainerEquipmentGroupID int64   `json:"TargetContainerEquipmentGroupID"` // Контейнер, куда нужно положить результат перемещения.
 	FuelTankEquipmentGroupID        int64   `json:"FuelTankEquipmentGroupID"`        // Бак, участвующий в заправке или сливе.
@@ -46,6 +46,7 @@ func (tasks *Tasks) Add(task *Task) (*Task, error) {
 		return nil, errors.New("task is nil")
 	}
 	tasks.ensureMaps()
+	normalizeTaskDefaults(task)
 	if err := tasks.validateRequiredFields(task); err != nil {
 		return nil, err
 	}
@@ -100,6 +101,7 @@ func (tasks *Tasks) RebuildIndexes() error {
 		if task.ID != id {
 			return fmt.Errorf("task map key %d does not match task ID %d", id, task.ID)
 		}
+		normalizeTaskDefaults(task)
 		if err := tasks.validateRequiredFields(task); err != nil {
 			return fmt.Errorf("task with ID %d is invalid: %w", id, err)
 		}
@@ -151,6 +153,13 @@ func (tasks *Tasks) ensureMaps() {
 func (tasks *Tasks) ensureItems() {
 	if tasks.Items == nil {
 		tasks.Items = make(map[int64]*Task)
+	}
+}
+
+// normalizeTaskDefaults заполняет значения задания, которые по умолчанию не могут оставаться нулевыми.
+func normalizeTaskDefaults(task *Task) {
+	if task.BatchCount <= 0 {
+		task.BatchCount = 1
 	}
 }
 

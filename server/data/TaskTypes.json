@@ -36,6 +36,12 @@
                             "TitleRu":  "Деконструкция объектов",
                             "TitleEn":  "Object deconstruction",
                             "Acronym":  "ObjectDeconstruction"
+                        },
+                  "7":  {
+                            "ID":  7,
+                            "TitleRu":  "Обмен",
+                            "TitleEn":  "Exchange",
+                            "Acronym":  "Exchange"
                         }
               }
 }

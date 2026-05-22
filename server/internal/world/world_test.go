@@ -1821,6 +1821,9 @@ func TestApplyControlPanelContainerTransferMovesAllItemsToTargetContainer(t *tes
 	if task.ControllerEquipmentGroupID != target.ID || !task.LeftToRightDirection {
 		t.Fatalf("movement controller was not saved: %+v", task)
 	}
+	if task.BatchCount != 1 {
+		t.Fatalf("movement batch count = %d, want 1", task.BatchCount)
+	}
 	reserved := serverData.TaskItemGroups.GetByTaskID(task.ID)
 	if len(reserved) != 1 || reserved[0].ItemModelID != 303 || reserved[0].Count != 10 {
 		t.Fatalf("cargo requirement was not saved in task item group: %+v", reserved)
@@ -1907,6 +1910,9 @@ func TestApplyControlPanelContainerTransferMovesRequestedAmount(t *testing.T) {
 	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(target.ID)
 	if len(tasks) != 1 {
 		t.Fatalf("movement task was not queued: %+v", tasks)
+	}
+	if tasks[0].BatchCount != 1 {
+		t.Fatalf("movement batch count = %d, want 1", tasks[0].BatchCount)
 	}
 	reserved := serverData.TaskItemGroups.GetByTaskID(tasks[0].ID)
 	if len(reserved) != 1 || reserved[0].ItemModelID != 303 || reserved[0].Count != 4 {
@@ -2093,7 +2099,7 @@ func TestApplyControlPanelContainerTransferUsesOwnedClusterObject(t *testing.T) 
 		t.Fatalf("target cluster container changed before task completion: %+v", targetItems)
 	}
 	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(target.ID)
-	if len(tasks) != 1 || tasks[0].ControllerEquipmentGroupID != target.ID || !tasks[0].LeftToRightDirection {
+	if len(tasks) != 1 || tasks[0].ControllerEquipmentGroupID != target.ID || !tasks[0].LeftToRightDirection || tasks[0].BatchCount != 1 {
 		t.Fatalf("cluster movement task was not queued: %+v", tasks)
 	}
 }
@@ -2168,6 +2174,17 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 	if materialContainer == nil {
 		t.Fatalf("material container was not installed")
 	}
+	staleMaterialContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       objectID,
+		Title:                "Old Material Container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 	productContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
 		CosmicObjectID:       objectID,
 		Title:                "Product Container",
@@ -2180,12 +2197,13 @@ func TestApplyControlPanelConstructorProduceItemQueuesAndCompletesAfterProductio
 		t.Fatal(err)
 	}
 	constructor, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
-		CosmicObjectID:       objectID,
-		Title:                "Constructor",
-		EquipmentItemModelID: 501,
-		Count:                1,
-		EnabledCount:         1,
-		Enabled:              true,
+		CosmicObjectID:         objectID,
+		Title:                  "Constructor",
+		EquipmentItemModelID:   501,
+		SourceEquipmentGroupID: staleMaterialContainer.ID,
+		Count:                  1,
+		EnabledCount:           1,
+		Enabled:                true,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -2319,6 +2337,9 @@ func TestApplyControlPanelConstructorProduceItemStoresAmountInSingleTask(t *test
 	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(constructor.ID)
 	if len(tasks) != 1 {
 		t.Fatalf("production amount was split into separate tasks: %+v", tasks)
+	}
+	if tasks[0].BatchCount != 3 {
+		t.Fatalf("production batch count = %d, want 3", tasks[0].BatchCount)
 	}
 }
 
@@ -2832,7 +2853,7 @@ func TestApplyControlPanelFuelTransferFillsObjectFuelFromContainer(t *testing.T)
 		t.Fatalf("container fuel changed before fueling task started: %+v", items)
 	}
 	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(fuelTank.ID)
-	if len(tasks) != 1 || !tasks[0].LeftToRightDirection {
+	if len(tasks) != 1 || !tasks[0].LeftToRightDirection || tasks[0].BatchCount != 1 {
 		t.Fatalf("fueling task was not queued correctly: %+v", tasks)
 	}
 
@@ -3051,7 +3072,7 @@ func TestApplyControlPanelFuelTransferDrainsObjectFuelToContainer(t *testing.T) 
 		t.Fatalf("object fuel changed before drain task started: %v", cosmicObject.Fuel)
 	}
 	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(fuelTank.ID)
-	if len(tasks) != 1 || tasks[0].LeftToRightDirection {
+	if len(tasks) != 1 || tasks[0].LeftToRightDirection || tasks[0].BatchCount != 1 {
 		t.Fatalf("fuel drain task was not queued correctly: %+v", tasks)
 	}
 
@@ -3114,7 +3135,7 @@ func TestApplyControlPanelItemDeconstructionQueuesAndCompletesSchemaBatch(t *tes
 	}
 
 	tasks := serverData.Tasks.GetByControllerEquipmentGroupID(deconstructor.ID)
-	if len(tasks) != 1 || tasks[0].SchemaID != 2 || tasks[0].Count != 2 || tasks[0].TotalEnergy != 200 {
+	if len(tasks) != 1 || tasks[0].SchemaID != 2 || tasks[0].BatchCount != 2 || tasks[0].TotalEnergy != 200 {
 		t.Fatalf("deconstruction task was not queued correctly: %+v", tasks)
 	}
 	reserves := serverData.TaskItemGroups.GetByTaskID(tasks[0].ID)
