@@ -845,6 +845,7 @@ describe("InputController", () => {
       thrustRight: false,
       toggleAnchor: false,
       primaryPointerAction: false,
+      selectedPilotToolIndex: 0,
       targetRotationDelta: 0,
     });
   });

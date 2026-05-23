@@ -36,6 +36,7 @@ export const emptyShipInput = (): ClientInputState => ({
   thrustRight: false,
   toggleAnchor: false,
   primaryPointerAction: false,
+  selectedPilotToolIndex: 0,
   targetRotationDelta: 0,
 });
 
@@ -60,6 +61,7 @@ export const toShipInput = (
     thrustRight: isKeyboardBindingPressed(keys, activeBindings.ThrustRight),
     toggleAnchor: false,
     primaryPointerAction: isInputBindingPressed(keys, mouseButtons, activeBindings.PrimaryPointerAction),
+    selectedPilotToolIndex: 0,
     targetRotationDelta: rotationDeltaFromBindings(keys, mouseDeltaX, activeBindings),
   };
 };

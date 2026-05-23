@@ -35,6 +35,7 @@ const emptyInput = (): ClientInputState => ({
   thrustRight: false,
   toggleAnchor: false,
   primaryPointerAction: false,
+  selectedPilotToolIndex: 0,
   targetRotationDelta: 0,
 });
 
@@ -183,7 +184,7 @@ describe("GameClient", () => {
     });
     const socket = FakeWebSocket.instances[0];
 
-    client.setInput({ ...emptyInput(), thrustForward: true, targetRotationDelta: 0.25 });
+    client.setInput({ ...emptyInput(), thrustForward: true, selectedPilotToolIndex: 3, targetRotationDelta: 0.25 });
     socket.onopen?.();
     vi.advanceTimersByTime(1000);
 
@@ -196,6 +197,7 @@ describe("GameClient", () => {
       thrustRight: false,
       toggleAnchor: false,
       primaryPointerAction: false,
+      selectedPilotToolIndex: 3,
       targetRotationDelta: 0.25,
     });
 
@@ -326,6 +328,7 @@ describe("GameClient", () => {
       thrustRight: true,
       toggleAnchor: false,
       primaryPointerAction: false,
+      selectedPilotToolIndex: 0,
       targetRotationDelta: firstMessage.targetRotationDelta,
     });
     expect(firstMessage.targetRotationDelta).toBeCloseTo(0.25);
@@ -339,6 +342,7 @@ describe("GameClient", () => {
       thrustRight: true,
       toggleAnchor: false,
       primaryPointerAction: false,
+      selectedPilotToolIndex: 0,
       targetRotationDelta: 0,
     });
 

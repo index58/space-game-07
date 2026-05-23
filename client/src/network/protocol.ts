@@ -15,6 +15,8 @@ export type ClientInputState = {
   toggleAnchor: boolean;
   // Запрос основного действия указателя для выбранного инструмента пилота.
   primaryPointerAction: boolean;
+  // Номер слота в панели инструментов пилота.
+  selectedPilotToolIndex: number;
   // Изменение целевого угла поворота с прошлого пакета.
   targetRotationDelta: number;
 };

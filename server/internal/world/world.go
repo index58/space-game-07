@@ -22,9 +22,17 @@ const (
 	defaultStarterShipAcronym = "ship_bat"
 	dockingDurationSeconds    = 10
 	dockingProbeDistance      = 10
+	pilotToolSlotCount        = 10
 	simpleDrillAcronym        = "SimpleDrill"
 	simpleDrillRayAcronym     = "SimpleDrillRay"
 )
+
+// Хранит сводные данные одной модели инструмента в панели пилота.
+type pilotInstrumentModel struct {
+	ModelID      int64 // Уникальный идентификатор модели предмета.
+	FirstGroupID int64 // Уникальный идентификатор первой группы оборудования этой модели.
+	EnabledCount int64 // Количество включенных единиц оборудования этой модели.
+}
 
 // Р РЋР С•Р В±Р С‘РЎР‚Р В°Р ВµРЎвЂљ РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С‘ Р С‘ Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№Р Вµ РЎРѓРЎС“РЎвЂ°Р Р…Р С•РЎРѓРЎвЂљР С‘, Р Р…РЎС“Р В¶Р Р…РЎвЂ№Р Вµ РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘ Р СР С‘РЎР‚Р В°.
 type Data struct {
@@ -3492,21 +3500,21 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 		if !ok {
 			continue
 		}
+		input, controlled := inputsByObjectID[objectID]
 		if !cosmicObject.Enabled {
-			world.updateEquipmentUsage(cosmicObject, dtSeconds)
+			world.updateEquipmentUsage(cosmicObject, game.ShipInput{}, dtSeconds)
 			continue
 		}
 		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
 		if !ok {
-			world.updateEquipmentUsage(cosmicObject, dtSeconds)
+			world.updateEquipmentUsage(cosmicObject, input, dtSeconds)
 			continue
 		}
 		if cosmicObject.Anchored {
-			world.updateEquipmentUsage(cosmicObject, dtSeconds)
+			world.updateEquipmentUsage(cosmicObject, input, dtSeconds)
 			continue
 		}
 
-		input, controlled := inputsByObjectID[objectID]
 		isShip := world.isShipModel(model)
 		if controlled && (!isShip || shipHasFuel(*cosmicObject)) {
 			*cosmicObject = world.stepControlledObject(*cosmicObject, *model, input, dtSeconds)
@@ -3515,7 +3523,7 @@ func (world *World) stepMovableObjects(dtSeconds float64, inputsByObjectID map[i
 		} else {
 			*cosmicObject = physics.StepFreeBody(*cosmicObject, dtSeconds)
 		}
-		world.updateEquipmentUsage(cosmicObject, dtSeconds)
+		world.updateEquipmentUsage(cosmicObject, input, dtSeconds)
 	}
 }
 
@@ -3563,6 +3571,7 @@ func (world *World) electricShareForInput(cosmicObject data.CosmicObject, input 
 
 	generatedPower := 0.0
 	neededPower := 0.0
+	primaryModelID, primaryModelOK := world.activePrimaryPilotToolModelIDLocked(cosmicObject.ID, input)
 	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)) {
 		enabledCount := enabledEquipmentCount(group)
 		if enabledCount <= 0 {
@@ -3574,7 +3583,7 @@ func (world *World) electricShareForInput(cosmicObject data.CosmicObject, input 
 		}
 		count := float64(enabledCount)
 		generatedPower += model.GeneratingPower * count
-		if equipmentNeedsElectricityForInput(input, *model) {
+		if equipmentNeedsElectricityForInput(input, *model, primaryModelID, primaryModelOK) {
 			neededPower += model.ConsumingPower * count
 		}
 	}
@@ -3583,7 +3592,7 @@ func (world *World) electricShareForInput(cosmicObject data.CosmicObject, input 
 }
 
 // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµРЎвЂљ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р С•РЎРѓРЎвЂљРЎРЉ Р С•Р В±Р С•РЎР‚РЎС“Р Т‘Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ, Р СР С•РЎвЂ°Р Р…Р С•РЎРѓРЎвЂљРЎРЉ Р С‘ Р В·Р В°Р С—Р В°РЎРѓ РЎвЂљР С•Р С—Р В»Р С‘Р Р†Р В° Р С—Р С•РЎРѓР В»Р Вµ РЎв‚¬Р В°Р С–Р В° Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР В°.
-func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeconds float64) {
+func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, input game.ShipInput, dtSeconds float64) {
 	cosmicObject.ConsumingPower = 0
 	cosmicObject.GeneratingPower = 0
 	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
@@ -3594,6 +3603,7 @@ func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeco
 	generatorFuelConsumptionPerSecond := 0.0
 	neededPower := 0.0
 	generatorGroups := make([]*data.EquipmentGroup, 0)
+	primaryModelID, primaryModelOK := world.activePrimaryPilotToolModelIDLocked(cosmicObject.ID, input)
 	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(cosmicObject.ID)) {
 		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
 		if !ok {
@@ -3621,7 +3631,9 @@ func (world *World) updateEquipmentUsage(cosmicObject *data.CosmicObject, dtSeco
 			}
 		}
 
-		group.Active = equipmentIsActive(*cosmicObject, *model) || world.constructorEquipmentIsWorkingLocked(group.ID)
+		group.Active = equipmentIsActive(*cosmicObject, *model) ||
+			equipmentIsActiveForPrimaryAction(*model, primaryModelID, primaryModelOK) ||
+			world.constructorEquipmentIsWorkingLocked(group.ID)
 		if !group.Active {
 			continue
 		}
@@ -3679,11 +3691,17 @@ func electricWorkShare(generatedPower float64, neededPower float64) float64 {
 }
 
 // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµРЎвЂљ, Р В±РЎС“Р Т‘Р ВµРЎвЂљ Р В»Р С‘ Р СР С•Р Т‘Р ВµР В»РЎРЉ РЎвЂљРЎР‚Р В°РЎвЂљР С‘РЎвЂљРЎРЉ РЎРЊР В»Р ВµР С”РЎвЂљРЎР‚Р С‘РЎвЂЎР ВµРЎРѓРЎвЂљР Р†Р С• Р С—РЎР‚Р С‘ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С РЎС“Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘Р С‘.
-func equipmentNeedsElectricityForInput(input game.ShipInput, model data.ItemModel) bool {
+func equipmentNeedsElectricityForInput(input game.ShipInput, model data.ItemModel, primaryModelID int64, primaryModelOK bool) bool {
 	usesAlongForce := model.MaxAlongForce != 0 && (input.ThrustForward || input.ThrustBackward)
 	usesAcrossForce := model.MaxAcrossForce != 0 && (input.ThrustLeft || input.ThrustRight)
 	usesTorque := model.MaxTorque != 0 && input.TargetRotationDelta != 0
-	return usesAlongForce || usesAcrossForce || usesTorque
+	usesPrimaryAction := equipmentIsActiveForPrimaryAction(model, primaryModelID, primaryModelOK)
+	return usesAlongForce || usesAcrossForce || usesTorque || usesPrimaryAction
+}
+
+// Проверяет, работает ли оборудование от основного действия выбранного инструмента.
+func equipmentIsActiveForPrimaryAction(model data.ItemModel, primaryModelID int64, primaryModelOK bool) bool {
+	return primaryModelOK && model.ID == primaryModelID && model.Acronym == simpleDrillAcronym
 }
 
 // Р С›Р С—РЎР‚Р ВµР Т‘Р ВµР В»РЎРЏР ВµРЎвЂљ, Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…РЎРЏР ВµРЎвЂљ Р В»Р С‘ Р С•Р В±Р С•РЎР‚РЎС“Р Т‘Р С•Р Р†Р В°Р Р…Р С‘Р Вµ РЎР‚Р В°Р В±Р С•РЎвЂљРЎС“ Р Р† РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С РЎвЂљР С‘Р С”Р Вµ.
@@ -3957,6 +3975,7 @@ func (world *World) activeDrillRayObjectsLocked() []game.SnapshotCosmicObject {
 
 	rays := make([]game.SnapshotCosmicObject, 0, len(objectIDs))
 	for _, objectID := range objectIDs {
+		input := inputs[objectID]
 		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
 		if !ok || !cosmicObject.Enabled {
 			continue
@@ -3965,7 +3984,7 @@ func (world *World) activeDrillRayObjectsLocked() []game.SnapshotCosmicObject {
 		if !ok {
 			continue
 		}
-		if _, ok := world.enabledSimpleDrillRangeLocked(objectID); !ok {
+		if _, ok := world.selectedSimpleDrillRangeLocked(objectID, input); !ok {
 			continue
 		}
 
@@ -4002,15 +4021,84 @@ func modelVisualForwardOffsetMeters(model data.CosmicObjectModel) float64 {
 	return model.BodyLength / 2
 }
 
-// Ищет включенный простой бур на объекте и возвращает дальность его действия.
-func (world *World) enabledSimpleDrillRangeLocked(objectID int64) (float64, bool) {
-	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
+// Возвращает модель выбранного включенного инструмента, если основное действие активно.
+func (world *World) activePrimaryPilotToolModelIDLocked(objectID int64, input game.ShipInput) (int64, bool) {
+	if !input.PrimaryPointerAction {
+		return 0, false
+	}
+	tools := world.pilotInstrumentModelsLocked(objectID)
+	if len(tools) == 0 {
+		return 0, false
+	}
+	index := normalizePilotToolIndex(input.SelectedPilotToolIndex)
+	if index >= len(tools) || tools[index].EnabledCount <= 0 {
+		return 0, false
+	}
+	return tools[index].ModelID, true
+}
+
+// Собирает модели инструментов пилота в том же порядке, в котором их видит клиентская панель.
+func (world *World) pilotInstrumentModelsLocked(objectID int64) []pilotInstrumentModel {
+	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil || world.data.ItemTypes == nil {
+		return nil
+	}
+
+	byModelID := map[int64]*pilotInstrumentModel{}
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(objectID)) {
+		if group == nil || group.Count <= 0 {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok {
+			continue
+		}
+		itemType, ok := world.data.ItemTypes.Get(model.ItemTypeID)
+		if !ok || !itemType.IsPilotInstrument {
+			continue
+		}
+		tool, ok := byModelID[model.ID]
+		if !ok {
+			tool = &pilotInstrumentModel{ModelID: model.ID, FirstGroupID: group.ID}
+			byModelID[model.ID] = tool
+		}
+		if group.ID < tool.FirstGroupID {
+			tool.FirstGroupID = group.ID
+		}
+		tool.EnabledCount += enabledEquipmentCount(group)
+	}
+
+	result := make([]pilotInstrumentModel, 0, len(byModelID))
+	for _, tool := range byModelID {
+		result = append(result, *tool)
+	}
+	sort.Slice(result, func(left int, right int) bool {
+		return result[left].FirstGroupID < result[right].FirstGroupID
+	})
+	if len(result) > pilotToolSlotCount {
+		return result[:pilotToolSlotCount]
+	}
+	return result
+}
+
+// Приводит номер слота инструмента к диапазону панели пилота.
+func normalizePilotToolIndex(index int) int {
+	result := index % pilotToolSlotCount
+	if result < 0 {
+		result += pilotToolSlotCount
+	}
+	return result
+}
+
+// Ищет выбранный включенный простой бур и возвращает дальность его действия.
+func (world *World) selectedSimpleDrillRangeLocked(objectID int64, input game.ShipInput) (float64, bool) {
+	modelID, ok := world.activePrimaryPilotToolModelIDLocked(objectID, input)
+	if !ok || world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
 		return 0, false
 	}
 
 	var selectedRange float64
 	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(objectID)) {
-		if enabledEquipmentCount(group) <= 0 {
+		if group.EquipmentItemModelID != modelID || enabledEquipmentCount(group) <= 0 {
 			continue
 		}
 		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)

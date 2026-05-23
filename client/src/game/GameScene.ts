@@ -292,7 +292,11 @@ export class GameScene extends Phaser.Scene {
   update(time: number, _deltaMs: number): void {
     const measuredFps = this.frameRateMeter.recordFrame(time);
     const input = this.inputController.consumeShipInput();
-    this.gameClient?.setInput(input);
+    const pilotToolSelectionDelta = this.inputController.consumePilotToolSelectionDelta();
+    if (pilotToolSelectionDelta !== 0) {
+      this.selectedPilotToolIndex = getNextPilotToolIndex(this.selectedPilotToolIndex, pilotToolSelectionDelta);
+    }
+    this.gameClient?.setInput({ ...input, selectedPilotToolIndex: this.selectedPilotToolIndex });
     if (this.inputController.consumeRandomShipChangeRequest()) {
       this.gameClient?.requestRandomShipChange();
     }
@@ -307,7 +311,6 @@ export class GameScene extends Phaser.Scene {
       }
     }
     this.zoomLevel = this.inputController.getZoom();
-    const pilotToolSelectionDelta = this.inputController.consumePilotToolSelectionDelta();
 
     const status = this.gameClient?.getStatus() ?? "connecting";
     const settingsVisible = this.inputController.isSettingsVisible();
@@ -457,10 +460,6 @@ export class GameScene extends Phaser.Scene {
       });
       this.updateGameUiControlsIfNeeded(this.gameUi.state());
       return;
-    }
-
-    if (pilotToolSelectionDelta !== 0) {
-      this.selectedPilotToolIndex = getNextPilotToolIndex(this.selectedPilotToolIndex, pilotToolSelectionDelta);
     }
 
     this.waitingText.setVisible(false);

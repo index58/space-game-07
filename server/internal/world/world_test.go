@@ -41,6 +41,7 @@ func dockingEventsContainKind(events []game.DockingEvent, kind string) bool {
 // Добавляет минимальные справочники бура и луча для проверки временного объекта в снимке мира.
 func addSimpleDrillRayTestData(t *testing.T, serverData *world.Data) {
 	t.Helper()
+	serverData.ItemTypes.Items[1].IsPilotInstrument = true
 
 	serverData.CosmicObjectTypes.Items[6] = &data.CosmicObjectType{ID: 6, TitleRu: "Луч", TitleEn: "Ray", Acronym: "Ray", Movable: true, Rotatable: true}
 	serverData.CosmicObjectTypes.MaxID = 6
@@ -80,6 +81,9 @@ func addSimpleDrillRayTestData(t *testing.T, serverData *world.Data) {
 		t.Fatal(err)
 	}
 	if err := serverData.CosmicObjectModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
 		t.Fatal(err)
 	}
 	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
@@ -590,6 +594,71 @@ func TestSnapshotAddsTemporarySimpleDrillRayObject(t *testing.T) {
 	}
 	if math.Abs(ray.Rotation-ship.Rotation) > physics.Epsilon {
 		t.Fatalf("ray rotation got %.6f, want %.6f", ray.Rotation, ship.Rotation)
+	}
+}
+
+// Проверяет, что основное действие пушки не создает временный луч установленного бура.
+func TestSnapshotAddsTemporarySimpleDrillRayOnlyForSelectedDrill(t *testing.T) {
+	serverData := testWorldData(t)
+	addSimpleDrillRayTestData(t, &serverData)
+	serverData.EquipmentGroups.Items[600] = &data.EquipmentGroup{
+		ID:                   600,
+		CosmicObjectID:       1,
+		Title:                "Cannon",
+		EquipmentItemModelID: 302,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	}
+	if err := serverData.EquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	cannonSnapshot := gameWorld.SnapshotForAccount(1)
+	if _, ok := findCosmicObjectInSnapshot(cannonSnapshot, -1); ok {
+		t.Fatalf("temporary ray was added for selected cannon")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 1, PrimaryPointerAction: true})
+	drillSnapshot := gameWorld.SnapshotForAccount(1)
+	if _, ok := findCosmicObjectInSnapshot(drillSnapshot, -1); !ok {
+		t.Fatalf("temporary ray was not added for selected drill")
+	}
+}
+
+// Проверяет, что выбранный бур расходует электричество во время основного действия.
+func TestSelectedSimpleDrillConsumesPowerOnPrimaryAction(t *testing.T) {
+	serverData := testWorldData(t)
+	addSimpleDrillRayTestData(t, &serverData)
+	serverData.ItemModels.Items[700].ConsumingPower = 12000
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	addTestPowerProducer(t, serverData, 1)
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	snapshot := gameWorld.Tick(1)
+
+	ship, ok := findCosmicObjectInSnapshot(snapshot, 1)
+	if !ok {
+		t.Fatal("ship was not found")
+	}
+	closeWorldFloat(t, ship.ConsumingPower, 12000)
+	drill, ok := findEquipmentGroupInSnapshot(snapshot, 700)
+	if !ok {
+		t.Fatal("drill group was not found")
+	}
+	if !drill.Active {
+		t.Fatalf("drill group was not marked active")
 	}
 }
 
