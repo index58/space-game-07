@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { DockingEventMessage, ExchangeEventMessage } from "../network/protocol";
+import type { CosmicObjectModelReference, DockingEventMessage, ExchangeEventMessage } from "../network/protocol";
 
 vi.mock("phaser", () => ({
   Scene: class {
@@ -10,6 +10,51 @@ vi.mock("phaser", () => ({
 }));
 
 describe("GameScene", () => {
+  // Проверяет, что текстура привязывается по центру, потому что физическое тело уже смещено внутри полигона.
+  it("uses texture center origin for shifted body polygon", async () => {
+    const { GameScene } = await import("./GameScene");
+    const model = {
+      ID: 350,
+      CosmicObjectTypeID: 1,
+      TextureFilePath: "assets/ships/1024x2048/ship_1024x2048_0042.png",
+      TextureWidth: 1024,
+      TextureHeight: 2048,
+      TextureBodyOriginX: 513,
+      TextureBodyOriginY: 920,
+      TextureScale: 4,
+      BodyWidth: 183.825,
+      BodyLength: 348.65,
+    } satisfies CosmicObjectModelReference;
+    const origins: Array<{ x: number; y: number }> = [];
+    type TestSprite = {
+      setOrigin: (x: number, y: number) => void;
+    };
+    const sprite: TestSprite = {
+      setOrigin: (x, y) => {
+        origins.push({ x, y });
+      },
+    };
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      updateObjectSpriteOrigin: (sprite: TestSprite, object: { CosmicObjectModelID: number }) => void;
+    };
+
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "350": model,
+        },
+      },
+    };
+
+    scene.updateObjectSpriteOrigin(sprite, { CosmicObjectModelID: 350 });
+
+    expect(origins[0]).toEqual({
+      x: 0.5,
+      y: 0.5,
+    });
+  });
+
   // Проверяет, что маленькие уведомления стыковки убираются через пять секунд.
   it("keeps docking notifications for five seconds", async () => {
     const { GameScene } = await import("./GameScene");

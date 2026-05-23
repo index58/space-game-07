@@ -839,15 +839,15 @@ export class GameScene extends Phaser.Scene {
     return objectType?.Acronym === "Ray";
   }
 
-  // Ставит точку привязки спрайта на физический центр модели из справочника.
+  // Ставит точку привязки спрайта на центр текстуры, потому что смещение тела уже учтено в полигоне.
   private updateObjectSpriteOrigin(sprite: Phaser.GameObjects.Image, object: CosmicObject): void {
     const model = this.modelForObject(object);
     if (!model || model.TextureWidth <= 0 || model.TextureHeight <= 0) {
-      sprite.setOrigin(0.5);
+      sprite.setOrigin(0.5, 0.5);
       return;
     }
 
-    sprite.setOrigin(model.TextureBodyOriginX / model.TextureWidth, model.TextureBodyOriginY / model.TextureHeight);
+    sprite.setOrigin(0.5, 0.5);
   }
 
   private textureKeyForObject(object: CosmicObject): string | null {
