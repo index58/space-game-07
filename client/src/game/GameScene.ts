@@ -39,6 +39,7 @@ import { applyControlPanelListSelection } from "./controlPanelListSelection";
 import { applyActiveControlPanelUsageRelations, normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
 import {
   SIMPLE_DRILL_RAY_ACRONYM,
+  clipDrillBeamGeometryToPolygons,
   getDrillBeamGeometry,
   getDrillBeamIntakeProgress,
   type DrillBeamGeometry,
@@ -692,7 +693,15 @@ export class GameScene extends Phaser.Scene {
         zoomScale: this.zoomScale,
       });
       if (geometry) {
-        this.renderDrillBeamGeometry(geometry, timeMs);
+        const sourceObjectId = -object.ID;
+        const obstaclePolygons = objects.flatMap((obstacle) => {
+          if (obstacle.ID === object.ID || obstacle.ID === sourceObjectId || this.isDrillRayObject(obstacle)) {
+            return [];
+          }
+          const obstacleModel = this.modelForObject(obstacle);
+          return obstacleModel ? [bodyPolygonToPilotScreen(obstacle, obstacleModel, camera)] : [];
+        });
+        this.renderDrillBeamGeometry(clipDrillBeamGeometryToPolygons(geometry, obstaclePolygons), timeMs);
       }
     }
   }

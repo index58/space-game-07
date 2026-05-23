@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getDrillBeamGeometry, getDrillBeamIntakeProgress } from "./drillBeam";
+import { clipDrillBeamGeometryToPolygons, getDrillBeamGeometry, getDrillBeamIntakeProgress } from "./drillBeam";
 
 describe("getDrillBeamGeometry", () => {
   // Проверяет, что центр мирового объекта луча превращается в экранный отрезок с учетом масштаба.
@@ -52,6 +52,28 @@ describe("getDrillBeamGeometry", () => {
 
     expect(wide?.lengthPx).toBe((narrow?.lengthPx ?? 0) * 3);
     expect(wide?.widthPx).toBe((narrow?.widthPx ?? 0) * 3);
+  });
+
+  // Проверяет, что видимый след останавливается на первой границе физического тела перед кораблем.
+  it("обрезает отрезок по ближайшему пересеченному телу", () => {
+    const geometry = getDrillBeamGeometry({
+      center: { x: 0, y: -50 },
+      rotation: 0,
+      lengthMeters: 100,
+      zoomScale: 1,
+    });
+
+    expect(geometry).not.toBeNull();
+    const clipped = clipDrillBeamGeometryToPolygons(geometry!, [[
+      { x: -10, y: -70 },
+      { x: 10, y: -70 },
+      { x: 10, y: -50 },
+      { x: -10, y: -50 },
+    ]]);
+
+    expect(clipped.end).toEqual({ x: 0, y: -50 });
+    expect(clipped.lengthPx).toBe(50);
+    expect(clipped.widthPx).toBe(geometry?.widthPx);
   });
 
   // Проверяет, что внутреннее движение идет от цели к кораблю.
