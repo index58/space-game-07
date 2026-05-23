@@ -104,6 +104,16 @@ func dockingEventsContainMessage(events []game.DockingEvent, message string) boo
 	return false
 }
 
+// Проверяет, что среди событий есть уведомление с точным текстом.
+func exchangeEventsContainNotificationMessage(events []game.ExchangeEvent, message string) bool {
+	for _, event := range events {
+		if event.Kind == "exchangeNotification" && event.Message == message {
+			return true
+		}
+	}
+	return false
+}
+
 func addRawReferenceItem(t *testing.T, table *storage.RawReferenceTable, id int64, item any) {
 	t.Helper()
 	raw, err := json.Marshal(item)
@@ -658,6 +668,126 @@ func TestSelectedSimpleDrillConsumesPowerOnPrimaryAction(t *testing.T) {
 	}
 	if !drill.Active {
 		t.Fatalf("drill group was not marked active")
+	}
+}
+
+// Проверяет, что выбранный бур перекачивает ресурс из контейнера астероида в контейнер корабля при попадании луча.
+func TestSelectedSimpleDrillMinesAsteroidResourceToShipContainer(t *testing.T) {
+	serverData := testWorldData(t)
+	addSimpleDrillRayTestData(t, &serverData)
+	serverData.ItemTypes.Items[17] = &data.ItemType{ID: 17, TitleRu: "Ресурс", TitleEn: "Resource", Acronym: "Resource"}
+	serverData.ItemModels.Items[700].MiningSpeed = 20
+	serverData.ItemModels.Items[710] = &data.ItemModel{ID: 710, TitleRu: "Руда", TitleEn: "Ore", Acronym: "Ore", ItemTypeID: 17, Mass: 2}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	shipContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       1,
+		Title:                "Ship container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	asteroidContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       2,
+		Title:                "Asteroid container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: asteroidContainer.ID, ContentItemModelID: 710, Count: 100}); err != nil {
+		t.Fatal(err)
+	}
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[2].X = 0
+	serverData.CosmicObjects.Items[2].Y = 100
+	serverData.CosmicObjects.Items[2].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(1)
+
+	closeWorldFloat(t, exchangeContainerItemCount(serverData, asteroidContainer.ID, 710), 90)
+	closeWorldFloat(t, exchangeContainerItemCount(serverData, shipContainer.ID, 710), 10)
+}
+
+// Проверяет, что добыча сообщает игроку целое количество ресурса, накопленное за секунду.
+func TestSelectedSimpleDrillReportsMinedResourceEverySecond(t *testing.T) {
+	serverData := testWorldData(t)
+	addSimpleDrillRayTestData(t, &serverData)
+	serverData.ItemTypes.Items[17] = &data.ItemType{ID: 17, TitleRu: "Ресурс", TitleEn: "Resource", Acronym: "Resource"}
+	serverData.ItemModels.Items[700].MiningSpeed = 20
+	serverData.ItemModels.Items[710] = &data.ItemModel{ID: 710, TitleRu: "Руда", TitleEn: "Ore", Acronym: "Ore", ItemTypeID: 17, Mass: 2}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       1,
+		Title:                "Ship container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	asteroidContainer, err := serverData.EquipmentGroups.Add(&data.EquipmentGroup{
+		CosmicObjectID:       2,
+		Title:                "Asteroid container",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{ContainerEquipmentGroupID: asteroidContainer.ID, ContentItemModelID: 710, Count: 300}); err != nil {
+		t.Fatal(err)
+	}
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[2].X = 0
+	serverData.CosmicObjects.Items[2].Y = 100
+	serverData.CosmicObjects.Items[2].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(0.5)
+	if exchangeEventsContainKind(gameWorld.DrainExchangeEvents(), "exchangeNotification") {
+		t.Fatalf("mining notification was sent before one second")
+	}
+
+	gameWorld.Tick(0.5)
+
+	events := gameWorld.DrainExchangeEvents()
+	if !exchangeEventsContainNotificationMessage(events, "+ 10 Руда") {
+		t.Fatalf("mining notification was not sent with expected text: %+v", events)
 	}
 }
 

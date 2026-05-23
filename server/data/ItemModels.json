@@ -628,6 +628,7 @@
                              "RechargeTime":  0,
                              "Range":  500,
                              "Damage":  60,
+                             "MiningSpeed":  20,
                              "ConsumingItemModelID":  0,
                              "ConsumingCount":  0,
                              "MaxAlongForce":  0,

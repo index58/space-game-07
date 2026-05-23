@@ -27,6 +27,7 @@ type ItemModel struct {
 	RechargeTime         float64 `json:"RechargeTime"`         // Р’СЂРµРјСЏ РїРµСЂРµР·Р°СЂСЏРґРєРё РІ СЃРµРєСѓРЅРґР°С….
 	Range                float64 `json:"Range"`                // Р”Р°Р»СЊРЅРѕСЃС‚СЊ РґРµР№СЃС‚РІРёСЏ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 	Damage               float64 `json:"Damage"`               // РЈСЂРѕРЅ РѕРґРЅРѕРіРѕ РїРѕРїР°РґР°РЅРёСЏ РёР»Рё РІРѕР·РґРµР№СЃС‚РІРёСЏ.
+	MiningSpeed          float64 `json:"MiningSpeed"`          // Скорость добычи ресурса в килограммах за секунду для одной установленной единицы.
 	ConsumingItemModelID int64   `json:"ConsumingItemModelID"` // РњРѕРґРµР»СЊ РїРѕС‚СЂРµР±Р»СЏРµРјРѕРіРѕ СЂРµСЃСѓСЂСЃР°.
 	ConsumingCount       float64 `json:"ConsumingCount"`       // Р Р°СЃС…РѕРґ СЂРµСЃСѓСЂСЃР° Р·Р° СЃРµРєСѓРЅРґСѓ.
 	MaxAlongForce        float64 `json:"MaxAlongForce"`        // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РїСЂРѕРґРѕР»СЊРЅР°СЏ СЃРёР»Р° РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.

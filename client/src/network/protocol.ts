@@ -757,6 +757,8 @@ export type ItemModelReference = Record<string, unknown> & {
   IconFilePath?: string;
   // Дальность действия инструмента в метрах, если она задана.
   Range?: number;
+  // Скорость добычи ресурса в килограммах за секунду.
+  MiningSpeed?: number;
   // Вместимость магазина, если у инструмента есть магазин.
   MagazineCapacity?: number;
 };

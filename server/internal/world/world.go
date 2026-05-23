@@ -22,6 +22,7 @@ const (
 	defaultStarterShipAcronym = "ship_bat"
 	dockingDurationSeconds    = 10
 	dockingProbeDistance      = 10
+	miningNotificationSeconds = 1
 	pilotToolSlotCount        = 10
 	simpleDrillAcronym        = "SimpleDrill"
 	simpleDrillRayAcronym     = "SimpleDrillRay"
@@ -35,6 +36,25 @@ type pilotInstrumentModel struct {
 }
 
 // Р РЋР С•Р В±Р С‘РЎР‚Р В°Р ВµРЎвЂљ РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С‘ Р С‘ Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№Р Вµ РЎРѓРЎС“РЎвЂ°Р Р…Р С•РЎРѓРЎвЂљР С‘, Р Р…РЎС“Р В¶Р Р…РЎвЂ№Р Вµ РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘ Р СР С‘РЎР‚Р В°.
+// Хранит рассчитанные параметры добычи выбранным буром.
+type drillMiningParameters struct {
+	Range        float64 // Дальность действия луча в метрах.
+	MiningSpeed  float64 // Масса добываемого ресурса в килограммах за секунду одной установленной единицей.
+	EnabledCount int64   // Количество включенных единиц выбранной модели.
+}
+
+// Хранит признак отдельного накопителя уведомлений добычи.
+type miningNotificationKey struct {
+	ObjectID    int64 // Корабль, которому нужно отправлять уведомление.
+	ItemModelID int64 // Ресурс, количество которого накапливается.
+}
+
+// Хранит добычу, накопленную до следующего уведомления.
+type miningNotificationAccumulator struct {
+	Seconds float64 // Время активной добычи после прошлого уведомления.
+	Count   float64 // Количество ресурса, добытое за накопленное время.
+}
+
 type Data struct {
 	Accounts                   *data.Accounts                   // Р Р€РЎвЂЎР ВµРЎвЂљР Р…РЎвЂ№Р Вµ Р В·Р В°Р С—Р С‘РЎРѓР С‘, Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р Р…РЎвЂ№Р Вµ Р С‘Р С–РЎР‚Р С•Р Р†Р С•Р в„– РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘.
 	Characters                 *data.Characters                 // Р СџР ВµРЎР‚РЎРѓР С•Р Р…Р В°Р В¶Р С‘, Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р Р…РЎвЂ№Р Вµ Р С‘Р С–РЎР‚Р С•Р Р†Р С•Р в„– РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘.
@@ -70,22 +90,23 @@ type Data struct {
 
 // Р Р€Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљ Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р Р…РЎвЂ№Р СР С‘ Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР В°Р СР С‘, Р Р†Р Р†Р С•Р Т‘Р С•Р С Р С‘Р С–РЎР‚Р С•Р С”Р С•Р Р† Р С‘ Р С—Р С•РЎв‚¬Р В°Р С–Р С•Р Р†Р С•Р в„– РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р ВµР в„– Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
 type World struct {
-	mu                             sync.Mutex                 // Р вЂ”Р В°РЎвЂ°Р С‘РЎвЂ°Р В°Р ВµРЎвЂљ Р С‘Р В·Р СР ВµР Р…РЎРЏР ВµР СР С•Р Вµ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р СР С‘РЎР‚Р В° Р С•РЎвЂљ Р С—Р В°РЎР‚Р В°Р В»Р В»Р ВµР В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р С–Р С•РЎР‚РЎС“РЎвЂљР С‘Р Р….
-	tick                           int64                      // Р СњР С•Р СР ВµРЎР‚ Р С—Р С•РЎРѓР В»Р ВµР Т‘Р Р…Р ВµР С–Р С• Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…Р ВµР Р…Р Р…Р С•Р С–Р С• РЎв‚¬Р В°Р С–Р В° РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘.
-	data                           Data                       // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С‘ Р С‘ Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№Р Вµ РЎРѓРЎС“РЎвЂ°Р Р…Р С•РЎРѓРЎвЂљР С‘, Р С”Р С•РЎвЂљР С•РЎР‚РЎвЂ№Р СР С‘ РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљ Р СР С‘РЎР‚.
-	accountObjectIDs               map[int64]int64            // Р РЋР Р†РЎРЏР В·РЎРЉ Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р Р…РЎвЂ№РЎвЂ¦ Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР С•Р Р† РЎРѓ РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР СРЎвЂ№Р СР С‘ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР В°Р СР С‘.
-	inputs                         map[int64]game.ShipInput   // Р СџР С•РЎРѓР В»Р ВµР Т‘Р Р…Р С‘Р в„– Р С—РЎР‚Р С‘Р Р…РЎРЏРЎвЂљРЎвЂ№Р в„– Р Р†Р Р†Р С•Р Т‘ Р Т‘Р В»РЎРЏ Р С”Р В°Р В¶Р Т‘Р С•Р С–Р С• Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р Р…Р С•Р С–Р С• Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР В°.
-	mutationAcks                   map[string]int64           // Р СџР С•РЎРѓР В»Р ВµР Т‘Р Р…Р С‘Р в„– Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР В°Р Р…Р Р…РЎвЂ№Р в„– Р Р…Р С•Р СР ВµРЎР‚ Р С”Р С•Р СР В°Р Р…Р Т‘РЎвЂ№ Р С—Р В°Р Р…Р ВµР В»Р С‘ Р С—Р С• Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљРЎС“ Р С‘ РЎРѓР ВµРЎРѓРЎРѓР С‘Р С‘.
-	random                         *rand.Rand                 // Р ВРЎРѓРЎвЂљР С•РЎвЂЎР Р…Р С‘Р С” РЎРѓР В»РЎС“РЎвЂЎР В°Р в„–Р Р…Р С•РЎРѓРЎвЂљР С‘ Р Т‘Р В»РЎРЏ Р Р†Р С•РЎРѓР С—РЎР‚Р С•Р С‘Р В·Р Р†Р С•Р Т‘Р С‘Р СРЎвЂ№РЎвЂ¦ Р С”Р С•Р СР В°Р Р…Р Т‘.
-	nextConstructorProductionJobID int64                      // Р РЋР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘Р в„– Р С‘Р Т‘Р ВµР Р…РЎвЂљР С‘РЎвЂћР С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р В·Р В°Р Т‘Р В°Р Р…Р С‘РЎРЏ Р С‘Р В·Р С–Р С•РЎвЂљР С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ.
-	constructorProductionJobs      []constructorProductionJob // Р вЂ”Р В°Р Т‘Р В°Р Р…Р С‘РЎРЏ Р С‘Р В·Р С–Р С•РЎвЂљР С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ, Р С•Р В¶Р С‘Р Т‘Р В°РЎР‹РЎвЂ°Р С‘Р Вµ Р С‘Р В»Р С‘ Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…РЎРЏРЎР‹РЎвЂ°Р С‘Р ВµРЎРѓРЎРЏ Р Р† Р С”Р С•Р Р…РЎРѓРЎвЂљРЎР‚РЎС“Р С”РЎвЂљР С•РЎР‚Р В°РЎвЂ¦.
-	dockingRequests                []dockingRequest           // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В·Р В°Р С—РЎР‚Р С•РЎРѓРЎвЂ№ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘, Р С•Р В¶Р С‘Р Т‘Р В°РЎР‹РЎвЂ°Р С‘Р Вµ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В°.
-	dockingProcesses               []dockingProcess           // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘Р Вµ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘, РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏРЎвЂ°Р С‘Р ВµРЎРѓРЎРЏ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р† Р С—Р В°Р СРЎРЏРЎвЂљР С‘.
-	landingRequests                []landingRequest           // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В·Р В°Р С—РЎР‚Р С•РЎРѓРЎвЂ№ Р С—Р С•РЎРѓР В°Р Т‘Р С”Р С‘ Р С—Р ВµРЎР‚РЎРѓР С•Р Р…Р В°Р В¶Р В°, Р С•Р В¶Р С‘Р Т‘Р В°РЎР‹РЎвЂ°Р С‘Р Вµ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В°.
-	dockingEvents                  []game.DockingEvent        // Р СњР В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљРЎРѓР С”Р С‘Р Вµ РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘РЎРЏ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘ Р Т‘Р С• Р В±Р В»Р С‘Р В¶Р В°Р в„–РЎв‚¬Р ВµР в„– РЎР‚Р В°РЎРѓРЎРѓРЎвЂ№Р В»Р С”Р С‘.
-	exchangeRequests               []exchangeRequest          // Ожидающие ответы на запросы обмена.
-	exchangeSessions               []exchangeSession          // Открытые и выполняющиеся обмены.
-	exchangeEvents                 []game.ExchangeEvent       // Накопленные клиентские события обмена.
+	mu                             sync.Mutex                                              // Р вЂ”Р В°РЎвЂ°Р С‘РЎвЂ°Р В°Р ВµРЎвЂљ Р С‘Р В·Р СР ВµР Р…РЎРЏР ВµР СР С•Р Вµ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р СР С‘РЎР‚Р В° Р С•РЎвЂљ Р С—Р В°РЎР‚Р В°Р В»Р В»Р ВµР В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р С–Р С•РЎР‚РЎС“РЎвЂљР С‘Р Р….
+	tick                           int64                                                   // Р СњР С•Р СР ВµРЎР‚ Р С—Р С•РЎРѓР В»Р ВµР Т‘Р Р…Р ВµР С–Р С• Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…Р ВµР Р…Р Р…Р С•Р С–Р С• РЎв‚¬Р В°Р С–Р В° РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘.
+	data                           Data                                                    // Р РЋР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С‘ Р С‘ Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№Р Вµ РЎРѓРЎС“РЎвЂ°Р Р…Р С•РЎРѓРЎвЂљР С‘, Р С”Р С•РЎвЂљР С•РЎР‚РЎвЂ№Р СР С‘ РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљ Р СР С‘РЎР‚.
+	accountObjectIDs               map[int64]int64                                         // Р РЋР Р†РЎРЏР В·РЎРЉ Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р Р…РЎвЂ№РЎвЂ¦ Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР С•Р Р† РЎРѓ РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР СРЎвЂ№Р СР С‘ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР В°Р СР С‘.
+	inputs                         map[int64]game.ShipInput                                // Р СџР С•РЎРѓР В»Р ВµР Т‘Р Р…Р С‘Р в„– Р С—РЎР‚Р С‘Р Р…РЎРЏРЎвЂљРЎвЂ№Р в„– Р Р†Р Р†Р С•Р Т‘ Р Т‘Р В»РЎРЏ Р С”Р В°Р В¶Р Т‘Р С•Р С–Р С• Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р Р…Р С•Р С–Р С• Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР В°.
+	mutationAcks                   map[string]int64                                        // Р СџР С•РЎРѓР В»Р ВµР Т‘Р Р…Р С‘Р в„– Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР В°Р Р…Р Р…РЎвЂ№Р в„– Р Р…Р С•Р СР ВµРЎР‚ Р С”Р С•Р СР В°Р Р…Р Т‘РЎвЂ№ Р С—Р В°Р Р…Р ВµР В»Р С‘ Р С—Р С• Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљРЎС“ Р С‘ РЎРѓР ВµРЎРѓРЎРѓР С‘Р С‘.
+	random                         *rand.Rand                                              // Р ВРЎРѓРЎвЂљР С•РЎвЂЎР Р…Р С‘Р С” РЎРѓР В»РЎС“РЎвЂЎР В°Р в„–Р Р…Р С•РЎРѓРЎвЂљР С‘ Р Т‘Р В»РЎРЏ Р Р†Р С•РЎРѓР С—РЎР‚Р С•Р С‘Р В·Р Р†Р С•Р Т‘Р С‘Р СРЎвЂ№РЎвЂ¦ Р С”Р С•Р СР В°Р Р…Р Т‘.
+	nextConstructorProductionJobID int64                                                   // Р РЋР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘Р в„– Р С‘Р Т‘Р ВµР Р…РЎвЂљР С‘РЎвЂћР С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р В·Р В°Р Т‘Р В°Р Р…Р С‘РЎРЏ Р С‘Р В·Р С–Р С•РЎвЂљР С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ.
+	constructorProductionJobs      []constructorProductionJob                              // Р вЂ”Р В°Р Т‘Р В°Р Р…Р С‘РЎРЏ Р С‘Р В·Р С–Р С•РЎвЂљР С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ, Р С•Р В¶Р С‘Р Т‘Р В°РЎР‹РЎвЂ°Р С‘Р Вµ Р С‘Р В»Р С‘ Р Р†РЎвЂ№Р С—Р С•Р В»Р Р…РЎРЏРЎР‹РЎвЂ°Р С‘Р ВµРЎРѓРЎРЏ Р Р† Р С”Р С•Р Р…РЎРѓРЎвЂљРЎР‚РЎС“Р С”РЎвЂљР С•РЎР‚Р В°РЎвЂ¦.
+	dockingRequests                []dockingRequest                                        // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В·Р В°Р С—РЎР‚Р С•РЎРѓРЎвЂ№ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘, Р С•Р В¶Р С‘Р Т‘Р В°РЎР‹РЎвЂ°Р С‘Р Вµ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В°.
+	dockingProcesses               []dockingProcess                                        // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘Р Вµ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘, РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏРЎвЂ°Р С‘Р ВµРЎРѓРЎРЏ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р† Р С—Р В°Р СРЎРЏРЎвЂљР С‘.
+	landingRequests                []landingRequest                                        // Р С’Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ Р В·Р В°Р С—РЎР‚Р С•РЎРѓРЎвЂ№ Р С—Р С•РЎРѓР В°Р Т‘Р С”Р С‘ Р С—Р ВµРЎР‚РЎРѓР С•Р Р…Р В°Р В¶Р В°, Р С•Р В¶Р С‘Р Т‘Р В°РЎР‹РЎвЂ°Р С‘Р Вµ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В°.
+	dockingEvents                  []game.DockingEvent                                     // Р СњР В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљРЎРѓР С”Р С‘Р Вµ РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘РЎРЏ РЎРѓРЎвЂљРЎвЂ№Р С”Р С•Р Р†Р С”Р С‘ Р Т‘Р С• Р В±Р В»Р С‘Р В¶Р В°Р в„–РЎв‚¬Р ВµР в„– РЎР‚Р В°РЎРѓРЎРѓРЎвЂ№Р В»Р С”Р С‘.
+	exchangeRequests               []exchangeRequest                                       // Ожидающие ответы на запросы обмена.
+	exchangeSessions               []exchangeSession                                       // Открытые и выполняющиеся обмены.
+	exchangeEvents                 []game.ExchangeEvent                                    // Накопленные клиентские события обмена.
+	miningNotifications            map[miningNotificationKey]miningNotificationAccumulator // Накопленная добыча для периодических уведомлений.
 }
 
 type constructorProductionJob struct {
@@ -221,11 +242,12 @@ type controlPanelObjectBlueprintComponent struct {
 
 func New(seed int64, serverData Data) *World {
 	created := &World{
-		data:             serverData,
-		accountObjectIDs: map[int64]int64{},
-		inputs:           map[int64]game.ShipInput{},
-		mutationAcks:     map[string]int64{},
-		random:           rand.New(rand.NewSource(seed)),
+		data:                serverData,
+		accountObjectIDs:    map[int64]int64{},
+		inputs:              map[int64]game.ShipInput{},
+		mutationAcks:        map[string]int64{},
+		miningNotifications: map[miningNotificationKey]miningNotificationAccumulator{},
+		random:              rand.New(rand.NewSource(seed)),
 	}
 	created.ensureChatData()
 	created.applyAssembliesToLoadedShips()
@@ -2501,14 +2523,203 @@ func (world *World) equipmentGroupIsContainerLocked(group *data.EquipmentGroup) 
 }
 
 // Р вЂ™РЎвЂ№Р С—Р С•Р В»Р Р…РЎРЏР ВµРЎвЂљ Р С•Р Т‘Р С‘Р Р… РЎв‚¬Р В°Р С– РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘ Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С•Р В±РЎвЂ°Р С‘Р в„– РЎРѓР Р…Р С‘Р СР С•Р С” Р СР С‘РЎР‚Р В°.
+// Выполняет добычу ресурсного содержимого астероидов активными буровыми лучами.
+func (world *World) stepMiningLocked(dtSeconds float64, inputsByObjectID map[int64]game.ShipInput) {
+	if dtSeconds <= 0 || world.data.CosmicObjects == nil || world.data.CosmicObjectModels == nil || world.data.EquipmentGroups == nil || world.data.ItemGroups == nil || world.data.ItemModels == nil || world.data.ItemTypes == nil {
+		return
+	}
+
+	objectIDs := make([]int64, 0, len(inputsByObjectID))
+	for objectID, input := range inputsByObjectID {
+		if input.PrimaryPointerAction {
+			objectIDs = append(objectIDs, objectID)
+		}
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+
+	for _, objectID := range objectIDs {
+		input := inputsByObjectID[objectID]
+		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok || !cosmicObject.Enabled {
+			continue
+		}
+		parameters, ok := world.selectedSimpleDrillMiningParametersLocked(objectID, input)
+		if !ok {
+			continue
+		}
+		electricShare := world.electricShareForInput(*cosmicObject, input)
+		if electricShare <= physics.Epsilon {
+			continue
+		}
+		targetContainer, ok := world.firstContainerEquipmentGroupLocked(objectID)
+		if !ok {
+			continue
+		}
+		hitObject, hitModel, ok := world.nearestRayHitObjectLocked(*cosmicObject, parameters.Range)
+		if !ok || !world.cosmicObjectModelHasTypeAcronymLocked(hitModel, "Asteroid") {
+			continue
+		}
+		sourceContainer, ok := world.firstContainerEquipmentGroupLocked(hitObject.ID)
+		if !ok {
+			continue
+		}
+		sourceItem, resourceModel, ok := world.firstResourceItemGroupLocked(sourceContainer.ID)
+		if !ok || resourceModel.Mass <= physics.Epsilon {
+			continue
+		}
+
+		maxUnits := parameters.MiningSpeed * float64(parameters.EnabledCount) * electricShare * dtSeconds / resourceModel.Mass
+		transferUnits := math.Min(sourceItem.Count, maxUnits)
+		if transferUnits <= physics.Epsilon {
+			continue
+		}
+		if err := world.addItemModelToContainerLocked(targetContainer.ID, sourceItem.ContentItemModelID, transferUnits); err != nil {
+			continue
+		}
+		world.consumeItemModelFromContainerLocked(sourceContainer.ID, sourceItem.ContentItemModelID, transferUnits)
+		world.recordMiningNotificationLocked(objectID, resourceModel, transferUnits, dtSeconds)
+	}
+}
+
+// Накапливает добытый ресурс и отправляет уведомления за полные секундные интервалы.
+func (world *World) recordMiningNotificationLocked(objectID int64, resourceModel *data.ItemModel, minedCount float64, dtSeconds float64) {
+	if resourceModel == nil || minedCount <= physics.Epsilon || dtSeconds <= physics.Epsilon {
+		return
+	}
+	if world.miningNotifications == nil {
+		world.miningNotifications = map[miningNotificationKey]miningNotificationAccumulator{}
+	}
+
+	key := miningNotificationKey{ObjectID: objectID, ItemModelID: resourceModel.ID}
+	accumulator := world.miningNotifications[key]
+	accumulator.Seconds += dtSeconds
+	accumulator.Count += minedCount
+
+	for accumulator.Seconds+physics.Epsilon >= miningNotificationSeconds {
+		intervalShare := miningNotificationSeconds / accumulator.Seconds
+		intervalCount := accumulator.Count * intervalShare
+		world.addExchangeNotificationLocked(
+			[]int64{objectID},
+			fmt.Sprintf("+ %.0f %s", intervalCount, resourceModel.TitleRu),
+		)
+		accumulator.Seconds -= miningNotificationSeconds
+		accumulator.Count -= intervalCount
+	}
+
+	if accumulator.Seconds <= physics.Epsilon || accumulator.Count <= physics.Epsilon {
+		delete(world.miningNotifications, key)
+		return
+	}
+	world.miningNotifications[key] = accumulator
+}
+
+// Выбирает первый контейнер объекта в стабильном порядке.
+func (world *World) firstContainerEquipmentGroupLocked(objectID int64) (*data.EquipmentGroup, bool) {
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(objectID)) {
+		if group != nil && group.Count > 0 && world.equipmentGroupIsContainerLocked(group) {
+			return group, true
+		}
+	}
+	return nil, false
+}
+
+// Выбирает первую группу ресурса в контейнере в стабильном порядке.
+func (world *World) firstResourceItemGroupLocked(containerID int64) (*data.ItemGroup, *data.ItemModel, bool) {
+	groups := append([]*data.ItemGroup(nil), world.data.ItemGroups.GetByContainerEquipmentGroupID(containerID)...)
+	sort.Slice(groups, func(left int, right int) bool {
+		return groups[left].ID < groups[right].ID
+	})
+	for _, group := range groups {
+		if group == nil || group.Count <= physics.Epsilon {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.ContentItemModelID)
+		if !ok || !world.itemModelHasTypeAcronymLocked(model, "Resource") {
+			continue
+		}
+		return group, model, true
+	}
+	return nil, nil, false
+}
+
+// Ищет ближайший постоянный объект, в физическое тело которого попал луч.
+func (world *World) nearestRayHitObjectLocked(source data.CosmicObject, rayRange float64) (*data.CosmicObject, *data.CosmicObjectModel, bool) {
+	sourceModel, ok := world.data.CosmicObjectModels.Get(source.CosmicObjectModelID)
+	if !ok || rayRange <= 0 {
+		return nil, nil, false
+	}
+	forward := physics.ForwardVector(source.Rotation)
+	startDistance := modelVisualForwardOffsetMeters(*sourceModel)
+	startX := source.X + forward.X*startDistance
+	startY := source.Y + forward.Y*startDistance
+	endX := startX + forward.X*rayRange
+	endY := startY + forward.Y*rayRange
+
+	bestDistance := math.Inf(1)
+	var bestObject *data.CosmicObject
+	var bestModel *data.CosmicObjectModel
+	objectIDs := make([]int64, 0, len(world.data.CosmicObjects.Items))
+	for objectID := range world.data.CosmicObjects.Items {
+		objectIDs = append(objectIDs, objectID)
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+	for _, objectID := range objectIDs {
+		if objectID == source.ID {
+			continue
+		}
+		candidate, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok || !candidate.Enabled {
+			continue
+		}
+		candidateModel, ok := world.data.CosmicObjectModels.Get(candidate.CosmicObjectModelID)
+		if !ok {
+			continue
+		}
+		distance, ok := raySegmentPolygonDistance(startX, startY, endX, endY, *candidate, *candidateModel)
+		if ok && distance < bestDistance {
+			bestDistance = distance
+			bestObject = candidate
+			bestModel = candidateModel
+		}
+	}
+	if bestObject == nil || bestModel == nil {
+		return nil, nil, false
+	}
+	return bestObject, bestModel, true
+}
+
+// Проверяет тип модели космического объекта по акрониму.
+func (world *World) cosmicObjectModelHasTypeAcronymLocked(model *data.CosmicObjectModel, acronym string) bool {
+	if model == nil {
+		return false
+	}
+	cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
+	return ok && cosmicObjectType.Acronym == acronym
+}
+
+// Проверяет тип модели предмета по акрониму.
+func (world *World) itemModelHasTypeAcronymLocked(model *data.ItemModel, acronym string) bool {
+	if model == nil {
+		return false
+	}
+	itemType, ok := world.data.ItemTypes.Get(model.ItemTypeID)
+	return ok && itemType.Acronym == acronym
+}
+
 func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
 	world.stepTasksLocked(dtSeconds)
 	world.stepExchangeSessionsLocked(dtSeconds)
-	world.stepMovableObjects(dtSeconds, world.inputsByObjectID())
+	inputsByObjectID := world.inputsByObjectID()
+	world.stepMovableObjects(dtSeconds, inputsByObjectID)
 	world.resolveAllCollisions()
+	world.stepMiningLocked(dtSeconds, inputsByObjectID)
 	world.stepExchangeRequestsLocked(dtSeconds)
 	world.stepDockingRequestsLocked(dtSeconds)
 	world.stepDockingProcessesLocked(dtSeconds)
@@ -4111,6 +4322,32 @@ func (world *World) selectedSimpleDrillRangeLocked(objectID int64, input game.Sh
 	}
 
 	return selectedRange, selectedRange > 0
+}
+
+// Ищет выбранный включенный простой бур и возвращает параметры его добычи.
+func (world *World) selectedSimpleDrillMiningParametersLocked(objectID int64, input game.ShipInput) (drillMiningParameters, bool) {
+	modelID, ok := world.activePrimaryPilotToolModelIDLocked(objectID, input)
+	if !ok || world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
+		return drillMiningParameters{}, false
+	}
+
+	parameters := drillMiningParameters{}
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(objectID)) {
+		if group.EquipmentItemModelID != modelID || enabledEquipmentCount(group) <= 0 {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok || model.Acronym != simpleDrillAcronym || model.Range <= 0 || model.MiningSpeed <= 0 {
+			continue
+		}
+		if model.Range > parameters.Range {
+			parameters.Range = model.Range
+		}
+		parameters.MiningSpeed = model.MiningSpeed
+		parameters.EnabledCount += enabledEquipmentCount(group)
+	}
+
+	return parameters, parameters.Range > 0 && parameters.MiningSpeed > 0 && parameters.EnabledCount > 0
 }
 
 func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
