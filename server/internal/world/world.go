@@ -3987,10 +3987,16 @@ func (world *World) activeDrillRayObjectsLocked() []game.SnapshotCosmicObject {
 	return rays
 }
 
-// Возвращает расстояние от центра модели до видимого носа по направлению вперед.
+// Возвращает расстояние от центра модели до переднего края физического тела.
 func modelVisualForwardOffsetMeters(model data.CosmicObjectModel) float64 {
-	if model.TextureScale > 0 && model.TextureVisibleTopY > 0 && model.TextureBodyOriginY > model.TextureVisibleTopY {
-		return float64(model.TextureBodyOriginY-model.TextureVisibleTopY) / model.TextureScale
+	if len(model.BodyPolygon) > 0 {
+		forwardOffset := model.BodyPolygon[0].Y
+		for _, point := range model.BodyPolygon[1:] {
+			if point.Y > forwardOffset {
+				forwardOffset = point.Y
+			}
+		}
+		return forwardOffset
 	}
 
 	return model.BodyLength / 2

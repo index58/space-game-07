@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { CosmicObjectModelReference, DockingEventMessage, ExchangeEventMessage } from "../network/protocol";
+import type { DrillBeamGeometry } from "./drillBeam";
 
 vi.mock("phaser", () => ({
   Scene: class {
@@ -53,6 +54,69 @@ describe("GameScene", () => {
       x: 0.5,
       y: 0.5,
     });
+  });
+
+  // Проверяет, что свободный луч получает полукруглое окончание слоёв без отдельного светового пятна.
+  it("does not render drill beam end cap without object hit", async () => {
+    const { GameScene } = await import("./GameScene");
+    const fillCircle = vi.fn();
+    const strokeCircle = vi.fn();
+    const graphics = createDrillBeamGraphics({ fillCircle, strokeCircle });
+    const scene = Object.create(GameScene.prototype) as {
+      pilotToolEffectGraphics: typeof graphics;
+      renderDrillBeamGeometry: (geometry: DrillBeamGeometry, timeMs: number) => void;
+    };
+    scene.pilotToolEffectGraphics = graphics;
+
+    scene.renderDrillBeamGeometry(testDrillBeamGeometry({ hitObject: false }), 1000);
+
+    expect(fillCircle).not.toHaveBeenCalled();
+    expect(strokeCircle).not.toHaveBeenCalled();
+  });
+
+  // Проверяет, что все видимые слои луча закругляются в конечной точке только передней половиной.
+  it("rounds drill beam visual layers at the end", async () => {
+    const { GameScene } = await import("./GameScene");
+    const fillStyle = vi.fn();
+    const slice = vi.fn();
+    const graphics = createDrillBeamGraphics({ fillStyle, slice });
+    const scene = Object.create(GameScene.prototype) as {
+      pilotToolEffectGraphics: typeof graphics;
+      renderDrillBeamGeometry: (geometry: DrillBeamGeometry, timeMs: number) => void;
+    };
+    scene.pilotToolEffectGraphics = graphics;
+
+    scene.renderDrillBeamGeometry(testDrillBeamGeometry({ hitObject: false }), 1000);
+
+    expect(fillStyle).toHaveBeenCalledWith(0x1fdcff, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0x0b6f9e, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0x20d8ff, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0x8cf8ff, 0.58);
+    expect(fillStyle).toHaveBeenCalledWith(0xffffff, 0.95);
+    expect(slice).toHaveBeenCalledWith(0, 0, 7.199999999999999, -Math.PI, 0);
+    expect(slice).toHaveBeenCalledWith(0, 0, 13.5, -Math.PI, 0);
+    expect(slice).toHaveBeenCalledWith(0, 0, 8.25, -Math.PI, 0);
+    expect(slice).toHaveBeenCalledWith(0, 0, 3.3000000000000003, -Math.PI, 0);
+    expect(slice).toHaveBeenCalledWith(0, 0, 0.9750000000000001, -Math.PI, 0);
+  });
+
+  // Проверяет, что конец луча получает световое пятно только при попадании в объект.
+  it("renders drill beam end cap on object hit", async () => {
+    const { GameScene } = await import("./GameScene");
+    const fillCircle = vi.fn();
+    const strokeCircle = vi.fn();
+    const graphics = createDrillBeamGraphics({ fillCircle, strokeCircle });
+    const scene = Object.create(GameScene.prototype) as {
+      pilotToolEffectGraphics: typeof graphics;
+      renderDrillBeamGeometry: (geometry: DrillBeamGeometry, timeMs: number) => void;
+    };
+    scene.pilotToolEffectGraphics = graphics;
+
+    scene.renderDrillBeamGeometry(testDrillBeamGeometry({ hitObject: true }), 1000);
+
+    expect(fillCircle).toHaveBeenCalledTimes(2);
+    expect(fillCircle).toHaveBeenCalledWith(0, 0, 5.4);
+    expect(strokeCircle).toHaveBeenCalledTimes(1);
   });
 
   // Проверяет, что маленькие уведомления стыковки убираются через пять секунд.
@@ -456,4 +520,52 @@ describe("GameScene", () => {
     expect(sendExchangeAddItems).toHaveBeenCalledWith([44], 3);
     expect(blurControlPanelFuelDrainAmount).toHaveBeenCalled();
   });
+});
+
+type DrillBeamGraphics = {
+  // Выбирает цвет и прозрачность следующей заливки.
+  fillStyle: ReturnType<typeof vi.fn>;
+  // Начинает новый векторный путь.
+  beginPath: ReturnType<typeof vi.fn>;
+  // Переносит текущую точку пути.
+  moveTo: ReturnType<typeof vi.fn>;
+  // Добавляет прямой участок пути.
+  lineTo: ReturnType<typeof vi.fn>;
+  // Замыкает текущий путь.
+  closePath: ReturnType<typeof vi.fn>;
+  // Заливает текущий путь.
+  fillPath: ReturnType<typeof vi.fn>;
+  // Выбирает цвет, прозрачность и толщину обводки.
+  lineStyle: ReturnType<typeof vi.fn>;
+  // Обводит текущий путь.
+  strokePath: ReturnType<typeof vi.fn>;
+  // Рисует залитый круг.
+  fillCircle: ReturnType<typeof vi.fn>;
+  // Рисует обводку круга.
+  strokeCircle: ReturnType<typeof vi.fn>;
+  // Рисует залитый сектор круга.
+  slice: ReturnType<typeof vi.fn>;
+};
+
+const createDrillBeamGraphics = (overrides: Partial<DrillBeamGraphics> = {}): DrillBeamGraphics => ({
+  fillStyle: vi.fn(),
+  beginPath: vi.fn(),
+  moveTo: vi.fn(),
+  lineTo: vi.fn(),
+  closePath: vi.fn(),
+  fillPath: vi.fn(),
+  lineStyle: vi.fn(),
+  strokePath: vi.fn(),
+  fillCircle: vi.fn(),
+  strokeCircle: vi.fn(),
+  slice: vi.fn(),
+  ...overrides,
+});
+
+const testDrillBeamGeometry = (input: { hitObject: boolean }): DrillBeamGeometry => ({
+  start: { x: 0, y: 100 },
+  end: { x: 0, y: 0 },
+  lengthPx: 100,
+  widthPx: 3,
+  hitObject: input.hitObject,
 });

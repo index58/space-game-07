@@ -15,6 +15,7 @@ describe("getDrillBeamGeometry", () => {
       start: { x: 400, y: 400 },
       end: { x: 400, y: 200 },
       lengthPx: 200,
+      hitObject: false,
     });
     expect(geometry?.widthPx).toBeGreaterThan(0);
   });
@@ -74,6 +75,7 @@ describe("getDrillBeamGeometry", () => {
     expect(clipped.end).toEqual({ x: 0, y: -50 });
     expect(clipped.lengthPx).toBe(50);
     expect(clipped.widthPx).toBe(geometry?.widthPx);
+    expect(clipped.hitObject).toBe(true);
   });
 
   // Проверяет, что внутреннее движение идет от цели к кораблю.

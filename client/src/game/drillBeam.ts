@@ -18,6 +18,8 @@ export type DrillBeamGeometry = {
   lengthPx: number;
   // Базовая толщина яркого ядра в пикселях экрана.
   widthPx: number;
+  // Показывает, что конец луча уперся в физическое тело.
+  hitObject: boolean;
 };
 
 export type DrillBeamInput = {
@@ -55,6 +57,7 @@ export const getDrillBeamGeometry = (input: DrillBeamInput): DrillBeamGeometry |
     },
     lengthPx,
     widthPx: input.zoomScale * 3,
+    hitObject: false,
   };
 };
 
@@ -96,6 +99,7 @@ export const clipDrillBeamGeometryToPolygons = (
       y: geometry.start.y + (geometry.end.y - geometry.start.y) * ratio,
     },
     lengthPx: nearestDistance,
+    hitObject: true,
   };
 };
 

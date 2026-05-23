@@ -535,7 +535,7 @@ func TestSnapshotAddsTemporarySimpleDrillRayObject(t *testing.T) {
 	serverData := testWorldData(t)
 	addSimpleDrillRayTestData(t, &serverData)
 	serverData.CosmicObjectModels.Items[1].TextureHeight = 120
-	serverData.CosmicObjectModels.Items[1].TextureVisibleTopY = 30
+	serverData.CosmicObjectModels.Items[1].TextureVisibleTopY = 70
 	serverData.CosmicObjectModels.Items[1].TextureBodyOriginY = 80
 	serverData.CosmicObjectModels.Items[1].TextureBodyLength = 40
 	serverData.CosmicObjectModels.Items[1].TextureScale = 1
@@ -572,16 +572,21 @@ func TestSnapshotAddsTemporarySimpleDrillRayObject(t *testing.T) {
 	shipModel := serverData.CosmicObjectModels.Items[1]
 	rayModel := serverData.CosmicObjectModels.Items[900]
 	forward := physics.ForwardVector(ship.Rotation)
-	visibleNoseDistance := float64(shipModel.TextureBodyOriginY-shipModel.TextureVisibleTopY) / shipModel.TextureScale
-	expectedDistance := visibleNoseDistance + rayModel.BodyLength/2
+	physicalNoseDistance := shipModel.BodyPolygon[0].Y
+	for _, point := range shipModel.BodyPolygon {
+		if point.Y > physicalNoseDistance {
+			physicalNoseDistance = point.Y
+		}
+	}
+	expectedDistance := physicalNoseDistance + rayModel.BodyLength/2
 	expectedX := ship.X + forward.X*expectedDistance
 	expectedY := ship.Y + forward.Y*expectedDistance
 	if math.Abs(ray.X-expectedX) > physics.Epsilon || math.Abs(ray.Y-expectedY) > physics.Epsilon {
 		t.Fatalf("ray position got (%.6f, %.6f), want (%.6f, %.6f)", ray.X, ray.Y, expectedX, expectedY)
 	}
 	startDistance := math.Hypot(ray.X-ship.X, ray.Y-ship.Y) - rayModel.BodyLength/2
-	if math.Abs(startDistance-visibleNoseDistance) > physics.Epsilon {
-		t.Fatalf("ray start distance got %.6f, want %.6f", startDistance, visibleNoseDistance)
+	if math.Abs(startDistance-physicalNoseDistance) > physics.Epsilon {
+		t.Fatalf("ray start distance got %.6f, want %.6f", startDistance, physicalNoseDistance)
 	}
 	if math.Abs(ray.Rotation-ship.Rotation) > physics.Epsilon {
 		t.Fatalf("ray rotation got %.6f, want %.6f", ray.Rotation, ship.Rotation)
