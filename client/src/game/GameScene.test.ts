@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { CosmicObjectModelReference, DockingEventMessage, ExchangeEventMessage } from "../network/protocol";
+import type { CosmicObject, CosmicObjectModelReference, DockingEventMessage, ExchangeEventMessage } from "../network/protocol";
 import type { DrillBeamGeometry } from "./drillBeam";
 
 vi.mock("phaser", () => ({
@@ -54,6 +54,43 @@ describe("GameScene", () => {
       x: 0.5,
       y: 0.5,
     });
+  });
+
+  // Проверяет, что цвет экранной полоски меняется от зелёного к красному по остаточной броне.
+  it("maps armor bar color from green to red", async () => {
+    const { GameScene } = await import("./GameScene");
+    const scene = Object.create(GameScene.prototype) as {
+      armorBarColor: (object: CosmicObject) => number;
+    };
+
+    expect(scene.armorBarColor(testCosmicObject({ Armor: 100, MaxArmor: 100 }))).toBe(0x00ff00);
+    expect(scene.armorBarColor(testCosmicObject({ Armor: 50, MaxArmor: 100 }))).toBe(0x808000);
+    expect(scene.armorBarColor(testCosmicObject({ Armor: 0, MaxArmor: 100 }))).toBe(0xff0000);
+  });
+
+  // Проверяет, что экранная полоска показывается только у чужих кораблей и станций.
+  it("renders armor bars only for foreign ships and stations", async () => {
+    const { GameScene } = await import("./GameScene");
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      shouldRenderArmorBar: (object: CosmicObject, selfObject: CosmicObject, model: CosmicObjectModelReference) => boolean;
+    };
+    scene.referenceData = {
+      CosmicObjectType: {
+        Items: {
+          "1": { Acronym: "Ship" },
+          "2": { Acronym: "Station" },
+          "3": { Acronym: "Asteroid" },
+        },
+      },
+    };
+    const selfObject = testCosmicObject({ ID: 1, OwnerCharacterID: 10 });
+
+    expect(scene.shouldRenderArmorBar(testCosmicObject({ ID: 2, OwnerCharacterID: 20 }), selfObject, testModel({ CosmicObjectTypeID: 1 }))).toBe(true);
+    expect(scene.shouldRenderArmorBar(testCosmicObject({ ID: 3, OwnerCharacterID: 20 }), selfObject, testModel({ CosmicObjectTypeID: 2 }))).toBe(true);
+    expect(scene.shouldRenderArmorBar(testCosmicObject({ ID: 4, OwnerCharacterID: 20 }), selfObject, testModel({ CosmicObjectTypeID: 3 }))).toBe(false);
+    expect(scene.shouldRenderArmorBar(testCosmicObject({ ID: 5, OwnerCharacterID: 10 }), selfObject, testModel({ CosmicObjectTypeID: 1 }))).toBe(false);
+    expect(scene.shouldRenderArmorBar(testCosmicObject({ ID: 1, OwnerCharacterID: 10 }), selfObject, testModel({ CosmicObjectTypeID: 1 }))).toBe(false);
   });
 
   // Проверяет, что свободный луч получает полукруглое окончание слоёв без отдельного светового пятна.
@@ -573,4 +610,64 @@ const testDrillBeamGeometry = (input: { hitObject: boolean }): DrillBeamGeometry
   lengthPx: 100,
   widthPx: 3,
   hitObject: input.hitObject,
+});
+
+const testCosmicObject = (overrides: Partial<CosmicObject>): CosmicObject => ({
+  ID: 1,
+  Title: "Object",
+  CosmicObjectModelID: 1,
+  OwnerCharacterID: 0,
+  OwnerNpcClanID: 0,
+  CreatorCharacterID: 0,
+  X: 0,
+  Y: 0,
+  Rotation: 0,
+  TargetRotation: 0,
+  Speed: 0,
+  VelocityX: 0,
+  VelocityY: 0,
+  AngularSpeed: 0,
+  Mass: 1,
+  Capacity: 0,
+  Fuel: 0,
+  MaxFuel: 0,
+  MaxSpeed: 0,
+  MaxAngularSpeed: 0,
+  MaxAlongForce: 0,
+  MaxAcrossForce: 0,
+  MaxTorque: 0,
+  GeneratingPower: 0,
+  ConsumingPower: 0,
+  AlongForce: 0,
+  AcrossForce: 0,
+  Torque: 0,
+  MaxArmor: 100,
+  Armor: 100,
+  LastReceivedDamageTime: 0,
+  Enabled: true,
+  Anchored: false,
+  Complexity: 0,
+  OccupiedVolume: 0,
+  OwnerName: "",
+  ...overrides,
+});
+
+const testModel = (overrides: Partial<CosmicObjectModelReference>): CosmicObjectModelReference => ({
+  ID: 1,
+  TitleRu: "Object",
+  TitleEn: "Object",
+  Acronym: "Object",
+  CosmicObjectTypeID: 1,
+  TextureFilePath: "",
+  TextureWidth: 1,
+  TextureHeight: 1,
+  TextureBodyOriginX: 0,
+  TextureBodyOriginY: 0,
+  TextureBodyWidth: 30,
+  TextureBodyLength: 30,
+  TextureScale: 1,
+  BodyWidth: 30,
+  BodyLength: 30,
+  MaxArmor: 100,
+  ...overrides,
 });

@@ -95,6 +95,33 @@ func addSimpleDrillRayTestData(t *testing.T, serverData *world.Data) {
 }
 
 // Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р вЂ¦Р В Р’В°Р В Р’В»Р В РЎвЂР РЋРІР‚РЋР В РЎвЂР В Р’Вµ Р РЋРЎвЂњР В Р вЂ Р В Р’ВµР В РўвЂР В РЎвЂўР В РЎВР В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР В РЎвЂ Р РЋР С“ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РЎВ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В РЎВ.
+// Добавляет минимальные справочники оружия для проверки урона выбранным инструментом пилота.
+func addWeaponTestData(t *testing.T, serverData *world.Data) {
+	t.Helper()
+	serverData.ItemTypes.Items[1].IsPilotInstrument = true
+	serverData.ItemModels.Items[302].Range = 500
+	serverData.ItemModels.Items[302].Damage = 120
+	serverData.ItemModels.Items[302].FiringRate = 1
+	serverData.EquipmentGroups.Items[600] = &data.EquipmentGroup{
+		ID:                   600,
+		CosmicObjectID:       1,
+		Title:                "Cannon",
+		EquipmentItemModelID: 302,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.EquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
 	for _, event := range events {
 		if event.Message != "" && (strings.Contains(event.Message, message) || strings.Contains(message, event.Message) || message != "") {
@@ -789,6 +816,83 @@ func TestSelectedSimpleDrillReportsMinedResourceEverySecond(t *testing.T) {
 	if !exchangeEventsContainNotificationMessage(events, "+ 10 Руда") {
 		t.Fatalf("mining notification was not sent with expected text: %+v", events)
 	}
+}
+
+// Проверяет, что выбранное оружие снимает броню с корабля при попадании лучом наведения.
+func TestSelectedWeaponDamagesShipArmorOnPrimaryAction(t *testing.T) {
+	serverData := testWorldData(t)
+	addWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[4] = &data.CosmicObject{ID: 4, Title: "Target ship", CosmicObjectModelID: 1, X: 0, Y: 100, MaxArmor: 300, Armor: 300, Enabled: true, Anchored: true}
+	serverData.CosmicObjects.MaxID = 4
+	if err := serverData.CosmicObjects.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(1)
+
+	closeWorldFloat(t, serverData.CosmicObjects.Items[4].Armor, 180)
+	if serverData.CosmicObjects.Items[4].LastReceivedDamageTime == 0 {
+		t.Fatalf("damage time was not updated")
+	}
+}
+
+// Проверяет, что выбранное оружие снимает броню со станции при попадании лучом наведения.
+func TestSelectedWeaponDamagesStationArmorOnPrimaryAction(t *testing.T) {
+	serverData := testWorldData(t)
+	addWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[3].X = 0
+	serverData.CosmicObjects.Items[3].Y = 100
+	serverData.CosmicObjects.Items[3].MaxArmor = 300
+	serverData.CosmicObjects.Items[3].Armor = 300
+	serverData.CosmicObjects.Items[3].Enabled = true
+	serverData.CosmicObjects.Items[3].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(1)
+
+	closeWorldFloat(t, serverData.CosmicObjects.Items[3].Armor, 180)
+}
+
+// Проверяет, что выбранное оружие не тратит урон на астероид даже при попадании.
+func TestSelectedWeaponIgnoresAsteroidArmorOnPrimaryAction(t *testing.T) {
+	serverData := testWorldData(t)
+	addWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[2].X = 0
+	serverData.CosmicObjects.Items[2].Y = 100
+	serverData.CosmicObjects.Items[2].MaxArmor = 300
+	serverData.CosmicObjects.Items[2].Armor = 300
+	serverData.CosmicObjects.Items[2].Enabled = true
+	serverData.CosmicObjects.Items[2].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(1)
+
+	closeWorldFloat(t, serverData.CosmicObjects.Items[2].Armor, 300)
 }
 
 func TestDockingRequestAutoApprovesOwnedReceiverAndCompletesCluster(t *testing.T) {

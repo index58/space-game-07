@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 	"sync"
+	"time"
 
 	"space-game-07-server/internal/data"
 	"space-game-07-server/internal/game"
@@ -26,6 +27,7 @@ const (
 	pilotToolSlotCount        = 10
 	simpleDrillAcronym        = "SimpleDrill"
 	simpleDrillRayAcronym     = "SimpleDrillRay"
+	weaponItemTypeAcronym     = "Weapon"
 )
 
 // Хранит сводные данные одной модели инструмента в панели пилота.
@@ -41,6 +43,13 @@ type drillMiningParameters struct {
 	Range        float64 // Дальность действия луча в метрах.
 	MiningSpeed  float64 // Масса добываемого ресурса в килограммах за секунду одной установленной единицей.
 	EnabledCount int64   // Количество включенных единиц выбранной модели.
+}
+
+// Хранит рассчитанные параметры атаки выбранным оружием.
+type weaponAttackParameters struct {
+	Range           float64 // Дальность попадания в метрах.
+	DamagePerSecond float64 // Урон броне за секунду при полном питании.
+	EnabledCount    int64   // Количество включённых единиц выбранной модели.
 }
 
 // Хранит признак отдельного накопителя уведомлений добычи.
@@ -2583,6 +2592,59 @@ func (world *World) stepMiningLocked(dtSeconds float64, inputsByObjectID map[int
 	}
 }
 
+// Выполняет урон броне от активного оружия по ближайшей цели на линии стрельбы.
+func (world *World) stepWeaponFireLocked(dtSeconds float64, inputsByObjectID map[int64]game.ShipInput) {
+	if dtSeconds <= 0 || world.data.CosmicObjects == nil || world.data.CosmicObjectModels == nil || world.data.CosmicObjectTypes == nil || world.data.EquipmentGroups == nil || world.data.ItemModels == nil || world.data.ItemTypes == nil {
+		return
+	}
+
+	objectIDs := make([]int64, 0, len(inputsByObjectID))
+	for objectID, input := range inputsByObjectID {
+		if input.PrimaryPointerAction {
+			objectIDs = append(objectIDs, objectID)
+		}
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+
+	for _, objectID := range objectIDs {
+		input := inputsByObjectID[objectID]
+		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok || !cosmicObject.Enabled {
+			continue
+		}
+		parameters, ok := world.selectedWeaponAttackParametersLocked(objectID, input)
+		if !ok {
+			continue
+		}
+		electricShare := world.electricShareForInput(*cosmicObject, input)
+		if electricShare <= physics.Epsilon {
+			continue
+		}
+		hitObject, hitModel, ok := world.nearestRayHitObjectLocked(*cosmicObject, parameters.Range)
+		if !ok || !world.cosmicObjectModelCanReceiveWeaponDamageLocked(hitModel) {
+			continue
+		}
+		damage := parameters.DamagePerSecond * electricShare * dtSeconds
+		world.damageObjectArmorLocked(hitObject, damage)
+	}
+}
+
+// Возвращает, подходит ли модель для получения урона от оружия корабля.
+func (world *World) cosmicObjectModelCanReceiveWeaponDamageLocked(model *data.CosmicObjectModel) bool {
+	return world.cosmicObjectModelHasTypeAcronymLocked(model, "Ship") || world.cosmicObjectModelHasTypeAcronymLocked(model, "Station")
+}
+
+// Снимает броню с объекта без ухода ниже нуля и отмечает время последнего попадания.
+func (world *World) damageObjectArmorLocked(cosmicObject *data.CosmicObject, damage float64) {
+	if cosmicObject == nil || damage <= physics.Epsilon || cosmicObject.Armor <= 0 {
+		return
+	}
+	cosmicObject.Armor = math.Max(0, cosmicObject.Armor-damage)
+	cosmicObject.LastReceivedDamageTime = time.Now().UnixMilli()
+}
+
 // Накапливает добытый ресурс и отправляет уведомления за полные секундные интервалы.
 func (world *World) recordMiningNotificationLocked(objectID int64, resourceModel *data.ItemModel, minedCount float64, dtSeconds float64) {
 	if resourceModel == nil || minedCount <= physics.Epsilon || dtSeconds <= physics.Epsilon {
@@ -2720,6 +2782,7 @@ func (world *World) Tick(dtSeconds float64) game.Snapshot {
 	world.stepMovableObjects(dtSeconds, inputsByObjectID)
 	world.resolveAllCollisions()
 	world.stepMiningLocked(dtSeconds, inputsByObjectID)
+	world.stepWeaponFireLocked(dtSeconds, inputsByObjectID)
 	world.stepExchangeRequestsLocked(dtSeconds)
 	world.stepDockingRequestsLocked(dtSeconds)
 	world.stepDockingProcessesLocked(dtSeconds)
@@ -4298,6 +4361,33 @@ func normalizePilotToolIndex(index int) int {
 		result += pilotToolSlotCount
 	}
 	return result
+}
+
+// Ищет выбранное включённое оружие и возвращает параметры его атаки.
+func (world *World) selectedWeaponAttackParametersLocked(objectID int64, input game.ShipInput) (weaponAttackParameters, bool) {
+	modelID, ok := world.activePrimaryPilotToolModelIDLocked(objectID, input)
+	if !ok || world.data.EquipmentGroups == nil || world.data.ItemModels == nil || world.data.ItemTypes == nil {
+		return weaponAttackParameters{}, false
+	}
+
+	parameters := weaponAttackParameters{}
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(objectID)) {
+		enabledCount := enabledEquipmentCount(group)
+		if group.EquipmentItemModelID != modelID || enabledCount <= 0 {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok || !world.itemModelHasTypeAcronymLocked(model, weaponItemTypeAcronym) || model.Range <= 0 || model.Damage <= 0 || model.FiringRate <= 0 {
+			continue
+		}
+		if model.Range > parameters.Range {
+			parameters.Range = model.Range
+		}
+		parameters.DamagePerSecond += model.Damage * model.FiringRate * float64(enabledCount)
+		parameters.EnabledCount += enabledCount
+	}
+
+	return parameters, parameters.Range > 0 && parameters.DamagePerSecond > 0 && parameters.EnabledCount > 0
 }
 
 // Ищет выбранный включенный простой бур и возвращает дальность его действия.

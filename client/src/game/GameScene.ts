@@ -50,6 +50,14 @@ import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
 import { InputController, type ChatScrollState } from "./InputController";
 
 const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
+// Высота экранной полоски брони над чужим боевым объектом.
+const ARMOR_BAR_HEIGHT_PX = 4;
+// Минимальная ширина полоски, чтобы маленькие цели оставались читаемыми.
+const ARMOR_BAR_MIN_WIDTH_PX = 24;
+// Максимальная ширина полоски, чтобы крупные цели не перекрывали обзор.
+const ARMOR_BAR_MAX_WIDTH_PX = 90;
+// Отступ от верхней границы видимого тела до полоски.
+const ARMOR_BAR_SCREEN_GAP_PX = 8;
 // Базовая высота строки настроек ввода в единицах высоты экрана.
 const SETTINGS_INPUT_ROW_HEIGHT_VH = 2.7;
 // Базовая высота пункта раскрытого списка в единицах высоты экрана.
@@ -81,6 +89,8 @@ export class GameScene extends Phaser.Scene {
   private bodyPolygonGraphics!: Phaser.GameObjects.Graphics;
   // Векторный слой активных эффектов инструментов пилота.
   private pilotToolEffectGraphics!: Phaser.GameObjects.Graphics;
+  // Векторный слой индикаторов брони над видимыми объектами.
+  private armorBarGraphics!: Phaser.GameObjects.Graphics;
   // Измеряет простую среднюю частоту кадров за последнюю секунду.
   private frameRateMeter = new FrameRateMeter();
   // Включает показ серверных физических тел поверх текстур.
@@ -280,6 +290,7 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5);
     this.pilotToolEffectGraphics = this.add.graphics().setDepth(900).setBlendMode(Phaser.BlendModes.ADD);
     this.bodyPolygonGraphics = this.add.graphics().setDepth(1000);
+    this.armorBarGraphics = this.add.graphics().setDepth(1100);
 
     this.inputController = new InputController(
       this.game.canvas,
@@ -583,6 +594,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.pilotToolEffectGraphics.clear();
     this.bodyPolygonGraphics.clear();
+    this.armorBarGraphics.clear();
   }
 
   // Размещает все объекты в экранных координатах камеры пилота.
@@ -632,6 +644,73 @@ export class GameScene extends Phaser.Scene {
     }
     this.renderBodyPolygons(objects, camera);
     this.renderDrillBeams(objects, camera, selfObject.Rotation, timeMs);
+    this.renderArmorBars(objects, selfObject, camera);
+  }
+
+  // Рисует узкие полоски брони над чужими кораблями и станциями в экранных координатах.
+  private renderArmorBars(
+    objects: CosmicObject[],
+    selfObject: CosmicObject,
+    camera: Parameters<typeof worldToPilotScreen>[1],
+  ): void {
+    const graphics = this.armorBarGraphics;
+    graphics.clear();
+
+    for (const object of objects) {
+      if (this.isDrillRayObject(object)) {
+        continue;
+      }
+      const model = this.modelForObject(object);
+      if (!model || !this.shouldRenderArmorBar(object, selfObject, model)) {
+        continue;
+      }
+
+      const center = worldToPilotScreen({ x: object.X, y: object.Y }, camera);
+      const width = clamp(model.BodyWidth * this.zoomScale, ARMOR_BAR_MIN_WIDTH_PX, ARMOR_BAR_MAX_WIDTH_PX);
+      const height = ARMOR_BAR_HEIGHT_PX;
+      const topOffset = Math.max(model.BodyLength * this.zoomScale * 0.5, height) + ARMOR_BAR_SCREEN_GAP_PX;
+      const x = center.x - width / 2;
+      const y = center.y - topOffset - height;
+      const fillWidth = width * this.armorBarFillRatio(object);
+
+      graphics.fillStyle(0x05090c, 0.72);
+      graphics.fillRect(x - 1, y - 1, width + 2, height + 2);
+      graphics.fillStyle(this.armorBarColor(object), 0.96);
+      graphics.fillRect(x, y, fillWidth, height);
+    }
+  }
+
+  // Проверяет, нужен ли экранный индикатор для конкретного объекта.
+  private shouldRenderArmorBar(
+    object: CosmicObject,
+    selfObject: CosmicObject,
+    model: CosmicObjectModelReference,
+  ): boolean {
+    if (object.ID === selfObject.ID || object.MaxArmor <= 0) {
+      return false;
+    }
+    if (object.OwnerCharacterID > 0 && object.OwnerCharacterID === selfObject.OwnerCharacterID) {
+      return false;
+    }
+    if (object.OwnerNpcClanID > 0 && object.OwnerNpcClanID === selfObject.OwnerNpcClanID) {
+      return false;
+    }
+
+    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)] as { Acronym?: unknown } | undefined;
+    return objectType?.Acronym === "Ship" || objectType?.Acronym === "Station";
+  }
+
+  // Возвращает долю оставшейся брони в безопасном диапазоне для отрисовки.
+  private armorBarFillRatio(object: CosmicObject): number {
+    return clamp(object.Armor / Math.max(1, object.MaxArmor), 0, 1);
+  }
+
+  // Возвращает цвет от красного к зелёному по доле оставшейся брони.
+  private armorBarColor(object: CosmicObject): number {
+    const ratio = this.armorBarFillRatio(object);
+    const red = Math.round(255 * (1 - ratio));
+    const green = Math.round(255 * ratio);
+    return (red << 16) | (green << 8);
   }
 
   // Рисует полупрозрачные физические тела поверх видимых объектов.
