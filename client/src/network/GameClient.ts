@@ -83,6 +83,7 @@ const emptyInput = (): ClientInputState => ({
   thrustLeft: false,
   thrustRight: false,
   toggleAnchor: false,
+  primaryPointerAction: false,
   targetRotationDelta: 0,
 });
 

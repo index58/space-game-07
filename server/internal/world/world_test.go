@@ -38,6 +38,58 @@ func dockingEventsContainKind(events []game.DockingEvent, kind string) bool {
 	return false
 }
 
+// Добавляет минимальные справочники бура и луча для проверки временного объекта в снимке мира.
+func addSimpleDrillRayTestData(t *testing.T, serverData *world.Data) {
+	t.Helper()
+
+	serverData.CosmicObjectTypes.Items[6] = &data.CosmicObjectType{ID: 6, TitleRu: "Луч", TitleEn: "Ray", Acronym: "Ray", Movable: true, Rotatable: true}
+	serverData.CosmicObjectTypes.MaxID = 6
+	serverData.CosmicObjectModels.Items[900] = &data.CosmicObjectModel{
+		ID:                 900,
+		TitleRu:            "Луч простого бура",
+		TitleEn:            "Simple Drill Ray",
+		Acronym:            "SimpleDrillRay",
+		TextureWidth:       8,
+		TextureHeight:      500,
+		TextureBodyOriginX: 4,
+		TextureBodyOriginY: 250,
+		TextureBodyWidth:   8,
+		TextureBodyLength:  500,
+		TextureScale:       0.95,
+		CosmicObjectTypeID: 6,
+	}
+	serverData.ItemModels.Items[700] = &data.ItemModel{
+		ID:         700,
+		TitleRu:    "Простой бур",
+		TitleEn:    "Simple Drill",
+		Acronym:    "SimpleDrill",
+		ItemTypeID: 1,
+		Range:      500,
+	}
+	serverData.EquipmentGroups.Items[700] = &data.EquipmentGroup{
+		ID:                   700,
+		CosmicObjectID:       1,
+		Title:                "Simple Drill",
+		EquipmentItemModelID: 700,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	}
+
+	if err := serverData.CosmicObjectTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.CosmicObjectModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.EquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 // Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™ Р В Р вЂ¦Р В Р’В°Р В Р’В»Р В РЎвЂР РЋРІР‚РЋР В РЎвЂР В Р’Вµ Р РЋРЎвЂњР В Р вЂ Р В Р’ВµР В РўвЂР В РЎвЂўР В РЎВР В Р’В»Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР В РЎвЂ Р РЋР С“ Р РЋРЎвЂњР В РЎвЂќР В Р’В°Р В Р’В·Р В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РЎВ Р РЋРІР‚С™Р В Р’ВµР В РЎвЂќР РЋР С“Р РЋРІР‚С™Р В РЎвЂўР В РЎВ.
 func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
 	for _, event := range events {
@@ -478,6 +530,64 @@ func TestConnectAccountUsesCurrentCharacterLocation(t *testing.T) {
 }
 
 // Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎвЂўР В Р’В±Р РЋР С“Р РЋРІР‚С™Р В Р вЂ Р В Р’ВµР В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р В РІвЂћвЂ“ Р В РЎСџР В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰ Р РЋР С“Р РЋР вЂљР В Р’В°Р В Р’В·Р РЋРЎвЂњ Р В Р вЂ¦Р В Р’В°Р РЋРІР‚РЋР В РЎвЂР В Р вЂ¦Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В Р’В°Р В Р вЂ Р РЋРІР‚С™Р В РЎвЂўР В РЎВР В Р’В°Р РЋРІР‚С™Р В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР РЋРЎвЂњР РЋР вЂ№ Р РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В РЎвЂќР РЋРЎвЂњ Р В РЎвЂ Р В РЎвЂ”Р В РЎвЂўР РЋР С“Р В Р’В»Р В Р’Вµ Р РЋРІР‚С™Р В Р’В°Р В РІвЂћвЂ“Р В РЎВР В Р’ВµР РЋР вЂљР В Р’В° Р РЋР С“Р В РЎвЂўР В Р’В·Р В РўвЂР В Р’В°Р РЋРІР‚ВР РЋРІР‚С™ Р В РЎвЂќР В Р’В»Р В Р’В°Р РЋР С“Р РЋРІР‚С™Р В Р’ВµР РЋР вЂљ.
+// Проверяет, что активный бур передается другим клиентам как временный луч и не записывается в постоянные объекты мира.
+func TestSnapshotAddsTemporarySimpleDrillRayObject(t *testing.T) {
+	serverData := testWorldData(t)
+	addSimpleDrillRayTestData(t, &serverData)
+	serverData.CosmicObjectModels.Items[1].TextureHeight = 120
+	serverData.CosmicObjectModels.Items[1].TextureVisibleTopY = 30
+	serverData.CosmicObjectModels.Items[1].TextureBodyOriginY = 80
+	serverData.CosmicObjectModels.Items[1].TextureBodyLength = 40
+	serverData.CosmicObjectModels.Items[1].TextureScale = 1
+	if err := serverData.CosmicObjectModels.RebuildIndexes(); err != nil {
+		t.Fatalf("rebuild cosmic object model indexes: %v", err)
+	}
+	serverData.CosmicObjects.Items[1].X = 100
+	serverData.CosmicObjects.Items[1].Y = -50
+	serverData.CosmicObjects.Items[1].Rotation = 0.4
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	withoutAction := gameWorld.SnapshotForAccount(1)
+	if _, ok := findCosmicObjectInSnapshot(withoutAction, -1); ok {
+		t.Fatalf("temporary ray exists without primary action")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{PrimaryPointerAction: true})
+	snapshot := gameWorld.SnapshotForAccount(1)
+
+	ray, ok := findCosmicObjectInSnapshot(snapshot, -1)
+	if !ok {
+		t.Fatalf("temporary ray was not added to snapshot")
+	}
+	if _, ok := serverData.CosmicObjects.Get(-1); ok {
+		t.Fatalf("temporary ray was saved in persistent objects")
+	}
+	if ray.CosmicObjectModelID != 900 || !ray.Enabled {
+		t.Fatalf("temporary ray uses wrong model or disabled state: %+v", ray.CosmicObject)
+	}
+	ship := serverData.CosmicObjects.Items[1]
+	shipModel := serverData.CosmicObjectModels.Items[1]
+	rayModel := serverData.CosmicObjectModels.Items[900]
+	forward := physics.ForwardVector(ship.Rotation)
+	visibleNoseDistance := float64(shipModel.TextureBodyOriginY-shipModel.TextureVisibleTopY) / shipModel.TextureScale
+	expectedDistance := visibleNoseDistance + rayModel.BodyLength/2
+	expectedX := ship.X + forward.X*expectedDistance
+	expectedY := ship.Y + forward.Y*expectedDistance
+	if math.Abs(ray.X-expectedX) > physics.Epsilon || math.Abs(ray.Y-expectedY) > physics.Epsilon {
+		t.Fatalf("ray position got (%.6f, %.6f), want (%.6f, %.6f)", ray.X, ray.Y, expectedX, expectedY)
+	}
+	startDistance := math.Hypot(ray.X-ship.X, ray.Y-ship.Y) - rayModel.BodyLength/2
+	if math.Abs(startDistance-visibleNoseDistance) > physics.Epsilon {
+		t.Fatalf("ray start distance got %.6f, want %.6f", startDistance, visibleNoseDistance)
+	}
+	if math.Abs(ray.Rotation-ship.Rotation) > physics.Epsilon {
+		t.Fatalf("ray rotation got %.6f, want %.6f", ray.Rotation, ship.Rotation)
+	}
+}
+
 func TestDockingRequestAutoApprovesOwnedReceiverAndCompletesCluster(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[1].Anchored = true

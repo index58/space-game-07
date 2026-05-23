@@ -4,7 +4,7 @@ import { GameUiRuntime } from "../ui-kit/runtime";
 import { getScrollOffsetFromThumbTopPercent, getScrollbarThumbTopPercentFromCursor, startScrollbarDrag, type ScrollbarDragState } from "../ui-kit/scrollbar";
 import { TextEditController } from "../ui-kit/textEdit";
 import type { GameUiAction, GameUiControlState, TextEditState } from "../ui-kit/types";
-import { isFreshKeyboardBinding, isFreshKeyboardEventBinding, isFreshKeyDown, toShipInput, type InputBindingMap } from "./inputState";
+import { isFreshKeyboardBinding, isFreshKeyboardEventBinding, isFreshKeyDown, toShipInput, type InputBindingMap, type MouseButtonState } from "./inputState";
 
 export type ChatInputAction = Omit<ChatSendMessage, "type">;
 
@@ -86,6 +86,8 @@ const chatWheelPixels = 42;
 export class InputController {
   // Текущее состояние клавиш по DOM-кодам.
   private readonly keys: Record<string, boolean> = {};
+  // Текущее состояние кнопок мыши по DOM-номерам.
+  private readonly mouseButtons: MouseButtonState = {};
   // Накопленное горизонтальное движение мыши между кадрами.
   private mouseDeltaX = 0;
   // Дискретный пользовательский уровень приближения.
@@ -345,6 +347,9 @@ export class InputController {
     });
 
     window.addEventListener("mousedown", (event) => {
+      if (this.isPointerLocked()) {
+        this.mouseButtons[event.button] = true;
+      }
       if (event.button !== 0) {
         return;
       }
@@ -390,6 +395,9 @@ export class InputController {
     });
 
     window.addEventListener("mouseup", (event) => {
+      if (this.isPointerLocked()) {
+        this.mouseButtons[event.button] = false;
+      }
       if (event.button === 0) {
         this.enqueueUiAction(this.uiRuntime.pointerUp(this.cursorX, this.cursorY, event.button, uiActionModifiers(event)));
         this.chatEditDragActive = false;
@@ -814,9 +822,12 @@ export class InputController {
       this.chatScrollbarDragActive = false;
       this.chatEditDragActive = false;
       this.chatScrollbarDrag = null;
+      for (const button of Object.keys(this.mouseButtons)) {
+        this.mouseButtons[Number(button)] = false;
+      }
     }
     const canControlShip = isPointerLocked && !this.isGameCursorVisible();
-    const input = toShipInput(canControlShip, this.keys, this.mouseDeltaX, this.inputBindings);
+    const input = toShipInput(canControlShip, this.keys, this.mouseDeltaX, this.inputBindings, this.mouseButtons);
     input.toggleAnchor = canControlShip && this.anchorToggleRequested;
     this.mouseDeltaX = 0;
     this.anchorToggleRequested = false;

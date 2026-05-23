@@ -37,6 +37,13 @@ import { applyControlPanelPendingToEquipmentGroups, applyControlPanelPendingToOb
 import { getControlPanelFuelFillMaxAmount } from "./controlPanelFuelAmount";
 import { applyControlPanelListSelection } from "./controlPanelListSelection";
 import { applyActiveControlPanelUsageRelations, normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
+import {
+  SIMPLE_DRILL_RAY_ACRONYM,
+  getDrillBeamGeometry,
+  getDrillBeamIntakeProgress,
+  type DrillBeamGeometry,
+  type DrillBeamPoint,
+} from "./drillBeam";
 import { FrameRateMeter } from "./frameRateMeter";
 import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
 import { InputController, type ChatScrollState } from "./InputController";
@@ -71,6 +78,8 @@ export class GameScene extends Phaser.Scene {
   private objectSprites = new Map<number, Phaser.GameObjects.Image>();
   // Векторный слой отладочной отрисовки физических тел.
   private bodyPolygonGraphics!: Phaser.GameObjects.Graphics;
+  // Векторный слой активных эффектов инструментов пилота.
+  private pilotToolEffectGraphics!: Phaser.GameObjects.Graphics;
   // Измеряет простую среднюю частоту кадров за последнюю секунду.
   private frameRateMeter = new FrameRateMeter();
   // Включает показ серверных физических тел поверх текстур.
@@ -268,6 +277,7 @@ export class GameScene extends Phaser.Scene {
         fontSize: "18px",
       })
       .setOrigin(0.5);
+    this.pilotToolEffectGraphics = this.add.graphics().setDepth(900).setBlendMode(Phaser.BlendModes.ADD);
     this.bodyPolygonGraphics = this.add.graphics().setDepth(1000);
 
     this.inputController = new InputController(
@@ -453,7 +463,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.waitingText.setVisible(false);
-    this.renderWorld(snapshot.objects, selfObject);
+    this.renderWorld(snapshot.objects, selfObject, time);
     this.gameUi.update({
       status,
       selfObject,
@@ -571,11 +581,16 @@ export class GameScene extends Phaser.Scene {
     for (const sprite of this.objectSprites.values()) {
       sprite.setVisible(false);
     }
+    this.pilotToolEffectGraphics.clear();
     this.bodyPolygonGraphics.clear();
   }
 
   // Размещает все объекты в экранных координатах камеры пилота.
-  private renderWorld(objects: CosmicObject[], selfObject: CosmicObject): void {
+  private renderWorld(
+    objects: CosmicObject[],
+    selfObject: CosmicObject,
+    timeMs: number,
+  ): void {
     const viewportWidth = this.scale.width;
     const viewportHeight = this.scale.height;
     const camera = {
@@ -590,6 +605,9 @@ export class GameScene extends Phaser.Scene {
 
     const activeObjectIds = new Set<number>();
     for (const object of objects) {
+      if (this.isDrillRayObject(object)) {
+        continue;
+      }
       activeObjectIds.add(object.ID);
 
       const sprite = this.getOrCreateObjectSprite(object);
@@ -597,6 +615,7 @@ export class GameScene extends Phaser.Scene {
         continue;
       }
       const screen = worldToPilotScreen({ x: object.X, y: object.Y }, camera);
+      this.updateObjectSpriteOrigin(sprite, object);
 
       sprite.setVisible(true);
       sprite.setPosition(screen.x, screen.y);
@@ -612,6 +631,7 @@ export class GameScene extends Phaser.Scene {
       }
     }
     this.renderBodyPolygons(objects, camera);
+    this.renderDrillBeams(objects, camera, selfObject.Rotation, timeMs);
   }
 
   // Рисует полупрозрачные физические тела поверх видимых объектов.
@@ -645,6 +665,108 @@ export class GameScene extends Phaser.Scene {
       this.bodyPolygonGraphics.fillPath();
       this.bodyPolygonGraphics.strokePath();
     }
+  }
+
+  // Рисует энергетический след активного бура поверх мира пилота.
+  private renderDrillBeams(
+    objects: CosmicObject[],
+    camera: Parameters<typeof worldToPilotScreen>[1],
+    selfRotation: number,
+    timeMs: number,
+  ): void {
+    const graphics = this.pilotToolEffectGraphics;
+    graphics.clear();
+
+    for (const object of objects) {
+      if (!this.isDrillRayObject(object)) {
+        continue;
+      }
+      const model = this.modelForObject(object);
+      if (!model) {
+        continue;
+      }
+      const geometry = getDrillBeamGeometry({
+        center: worldToPilotScreen({ x: object.X, y: object.Y }, camera),
+        rotation: rotationToPilotScreen(object.Rotation, selfRotation),
+        lengthMeters: model.BodyLength,
+        zoomScale: this.zoomScale,
+      });
+      if (geometry) {
+        this.renderDrillBeamGeometry(geometry, timeMs);
+      }
+    }
+  }
+
+  // Рисует один световой отрезок бура по готовой экранной геометрии.
+  private renderDrillBeamGeometry(geometry: DrillBeamGeometry, timeMs: number): void {
+    const graphics = this.pilotToolEffectGraphics;
+
+    const pulse = 0.82 + Math.sin(timeMs * 0.018) * 0.16;
+    const width = geometry.widthPx;
+    const sideWidth = width * 2.4;
+    const direction = normalizeScreenVector({
+      x: geometry.end.x - geometry.start.x,
+      y: geometry.end.y - geometry.start.y,
+    });
+    const normal = { x: -direction.y, y: direction.x };
+
+    graphics.fillStyle(0x1fdcff, 0.08 * pulse);
+    graphics.beginPath();
+    graphics.moveTo(geometry.start.x - normal.x * width * 1.4, geometry.start.y - normal.y * width * 1.4);
+    graphics.lineTo(geometry.end.x - normal.x * sideWidth, geometry.end.y - normal.y * sideWidth);
+    graphics.lineTo(geometry.end.x + normal.x * sideWidth, geometry.end.y + normal.y * sideWidth);
+    graphics.lineTo(geometry.start.x + normal.x * width * 1.4, geometry.start.y + normal.y * width * 1.4);
+    graphics.closePath();
+    graphics.fillPath();
+
+    this.strokePilotToolEffectLine(geometry.start, geometry.end, width * 9, 0x0b6f9e, 0.18 * pulse);
+    this.strokePilotToolEffectLine(geometry.start, geometry.end, width * 5.5, 0x20d8ff, 0.28 * pulse);
+    this.strokePilotToolEffectLine(geometry.start, geometry.end, width * 2.2, 0x8cf8ff, 0.58);
+    this.strokePilotToolEffectLine(geometry.start, geometry.end, width * 0.65, 0xffffff, 0.95);
+
+    for (let index = 0; index < 10; index += 1) {
+      const progress = getDrillBeamIntakeProgress(timeMs, index);
+      const center = {
+        x: lerp(geometry.start.x, geometry.end.x, progress),
+        y: lerp(geometry.start.y, geometry.end.y, progress),
+      };
+      const shimmer = Math.sin(timeMs * 0.01 + index * 2.17);
+      const offset = shimmer * sideWidth * (0.35 + progress * 0.85);
+      const segmentLength = clamp(geometry.lengthPx * 0.045, 12, 46);
+      this.strokePilotToolEffectLine(
+        { x: center.x + normal.x * offset, y: center.y + normal.y * offset },
+        {
+          x: center.x - direction.x * segmentLength + normal.x * shimmer * width * 0.5,
+          y: center.y - direction.y * segmentLength + normal.y * shimmer * width * 0.5,
+        },
+        width * 0.75,
+        index % 2 === 0 ? 0xffffff : 0x69f0ff,
+        0.32,
+      );
+    }
+
+    graphics.fillStyle(0x26e6ff, 0.2);
+    graphics.fillCircle(geometry.end.x, geometry.end.y, sideWidth * 2.2 * pulse);
+    graphics.fillStyle(0xe9ffff, 0.62);
+    graphics.fillCircle(geometry.end.x, geometry.end.y, width * 1.8);
+    graphics.lineStyle(width * 0.55, 0x9ffcff, 0.72);
+    graphics.strokeCircle(geometry.end.x, geometry.end.y, sideWidth * 1.35 * pulse);
+  }
+
+  // Находит активный бур в выбранной ячейке и готовит геометрию для эффекта.
+  // Проводит одну светящуюся линию без накопления состояния между штрихами.
+  private strokePilotToolEffectLine(
+    start: DrillBeamGeometry["start"],
+    end: DrillBeamGeometry["end"],
+    width: number,
+    color: number,
+    alpha: number,
+  ): void {
+    this.pilotToolEffectGraphics.lineStyle(width, color, alpha);
+    this.pilotToolEffectGraphics.beginPath();
+    this.pilotToolEffectGraphics.moveTo(start.x, start.y);
+    this.pilotToolEffectGraphics.lineTo(end.x, end.y);
+    this.pilotToolEffectGraphics.strokePath();
   }
 
   // Обновляет тайловый фон так, чтобы движение камеры выглядело непрерывным.
@@ -698,6 +820,27 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Возвращает ключ текстуры модели и запускает загрузку, если Phaser еще не получил файл.
+  // Проверяет, что объект является серверным лучом простого бура.
+  private isDrillRayObject(object: CosmicObject): boolean {
+    const model = this.modelForObject(object);
+    if (!model || model.Acronym !== SIMPLE_DRILL_RAY_ACRONYM) {
+      return false;
+    }
+    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)] as { Acronym?: unknown } | undefined;
+    return objectType?.Acronym === "Ray";
+  }
+
+  // Ставит точку привязки спрайта на физический центр модели из справочника.
+  private updateObjectSpriteOrigin(sprite: Phaser.GameObjects.Image, object: CosmicObject): void {
+    const model = this.modelForObject(object);
+    if (!model || model.TextureWidth <= 0 || model.TextureHeight <= 0) {
+      sprite.setOrigin(0.5);
+      return;
+    }
+
+    sprite.setOrigin(model.TextureBodyOriginX / model.TextureWidth, model.TextureBodyOriginY / model.TextureHeight);
+  }
+
   private textureKeyForObject(object: CosmicObject): string | null {
     const model = this.modelForObject(object);
     if (!model) {
@@ -2753,3 +2896,18 @@ const normalizeSelectedControlPanelGroupId = (groups: EquipmentGroup[], selected
   groups.some((group) => group.ID === selectedGroupId) ? selectedGroupId : groups[0]?.ID ?? null;
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+
+const lerp = (start: number, end: number, progress: number): number => start + (end - start) * progress;
+
+// Нормализует экранное направление и защищает от нулевой длины отрезка.
+const normalizeScreenVector = (vector: DrillBeamPoint): DrillBeamPoint => {
+  const length = Math.hypot(vector.x, vector.y);
+  if (length <= Number.EPSILON) {
+    return { x: 0, y: -1 };
+  }
+
+  return {
+    x: vector.x / length,
+    y: vector.y / length,
+  };
+};

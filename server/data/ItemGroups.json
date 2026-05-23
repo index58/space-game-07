@@ -1,5 +1,5 @@
 {
-  "MaxID": 1694,
+  "MaxID": 1778,
   "Items": {
     "39": {
       "ID": 39,
@@ -271,126 +271,6 @@
       "ContentItemModelID": 4,
       "Count": 5
     },
-    "1634": {
-      "ID": 1634,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 3,
-      "Count": 10
-    },
-    "1635": {
-      "ID": 1635,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 1,
-      "Count": 10
-    },
-    "1636": {
-      "ID": 1636,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 4,
-      "Count": 10
-    },
-    "1637": {
-      "ID": 1637,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 5,
-      "Count": 10
-    },
-    "1638": {
-      "ID": 1638,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 13,
-      "Count": 10
-    },
-    "1639": {
-      "ID": 1639,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 14,
-      "Count": 10
-    },
-    "1640": {
-      "ID": 1640,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 21,
-      "Count": 10
-    },
-    "1641": {
-      "ID": 1641,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 7,
-      "Count": 10
-    },
-    "1642": {
-      "ID": 1642,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 8,
-      "Count": 1000
-    },
-    "1643": {
-      "ID": 1643,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 9,
-      "Count": 1000
-    },
-    "1644": {
-      "ID": 1644,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 10,
-      "Count": 1000
-    },
-    "1645": {
-      "ID": 1645,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 11,
-      "Count": 1000
-    },
-    "1646": {
-      "ID": 1646,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 12,
-      "Count": 1000
-    },
-    "1647": {
-      "ID": 1647,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 15,
-      "Count": 1000
-    },
-    "1648": {
-      "ID": 1648,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 16,
-      "Count": 1000
-    },
-    "1649": {
-      "ID": 1649,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 17,
-      "Count": 1000
-    },
-    "1650": {
-      "ID": 1650,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 18,
-      "Count": 1000
-    },
-    "1651": {
-      "ID": 1651,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 19,
-      "Count": 1000
-    },
-    "1652": {
-      "ID": 1652,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 20,
-      "Count": 1000
-    },
-    "1653": {
-      "ID": 1653,
-      "ContainerEquipmentGroupID": 1725,
-      "ContentItemModelID": 6,
-      "Count": 10
-    },
     "1674": {
       "ID": 1674,
       "ContainerEquipmentGroupID": 1736,
@@ -514,6 +394,132 @@
     "1694": {
       "ID": 1694,
       "ContainerEquipmentGroupID": 1736,
+      "ContentItemModelID": 20,
+      "Count": 1000
+    },
+    "1758": {
+      "ID": 1758,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 3,
+      "Count": 10
+    },
+    "1759": {
+      "ID": 1759,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 22,
+      "Count": 10
+    },
+    "1760": {
+      "ID": 1760,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 1,
+      "Count": 10
+    },
+    "1761": {
+      "ID": 1761,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 4,
+      "Count": 10
+    },
+    "1762": {
+      "ID": 1762,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 6,
+      "Count": 10
+    },
+    "1763": {
+      "ID": 1763,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 5,
+      "Count": 10
+    },
+    "1764": {
+      "ID": 1764,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 13,
+      "Count": 10
+    },
+    "1765": {
+      "ID": 1765,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 14,
+      "Count": 10
+    },
+    "1766": {
+      "ID": 1766,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 21,
+      "Count": 10
+    },
+    "1767": {
+      "ID": 1767,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 7,
+      "Count": 10
+    },
+    "1768": {
+      "ID": 1768,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 8,
+      "Count": 1000
+    },
+    "1769": {
+      "ID": 1769,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 9,
+      "Count": 1000
+    },
+    "1770": {
+      "ID": 1770,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 10,
+      "Count": 1000
+    },
+    "1771": {
+      "ID": 1771,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 11,
+      "Count": 1000
+    },
+    "1772": {
+      "ID": 1772,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 12,
+      "Count": 1000
+    },
+    "1773": {
+      "ID": 1773,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 15,
+      "Count": 1000
+    },
+    "1774": {
+      "ID": 1774,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 16,
+      "Count": 1000
+    },
+    "1775": {
+      "ID": 1775,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 17,
+      "Count": 1000
+    },
+    "1776": {
+      "ID": 1776,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 18,
+      "Count": 1000
+    },
+    "1777": {
+      "ID": 1777,
+      "ContainerEquipmentGroupID": 1784,
+      "ContentItemModelID": 19,
+      "Count": 1000
+    },
+    "1778": {
+      "ID": 1778,
+      "ContainerEquipmentGroupID": 1784,
       "ContentItemModelID": 20,
       "Count": 1000
     }

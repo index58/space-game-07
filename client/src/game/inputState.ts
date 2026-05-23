@@ -6,6 +6,9 @@ export type KeyState = Record<string, boolean>;
 // Переводит движение мыши в изменение целевого угла корабля.
 export const MOUSE_TARGET_ROTATION_RADIANS_PER_PIXEL = 0.0025;
 
+// Хранит удержанные кнопки мыши по DOM-номерам MouseEvent.button.
+export type MouseButtonState = Record<number, boolean>;
+
 export type InputBindingMap = Record<string, string>;
 
 const defaultInputBindings: InputBindingMap = {
@@ -15,6 +18,7 @@ const defaultInputBindings: InputBindingMap = {
   ThrustRight: "KeyboardEvent.code:KeyD",
   RotateClockwise: "MouseEvent.movementX>0",
   RotateCounterclockwise: "MouseEvent.movementX<0",
+  PrimaryPointerAction: "MouseEvent.button:0",
 };
 
 // Проверяет первое событие нажатия, игнорируя автоповторы удерживаемой клавиши.
@@ -31,6 +35,7 @@ export const emptyShipInput = (): ClientInputState => ({
   thrustLeft: false,
   thrustRight: false,
   toggleAnchor: false,
+  primaryPointerAction: false,
   targetRotationDelta: 0,
 });
 
@@ -40,6 +45,7 @@ export const toShipInput = (
   keys: KeyState,
   mouseDeltaX: number,
   bindings: InputBindingMap = defaultInputBindings,
+  mouseButtons: MouseButtonState = {},
 ): ClientInputState => {
   if (!isPointerLocked) {
     return emptyShipInput();
@@ -53,6 +59,7 @@ export const toShipInput = (
     thrustLeft: isKeyboardBindingPressed(keys, activeBindings.ThrustLeft),
     thrustRight: isKeyboardBindingPressed(keys, activeBindings.ThrustRight),
     toggleAnchor: false,
+    primaryPointerAction: isInputBindingPressed(keys, mouseButtons, activeBindings.PrimaryPointerAction),
     targetRotationDelta: rotationDeltaFromBindings(keys, mouseDeltaX, activeBindings),
   };
 };
@@ -61,6 +68,15 @@ export const toShipInput = (
 export const isKeyboardBindingPressed = (keys: KeyState, systemStringValue: string | undefined): boolean => {
   const keyCode = keyboardCodeFromSystemString(systemStringValue);
   return keyCode ? Boolean(keys[keyCode]) : false;
+};
+
+// Проверяет удержание действия, которое может быть назначено на клавиатуру или кнопку мыши.
+export const isInputBindingPressed = (keys: KeyState, mouseButtons: MouseButtonState, systemStringValue: string | undefined): boolean => {
+  const mouseButton = mouseButtonFromSystemString(systemStringValue);
+  if (mouseButton !== null) {
+    return Boolean(mouseButtons[mouseButton]);
+  }
+  return isKeyboardBindingPressed(keys, systemStringValue);
 };
 
 // Проверяет первое нажатие клавиши для дискретного действия.
@@ -111,6 +127,15 @@ const rotationDeltaFromBindings = (keys: KeyState, mouseDeltaX: number, bindings
 const keyboardCodeFromSystemString = (systemStringValue: string | undefined): string | null => {
   const match = systemStringValue?.match(/^KeyboardEvent\.code:(.+)$/);
   return match?.[1] ?? null;
+};
+
+// Достает DOM-номер кнопки мыши из системной строки справочника.
+const mouseButtonFromSystemString = (systemStringValue: string | undefined): number | null => {
+  const match = systemStringValue?.match(/^MouseEvent\.button:(\d+)$/);
+  if (!match) {
+    return null;
+  }
+  return Number(match[1]);
 };
 
 type KeyboardEventBinding = {

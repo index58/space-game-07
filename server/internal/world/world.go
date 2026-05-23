@@ -22,6 +22,8 @@ const (
 	defaultStarterShipAcronym = "ship_bat"
 	dockingDurationSeconds    = 10
 	dockingProbeDistance      = 10
+	simpleDrillAcronym        = "SimpleDrill"
+	simpleDrillRayAcronym     = "SimpleDrillRay"
 )
 
 // Р РЋР С•Р В±Р С‘РЎР‚Р В°Р ВµРЎвЂљ РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р С‘ Р С‘ Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№Р Вµ РЎРѓРЎС“РЎвЂ°Р Р…Р С•РЎРѓРЎвЂљР С‘, Р Р…РЎС“Р В¶Р Р…РЎвЂ№Р Вµ РЎРѓР С‘Р СРЎС“Р В»РЎРЏРЎвЂ Р С‘Р С‘ Р СР С‘РЎР‚Р В°.
@@ -3932,6 +3934,91 @@ func (world *World) SaveData(workingDirectory string) error {
 }
 
 // Р РЋР С•Р В±Р С‘РЎР‚Р В°Р ВµРЎвЂљ Р Т‘Р ВµРЎвЂљР ВµРЎР‚Р СР С‘Р Р…Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р Р…Р С• Р С•РЎвЂљРЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р Р…РЎвЂ№Р в„– РЎРѓР Р…Р С‘Р СР С•Р С”; Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµРЎвЂљРЎРѓРЎРЏ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р С—Р С•Р Т‘ mutex.
+// Создает временные лучи активных буров только для текущего сетевого снимка.
+func (world *World) activeDrillRayObjectsLocked() []game.SnapshotCosmicObject {
+	if world.data.CosmicObjects == nil || world.data.CosmicObjectModels == nil {
+		return nil
+	}
+	rayModel, ok := world.data.CosmicObjectModels.GetByAcronym(simpleDrillRayAcronym)
+	if !ok {
+		return nil
+	}
+
+	inputs := world.inputsByObjectID()
+	objectIDs := make([]int64, 0, len(inputs))
+	for objectID, input := range inputs {
+		if input.PrimaryPointerAction {
+			objectIDs = append(objectIDs, objectID)
+		}
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+
+	rays := make([]game.SnapshotCosmicObject, 0, len(objectIDs))
+	for _, objectID := range objectIDs {
+		cosmicObject, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok || !cosmicObject.Enabled {
+			continue
+		}
+		model, ok := world.data.CosmicObjectModels.Get(cosmicObject.CosmicObjectModelID)
+		if !ok {
+			continue
+		}
+		if _, ok := world.enabledSimpleDrillRangeLocked(objectID); !ok {
+			continue
+		}
+
+		forward := physics.ForwardVector(cosmicObject.Rotation)
+		centerDistance := modelVisualForwardOffsetMeters(*model) + rayModel.BodyLength/2
+		ray := data.CosmicObject{
+			ID:                  -objectID,
+			Title:               simpleDrillRayAcronym,
+			CosmicObjectModelID: rayModel.ID,
+			X:                   cosmicObject.X + forward.X*centerDistance,
+			Y:                   cosmicObject.Y + forward.Y*centerDistance,
+			Rotation:            cosmicObject.Rotation,
+			TargetRotation:      cosmicObject.Rotation,
+			Enabled:             true,
+		}
+		rays = append(rays, game.SnapshotCosmicObject{CosmicObject: ray})
+	}
+
+	return rays
+}
+
+// Возвращает расстояние от центра модели до видимого носа по направлению вперед.
+func modelVisualForwardOffsetMeters(model data.CosmicObjectModel) float64 {
+	if model.TextureScale > 0 && model.TextureVisibleTopY > 0 && model.TextureBodyOriginY > model.TextureVisibleTopY {
+		return float64(model.TextureBodyOriginY-model.TextureVisibleTopY) / model.TextureScale
+	}
+
+	return model.BodyLength / 2
+}
+
+// Ищет включенный простой бур на объекте и возвращает дальность его действия.
+func (world *World) enabledSimpleDrillRangeLocked(objectID int64) (float64, bool) {
+	if world.data.EquipmentGroups == nil || world.data.ItemModels == nil {
+		return 0, false
+	}
+
+	var selectedRange float64
+	for _, group := range sortedEquipmentGroups(world.data.EquipmentGroups.GetByCosmicObjectID(objectID)) {
+		if enabledEquipmentCount(group) <= 0 {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
+		if !ok || model.Acronym != simpleDrillAcronym || model.Range <= 0 {
+			continue
+		}
+		if model.Range > selectedRange {
+			selectedRange = model.Range
+		}
+	}
+
+	return selectedRange, selectedRange > 0
+}
+
 func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 	objectIDs := make([]int64, 0, len(world.data.CosmicObjects.Items))
 	for objectID := range world.data.CosmicObjects.Items {
@@ -3952,6 +4039,7 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 			OwnerName:    world.ownerNameForTestingLocked(cosmicObject.OwnerCharacterID),
 		})
 	}
+	objects = append(objects, world.activeDrillRayObjectsLocked()...)
 
 	equipmentGroups := make([]data.EquipmentGroup, 0)
 	if world.data.EquipmentGroups != nil {

@@ -13,6 +13,8 @@ export type ClientInputState = {
   thrustRight: boolean;
   // Одноразовый запрос переключения якоря.
   toggleAnchor: boolean;
+  // Запрос основного действия указателя для выбранного инструмента пилота.
+  primaryPointerAction: boolean;
   // Изменение целевого угла поворота с прошлого пакета.
   targetRotationDelta: number;
 };
@@ -697,6 +699,8 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
   // Уникальный числовой идентификатор записи.
   ID: number;
   // Тип космического объекта, к которому относится модель.
+  // Неизменяемый строковый идентификатор модели.
+  Acronym?: string;
   CosmicObjectTypeID: number;
   // Путь к основной текстуре объекта в игровом мире.
   TextureFilePath: string;
@@ -704,6 +708,8 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
   TextureWidth: number;
   // Полная высота текстуры в пикселях.
   TextureHeight: number;
+  // Верхняя граница видимой части текстуры от верхнего края.
+  TextureVisibleTopY?: number;
   // Горизонтальная координата центра тела на текстуре.
   TextureBodyOriginX: number;
   // Вертикальная координата центра тела на текстуре.
@@ -749,6 +755,8 @@ export type ItemModelReference = Record<string, unknown> & {
   TitleEn?: string;
   // Путь к файлу иконки предмета.
   IconFilePath?: string;
+  // Дальность действия инструмента в метрах, если она задана.
+  Range?: number;
   // Вместимость магазина, если у инструмента есть магазин.
   MagazineCapacity?: number;
 };

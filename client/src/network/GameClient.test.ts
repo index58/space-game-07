@@ -34,6 +34,7 @@ const emptyInput = (): ClientInputState => ({
   thrustLeft: false,
   thrustRight: false,
   toggleAnchor: false,
+  primaryPointerAction: false,
   targetRotationDelta: 0,
 });
 
@@ -194,6 +195,7 @@ describe("GameClient", () => {
       thrustLeft: false,
       thrustRight: false,
       toggleAnchor: false,
+      primaryPointerAction: false,
       targetRotationDelta: 0.25,
     });
 
@@ -323,6 +325,7 @@ describe("GameClient", () => {
       thrustLeft: false,
       thrustRight: true,
       toggleAnchor: false,
+      primaryPointerAction: false,
       targetRotationDelta: firstMessage.targetRotationDelta,
     });
     expect(firstMessage.targetRotationDelta).toBeCloseTo(0.25);
@@ -335,6 +338,7 @@ describe("GameClient", () => {
       thrustLeft: false,
       thrustRight: true,
       toggleAnchor: false,
+      primaryPointerAction: false,
       targetRotationDelta: 0,
     });
 

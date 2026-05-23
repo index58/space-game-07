@@ -12,6 +12,7 @@ describe("toShipInput", () => {
       thrustLeft: false,
       thrustRight: false,
       toggleAnchor: false,
+      primaryPointerAction: false,
       targetRotationDelta: 0,
     });
   });
@@ -41,6 +42,15 @@ describe("toShipInput", () => {
 
     expect(input.thrustForward).toBe(true);
     expect(input.thrustBackward).toBe(false);
+  });
+
+  // Проверяет, что удержание основной кнопки попадает в игровой ввод только при управлении кораблем.
+  it("передает основное действие указателя из удержанной кнопки", () => {
+    const activeInput = toShipInput(true, {}, 0, {}, { 0: true });
+    const inactiveInput = toShipInput(false, {}, 0, {}, { 0: true });
+
+    expect(activeInput.primaryPointerAction).toBe(true);
+    expect(inactiveInput.primaryPointerAction).toBe(false);
   });
 });
 
