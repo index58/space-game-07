@@ -8386,7 +8386,6 @@
       "TextureFilePath": "assets/ships/1024x2048/ship_1024x2048_0042.png",
       "TextureWidth": 1024,
       "TextureHeight": 2048,
-      "TextureVisibleTopY": 393,
       "TextureBodyOriginX": 513,
       "TextureBodyOriginY": 920,
       "TextureBodyWidth": 774,

@@ -15,7 +15,7 @@
       "MaxAngularSpeed": 3,
       "X": 45.01899341989174,
       "Y": 661.5530906405505,
-      "Rotation": -7.514193428844208,
+      "Rotation": -7.471693428844198,
       "Armor": 18827,
       "MaxAlongForce": 13600000,
       "MaxAcrossForce": 13600000,
@@ -31,12 +31,12 @@
       "Complexity": 177953,
       "OccupiedVolume": 1670,
       "MaxFuel": 59700,
-      "Fuel": 55914.62333333176,
+      "Fuel": 54837.28249999869,
       "Speed": 0,
       "VelocityX": 0,
       "VelocityY": 0,
       "AngularSpeed": 0,
-      "TargetRotation": -7.514193428844208,
+      "TargetRotation": -7.471693428844198,
       "ClusterMainCosmicObjectID": 0
     },
     "2": {

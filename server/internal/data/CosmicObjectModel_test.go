@@ -179,7 +179,7 @@ func TestCosmicObjectModelsSaveLoadAndRebuildIndexes(t *testing.T) {
 // РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ JSON-РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РјРѕРґРµР»РµР№ РёСЃРїРѕР»СЊР·СѓРµС‚ РёРјРµРЅР° РїРѕР»РµР№ РёР· Go-СЃС‚СЂСѓРєС‚СѓСЂ.
 func TestCosmicObjectModelsJSONKeysMatchGoFieldNames(t *testing.T) {
 	cosmicObjectModels := NewCosmicObjectModels()
-	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "ship_0001", TextureScale: 4, TextureVisibleTopY: 10, CosmicObjectTypeID: 1}); err != nil {
+	if _, err := cosmicObjectModels.Add(&CosmicObjectModel{TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "ship_0001", TextureScale: 4, CosmicObjectTypeID: 1}); err != nil {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
@@ -198,7 +198,6 @@ func TestCosmicObjectModelsJSONKeysMatchGoFieldNames(t *testing.T) {
 		`"Acronym"`,
 		`"IconFilePath"`,
 		`"TextureFilePath"`,
-		`"TextureVisibleTopY"`,
 		`"TextureBodyOriginX"`,
 		`"TextureScale"`,
 		`"CosmicObjectTypeID"`,

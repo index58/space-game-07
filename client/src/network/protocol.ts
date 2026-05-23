@@ -710,8 +710,6 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
   TextureWidth: number;
   // Полная высота текстуры в пикселях.
   TextureHeight: number;
-  // Верхняя граница видимой части текстуры от верхнего края.
-  TextureVisibleTopY?: number;
   // Горизонтальная координата центра тела на текстуре.
   TextureBodyOriginX: number;
   // Вертикальная координата центра тела на текстуре.

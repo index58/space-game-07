@@ -539,7 +539,6 @@ func TestSnapshotAddsTemporarySimpleDrillRayObject(t *testing.T) {
 	serverData := testWorldData(t)
 	addSimpleDrillRayTestData(t, &serverData)
 	serverData.CosmicObjectModels.Items[1].TextureHeight = 120
-	serverData.CosmicObjectModels.Items[1].TextureVisibleTopY = 70
 	serverData.CosmicObjectModels.Items[1].TextureBodyOriginY = 80
 	serverData.CosmicObjectModels.Items[1].TextureBodyLength = 40
 	serverData.CosmicObjectModels.Items[1].TextureScale = 1
