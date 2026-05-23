@@ -45,16 +45,20 @@ const referenceData = {
   type: "referenceData",
   NpcClan: { MaxID: 1, Items: { "1": { ID: 1, TitleRu: "Клан добытчиков" } } },
   CosmicObjectType: {
-    MaxID: 2,
+    MaxID: 4,
     Items: {
       "1": { ID: 1, Acronym: "Ship" },
       "2": { ID: 2, Acronym: "Asteroid" },
+      "3": { ID: 3, Acronym: "Ray" },
+      "4": { ID: 4, Acronym: "Projectile" },
     },
   },
   ItemType: { MaxID: 0, Items: {} },
   CosmicObjectModel: {
-    MaxID: 20,
+    MaxID: 40,
     Items: {
+      "30": { ID: 30, CosmicObjectTypeID: 3, TitleRu: "Ray", TextureWidth: 8, TextureHeight: 40, TextureBodyOriginX: 4, TextureBodyOriginY: 20, TextureScale: 1, BodyWidth: 8, BodyLength: 40 },
+      "40": { ID: 40, CosmicObjectTypeID: 4, TitleRu: "Projectile", TextureWidth: 10, TextureHeight: 10, TextureBodyOriginX: 5, TextureBodyOriginY: 5, TextureScale: 1, BodyWidth: 10, BodyLength: 10 },
       "10": { ID: 10, CosmicObjectTypeID: 1, TitleRu: "Корабль", TextureWidth: 40, TextureHeight: 40, TextureBodyOriginX: 20, TextureBodyOriginY: 20, TextureScale: 1, BodyWidth: 20, BodyLength: 20 },
       "20": { ID: 20, CosmicObjectTypeID: 2, TitleRu: "Астероид", TextureWidth: 40, TextureHeight: 40, TextureBodyOriginX: 20, TextureBodyOriginY: 20, TextureScale: 1, BodyWidth: 20, BodyLength: 20 },
     },
@@ -83,7 +87,19 @@ describe("getInformationPanelView", () => {
     ]);
   });
 
-  // Проверяет, что панель не появляется для объекта за пределами 100 метров от носа корабля.
+  // Проверяет, что служебные тела лучей и снарядов не становятся целью информационной панели.
+  it("ignores rays and projectiles touched by the forward probe", () => {
+    const selfObject = object({ ID: 1, CosmicObjectModelID: 10, X: 0, Y: 0, Rotation: 0 });
+    const ray = object({ ID: 2, Title: "Ray", CosmicObjectModelID: 30, X: 0, Y: 40 });
+    const projectile = object({ ID: 3, Title: "Projectile", CosmicObjectModelID: 40, X: 0, Y: 55 });
+    const target = object({ ID: 4, Title: "Target", CosmicObjectModelID: 20, X: 0, Y: 70 });
+
+    const view = getInformationPanelView({ selfObject, objects: [selfObject, ray, projectile, target], referenceData });
+
+    expect(view?.object.ID).toBe(4);
+  });
+
+  // Проверяет, что панель не появляется, когда обзорный луч не касается ни одного тела.
   it("does not show panel when probe misses all bodies", () => {
     const selfObject = object({ ID: 1, CosmicObjectModelID: 10, X: 0, Y: 0, Rotation: 0 });
     const target = object({ ID: 2, CosmicObjectModelID: 20, X: 0, Y: 150 });

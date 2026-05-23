@@ -68,6 +68,9 @@ const getProbeTarget = (input: InformationPanelInput): CosmicObject | null => {
     if (!model) {
       continue;
     }
+    if (isIgnoredProbeTarget(model, input.referenceData)) {
+      continue;
+    }
     const distance = intersectSegmentWithBody(start, end, object, model);
     if (distance === null) {
       continue;
@@ -78,6 +81,12 @@ const getProbeTarget = (input: InformationPanelInput): CosmicObject | null => {
   }
 
   return best?.object ?? null;
+};
+
+// Проверяет служебные типы объектов, которые не должны выбираться обзорным лучом.
+const isIgnoredProbeTarget = (model: CosmicObjectModelReference, referenceData: ReferenceDataMessage): boolean => {
+  const objectType = referenceData.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
+  return objectType?.Acronym === "Ray" || objectType?.Acronym === "Projectile";
 };
 
 // Возвращает самую переднюю точку физического тела в мировых координатах.
