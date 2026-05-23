@@ -74,12 +74,13 @@ describe("GameScene", () => {
     expect(strokeCircle).not.toHaveBeenCalled();
   });
 
-  // Проверяет, что все видимые слои луча закругляются в конечной точке только передней половиной.
-  it("rounds drill beam visual layers at the end", async () => {
+  // Проверяет, что все видимые слои луча рисуются цельными фигурами с дугой на конце.
+  it("renders drill beam visual layers as single shapes with end arcs", async () => {
     const { GameScene } = await import("./GameScene");
     const fillStyle = vi.fn();
+    const arc = vi.fn();
     const slice = vi.fn();
-    const graphics = createDrillBeamGraphics({ fillStyle, slice });
+    const graphics = createDrillBeamGraphics({ arc, fillStyle, slice });
     const scene = Object.create(GameScene.prototype) as {
       pilotToolEffectGraphics: typeof graphics;
       renderDrillBeamGeometry: (geometry: DrillBeamGeometry, timeMs: number) => void;
@@ -93,11 +94,12 @@ describe("GameScene", () => {
     expect(fillStyle).toHaveBeenCalledWith(0x20d8ff, expect.any(Number));
     expect(fillStyle).toHaveBeenCalledWith(0x8cf8ff, 0.58);
     expect(fillStyle).toHaveBeenCalledWith(0xffffff, 0.95);
-    expect(slice).toHaveBeenCalledWith(0, 0, 7.199999999999999, -Math.PI, 0);
-    expect(slice).toHaveBeenCalledWith(0, 0, 13.5, -Math.PI, 0);
-    expect(slice).toHaveBeenCalledWith(0, 0, 8.25, -Math.PI, 0);
-    expect(slice).toHaveBeenCalledWith(0, 0, 3.3000000000000003, -Math.PI, 0);
-    expect(slice).toHaveBeenCalledWith(0, 0, 0.9750000000000001, -Math.PI, 0);
+    expect(slice).not.toHaveBeenCalled();
+    expect(arc).toHaveBeenCalledWith(0, 0, 7.199999999999999, -Math.PI, 0);
+    expect(arc).toHaveBeenCalledWith(0, 0, 13.5, -Math.PI, 0);
+    expect(arc).toHaveBeenCalledWith(0, 0, 8.25, -Math.PI, 0);
+    expect(arc).toHaveBeenCalledWith(0, 0, 3.3000000000000003, -Math.PI, 0);
+    expect(arc).toHaveBeenCalledWith(0, 0, 0.9750000000000001, -Math.PI, 0);
   });
 
   // Проверяет, что конец луча получает световое пятно только при попадании в объект.
@@ -545,6 +547,8 @@ type DrillBeamGraphics = {
   strokeCircle: ReturnType<typeof vi.fn>;
   // Рисует залитый сектор круга.
   slice: ReturnType<typeof vi.fn>;
+  // Добавляет дугу к текущему пути.
+  arc: ReturnType<typeof vi.fn>;
 };
 
 const createDrillBeamGraphics = (overrides: Partial<DrillBeamGraphics> = {}): DrillBeamGraphics => ({
@@ -559,6 +563,7 @@ const createDrillBeamGraphics = (overrides: Partial<DrillBeamGraphics> = {}): Dr
   fillCircle: vi.fn(),
   strokeCircle: vi.fn(),
   slice: vi.fn(),
+  arc: vi.fn(),
   ...overrides,
 });
 

@@ -719,20 +719,11 @@ export class GameScene extends Phaser.Scene {
     });
     const normal = { x: -direction.y, y: direction.x };
 
-    graphics.fillStyle(0x1fdcff, 0.08 * pulse);
-    graphics.beginPath();
-    graphics.moveTo(geometry.start.x - normal.x * width * 1.4, geometry.start.y - normal.y * width * 1.4);
-    graphics.lineTo(geometry.end.x - normal.x * sideWidth, geometry.end.y - normal.y * sideWidth);
-    graphics.lineTo(geometry.end.x + normal.x * sideWidth, geometry.end.y + normal.y * sideWidth);
-    graphics.lineTo(geometry.start.x + normal.x * width * 1.4, geometry.start.y + normal.y * width * 1.4);
-    graphics.closePath();
-    graphics.fillPath();
-    this.fillPilotToolEffectEndHalfCircle(geometry.end, direction, sideWidth);
-
-    this.strokePilotToolEffectRoundedLine(geometry.start, geometry.end, width * 9, 0x0b6f9e, 0.18 * pulse);
-    this.strokePilotToolEffectRoundedLine(geometry.start, geometry.end, width * 5.5, 0x20d8ff, 0.28 * pulse);
-    this.strokePilotToolEffectRoundedLine(geometry.start, geometry.end, width * 2.2, 0x8cf8ff, 0.58);
-    this.strokePilotToolEffectRoundedLine(geometry.start, geometry.end, width * 0.65, 0xffffff, 0.95);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 1.4, sideWidth, 0x1fdcff, 0.08 * pulse);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 4.5, width * 4.5, 0x0b6f9e, 0.18 * pulse);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 2.75, width * 2.75, 0x20d8ff, 0.28 * pulse);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 1.1, width * 1.1, 0x8cf8ff, 0.58);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 0.325, width * 0.325, 0xffffff, 0.95);
 
     for (let index = 0; index < 10; index += 1) {
       const progress = getDrillBeamIntakeProgress(timeMs, index);
@@ -765,27 +756,25 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  // Закругляет конец отдельного светового слоя луча.
-  private strokePilotToolEffectRoundedLine(
+  // Рисует один слой луча цельной фигурой, чтобы на конце не появлялся шов.
+  private fillPilotToolEffectRoundedBeam(
     start: DrillBeamGeometry["start"],
     end: DrillBeamGeometry["end"],
-    width: number,
+    startRadius: number,
+    endRadius: number,
     color: number,
     alpha: number,
   ): void {
-    this.strokePilotToolEffectLine(start, end, width, color, alpha);
-    this.pilotToolEffectGraphics.fillStyle(color, alpha);
-    this.fillPilotToolEffectEndHalfCircle(end, normalizeScreenVector({ x: end.x - start.x, y: end.y - start.y }), width / 2);
-  }
-
-  // Дорисовывает только переднюю половину круглого конца, чтобы не создавать отдельное пятно.
-  private fillPilotToolEffectEndHalfCircle(
-    end: DrillBeamGeometry["end"],
-    direction: DrillBeamPoint,
-    radius: number,
-  ): void {
+    const direction = normalizeScreenVector({ x: end.x - start.x, y: end.y - start.y });
+    const normal = { x: -direction.y, y: direction.x };
     const angle = Math.atan2(direction.y, direction.x);
-    this.pilotToolEffectGraphics.slice(end.x, end.y, radius, angle - Math.PI / 2, angle + Math.PI / 2);
+    this.pilotToolEffectGraphics.fillStyle(color, alpha);
+    this.pilotToolEffectGraphics.beginPath();
+    this.pilotToolEffectGraphics.moveTo(start.x - normal.x * startRadius, start.y - normal.y * startRadius);
+    this.pilotToolEffectGraphics.lineTo(end.x - normal.x * endRadius, end.y - normal.y * endRadius);
+    this.pilotToolEffectGraphics.arc(end.x, end.y, endRadius, angle - Math.PI / 2, angle + Math.PI / 2);
+    this.pilotToolEffectGraphics.lineTo(start.x + normal.x * startRadius, start.y + normal.y * startRadius);
+    this.pilotToolEffectGraphics.closePath();
     this.pilotToolEffectGraphics.fillPath();
   }
 
