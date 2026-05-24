@@ -15,57 +15,57 @@ const bodyPolygonVertexCount = 16
 // Коэффициент уменьшения физического тела относительно тела на текстуре.
 const cosmicObjectModelBodyScale = 0.95
 
-// РћРїРёСЃС‹РІР°РµС‚ Р»РѕРєР°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂР° РѕР±СЉРµРєС‚Р°.
+// Описывает локальную точку физического тела относительно центра объекта.
 type BodyPoint struct {
-	X float64 `json:"x"` // РЎРјРµС‰РµРЅРёРµ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ Р»РѕРєР°Р»СЊРЅРѕР№ РѕСЃРё РІ РјРµС‚СЂР°С….
-	Y float64 `json:"y"` // РЎРјРµС‰РµРЅРёРµ РїРѕ РїСЂРѕРґРѕР»СЊРЅРѕР№ Р»РѕРєР°Р»СЊРЅРѕР№ РѕСЃРё РІ РјРµС‚СЂР°С….
+	X float64 `json:"x"` // Смещение по горизонтальной локальной оси в метрах.
+	Y float64 `json:"y"` // Смещение по продольной локальной оси в метрах.
 }
 
-// РҐСЂР°РЅРёС‚ РґР°РЅРЅС‹Рµ РѕРґРЅРѕР№ РјРѕРґРµР»Рё РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°.
+// Хранит данные одной модели космического объекта.
 type CosmicObjectModel struct {
-	ID                 int64       `json:"ID"`                 // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	TitleRu            string      `json:"TitleRu"`            // Р СѓСЃСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
-	TitleEn            string      `json:"TitleEn"`            // РђРЅРіР»РёР№СЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
-	Acronym            string      `json:"Acronym"`            // РќРµРёР·РјРµРЅСЏРµРјС‹Р№ СЃС‚СЂРѕРєРѕРІС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ Р»РѕРіРёРєРё Рё СЃСЃС‹Р»РѕРє.
-	IconFilePath       string      `json:"IconFilePath"`       // РџСѓС‚СЊ Рє РјР°Р»РµРЅСЊРєРѕРјСѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЋ РјРѕРґРµР»Рё РІ РёРЅС‚РµСЂС„РµР№СЃРµ.
-	TextureFilePath    string      `json:"TextureFilePath"`    // РџСѓС‚СЊ Рє РѕСЃРЅРѕРІРЅРѕР№ С‚РµРєСЃС‚СѓСЂРµ РѕР±СЉРµРєС‚Р° РІ РёРіСЂРѕРІРѕРј РјРёСЂРµ.
-	TextureWidth       int64       `json:"TextureWidth"`       // РџРѕР»РЅР°СЏ С€РёСЂРёРЅР° С‚РµРєСЃС‚СѓСЂС‹ РІ РїРёРєСЃРµР»СЏС….
-	TextureHeight      int64       `json:"TextureHeight"`      // РџРѕР»РЅР°СЏ РІС‹СЃРѕС‚Р° С‚РµРєСЃС‚СѓСЂС‹ РІ РїРёРєСЃРµР»СЏС….
-	TextureBodyOriginX int64       `json:"TextureBodyOriginX"` // Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРµ СЃРјРµС‰РµРЅРёРµ С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РІРЅСѓС‚СЂРё С‚РµРєСЃС‚СѓСЂС‹.
-	TextureBodyOriginY int64       `json:"TextureBodyOriginY"` // Р’РµСЂС‚РёРєР°Р»СЊРЅРѕРµ СЃРјРµС‰РµРЅРёРµ С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РІРЅСѓС‚СЂРё С‚РµРєСЃС‚СѓСЂС‹.
-	TextureBodyWidth   int64       `json:"TextureBodyWidth"`   // РЁРёСЂРёРЅР° С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РЅР° С‚РµРєСЃС‚СѓСЂРµ РІ РїРёРєСЃРµР»СЏС….
-	TextureBodyLength  int64       `json:"TextureBodyLength"`  // Р”Р»РёРЅР° С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РЅР° С‚РµРєСЃС‚СѓСЂРµ РІ РїРёРєСЃРµР»СЏС….
-	TextureScale       float64     `json:"TextureScale"`       // РљРѕР»РёС‡РµСЃС‚РІРѕ РїРёРєСЃРµР»РµР№ С‚РµРєСЃС‚СѓСЂС‹ РЅР° РѕРґРёРЅ РјРµС‚СЂ РјРёСЂР°.
-	CosmicObjectTypeID int64       `json:"CosmicObjectTypeID"` // РўРёРї РѕР±СЉРµРєС‚Р°, Рє РєРѕС‚РѕСЂРѕРјСѓ РѕС‚РЅРѕСЃРёС‚СЃСЏ РјРѕРґРµР»СЊ.
-	Mass               float64     `json:"Mass"`               // Р‘Р°Р·РѕРІР°СЏ РјР°СЃСЃР° СЌРєР·РµРјРїР»СЏСЂР° СЌС‚РѕР№ РјРѕРґРµР»Рё.
-	Capacity           float64     `json:"Capacity"`           // Р‘Р°Р·РѕРІС‹Р№ РґРѕСЃС‚СѓРїРЅС‹Р№ РѕР±СЉРµРј РґР»СЏ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РёР»Рё СЃРѕРґРµСЂР¶РёРјРѕРіРѕ.
-	MaxArmor           float64     `json:"MaxArmor"`           // Р‘Р°Р·РѕРІС‹Р№ РјР°РєСЃРёРјСѓРј Р±СЂРѕРЅРё.
-	MaxSpeed           float64     `json:"MaxSpeed"`           // Р‘Р°Р·РѕРІР°СЏ РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ Р»РёРЅРµР№РЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ.
-	MaxAngularSpeed    float64     `json:"MaxAngularSpeed"`    // Р‘Р°Р·РѕРІР°СЏ РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ СѓРіР»РѕРІР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ.
-	Complexity         float64     `json:"Complexity"`         // РЎР»РѕР¶РЅРѕСЃС‚СЊ РїСЂРѕРёР·РІРѕРґСЃС‚РІР° Рё РѕС†РµРЅРєРё СЃС‚РѕРёРјРѕСЃС‚Рё РјРѕРґРµР»Рё.
-	BodyLength         float64     `json:"BodyLength"`         // Р Р°СЃСЃС‡РёС‚Р°РЅРЅР°СЏ РґР»РёРЅР° С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РІ РјРµС‚СЂР°С….
-	BodyWidth          float64     `json:"BodyWidth"`          // Р Р°СЃСЃС‡РёС‚Р°РЅРЅР°СЏ С€РёСЂРёРЅР° С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РІ РјРµС‚СЂР°С….
-	BodyPolygon        []BodyPoint `json:"-"`                  // Р›РѕРєР°Р»СЊРЅС‹Рµ РІРµСЂС€РёРЅС‹ С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р°, СЂР°СЃСЃС‡РёС‚Р°РЅРЅС‹Рµ РїСЂРё Р·Р°РіСЂСѓР·РєРµ СЃРїСЂР°РІРѕС‡РЅРёРєР°.
+	ID                 int64       `json:"ID"`                 // Уникальный числовой идентификатор записи.
+	TitleRu            string      `json:"TitleRu"`            // Русское название для интерфейса и данных.
+	TitleEn            string      `json:"TitleEn"`            // Английское название для интерфейса и данных.
+	Acronym            string      `json:"Acronym"`            // Неизменяемый строковый идентификатор для логики и ссылок.
+	IconFilePath       string      `json:"IconFilePath"`       // Путь к маленькому изображению модели в интерфейсе.
+	TextureFilePath    string      `json:"TextureFilePath"`    // Путь к основной текстуре объекта в игровом мире.
+	TextureWidth       int64       `json:"TextureWidth"`       // Полная ширина текстуры в пикселях.
+	TextureHeight      int64       `json:"TextureHeight"`      // Полная высота текстуры в пикселях.
+	TextureBodyOriginX int64       `json:"TextureBodyOriginX"` // Горизонтальное смещение физического тела внутри текстуры.
+	TextureBodyOriginY int64       `json:"TextureBodyOriginY"` // Вертикальное смещение физического тела внутри текстуры.
+	TextureBodyWidth   int64       `json:"TextureBodyWidth"`   // Ширина физического тела на текстуре в пикселях.
+	TextureBodyLength  int64       `json:"TextureBodyLength"`  // Длина физического тела на текстуре в пикселях.
+	TextureScale       float64     `json:"TextureScale"`       // Количество пикселей текстуры на один метр мира.
+	CosmicObjectTypeID int64       `json:"CosmicObjectTypeID"` // Тип объекта, к которому относится модель.
+	Mass               float64     `json:"Mass"`               // Базовая масса экземпляра этой модели.
+	Capacity           float64     `json:"Capacity"`           // Базовый доступный объем для оборудования или содержимого.
+	MaxArmor           float64     `json:"MaxArmor"`           // Базовый максимум брони.
+	MaxSpeed           float64     `json:"MaxSpeed"`           // Базовая максимальная линейная скорость.
+	MaxAngularSpeed    float64     `json:"MaxAngularSpeed"`    // Базовая максимальная угловая скорость.
+	Complexity         float64     `json:"Complexity"`         // Сложность производства и оценки стоимости модели.
+	BodyLength         float64     `json:"BodyLength"`         // Рассчитанная длина физического тела в метрах.
+	BodyWidth          float64     `json:"BodyWidth"`          // Рассчитанная ширина физического тела в метрах.
+	BodyPolygon        []BodyPoint `json:"-"`                  // Локальные вершины физического тела, рассчитанные при загрузке справочника.
 }
 
-// РҐСЂР°РЅРёС‚ РјРѕРґРµР»Рё РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕ СѓРЅРёРєР°Р»СЊРЅС‹Рј РїРѕР»СЏРј.
+// Хранит модели космических объектов и быстрые индексы по уникальным полям.
 type CosmicObjectModels struct {
-	MaxID int64                        `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РЅРѕРІС‹С… Р·Р°РїРёСЃРµР№.
-	Items map[int64]*CosmicObjectModel `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                        `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*CosmicObjectModel `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByTitleRu map[string]*CosmicObjectModel `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ СЂСѓСЃСЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
-	ByTitleEn map[string]*CosmicObjectModel `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РЅРіР»РёР№СЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
-	ByAcronym map[string]*CosmicObjectModel `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+	ByTitleRu map[string]*CosmicObjectModel `json:"-"` // Быстрый поиск записи по русскому названию.
+	ByTitleEn map[string]*CosmicObjectModel `json:"-"` // Быстрый поиск записи по английскому названию.
+	ByAcronym map[string]*CosmicObjectModel `json:"-"` // Быстрый поиск записи по акрониму.
 }
 
-// РЎРѕР·РґР°С‘С‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ РјРѕРґРµР»РµР№ РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ СЃ РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
+// Создаёт пустое хранилище моделей космических объектов с подготовленными индексами.
 func NewCosmicObjectModels() *CosmicObjectModels {
 	cosmicObjectModels := &CosmicObjectModels{}
 	cosmicObjectModels.ensureMaps()
 	return cosmicObjectModels
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІСѓСЋ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° Рё РЅР°Р·РЅР°С‡Р°РµС‚ РЅРѕРІС‹Р№ ID.
+// Добавляет новую модель космического объекта и назначает новый ID.
 func (cosmicObjectModels *CosmicObjectModels) Add(cosmicObjectModel *CosmicObjectModel) (*CosmicObjectModel, error) {
 	if cosmicObjectModel == nil {
 		return nil, errors.New("cosmic object model is nil")
@@ -86,14 +86,14 @@ func (cosmicObjectModels *CosmicObjectModels) Add(cosmicObjectModel *CosmicObjec
 	return cosmicObjectModel, nil
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРѕ ID.
+// Возвращает модель космического объекта по ID.
 func (cosmicObjectModels *CosmicObjectModels) Get(id int64) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.Items[id]
 	return cosmicObjectModel, ok
 }
 
-// РЈРґР°Р»СЏРµС‚ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° Рё РІСЃРµ РµС‘ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Удаляет модель космического объекта и все её быстрые индексы.
 func (cosmicObjectModels *CosmicObjectModels) Delete(id int64) bool {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.Items[id]
@@ -106,28 +106,28 @@ func (cosmicObjectModels *CosmicObjectModels) Delete(id int64) bool {
 	return true
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ СЂСѓСЃСЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
+// Возвращает модель космического объекта по уникальному русскому названию.
 func (cosmicObjectModels *CosmicObjectModels) GetByTitleRu(titleRu string) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.ByTitleRu[titleRu]
 	return cosmicObjectModel, ok
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ Р°РЅРіР»РёР№СЃРєРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ.
+// Возвращает модель космического объекта по уникальному английскому названию.
 func (cosmicObjectModels *CosmicObjectModels) GetByTitleEn(titleEn string) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.ByTitleEn[titleEn]
 	return cosmicObjectModel, ok
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ Р°РєСЂРѕРЅРёРјСѓ.
+// Возвращает модель космического объекта по уникальному акрониму.
 func (cosmicObjectModels *CosmicObjectModels) GetByAcronym(acronym string) (*CosmicObjectModel, bool) {
 	cosmicObjectModels.ensureMaps()
 	cosmicObjectModel, ok := cosmicObjectModels.ByAcronym[acronym]
 	return cosmicObjectModel, ok
 }
 
-// РџРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РёР· JSON.
+// Пересобирает быстрые индексы после загрузки из JSON.
 func (cosmicObjectModels *CosmicObjectModels) RebuildIndexes() error {
 	cosmicObjectModels.ensureItems()
 	cosmicObjectModels.ByTitleRu = make(map[string]*CosmicObjectModel)
@@ -160,7 +160,7 @@ func (cosmicObjectModels *CosmicObjectModels) RebuildIndexes() error {
 	return nil
 }
 
-// Р—Р°РіСЂСѓР¶Р°РµС‚ РјРѕРґРµР»Рё РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ РёР· JSON-С„Р°Р№Р»Р° Рё РїРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Загружает модели космических объектов из JSON-файла и пересобирает быстрые индексы.
 func (cosmicObjectModels *CosmicObjectModels) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -179,13 +179,13 @@ func (cosmicObjectModels *CosmicObjectModels) LoadFromFile(path string) error {
 	return nil
 }
 
-// РЎРѕС…СЂР°РЅСЏРµС‚ РјРѕРґРµР»Рё РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ РІ JSON-С„Р°Р№Р» Р±РµР· РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РёРЅРґРµРєСЃРѕРІ.
+// Сохраняет модели космических объектов в JSON-файл без вспомогательных индексов.
 func (cosmicObjectModels *CosmicObjectModels) SaveToFile(path string) error {
 	cosmicObjectModels.ensureMaps()
 	return saveTableWithOrderedItems(path, cosmicObjectModels.MaxID, cosmicObjectModels.Items)
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё РІСЃРµ РёРЅРґРµРєСЃС‹.
+// Подготавливает основное хранилище и все индексы.
 func (cosmicObjectModels *CosmicObjectModels) ensureMaps() {
 	cosmicObjectModels.ensureItems()
 	if cosmicObjectModels.ByTitleRu == nil {
@@ -199,14 +199,14 @@ func (cosmicObjectModels *CosmicObjectModels) ensureMaps() {
 	}
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅСѓСЋ map РјРѕРґРµР»РµР№ РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ.
+// Подготавливает основную map моделей космических объектов.
 func (cosmicObjectModels *CosmicObjectModels) ensureItems() {
 	if cosmicObjectModels.Items == nil {
 		cosmicObjectModels.Items = make(map[int64]*CosmicObjectModel)
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°.
+// Проверяет обязательные поля модели космического объекта.
 func (cosmicObjectModels *CosmicObjectModels) validateRequiredFields(cosmicObjectModel *CosmicObjectModel) error {
 	if cosmicObjectModel.TitleRu == "" {
 		return errors.New("title ru is empty")
@@ -226,7 +226,7 @@ func (cosmicObjectModels *CosmicObjectModels) validateRequiredFields(cosmicObjec
 	return nil
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РїРѕР»СЏ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј РІ РёРЅРґРµРєСЃС‹.
+// Проверяет уникальные поля перед добавлением в индексы.
 func (cosmicObjectModels *CosmicObjectModels) ensureUniqueForNewModel(cosmicObjectModel *CosmicObjectModel) error {
 	if existing, ok := cosmicObjectModels.ByTitleRu[cosmicObjectModel.TitleRu]; ok && existing.ID != cosmicObjectModel.ID {
 		return fmt.Errorf("title ru %q already exists", cosmicObjectModel.TitleRu)
@@ -240,21 +240,21 @@ func (cosmicObjectModels *CosmicObjectModels) ensureUniqueForNewModel(cosmicObje
 	return nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РІРѕ РІСЃРµ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет модель космического объекта во все быстрые индексы.
 func (cosmicObjectModels *CosmicObjectModels) addIndexes(cosmicObjectModel *CosmicObjectModel) {
 	cosmicObjectModels.ByTitleRu[cosmicObjectModel.TitleRu] = cosmicObjectModel
 	cosmicObjectModels.ByTitleEn[cosmicObjectModel.TitleEn] = cosmicObjectModel
 	cosmicObjectModels.ByAcronym[cosmicObjectModel.Acronym] = cosmicObjectModel
 }
 
-// РЈРґР°Р»СЏРµС‚ РјРѕРґРµР»СЊ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РёР· РІСЃРµС… Р±С‹СЃС‚СЂС‹С… РёРЅРґРµРєСЃРѕРІ.
+// Удаляет модель космического объекта из всех быстрых индексов.
 func (cosmicObjectModels *CosmicObjectModels) deleteIndexes(cosmicObjectModel *CosmicObjectModel) {
 	delete(cosmicObjectModels.ByTitleRu, cosmicObjectModel.TitleRu)
 	delete(cosmicObjectModels.ByTitleEn, cosmicObjectModel.TitleEn)
 	delete(cosmicObjectModels.ByAcronym, cosmicObjectModel.Acronym)
 }
 
-// Р’С‹СЃС‚Р°РІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Рё РїРµСЂРµСЃС‡РёС‚С‹РІР°РµС‚ РІС‹С‡РёСЃР»СЏРµРјС‹Рµ РїРѕР»СЏ.
+// Выставляет значения по умолчанию и пересчитывает вычисляемые поля.
 func (cosmicObjectModels *CosmicObjectModels) prepareCalculatedFields(cosmicObjectModel *CosmicObjectModel) {
 	if cosmicObjectModel.TextureScale == 0 {
 		cosmicObjectModel.TextureScale = defaultCosmicObjectModelTextureScale
@@ -264,7 +264,7 @@ func (cosmicObjectModels *CosmicObjectModels) prepareCalculatedFields(cosmicObje
 	cosmicObjectModel.BodyPolygon = buildBodyPolygon(*cosmicObjectModel)
 }
 
-// РЎС‚СЂРѕРёС‚ РІС‹РїСѓРєР»РѕРµ С‚РµР»Рѕ РїРѕ СЂР°РІРЅРѕРјРµСЂРЅС‹Рј С†РµРЅС‚СЂР°Р»СЊРЅС‹Рј СѓРіР»Р°Рј СЌР»Р»РёРїСЃР°.
+// Строит выпуклое тело по равномерным центральным углам эллипса.
 func buildBodyPolygon(cosmicObjectModel CosmicObjectModel) []BodyPoint {
 	points := make([]BodyPoint, bodyPolygonVertexCount)
 	offsetX, offsetY := bodyPolygonOffset(cosmicObjectModel)
@@ -284,7 +284,7 @@ func buildBodyPolygon(cosmicObjectModel CosmicObjectModel) []BodyPoint {
 	return points
 }
 
-// Р Р°СЃСЃС‡РёС‚С‹РІР°РµС‚ СЃРјРµС‰РµРЅРёРµ С†РµРЅС‚СЂР° С‚РµР»Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂР° С‚РµРєСЃС‚СѓСЂС‹.
+// Рассчитывает смещение центра тела относительно центра текстуры.
 func bodyPolygonOffset(cosmicObjectModel CosmicObjectModel) (float64, float64) {
 	if cosmicObjectModel.TextureScale <= 0 || cosmicObjectModel.TextureWidth <= 0 || cosmicObjectModel.TextureHeight <= 0 {
 		return 0, 0
@@ -294,7 +294,7 @@ func bodyPolygonOffset(cosmicObjectModel CosmicObjectModel) (float64, float64) {
 		(float64(cosmicObjectModel.TextureBodyOriginY) - float64(cosmicObjectModel.TextureHeight)/2) / cosmicObjectModel.TextureScale
 }
 
-// РЈР±РёСЂР°РµС‚ РјРёРєСЂРѕСЃРєРѕРїРёС‡РµСЃРєРёРµ РїРѕРіСЂРµС€РЅРѕСЃС‚Рё С‚СЂРёРіРѕРЅРѕРјРµС‚СЂРёРё Сѓ РѕСЃРµРІС‹С… РІРµСЂС€РёРЅ.
+// Убирает микроскопические погрешности тригонометрии у осевых вершин.
 func zeroSmallValue(value float64) float64 {
 	if math.Abs(value) < 0.000000000001 {
 		return 0
@@ -303,23 +303,23 @@ func zeroSmallValue(value float64) float64 {
 }
 
 type legacyCosmicObjectModel struct {
-	TextureFilePath      string  `json:"TextureFilePath"`      // РџСѓС‚СЊ Рє РѕСЃРЅРѕРІРЅРѕР№ С‚РµРєСЃС‚СѓСЂРµ РІ СЃС‚Р°СЂРѕРј С„РѕСЂРјР°С‚Рµ РґР°РЅРЅС‹С….
-	TextureWidth         int64   `json:"TextureWidth"`         // РџРѕР»РЅР°СЏ С€РёСЂРёРЅР° С‚РµРєСЃС‚СѓСЂС‹ РІ РїРёРєСЃРµР»СЏС… РІ СЃС‚Р°СЂРѕРј С„РѕСЂРјР°С‚Рµ.
-	TextureHeight        int64   `json:"TextureHeight"`        // РџРѕР»РЅР°СЏ РІС‹СЃРѕС‚Р° С‚РµРєСЃС‚СѓСЂС‹ РІ РїРёРєСЃРµР»СЏС… РІ СЃС‚Р°СЂРѕРј С„РѕСЂРјР°С‚Рµ.
-	TextureObjectOriginX int64   `json:"TextureObjectOriginX"` // Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРµ СЃРјРµС‰РµРЅРёРµ С‚РµР»Р° РІ СЃС‚Р°СЂРѕРј С„РѕСЂРјР°С‚Рµ.
-	TextureObjectOriginY int64   `json:"TextureObjectOriginY"` // Р’РµСЂС‚РёРєР°Р»СЊРЅРѕРµ СЃРјРµС‰РµРЅРёРµ С‚РµР»Р° РІ СЃС‚Р°СЂРѕРј С„РѕСЂРјР°С‚Рµ.
-	TextureObjectWidth   int64   `json:"TextureObjectWidth"`   // РЁРёСЂРёРЅР° С‚РµР»Р° РІ РїРёРєСЃРµР»СЏС… РІ СЃС‚Р°СЂРѕРј С„РѕСЂРјР°С‚Рµ.
-	TextureObjectLength  int64   `json:"TextureObjectLength"`  // Р”Р»РёРЅР° С‚РµР»Р° РІ РїРёРєСЃРµР»СЏС… РІ СЃС‚Р°СЂРѕРј С„РѕСЂРјР°С‚Рµ.
-	CosmicObjectType     string  `json:"CosmicObjectType"`     // РЎС‚СЂРѕРєРѕРІРѕРµ РёРјСЏ С‚РёРїР° РёР· СЃС‚Р°СЂРѕРіРѕ JSON.
-	TitleRu              string  `json:"TitleRu"`              // Р СѓСЃСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РёР· СЃС‚Р°СЂРѕРіРѕ JSON.
-	TitleEn              string  `json:"TitleEn"`              // РђРЅРіР»РёР№СЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РёР· СЃС‚Р°СЂРѕРіРѕ JSON.
-	Acronym              string  `json:"Acronym"`              // РђРєСЂРѕРЅРёРј РёР· СЃС‚Р°СЂРѕРіРѕ JSON.
-	Mass                 float64 `json:"Mass"`                 // Р‘Р°Р·РѕРІР°СЏ РјР°СЃСЃР° РёР· СЃС‚Р°СЂРѕРіРѕ JSON.
-	MaxSpeed             float64 `json:"MaxSpeed"`             // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ Р»РёРЅРµР№РЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РёР· СЃС‚Р°СЂРѕРіРѕ JSON.
-	MaxAngularSpeed      float64 `json:"MaxAngularSpeed"`      // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СѓРіР»РѕРІР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РёР· СЃС‚Р°СЂРѕРіРѕ JSON.
+	TextureFilePath      string  `json:"TextureFilePath"`      // Путь к основной текстуре в старом формате данных.
+	TextureWidth         int64   `json:"TextureWidth"`         // Полная ширина текстуры в пикселях в старом формате.
+	TextureHeight        int64   `json:"TextureHeight"`        // Полная высота текстуры в пикселях в старом формате.
+	TextureObjectOriginX int64   `json:"TextureObjectOriginX"` // Горизонтальное смещение тела в старом формате.
+	TextureObjectOriginY int64   `json:"TextureObjectOriginY"` // Вертикальное смещение тела в старом формате.
+	TextureObjectWidth   int64   `json:"TextureObjectWidth"`   // Ширина тела в пикселях в старом формате.
+	TextureObjectLength  int64   `json:"TextureObjectLength"`  // Длина тела в пикселях в старом формате.
+	CosmicObjectType     string  `json:"CosmicObjectType"`     // Строковое имя типа из старого JSON.
+	TitleRu              string  `json:"TitleRu"`              // Русское название из старого JSON.
+	TitleEn              string  `json:"TitleEn"`              // Английское название из старого JSON.
+	Acronym              string  `json:"Acronym"`              // Акроним из старого JSON.
+	Mass                 float64 `json:"Mass"`                 // Базовая масса из старого JSON.
+	MaxSpeed             float64 `json:"MaxSpeed"`             // Максимальная линейная скорость из старого JSON.
+	MaxAngularSpeed      float64 `json:"MaxAngularSpeed"`      // Максимальная угловая скорость из старого JSON.
 }
 
-// РљРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ СЃС‚Р°СЂС‹Р№ JSON РјРѕРґРµР»РµР№ РІ С‚РµРєСѓС‰СѓСЋ СЃС‚СЂСѓРєС‚СѓСЂСѓ РґР°РЅРЅС‹С….
+// Конвертирует старый JSON моделей в текущую структуру данных.
 func LoadCosmicObjectModelsFromLegacyFile(path string, cosmicObjectTypes *CosmicObjectTypes) (*CosmicObjectModels, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -372,7 +372,7 @@ func LoadCosmicObjectModelsFromLegacyFile(path string, cosmicObjectTypes *Cosmic
 	return cosmicObjectModels, nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РїРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ С‚РѕР»СЊРєРѕ Рє РїРѕРІС‚РѕСЂСЏСЋС‰РёРјСЃСЏ РЅР°Р·РІР°РЅРёСЏРј.
+// Добавляет порядковый номер только к повторяющимся названиям.
 func numberedLegacyTitle(title string, counts map[string]int, numbers map[string]int) string {
 	if counts[title] <= 1 {
 		return title
@@ -381,7 +381,7 @@ func numberedLegacyTitle(title string, counts map[string]int, numbers map[string
 	return title + " " + strconv.Itoa(numbers[title])
 }
 
-// РЎРѕРїРѕСЃС‚Р°РІР»СЏРµС‚ СЃС‚СЂРѕРєРѕРІС‹Р№ С‚РёРї СЃС‚Р°СЂРѕРіРѕ JSON СЃ ID С‚РµРєСѓС‰РµРіРѕ СЃРїСЂР°РІРѕС‡РЅРёРєР° С‚РёРїРѕРІ.
+// Сопоставляет строковый тип старого JSON с ID текущего справочника типов.
 func legacyCosmicObjectTypeID(legacyType string, cosmicObjectTypes *CosmicObjectTypes) (int64, error) {
 	acronymByLegacyType := map[string]string{
 		"ship":     "Ship",

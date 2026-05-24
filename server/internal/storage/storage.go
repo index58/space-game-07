@@ -41,55 +41,55 @@ const tasksFileName = "Tasks.json"
 const taskItemGroupsFileName = "TaskItemGroups.json"
 const implementersFileName = "Implementers.json"
 
-// Р ТђРЎР‚Р В°Р Р…Р С‘РЎвЂљ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“, Р Т‘Р В»РЎРЏ Р С”Р С•РЎвЂљР С•РЎР‚Р С•Р в„– Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ Р С—Р С•Р С”Р В° Р Р…Р ВµРЎвЂљ Р С•РЎвЂљР Т‘Р ВµР В»РЎРЉР Р…Р С•Р в„– Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР Р…Р С•Р в„– Р СР С•Р Т‘Р ВµР В»Р С‘.
+// Хранит таблицу, для которой на сервере пока нет отдельной предметной модели.
 type RawReferenceTable struct {
-	MaxID int64                      `json:"MaxID"` // Р СџР С•РЎРѓР В»Р ВµР Т‘Р Р…Р С‘Р в„– Р Р†РЎвЂ№Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р в„– РЎвЂЎР С‘РЎРѓР В»Р С•Р Р†Р С•Р в„– Р С‘Р Т‘Р ВµР Р…РЎвЂљР С‘РЎвЂћР С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р В·Р В°Р С—Р С‘РЎРѓР ВµР в„–.
-	Items map[string]json.RawMessage `json:"Items"` // Р вЂ”Р В°Р С—Р С‘РЎРѓР С‘ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎвЂ№ Р С—Р С• РЎРѓРЎвЂљРЎР‚Р С•Р С”Р С•Р Р†Р С•Р СРЎС“ Р С—РЎР‚Р ВµР Т‘РЎРѓРЎвЂљР В°Р Р†Р В»Р ВµР Р…Р С‘РЎР‹ РЎвЂЎР С‘РЎРѓР В»Р С•Р Р†Р С•Р С–Р С• Р С‘Р Т‘Р ВµР Р…РЎвЂљР С‘РЎвЂћР С‘Р С”Р В°РЎвЂљР С•РЎР‚Р В°.
+	MaxID int64                      `json:"MaxID"` // Последний выданный числовой идентификатор записей.
+	Items map[string]json.RawMessage `json:"Items"` // Записи таблицы по строковому представлению числового идентификатора.
 }
 
-// Р РЋР С•Р В·Р Т‘Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С”Р В° РЎРѓ РЎвЂљР ВµР С Р В¶Р Вµ JSON-Р С”Р С•Р Р…РЎвЂљРЎР‚Р В°Р С”РЎвЂљР С•Р С, РЎвЂЎРЎвЂљР С• РЎС“ РЎвЂљР С‘Р С—Р С‘Р В·Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ .
+// Создает пустой контейнер справочника с тем же JSON-контрактом, что у типизированных таблиц.
 func NewRawReferenceTable() *RawReferenceTable {
 	return &RawReferenceTable{
 		Items: make(map[string]json.RawMessage),
 	}
 }
 
-// Р С›Р В±РЎР‰Р ВµР Т‘Р С‘Р Р…РЎРЏР ВµРЎвЂљ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°, Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР СРЎвЂ№Р Вµ Р С‘Р В· JSON-РЎвЂћР В°Р в„–Р В»Р С•Р Р† Р С—РЎР‚Р С‘ РЎРѓРЎвЂљР В°РЎР‚РЎвЂљР Вµ.
+// Объединяет данные сервера, загружаемые из JSON-файлов при старте.
 type ServerData struct {
-	Accounts                   *data.Accounts                   // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ РЎС“РЎвЂЎР ВµРЎвЂљР Р…РЎвЂ№Р Вµ Р В·Р В°Р С—Р С‘РЎРѓР С‘ Р С‘Р С–РЎР‚Р С•Р С”Р С•Р Р†.
-	Characters                 *data.Characters                 // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С—Р ВµРЎР‚РЎРѓР С•Р Р…Р В°Р В¶Р С‘ Р С‘Р С–РЎР‚Р С•Р С”Р С•Р Р†.
-	CosmicObjects              *data.CosmicObjects              // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ РЎРЊР С”Р В·Р ВµР СР С—Р В»РЎРЏРЎР‚РЎвЂ№ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р† Р СР С‘РЎР‚Р В°.
-	CosmicObjectTypes          *data.CosmicObjectTypes          // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† Р С”Р С•РЎРѓР СР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘РЎвЂ¦ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
-	CosmicObjectModels         *data.CosmicObjectModels         // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р СР С•Р Т‘Р ВµР В»Р ВµР в„– Р С”Р С•РЎРѓР СР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘РЎвЂ¦ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
-	ItemTypes                  *data.ItemTypes                  // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†.
-	EquipmentGroups            *data.EquipmentGroups            // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С–РЎР‚РЎС“Р С—Р С—РЎвЂ№ Р С•Р В±Р С•РЎР‚РЎС“Р Т‘Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С”Р С•РЎРѓР СР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘РЎвЂ¦ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
-	ItemGroups                 *data.ItemGroups                 // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С–РЎР‚РЎС“Р С—Р С—РЎвЂ№ Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р† Р Р†Р Р…РЎС“РЎвЂљРЎР‚Р С‘ Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р С•Р Р†.
-	Assemblies                 *data.Assemblies                 // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎРѓР В±Р С•РЎР‚Р С•Р С” Р С”Р С•РЎРѓР СР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘РЎвЂ¦ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
-	AssemblyEquipmentGroups    *data.AssemblyEquipmentGroups    // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С•Р В±Р С•РЎР‚РЎС“Р Т‘Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ РЎРѓР В±Р С•РЎР‚Р С•Р С”.
-	NpcClans                   *RawReferenceTable               // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” NPC-Р С”Р В»Р В°Р Р…Р С•Р Р†.
-	ItemModels                 *data.ItemModels                 // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р СР С•Р Т‘Р ВµР В»Р ВµР в„– Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†.
-	Blueprints                 *RawReferenceTable               // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂЎР ВµРЎР‚РЎвЂљР ВµР В¶Р ВµР в„– Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р†.
-	BlueprintComponents        *RawReferenceTable               // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С”Р С•Р СР С—Р С•Р Р…Р ВµР Р…РЎвЂљР С•Р Р† РЎвЂЎР ВµРЎР‚РЎвЂљР ВµР В¶Р ВµР в„–.
-	Schemas                    *RawReferenceTable               // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎРѓРЎвЂ¦Р ВµР С Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†.
-	SchemaComponents           *RawReferenceTable               // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С”Р С•Р СР С—Р С•Р Р…Р ВµР Р…РЎвЂљР С•Р Р† РЎРѓРЎвЂ¦Р ВµР С.
-	Chats                      *data.Chats                      // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ РЎвЂЎР В°РЎвЂљРЎвЂ№ Р С‘Р С–РЎР‚Р С•Р Р†Р С•Р С–Р С• Р СР С‘РЎР‚Р В°.
-	ChatMembers                *data.ChatMembers                // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ РЎС“РЎвЂЎР В°РЎРѓРЎвЂљР Р…Р С‘Р С”Р С‘ РЎвЂЎР В°РЎвЂљР С•Р Р†.
-	CommunityTypes             *data.CommunityTypes             // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†.
-	CommunityChatRoles         *data.CommunityChatRoles         // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎР‚Р С•Р В»Р ВµР в„– Р Р† РЎвЂЎР В°РЎвЂљР В°РЎвЂ¦ РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†.
-	Messages                   *data.Messages                   // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘РЎРЏ РЎвЂЎР В°РЎвЂљР С•Р Р†.
-	MessageReads               *data.MessageReads               // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С—Р С•Р В·Р С‘РЎвЂ Р С‘Р С‘ РЎвЂЎРЎвЂљР ВµР Р…Р С‘РЎРЏ РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р в„– Р С—Р ВµРЎР‚РЎРѓР С•Р Р…Р В°Р В¶Р В°Р СР С‘.
-	MessageTypes               *data.MessageTypes               // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р в„–.
-	ActionTypes                *data.ActionTypes                // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№РЎвЂ¦ Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘Р в„–.
-	InputEventTypes            *data.InputEventTypes            // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р в„– Р Р†Р Р†Р С•Р Т‘Р В°.
-	DefaultActionInputSettings *data.DefaultActionInputSettings // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р С”Р С‘ Р Р†Р Р†Р С•Р Т‘Р В° Р С—Р С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹.
-	AccountActionInputSettings *data.AccountActionInputSettings // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…Р Р…РЎвЂ№Р Вµ Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР Р…РЎвЂ№Р Вµ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р С”Р С‘ Р Р†Р Р†Р С•Р Т‘Р В°.
-	TaskTypes                  *data.TaskTypes                  // РЎРїСЂР°РІРѕС‡РЅРёРє С‚РёРїРѕРІ Р·Р°РґР°РЅРёР№.
-	Tasks                      *data.Tasks                      // РЎРѕС…СЂР°РЅРµРЅРЅС‹Рµ Р·Р°РґР°РЅРёСЏ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	TaskItemGroups             *data.TaskItemGroups             // РџСЂРµРґРјРµС‚С‹, Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅРЅС‹Рµ Р·Р°РґР°РЅРёСЏРјРё.
-	Implementers               *data.Implementers               // РСЃРїРѕР»РЅРёС‚РµР»Рё С‚РёРїРѕРІ Р·Р°РґР°РЅРёР№.
+	Accounts                   *data.Accounts                   // Загруженные учетные записи игроков.
+	Characters                 *data.Characters                 // Загруженные персонажи игроков.
+	CosmicObjects              *data.CosmicObjects              // Загруженные экземпляры объектов мира.
+	CosmicObjectTypes          *data.CosmicObjectTypes          // Загруженный справочник типов космических объектов.
+	CosmicObjectModels         *data.CosmicObjectModels         // Загруженный справочник моделей космических объектов.
+	ItemTypes                  *data.ItemTypes                  // Загруженный справочник типов предметов.
+	EquipmentGroups            *data.EquipmentGroups            // Загруженные группы оборудования космических объектов.
+	ItemGroups                 *data.ItemGroups                 // Загруженные группы предметов внутри контейнеров.
+	Assemblies                 *data.Assemblies                 // Загруженный справочник сборок космических объектов.
+	AssemblyEquipmentGroups    *data.AssemblyEquipmentGroups    // Загруженный справочник оборудования сборок.
+	NpcClans                   *RawReferenceTable               // Загруженный справочник NPC-кланов.
+	ItemModels                 *data.ItemModels                 // Загруженный справочник моделей предметов.
+	Blueprints                 *RawReferenceTable               // Загруженный справочник чертежей объектов.
+	BlueprintComponents        *RawReferenceTable               // Загруженный справочник компонентов чертежей.
+	Schemas                    *RawReferenceTable               // Загруженный справочник схем предметов.
+	SchemaComponents           *RawReferenceTable               // Загруженный справочник компонентов схем.
+	Chats                      *data.Chats                      // Загруженные чаты игрового мира.
+	ChatMembers                *data.ChatMembers                // Загруженные участники чатов.
+	CommunityTypes             *data.CommunityTypes             // Загруженный справочник типов сообществ.
+	CommunityChatRoles         *data.CommunityChatRoles         // Загруженный справочник ролей в чатах сообществ.
+	Messages                   *data.Messages                   // Загруженные сообщения чатов.
+	MessageReads               *data.MessageReads               // Загруженные позиции чтения сообщений персонажами.
+	MessageTypes               *data.MessageTypes               // Загруженный справочник типов сообщений.
+	ActionTypes                *data.ActionTypes                // Загруженный справочник игровых действий.
+	InputEventTypes            *data.InputEventTypes            // Загруженный справочник событий ввода.
+	DefaultActionInputSettings *data.DefaultActionInputSettings // Загруженные привязки ввода по умолчанию.
+	AccountActionInputSettings *data.AccountActionInputSettings // Загруженные аккаунтные привязки ввода.
+	TaskTypes                  *data.TaskTypes                  // Справочник типов заданий.
+	Tasks                      *data.Tasks                      // Сохраненные задания оборудования.
+	TaskItemGroups             *data.TaskItemGroups             // Предметы, зарезервированные заданиями.
+	Implementers               *data.Implementers               // Исполнители типов заданий.
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р†РЎРѓР Вµ JSON-РЎвЂћР В°Р в„–Р В»РЎвЂ№ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° Р С‘Р В· РЎС“Р С”Р В°Р В·Р В°Р Р…Р Р…Р С•Р С–Р С• РЎР‚Р В°Р В±Р С•РЎвЂЎР ВµР С–Р С• Р С”Р В°РЎвЂљР В°Р В»Р С•Р С–Р В°.
+// Загружает все JSON-файлы данных сервера из указанного рабочего каталога.
 func LoadServerData(workingDirectory string) (*ServerData, error) {
 	dataDirectory := filepath.Join(workingDirectory, "data")
 
@@ -263,7 +263,7 @@ func LoadServerData(workingDirectory string) (*ServerData, error) {
 	}, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу или возвращает пустой контейнер до появления файла.
 func loadOptionalRawReferenceTable(path string) (*RawReferenceTable, error) {
 	content, err := os.ReadFile(path)
 	if errors.Is(err, os.ErrNotExist) {
@@ -283,7 +283,7 @@ func loadOptionalRawReferenceTable(path string) (*RawReferenceTable, error) {
 	return loaded, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ Р С•Р В±Р С•РЎР‚РЎС“Р Т‘Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР С•Р Р† Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу оборудования объектов или возвращает пустой контейнер до появления файла.
 func loadOptionalEquipmentGroups(path string) (*data.EquipmentGroups, error) {
 	groups := data.NewEquipmentGroups()
 	if err := groups.LoadFromFile(path); err != nil {
@@ -295,7 +295,7 @@ func loadOptionalEquipmentGroups(path string) (*data.EquipmentGroups, error) {
 	return groups, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ Р С–РЎР‚РЎС“Р С—Р С— Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р† Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу групп предметов или возвращает пустой контейнер до появления файла.
 func loadOptionalItemGroups(path string) (*data.ItemGroups, error) {
 	groups := data.NewItemGroups()
 	if err := groups.LoadFromFile(path); err != nil {
@@ -307,7 +307,7 @@ func loadOptionalItemGroups(path string) (*data.ItemGroups, error) {
 	return groups, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ Р СР С•Р Т‘Р ВµР В»Р ВµР в„– Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р† Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу моделей предметов или возвращает пустой контейнер до появления файла.
 func loadOptionalItemModels(path string) (*data.ItemModels, error) {
 	models := data.NewItemModels()
 	if err := models.LoadFromFile(path); err != nil {
@@ -319,7 +319,7 @@ func loadOptionalItemModels(path string) (*data.ItemModels, error) {
 	return models, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ РЎРѓР В±Р С•РЎР‚Р С•Р С” Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу сборок или возвращает пустой контейнер до появления файла.
 func loadOptionalAssemblies(path string) (*data.Assemblies, error) {
 	assemblies := data.NewAssemblies()
 	if err := assemblies.LoadFromFile(path); err != nil {
@@ -331,7 +331,7 @@ func loadOptionalAssemblies(path string) (*data.Assemblies, error) {
 	return assemblies, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ Р С•Р В±Р С•РЎР‚РЎС“Р Т‘Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ РЎРѓР В±Р С•РЎР‚Р С•Р С” Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу оборудования сборок или возвращает пустой контейнер до появления файла.
 func loadOptionalAssemblyEquipmentGroups(path string) (*data.AssemblyEquipmentGroups, error) {
 	groups := data.NewAssemblyEquipmentGroups()
 	if err := groups.LoadFromFile(path); err != nil {
@@ -343,7 +343,7 @@ func loadOptionalAssemblyEquipmentGroups(path string) (*data.AssemblyEquipmentGr
 	return groups, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ РЎвЂЎР В°РЎвЂљР С•Р Р† Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу чатов или возвращает пустое хранилище до появления файла.
 func loadOptionalChats(path string) (*data.Chats, error) {
 	chats := data.NewChats()
 	if err := chats.LoadFromFile(path); err != nil {
@@ -355,7 +355,7 @@ func loadOptionalChats(path string) (*data.Chats, error) {
 	return chats, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ РЎС“РЎвЂЎР В°РЎРѓРЎвЂљР Р…Р С‘Р С”Р С•Р Р† РЎвЂЎР В°РЎвЂљР С•Р Р† Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу участников чатов или возвращает пустое хранилище до появления файла.
 func loadOptionalChatMembers(path string) (*data.ChatMembers, error) {
 	members := data.NewChatMembers()
 	if err := members.LoadFromFile(path); err != nil {
@@ -367,7 +367,7 @@ func loadOptionalChatMembers(path string) (*data.ChatMembers, error) {
 	return members, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµРЎРѓРЎвЂљР Р† Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательный справочник типов сообществ или возвращает пустое хранилище до появления файла.
 func loadOptionalCommunityTypes(path string) (*data.CommunityTypes, error) {
 	types := data.NewCommunityTypes()
 	if err := types.LoadFromFile(path); err != nil {
@@ -379,7 +379,7 @@ func loadOptionalCommunityTypes(path string) (*data.CommunityTypes, error) {
 	return types, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎР‚Р С•Р В»Р ВµР в„– РЎвЂЎР В°РЎвЂљР С•Р Р† Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательный справочник ролей чатов или возвращает пустое хранилище до появления файла.
 func loadOptionalCommunityChatRoles(path string) (*data.CommunityChatRoles, error) {
 	roles := data.NewCommunityChatRoles()
 	if err := roles.LoadFromFile(path); err != nil {
@@ -391,7 +391,7 @@ func loadOptionalCommunityChatRoles(path string) (*data.CommunityChatRoles, erro
 	return roles, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р в„– Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу сообщений или возвращает пустое хранилище до появления файла.
 func loadOptionalMessages(path string) (*data.Messages, error) {
 	messages := data.NewMessages()
 	if err := messages.LoadFromFile(path); err != nil {
@@ -403,7 +403,7 @@ func loadOptionalMessages(path string) (*data.Messages, error) {
 	return messages, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂљР В°Р В±Р В»Р С‘РЎвЂ РЎС“ Р С—РЎР‚Р С•РЎвЂЎРЎвЂљР ВµР Р…Р С‘Р в„– РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р в„– Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательную таблицу прочтений сообщений или возвращает пустое хранилище до появления файла.
 func loadOptionalMessageReads(path string) (*data.MessageReads, error) {
 	reads := data.NewMessageReads()
 	if err := reads.LoadFromFile(path); err != nil {
@@ -415,7 +415,7 @@ func loadOptionalMessageReads(path string) (*data.MessageReads, error) {
 	return reads, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎвЂљР С‘Р С—Р С•Р Р† РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р в„– Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательный справочник типов сообщений или возвращает пустое хранилище до появления файла.
 func loadOptionalMessageTypes(path string) (*data.MessageTypes, error) {
 	types := data.NewMessageTypes()
 	if err := types.LoadFromFile(path); err != nil {
@@ -427,7 +427,7 @@ func loadOptionalMessageTypes(path string) (*data.MessageTypes, error) {
 	return types, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” Р С‘Р С–РЎР‚Р С•Р Р†РЎвЂ№РЎвЂ¦ Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘Р в„– Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательный справочник игровых действий или возвращает пустое хранилище до появления файла.
 func loadOptionalActionTypes(path string) (*data.ActionTypes, error) {
 	types := data.NewActionTypes()
 	if err := types.LoadFromFile(path); err != nil {
@@ -439,7 +439,7 @@ func loadOptionalActionTypes(path string) (*data.ActionTypes, error) {
 	return types, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР С—РЎР‚Р В°Р Р†Р С•РЎвЂЎР Р…Р С‘Р С” РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р в„– Р Р†Р Р†Р С•Р Т‘Р В° Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательный справочник событий ввода или возвращает пустое хранилище до появления файла.
 func loadOptionalInputEventTypes(path string) (*data.InputEventTypes, error) {
 	types := data.NewInputEventTypes()
 	if err := types.LoadFromFile(path); err != nil {
@@ -451,7 +451,7 @@ func loadOptionalInputEventTypes(path string) (*data.InputEventTypes, error) {
 	return types, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р С”Р С‘ Р Р†Р Р†Р С•Р Т‘Р В° Р С—Р С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹ Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательные привязки ввода по умолчанию или возвращает пустое хранилище до появления файла.
 func loadOptionalDefaultActionInputSettings(path string) (*data.DefaultActionInputSettings, error) {
 	settings := data.NewDefaultActionInputSettings()
 	if err := settings.LoadFromFile(path); err != nil {
@@ -463,7 +463,7 @@ func loadOptionalDefaultActionInputSettings(path string) (*data.DefaultActionInp
 	return settings, nil
 }
 
-// Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµРЎвЂљ Р Р…Р ВµР С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР Р…РЎвЂ№Р Вµ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р С”Р С‘ Р Р†Р Р†Р С•Р Т‘Р В° Р С‘Р В»Р С‘ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘РЎвЂ°Р Вµ Р Т‘Р С• Р С—Р С•РЎРЏР Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎвЂћР В°Р в„–Р В»Р В°.
+// Загружает необязательные аккаунтные привязки ввода или возвращает пустое хранилище до появления файла.
 func loadOptionalAccountActionInputSettings(path string) (*data.AccountActionInputSettings, error) {
 	settings := data.NewAccountActionInputSettings()
 	if err := settings.LoadFromFile(path); err != nil {
@@ -475,7 +475,7 @@ func loadOptionalAccountActionInputSettings(path string) (*data.AccountActionInp
 	return settings, nil
 }
 
-// loadOptionalTaskTypes Р·Р°РіСЂСѓР¶Р°РµС‚ РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅС‹Р№ СЃРїСЂР°РІРѕС‡РЅРёРє С‚РёРїРѕРІ Р·Р°РґР°РЅРёР№ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ.
+// loadOptionalTaskTypes загружает необязательный справочник типов заданий или возвращает пустое хранилище.
 func loadOptionalTaskTypes(path string) (*data.TaskTypes, error) {
 	types := data.NewTaskTypes()
 	if err := types.LoadFromFile(path); err != nil {
@@ -487,7 +487,7 @@ func loadOptionalTaskTypes(path string) (*data.TaskTypes, error) {
 	return types, nil
 }
 
-// loadOptionalTasks Р·Р°РіСЂСѓР¶Р°РµС‚ РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ Р·Р°РґР°РЅРёР№ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ.
+// loadOptionalTasks загружает необязательную таблицу заданий или возвращает пустое хранилище.
 func loadOptionalTasks(path string) (*data.Tasks, error) {
 	tasks := data.NewTasks()
 	if err := tasks.LoadFromFile(path); err != nil {
@@ -499,7 +499,7 @@ func loadOptionalTasks(path string) (*data.Tasks, error) {
 	return tasks, nil
 }
 
-// loadOptionalTaskItemGroups Р·Р°РіСЂСѓР¶Р°РµС‚ РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ СЂРµР·РµСЂРІРѕРІ Р·Р°РґР°РЅРёР№ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ.
+// loadOptionalTaskItemGroups загружает необязательную таблицу резервов заданий или возвращает пустое хранилище.
 func loadOptionalTaskItemGroups(path string) (*data.TaskItemGroups, error) {
 	groups := data.NewTaskItemGroups()
 	if err := groups.LoadFromFile(path); err != nil {
@@ -511,7 +511,7 @@ func loadOptionalTaskItemGroups(path string) (*data.TaskItemGroups, error) {
 	return groups, nil
 }
 
-// loadOptionalImplementers Р·Р°РіСЂСѓР¶Р°РµС‚ РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ РёСЃРїРѕР»РЅРёС‚РµР»РµР№ Р·Р°РґР°РЅРёР№ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ.
+// loadOptionalImplementers загружает необязательную таблицу исполнителей заданий или возвращает пустое хранилище.
 func loadOptionalImplementers(path string) (*data.Implementers, error) {
 	implementers := data.NewImplementers()
 	if err := implementers.LoadFromFile(path); err != nil {

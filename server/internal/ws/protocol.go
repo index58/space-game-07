@@ -11,7 +11,7 @@ type clientMessageType struct {
 	Type string `json:"type"` // ??? ????????? ?????? ??? ?????? ?????????? ???????????.
 }
 
-// Р СџР ВµРЎР‚Р ВµР Т‘Р В°Р ВµРЎвЂљ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљРЎС“ РЎРѓР ВµР С”РЎР‚Р ВµРЎвЂљ, Р С”Р С•РЎвЂљР С•РЎР‚РЎвЂ№Р в„– Р Р…РЎС“Р В¶Р Р…Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ Р Т‘Р В»РЎРЏ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘РЎвЂ¦ Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р в„–.
+// Передает клиенту секрет, который нужно сохранить для следующих подключений.
 type AuthMessage struct {
 	Type  string `json:"type"`  // ??? ?????? ??? ??????? ?? ??????? ????.
 	Token string `json:"token"` // ?????? ????????? ??????? ??????.
@@ -21,7 +21,7 @@ type AuthMessage struct {
 type ChatSendMessage struct {
 	Type           string `json:"type"`                     // ??? ?????? ??? ????????????? ???????? ???????.
 	ChatID         int64  `json:"chatId,omitempty"`         // ???, ? ??????? ????? ????????? ??????? ?????.
-	TargetNickname string `json:"targetNickname,omitempty"` // Р СњР С‘Р С” Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР В° Р Т‘Р В»РЎРЏ Р В°Р Т‘РЎР‚Р ВµРЎРѓР Р…Р С•Р в„– Р С”Р С•Р СР В°Р Р…Р Т‘РЎвЂ№.
+	TargetNickname string `json:"targetNickname,omitempty"` // Ник аккаунта для адресной команды.
 	Text           string `json:"text"`                     // ??????????, ??????? ????? ???????? ? ???????.
 }
 
@@ -55,13 +55,13 @@ type InputSettingsSaveMessage struct {
 	Settings []InputSettingPayload `json:"settings"` // ?????? ?????? ????????? ????????.
 }
 
-// InputSettingsErrorMessage Р С—Р ВµРЎР‚Р ВµР Т‘Р В°Р ВµРЎвЂљ Р С—РЎР‚Р С‘РЎвЂЎР С‘Р Р…РЎС“ Р С•РЎвЂљР С”Р В°Р В·Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р Р…Р В°РЎРѓРЎвЂљРЎР‚Р С•Р ВµР С”.
+// InputSettingsErrorMessage передает причину отказа сохранения настроек.
 type InputSettingsErrorMessage struct {
 	Type    string `json:"type"`    // ??? ?????? ??? ??????????? ??????????????.
-	Message string `json:"message"` // Р СћР ВµР С”РЎРѓРЎвЂљ Р С•РЎв‚¬Р С‘Р В±Р С”Р С‘ Р Т‘Р В»РЎРЏ Р С•Р С”Р Р…Р В° Р Р…Р В°РЎРѓРЎвЂљРЎР‚Р С•Р ВµР С”.
+	Message string `json:"message"` // Текст ошибки для окна настроек.
 }
 
-// ControlPanelMutationMessage РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљ Р С•Р В±РЎвЂ°Р С‘Р Вµ Р С—Р С•Р В»РЎРЏ Р С”Р С•Р СР В°Р Р…Р Т‘РЎвЂ№ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘РЎРЏ Р СР С‘РЎР‚Р В° Р С‘Р В· Р С—Р В°Р Р…Р ВµР В»Р С‘.
+// ControlPanelMutationMessage хранит общие поля команды изменения мира из панели.
 type ControlPanelMutationMessage struct {
 	ClientSessionID string `json:"clientSessionId"` // ?????? ??????????? ???????, ??????????? ???????.
 	MutationSeq     int64  `json:"mutationSeq"`     // ?????????? ????? ??????? ?????? ?????????? ??????.
@@ -82,17 +82,17 @@ type ControlPanelEquipmentUpdateMessage struct {
 	EquipmentGroupID int64   `json:"equipmentGroupId"`       // ?????? ????????????, ??????? ????? ????????.
 	Enabled          *bool   `json:"enabled,omitempty"`      // ????? ????????? ????????? ??????, ???? ??? ????????.
 	EnabledCount     *int64  `json:"enabledCount,omitempty"` // ????? ?????????? ?????????? ??????, ???? ??? ????????.
-	Title            *string `json:"title,omitempty"`        // РќРѕРІРѕРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РіСЂСѓРїРїС‹, РµСЃР»Рё РѕРЅРѕ РјРµРЅСЏРµС‚СЃСЏ.
+	Title            *string `json:"title,omitempty"`        // Новое пользовательское название группы, если оно меняется.
 }
 
-// ControlPanelContainerTransferMessage Р С—Р ВµРЎР‚Р ВµР Т‘Р В°Р ВµРЎвЂљ Р С—Р ВµРЎР‚Р ВµР Р…Р С•РЎРѓ РЎРѓР С•Р Т‘Р ВµРЎР‚Р В¶Р С‘Р СР С•Р С–Р С• Р СР ВµР В¶Р Т‘РЎС“ Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р В°Р СР С‘ Р С•Р В±РЎР‰Р ВµР С”РЎвЂљР В°.
-// ControlPanelEquipmentGroupRelationUpdateMessage СЃРѕС…СЂР°РЅСЏРµС‚ РІС‹Р±СЂР°РЅРЅСѓСЋ СЃРІСЏР·Р°РЅРЅСѓСЋ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
+// ControlPanelContainerTransferMessage передает перенос содержимого между контейнерами объекта.
+// ControlPanelEquipmentGroupRelationUpdateMessage сохраняет выбранную связанную группу оборудования.
 type ControlPanelEquipmentGroupRelationUpdateMessage struct {
-	Type string `json:"type"` // Р’РёРґ РєРѕРјР°РЅРґС‹ СЃРѕС…СЂР°РЅРµРЅРёСЏ СЃРІСЏР·Рё РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
+	Type string `json:"type"` // Вид команды сохранения связи группы оборудования.
 	ControlPanelMutationMessage
-	EquipmentGroupID        int64  `json:"equipmentGroupId"`        // Р“СЂСѓРїРїР° РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ, РґР»СЏ РєРѕС‚РѕСЂРѕР№ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РІС‹Р±РѕСЂ.
-	RelationTypeAcronym     string `json:"relationTypeAcronym"`     // Р’РёРґ СЃРІСЏР·Рё РїРѕ РЅРµРёР·РјРµРЅСЏРµРјРѕРјСѓ СЃС‚СЂРѕРєРѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
-	RelatedEquipmentGroupID int64  `json:"relatedEquipmentGroupId"` // Р“СЂСѓРїРїР° РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ, РІС‹Р±СЂР°РЅРЅР°СЏ РёРіСЂРѕРєРѕРј РІ СЃРІСЏР·Р°РЅРЅРѕР№ РїР°РЅРµР»Рё.
+	EquipmentGroupID        int64  `json:"equipmentGroupId"`        // Группа оборудования, для которой сохраняется выбор.
+	RelationTypeAcronym     string `json:"relationTypeAcronym"`     // Вид связи по неизменяемому строковому идентификатору.
+	RelatedEquipmentGroupID int64  `json:"relatedEquipmentGroupId"` // Группа оборудования, выбранная игроком в связанной панели.
 }
 
 type ControlPanelContainerTransferMessage struct {
@@ -136,28 +136,28 @@ type ControlPanelConstructorProduceItemMessage struct {
 	MaterialContainerEquipmentGroupID int64 `json:"materialContainerEquipmentGroupId"` // ?????????, ?? ???????? ??????????? ?????????.
 	ProductContainerEquipmentGroupID  int64 `json:"productContainerEquipmentGroupId"`  // ?????????, ? ??????? ??????????? ?????????.
 	SchemaID                          int64 `json:"schemaId"`                          // ????? ????????, ????????? ???????.
-	BlueprintID                       int64 `json:"blueprintId"`                       // Р§РµСЂС‚С‘Р¶ РѕР±СЉРµРєС‚Р°, РІС‹Р±СЂР°РЅРЅС‹Р№ РґР»СЏ РёР·РіРѕС‚РѕРІР»РµРЅРёСЏ.
-	Amount                            int64 `json:"amount"`                            // РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїСѓСЃРєРѕРІ РёР·РіРѕС‚РѕРІР»РµРЅРёСЏ РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ СЃС…РµРјРµ.
+	BlueprintID                       int64 `json:"blueprintId"`                       // Чертёж объекта, выбранный для изготовления.
+	Amount                            int64 `json:"amount"`                            // Количество запусков изготовления по выбранной схеме.
 }
 
 type ControlPanelConstructorQueueCommandMessage struct {
-	Type string `json:"type"` // Р’РёРґ РєРѕРјР°РЅРґС‹ РёР·РјРµРЅРµРЅРёСЏ РѕС‡РµСЂРµРґРё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°.
+	Type string `json:"type"` // Вид команды изменения очереди конструктора.
 	ControlPanelMutationMessage
-	ConstructorEquipmentGroupID int64  `json:"constructorEquipmentGroupId"` // Р“СЂСѓРїРїР° РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРѕРІ, РѕС‡РµСЂРµРґСЊ РєРѕС‚РѕСЂРѕР№ РјРµРЅСЏРµС‚СЃСЏ.
-	JobID                       int64  `json:"jobId"`                       // РЎС‚СЂРѕРєР° РѕСЃРЅРѕРІРЅРѕР№ РѕС‡РµСЂРµРґРё, РІС‹Р±СЂР°РЅРЅР°СЏ РёРіСЂРѕРєРѕРј.
-	Command                     string `json:"command"`                     // Р”РµР№СЃС‚РІРёРµ РЅР°Рґ РІС‹Р±СЂР°РЅРЅРѕР№ СЃС‚СЂРѕРєРѕР№ Рё СЃР»РµРґСѓСЋС‰РёРјРё СЃС‚СЂРѕРєР°РјРё.
+	ConstructorEquipmentGroupID int64  `json:"constructorEquipmentGroupId"` // Группа конструкторов, очередь которой меняется.
+	JobID                       int64  `json:"jobId"`                       // Строка основной очереди, выбранная игроком.
+	Command                     string `json:"command"`                     // Действие над выбранной строкой и следующими строками.
 }
 
 type LandingRequestMessage struct {
-	Type           string `json:"type"`           // Р’РёРґ РєРѕРјР°РЅРґС‹ РѕС‚РїСЂР°РІРєРё Р·Р°РїСЂРѕСЃР° РїРѕСЃР°РґРєРё.
-	TargetObjectID int64  `json:"targetObjectId"` // РћР±СЉРµРєС‚ РЅР°Р·РЅР°С‡РµРЅРёСЏ, РІС‹Р±СЂР°РЅРЅС‹Р№ РёРіСЂРѕРєРѕРј.
+	Type           string `json:"type"`           // Вид команды отправки запроса посадки.
+	TargetObjectID int64  `json:"targetObjectId"` // Объект назначения, выбранный игроком.
 }
 
 type ControlPanelErrorMessage struct {
 	Type            string `json:"type"`            // ??? ?????? ??? ??????????? ??????????????.
 	ClientSessionID string `json:"clientSessionId"` // ??????, ??????? ??????? ???? ?????????.
-	MutationSeq     int64  `json:"mutationSeq"`     // Р СњР С•Р СР ВµРЎР‚ Р С•РЎвЂљР С”Р В»Р С•Р Р…Р ВµР Р…Р Р…Р С•Р в„– Р С”Р С•Р СР В°Р Р…Р Т‘РЎвЂ№.
-	Message         string `json:"message"`         // Р СћР ВµР С”РЎРѓРЎвЂљ Р С•РЎв‚¬Р С‘Р В±Р С”Р С‘ Р Т‘Р В»РЎРЏ Р Т‘Р С‘Р В°Р С–Р Р…Р С•РЎРѓРЎвЂљР С‘Р С”Р С‘ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљР В°.
+	MutationSeq     int64  `json:"mutationSeq"`     // Номер отклоненной команды.
+	Message         string `json:"message"`         // Текст ошибки для диагностики клиента.
 }
 
 // ????????? ?????????? JSON ? ?????????? ?????? ????????? ?????????? ????????.
@@ -184,7 +184,7 @@ func DecodeRandomShipMessage(payload []byte) bool {
 	return message.Type == "randomShip"
 }
 
-// DecodeTestClaimFocusedObjectOwnerMessage РїСЂРѕРІРµСЂСЏРµС‚ С‚РµСЃС‚РѕРІСѓСЋ РєРѕРјР°РЅРґСѓ РїСЂРёСЃРІРѕРµРЅРёСЏ РѕР±СЉРµРєС‚Р° РІ С„РѕРєСѓСЃРµ.
+// DecodeTestClaimFocusedObjectOwnerMessage проверяет тестовую команду присвоения объекта в фокусе.
 func DecodeTestClaimFocusedObjectOwnerMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -194,7 +194,7 @@ func DecodeTestClaimFocusedObjectOwnerMessage(payload []byte) bool {
 	return message.Type == "testClaimFocusedObjectOwner"
 }
 
-// DecodeDockingRequestMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РѕС‚РїСЂР°РІРєРё Р·Р°РїСЂРѕСЃР° РЅР° СЃС‚С‹РєРѕРІРєСѓ.
+// DecodeDockingRequestMessage проверяет команду отправки запроса на стыковку.
 func DecodeDockingRequestMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -203,7 +203,7 @@ func DecodeDockingRequestMessage(payload []byte) bool {
 	return message.Type == "dockingRequest"
 }
 
-// DecodeDockingApproveMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РѕРґРѕР±СЂРµРЅРёСЏ РІС…РѕРґСЏС‰РµРіРѕ Р·Р°РїСЂРѕСЃР° РЅР° СЃС‚С‹РєРѕРІРєСѓ.
+// DecodeDockingApproveMessage проверяет команду одобрения входящего запроса на стыковку.
 func DecodeDockingApproveMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -212,7 +212,7 @@ func DecodeDockingApproveMessage(payload []byte) bool {
 	return message.Type == "dockingApprove"
 }
 
-// DecodeDockingRejectMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РѕС‚РєР°Р·Р° РІС…РѕРґСЏС‰РµРіРѕ Р·Р°РїСЂРѕСЃР° РЅР° СЃС‚С‹РєРѕРІРєСѓ.
+// DecodeDockingRejectMessage проверяет команду отказа входящего запроса на стыковку.
 func DecodeDockingRejectMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -221,7 +221,7 @@ func DecodeDockingRejectMessage(payload []byte) bool {
 	return message.Type == "dockingReject"
 }
 
-// DecodeDockingUndockMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РѕС‚СЃС‚С‹РєРѕРІРєРё С‚РµРєСѓС‰РµРіРѕ РѕР±СЉРµРєС‚Р°.
+// DecodeDockingUndockMessage проверяет команду отстыковки текущего объекта.
 func DecodeDockingUndockMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -230,7 +230,7 @@ func DecodeDockingUndockMessage(payload []byte) bool {
 	return message.Type == "dockingUndock"
 }
 
-// DecodeLandingBeginMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РЅР°С‡Р°Р»Р° РїРµСЂРµСЃР°РґРєРё РїРµСЂСЃРѕРЅР°Р¶Р°.
+// DecodeLandingBeginMessage проверяет команду начала пересадки персонажа.
 func DecodeLandingBeginMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -239,7 +239,7 @@ func DecodeLandingBeginMessage(payload []byte) bool {
 	return message.Type == "landingBegin"
 }
 
-// DecodeLandingApproveMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РѕРґРѕР±СЂРµРЅРёСЏ РІС…РѕРґСЏС‰РµРіРѕ Р·Р°РїСЂРѕСЃР° РїРѕСЃР°РґРєРё.
+// DecodeLandingApproveMessage проверяет команду одобрения входящего запроса посадки.
 func DecodeLandingApproveMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -248,7 +248,7 @@ func DecodeLandingApproveMessage(payload []byte) bool {
 	return message.Type == "landingApprove"
 }
 
-// DecodeLandingRejectMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РѕС‚РєР°Р·Р° РІС…РѕРґСЏС‰РµРјСѓ Р·Р°РїСЂРѕСЃСѓ РїРѕСЃР°РґРєРё.
+// DecodeLandingRejectMessage проверяет команду отказа входящему запросу посадки.
 func DecodeLandingRejectMessage(payload []byte) bool {
 	var message clientMessageType
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -257,7 +257,7 @@ func DecodeLandingRejectMessage(payload []byte) bool {
 	return message.Type == "landingReject"
 }
 
-// DecodeLandingRequestMessage РїСЂРѕРІРµСЂСЏРµС‚ РєРѕРјР°РЅРґСѓ РїРѕСЃР°РґРєРё РІ РІС‹Р±СЂР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚.
+// DecodeLandingRequestMessage проверяет команду посадки в выбранный объект.
 func DecodeLandingRequestMessage(payload []byte) (LandingRequestMessage, bool) {
 	var message LandingRequestMessage
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -349,7 +349,7 @@ func DecodeControlPanelEquipmentUpdateMessage(payload []byte) (ControlPanelEquip
 	return message, true
 }
 
-// DecodeControlPanelEquipmentGroupRelationUpdateMessage РїСЂРѕРІРµСЂСЏРµС‚ JSON РєРѕРјР°РЅРґС‹ СЃРѕС…СЂР°РЅРµРЅРёСЏ СЃРІСЏР·Рё РіСЂСѓРїРї РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
+// DecodeControlPanelEquipmentGroupRelationUpdateMessage проверяет JSON команды сохранения связи групп оборудования.
 func DecodeControlPanelEquipmentGroupRelationUpdateMessage(payload []byte) (ControlPanelEquipmentGroupRelationUpdateMessage, bool) {
 	var message ControlPanelEquipmentGroupRelationUpdateMessage
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -429,7 +429,7 @@ func DecodeControlPanelConstructorProduceItemMessage(payload []byte) (ControlPan
 	return message, true
 }
 
-// DecodeControlPanelConstructorQueueCommandMessage РїСЂРѕРІРµСЂСЏРµС‚ JSON РєРѕРјР°РЅРґС‹ РёР·РјРµРЅРµРЅРёСЏ РѕС‡РµСЂРµРґРё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°.
+// DecodeControlPanelConstructorQueueCommandMessage проверяет JSON команды изменения очереди конструктора.
 func DecodeControlPanelConstructorQueueCommandMessage(payload []byte) (ControlPanelConstructorQueueCommandMessage, bool) {
 	var message ControlPanelConstructorQueueCommandMessage
 	if err := json.Unmarshal(payload, &message); err != nil {
@@ -450,7 +450,7 @@ func EncodeSnapshotMessage(snapshot game.Snapshot) ([]byte, error) {
 	return json.Marshal(snapshot)
 }
 
-// EncodeDockingEventMessage РєРѕРґРёСЂСѓРµС‚ СЃРѕР±С‹С‚РёРµ СЃС‚С‹РєРѕРІРєРё РґР»СЏ РѕРґРЅРѕРіРѕ РєР»РёРµРЅС‚Р°.
+// EncodeDockingEventMessage кодирует событие стыковки для одного клиента.
 func EncodeDockingEventMessage(event game.DockingEvent) ([]byte, error) {
 	return json.Marshal(event)
 }

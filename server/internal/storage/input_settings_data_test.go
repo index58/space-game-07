@@ -1,4 +1,4 @@
-﻿package storage
+package storage
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРµР№СЃС‚РІРёСЏ СЃС‚С‹РєРѕРІРєРё РґРѕСЃС‚СѓРїРЅС‹ РІ СЃРїСЂР°РІРѕС‡РЅРёРєРµ РЅР°СЃС‚СЂРѕРµРє РІРІРѕРґР°.
+// Проверяет, что действия стыковки доступны в справочнике настроек ввода.
 func TestServerDataContainsDockingInputActions(t *testing.T) {
 	workingDirectory := serverDataWorkingDirectory(t)
 	serverData, err := LoadServerData(workingDirectory)
@@ -15,11 +15,11 @@ func TestServerDataContainsDockingInputActions(t *testing.T) {
 	}
 
 	expected := map[string]string{
-		"DockingRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:Equal",
+		"DockingRequest":  "KeyboardEvent.altKey&&KeyboardEvent.code:Equal",
 		"ExchangeRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:KeyE",
-		"ApproveRequest": "KeyboardEvent.altKey&&KeyboardEvent.code:Digit1",
-		"RejectRequest":  "KeyboardEvent.altKey&&KeyboardEvent.code:Digit2",
-		"DockingUndock":  "KeyboardEvent.altKey&&KeyboardEvent.code:Minus",
+		"ApproveRequest":  "KeyboardEvent.altKey&&KeyboardEvent.code:Digit1",
+		"RejectRequest":   "KeyboardEvent.altKey&&KeyboardEvent.code:Digit2",
+		"DockingUndock":   "KeyboardEvent.altKey&&KeyboardEvent.code:Minus",
 	}
 	for acronym, systemStringValue := range expected {
 		action := serverData.ActionTypes.ByAcronym[acronym]
@@ -40,7 +40,7 @@ func TestServerDataContainsDockingInputActions(t *testing.T) {
 	}
 }
 
-// РќР°С…РѕРґРёС‚ РєРѕСЂРµРЅСЊ СЃРµСЂРІРµСЂРЅРѕР№ С‡Р°СЃС‚Рё РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ С‚РµРєСѓС‰РµРіРѕ РєР°С‚Р°Р»РѕРіР° С‚РµСЃС‚РѕРІРѕРіРѕ РїСЂРѕС†РµСЃСЃР°.
+// Находит корень серверной части независимо от текущего каталога тестового процесса.
 func serverDataWorkingDirectory(t *testing.T) string {
 	t.Helper()
 	workingDirectory, err := os.Getwd()

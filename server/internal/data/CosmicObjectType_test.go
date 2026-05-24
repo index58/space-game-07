@@ -1,4 +1,4 @@
-﻿package data
+package data
 
 import (
 	"encoding/json"
@@ -8,12 +8,12 @@ import (
 	"testing"
 )
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРѕР±Р°РІР»РµРЅРёРµ С‚РёРїР° РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РЅР°Р·РЅР°С‡Р°РµС‚ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Рё СЃС‚СЂРѕРёС‚ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РёРЅРґРµРєСЃС‹.
+// Проверяет, что добавление типа космического объекта назначает идентификатор и строит уникальные индексы.
 func TestCosmicObjectTypesAddAssignsIDAndIndexesType(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 
 	cosmicObjectType, err := cosmicObjectTypes.Add(&CosmicObjectType{
-		TitleRu:            "РљРѕСЂР°Р±Р»СЊ",
+		TitleRu:            "Корабль",
 		TitleEn:            "Ship",
 		Acronym:            "Ship",
 		CharacterLocatable: true,
@@ -36,7 +36,7 @@ func TestCosmicObjectTypesAddAssignsIDAndIndexesType(t *testing.T) {
 		t.Fatal("Get did not return added cosmic object type")
 	}
 
-	byTitleRu, ok := cosmicObjectTypes.GetByTitleRu("РљРѕСЂР°Р±Р»СЊ")
+	byTitleRu, ok := cosmicObjectTypes.GetByTitleRu("Корабль")
 	if !ok || byTitleRu != cosmicObjectType {
 		t.Fatal("GetByTitleRu did not return added cosmic object type")
 	}
@@ -52,29 +52,29 @@ func TestCosmicObjectTypesAddAssignsIDAndIndexesType(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕРІС‚РѕСЂСЏСЋС‰РёРµСЃСЏ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РЅР°Р·РІР°РЅРёСЏ Рё Р°РєСЂРѕРЅРёРј РЅРµ РґРѕРїСѓСЃРєР°СЋС‚СЃСЏ.
+// Проверяет, что повторяющиеся уникальные названия и акроним не допускаются.
 func TestCosmicObjectTypesAddRejectsDuplicateUniqueFields(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 
-	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "Ship"}); err != nil {
+	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship"}); err != nil {
 		t.Fatalf("first Add returned error: %v", err)
 	}
 
-	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Station", Acronym: "Station"}); err == nil {
+	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Корабль", TitleEn: "Station", Acronym: "Station"}); err == nil {
 		t.Fatal("Add accepted duplicate TitleRu")
 	}
-	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "РЎС‚Р°РЅС†РёСЏ", TitleEn: "Ship", Acronym: "Station"}); err == nil {
+	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Станция", TitleEn: "Ship", Acronym: "Station"}); err == nil {
 		t.Fatal("Add accepted duplicate TitleEn")
 	}
-	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "РЎС‚Р°РЅС†РёСЏ", TitleEn: "Station", Acronym: "Ship"}); err == nil {
+	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Станция", TitleEn: "Station", Acronym: "Ship"}); err == nil {
 		t.Fatal("Add accepted duplicate Acronym")
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СѓРґР°Р»РµРЅРёРµ С‚РёРїР° РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РѕС‡РёС‰Р°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё РІСЃРµ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РёРЅРґРµРєСЃС‹.
+// Проверяет, что удаление типа космического объекта очищает основное хранилище и все уникальные индексы.
 func TestCosmicObjectTypesDeleteRemovesTypeAndIndexes(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
-	cosmicObjectType, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "Ship"})
+	cosmicObjectType, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship"})
 	if err != nil {
 		t.Fatalf("Add returned error: %v", err)
 	}
@@ -97,12 +97,12 @@ func TestCosmicObjectTypesDeleteRemovesTypeAndIndexes(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Рµ С‚РёРїС‹ РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РѕР±СЂР°С‚РЅРѕ СЃ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹Рј РёРЅРґРµРєСЃРѕРј РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+// Проверяет, что сохранённые типы космических объектов загружаются обратно с восстановленным индексом по акрониму.
 func TestCosmicObjectTypesSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "CosmicObjectTypes.json")
 	cosmicObjectTypes := NewCosmicObjectTypes()
 	cosmicObjectType, err := cosmicObjectTypes.Add(&CosmicObjectType{
-		TitleRu: "РљРѕСЂР°Р±Р»СЊ",
+		TitleRu: "Корабль",
 		TitleEn: "Ship",
 		Acronym: "Ship",
 		Movable: true,
@@ -135,10 +135,10 @@ func TestCosmicObjectTypesSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ JSON-РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ С‚РёРїРѕРІ РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ РёСЃРїРѕР»СЊР·СѓРµС‚ РёРјРµРЅР° РїРѕР»РµР№ РёР· Go-СЃС‚СЂСѓРєС‚СѓСЂ.
+// Проверяет, что JSON-представление типов космических объектов использует имена полей из Go-структур.
 func TestCosmicObjectTypesJSONKeysMatchGoFieldNames(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
-	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "Ship"}); err != nil {
+	if _, err := cosmicObjectTypes.Add(&CosmicObjectType{TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship"}); err != nil {
 		t.Fatalf("Add returned error: %v", err)
 	}
 
@@ -166,7 +166,7 @@ func TestCosmicObjectTypesJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РёРЅРґРµРєСЃРѕРІ РѕС‚РєР»РѕРЅСЏРµС‚ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ С‚РёРї РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° Р±РµР· РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… РїРѕР»РµР№.
+// Проверяет, что восстановление индексов отклоняет сохранённый тип космического объекта без обязательных полей.
 func TestCosmicObjectTypesRebuildIndexesRejectsInvalidStoredType(t *testing.T) {
 	cosmicObjectTypes := NewCosmicObjectTypes()
 	cosmicObjectTypes.Items[1] = &CosmicObjectType{ID: 1}

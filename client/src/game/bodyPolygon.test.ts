@@ -34,7 +34,7 @@ describe("buildBodyPolygon", () => {
     expect(points[12]).toEqual({ x: -5, y: 0 });
   });
 
-  it("СЃРјРµС‰Р°РµС‚ С‚РѕС‡РєРё Рє С†РµРЅС‚СЂСѓ С‚РµР»Р° РЅР° С‚РµРєСЃС‚СѓСЂРµ", () => {
+  it("смещает точки к центру тела на текстуре", () => {
     const points = buildBodyPolygon({
       ...model,
       TextureWidth: 100,

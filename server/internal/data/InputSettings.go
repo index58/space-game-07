@@ -1,4 +1,4 @@
-﻿package data
+package data
 
 import (
 	"encoding/json"
@@ -7,74 +7,74 @@ import (
 	"os"
 )
 
-// ActionType С…СЂР°РЅРёС‚ РёРіСЂРѕРІРѕРµ РґРµР№СЃС‚РІРёРµ, Рє РєРѕС‚РѕСЂРѕРјСѓ РјРѕР¶РЅРѕ РїСЂРёРІСЏР·Р°С‚СЊ СЃРѕР±С‹С‚РёРµ РІРІРѕРґР°.
+// ActionType хранит игровое действие, к которому можно привязать событие ввода.
 type ActionType struct {
-	ID          int64  `json:"ID"`          // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	TitleRu     string `json:"TitleRu"`     // Р СѓСЃСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° РЅР°СЃС‚СЂРѕРµРє.
-	TitleEn     string `json:"TitleEn"`     // РђРЅРіР»РёР№СЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
-	Acronym     string `json:"Acronym"`     // РќРµРёР·РјРµРЅСЏРµРјС‹Р№ СЃС‚СЂРѕРєРѕРІС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґРµР№СЃС‚РІРёСЏ.
-	Description string `json:"Description"` // РџРѕСЏСЃРЅРµРЅРёРµ РЅР°Р·РЅР°С‡РµРЅРёСЏ РґРµР№СЃС‚РІРёСЏ.
+	ID          int64  `json:"ID"`          // Уникальный числовой идентификатор записи.
+	TitleRu     string `json:"TitleRu"`     // Русское название для интерфейса настроек.
+	TitleEn     string `json:"TitleEn"`     // Английское название для интерфейса и данных.
+	Acronym     string `json:"Acronym"`     // Неизменяемый строковый идентификатор действия.
+	Description string `json:"Description"` // Пояснение назначения действия.
 }
 
-// ActionTypes С…СЂР°РЅРёС‚ РёРіСЂРѕРІС‹Рµ РґРµР№СЃС‚РІРёСЏ Рё Р±С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+// ActionTypes хранит игровые действия и быстрый поиск по акрониму.
 type ActionTypes struct {
-	MaxID int64                 `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРµР№.
-	Items map[int64]*ActionType `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                 `json:"MaxID"` // Последний выданный числовой идентификатор записей.
+	Items map[int64]*ActionType `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByAcronym map[string]*ActionType `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+	ByAcronym map[string]*ActionType `json:"-"` // Быстрый поиск записи по акрониму.
 }
 
-// InputEventType С…СЂР°РЅРёС‚ СЃРёСЃС‚РµРјРЅРѕРµ СЃРѕР±С‹С‚РёРµ, РґРѕСЃС‚СѓРїРЅРѕРµ РґР»СЏ РїСЂРёРІСЏР·РєРё Рє РґРµР№СЃС‚РІРёСЋ.
+// InputEventType хранит системное событие, доступное для привязки к действию.
 type InputEventType struct {
-	ID                 int64  `json:"ID"`                 // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	TitleRu            string `json:"TitleRu"`            // Р СѓСЃСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° РЅР°СЃС‚СЂРѕРµРє.
-	TitleEn            string `json:"TitleEn"`            // РђРЅРіР»РёР№СЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
-	Acronym            string `json:"Acronym"`            // РќРµРёР·РјРµРЅСЏРµРјС‹Р№ СЃС‚СЂРѕРєРѕРІС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРѕР±С‹С‚РёСЏ.
-	SystemStringValue  string `json:"SystemStringValue"`  // РЎРёСЃС‚РµРјРЅРѕРµ СЃС‚СЂРѕРєРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ Р±СЂР°СѓР·РµСЂРЅРѕРіРѕ СЃРѕР±С‹С‚РёСЏ.
-	SystemIntegerValue int64  `json:"SystemIntegerValue"` // РЎРёСЃС‚РµРјРЅРѕРµ С‡РёСЃР»РѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ, РµСЃР»Рё РѕРЅРѕ РµСЃС‚СЊ.
-	Description        string `json:"Description"`        // РџРѕСЏСЃРЅРµРЅРёРµ СЃРѕР±С‹С‚РёСЏ РІРІРѕРґР°.
+	ID                 int64  `json:"ID"`                 // Уникальный числовой идентификатор записи.
+	TitleRu            string `json:"TitleRu"`            // Русское название для интерфейса настроек.
+	TitleEn            string `json:"TitleEn"`            // Английское название для интерфейса и данных.
+	Acronym            string `json:"Acronym"`            // Неизменяемый строковый идентификатор события.
+	SystemStringValue  string `json:"SystemStringValue"`  // Системное строковое значение браузерного события.
+	SystemIntegerValue int64  `json:"SystemIntegerValue"` // Системное числовое значение, если оно есть.
+	Description        string `json:"Description"`        // Пояснение события ввода.
 }
 
-// InputEventTypes С…СЂР°РЅРёС‚ РґРѕСЃС‚СѓРїРЅС‹Рµ СЃРѕР±С‹С‚РёСЏ РІРІРѕРґР° Рё Р±С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РїРѕ СЃРёСЃС‚РµРјРЅРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ.
+// InputEventTypes хранит доступные события ввода и быстрый поиск по системному значению.
 type InputEventTypes struct {
-	MaxID int64                     `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРµР№.
-	Items map[int64]*InputEventType `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                     `json:"MaxID"` // Последний выданный числовой идентификатор записей.
+	Items map[int64]*InputEventType `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByAcronym           map[string]*InputEventType `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
-	BySystemStringValue map[string]*InputEventType `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ СЃРёСЃС‚РµРјРЅРѕР№ СЃС‚СЂРѕРєРµ.
+	ByAcronym           map[string]*InputEventType `json:"-"` // Быстрый поиск записи по акрониму.
+	BySystemStringValue map[string]*InputEventType `json:"-"` // Быстрый поиск записи по системной строке.
 }
 
-// DefaultActionInputSetting С…СЂР°РЅРёС‚ РёСЃС…РѕРґРЅСѓСЋ РїСЂРёРІСЏР·РєСѓ РґРµР№СЃС‚РІРёСЏ Рє СЃРѕР±С‹С‚РёСЋ.
+// DefaultActionInputSetting хранит исходную привязку действия к событию.
 type DefaultActionInputSetting struct {
-	ID               int64 `json:"ID"`               // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	ActionTypeID     int64 `json:"ActionTypeID"`     // Р”РµР№СЃС‚РІРёРµ, РІС‹РїРѕР»РЅСЏРµРјРѕРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ.
-	InputEventTypeID int64 `json:"InputEventTypeID"` // РЎРѕР±С‹С‚РёРµ РІРІРѕРґР° РґР»СЏ РґРµР№СЃС‚РІРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ.
+	ID               int64 `json:"ID"`               // Уникальный числовой идентификатор записи.
+	ActionTypeID     int64 `json:"ActionTypeID"`     // Действие, выполняемое по умолчанию.
+	InputEventTypeID int64 `json:"InputEventTypeID"` // Событие ввода для действия по умолчанию.
 }
 
-// DefaultActionInputSettings С…СЂР°РЅРёС‚ РёСЃС…РѕРґРЅС‹Рµ РїСЂРёРІСЏР·РєРё Рё РёРЅРґРµРєСЃС‹ СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё.
+// DefaultActionInputSettings хранит исходные привязки и индексы уникальности.
 type DefaultActionInputSettings struct {
-	MaxID int64                                `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРµР№.
-	Items map[int64]*DefaultActionInputSetting `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                                `json:"MaxID"` // Последний выданный числовой идентификатор записей.
+	Items map[int64]*DefaultActionInputSetting `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByActionTypeID     map[int64]*DefaultActionInputSetting `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РЅР°СЃС‚СЂРѕР№РєРё РїРѕ РґРµР№СЃС‚РІРёСЋ.
-	ByInputEventTypeID map[int64]*DefaultActionInputSetting `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РЅР°СЃС‚СЂРѕР№РєРё РїРѕ СЃРѕР±С‹С‚РёСЋ.
+	ByActionTypeID     map[int64]*DefaultActionInputSetting `json:"-"` // Быстрый поиск настройки по действию.
+	ByInputEventTypeID map[int64]*DefaultActionInputSetting `json:"-"` // Быстрый поиск настройки по событию.
 }
 
-// AccountActionInputSetting С…СЂР°РЅРёС‚ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРёРµ РїСЂРёРІСЏР·РєРё РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ Р°РєРєР°СѓРЅС‚Р°.
+// AccountActionInputSetting хранит переопределение привязки для конкретного аккаунта.
 type AccountActionInputSetting struct {
-	ID               int64 `json:"ID"`               // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	AccountID        int64 `json:"AccountID"`        // РђРєРєР°СѓРЅС‚, РєРѕС‚РѕСЂРѕРјСѓ РїСЂРёРЅР°РґР»РµР¶РёС‚ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРёРµ.
-	ActionTypeID     int64 `json:"ActionTypeID"`     // Р”РµР№СЃС‚РІРёРµ, РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРЅРѕРµ РёРіСЂРѕРєРѕРј.
-	InputEventTypeID int64 `json:"InputEventTypeID"` // РЎРѕР±С‹С‚РёРµ РІРІРѕРґР°, РІС‹Р±СЂР°РЅРЅРѕРµ РёРіСЂРѕРєРѕРј.
+	ID               int64 `json:"ID"`               // Уникальный числовой идентификатор записи.
+	AccountID        int64 `json:"AccountID"`        // Аккаунт, которому принадлежит переопределение.
+	ActionTypeID     int64 `json:"ActionTypeID"`     // Действие, переопределенное игроком.
+	InputEventTypeID int64 `json:"InputEventTypeID"` // Событие ввода, выбранное игроком.
 }
 
-// AccountActionInputSettings С…СЂР°РЅРёС‚ Р°РєРєР°СѓРЅС‚РЅС‹Рµ РїСЂРёРІСЏР·РєРё Рё РёРЅРґРµРєСЃС‹ СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё.
+// AccountActionInputSettings хранит аккаунтные привязки и индексы уникальности.
 type AccountActionInputSettings struct {
-	MaxID int64                                `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРµР№.
-	Items map[int64]*AccountActionInputSetting `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                                `json:"MaxID"` // Последний выданный числовой идентификатор записей.
+	Items map[int64]*AccountActionInputSetting `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByAccountAndAction map[string]*AccountActionInputSetting `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РЅР°СЃС‚СЂРѕР№РєРё РїРѕ Р°РєРєР°СѓРЅС‚Сѓ Рё РґРµР№СЃС‚РІРёСЋ.
-	ByAccountAndEvent  map[string]*AccountActionInputSetting `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РЅР°СЃС‚СЂРѕР№РєРё РїРѕ Р°РєРєР°СѓРЅС‚Сѓ Рё СЃРѕР±С‹С‚РёСЋ.
+	ByAccountAndAction map[string]*AccountActionInputSetting `json:"-"` // Быстрый поиск настройки по аккаунту и действию.
+	ByAccountAndEvent  map[string]*AccountActionInputSetting `json:"-"` // Быстрый поиск настройки по аккаунту и событию.
 }
 
 func NewActionTypes() *ActionTypes {

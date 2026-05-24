@@ -7,69 +7,69 @@ import (
 	"os"
 )
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 type ItemModel struct {
-	ID                   int64   `json:"ID"`                   // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	TitleRu              string  `json:"TitleRu"`              // Р СѓСЃСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
-	TitleEn              string  `json:"TitleEn"`              // РђРЅРіР»РёР№СЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
-	Acronym              string  `json:"Acronym"`              // РќРµРёР·РјРµРЅСЏРµРјС‹Р№ СЃС‚СЂРѕРєРѕРІС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ Р»РѕРіРёРєРё Рё СЃСЃС‹Р»РѕРє.
-	IconFilePath         string  `json:"IconFilePath"`         // РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ РёРєРѕРЅРєРё РїСЂРµРґРјРµС‚Р°.
-	ItemTypeID           int64   `json:"ItemTypeID"`           // РўРёРї РїСЂРµРґРјРµС‚Р° РёР· СЃРїСЂР°РІРѕС‡РЅРёРєР° С‚РёРїРѕРІ.
-	Mass                 float64 `json:"Mass"`                 // РњР°СЃСЃР° РѕРґРЅРѕР№ РµРґРёРЅРёС†С‹ РїСЂРµРґРјРµС‚Р°.
-	Volume               float64 `json:"Volume"`               // РћР±СЉРµРј РѕРґРЅРѕР№ РµРґРёРЅРёС†С‹ РїСЂРµРґРјРµС‚Р°.
-	Capacity             float64 `json:"Capacity"`             // Р’РјРµСЃС‚РёРјРѕСЃС‚СЊ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РёР»Рё РїСЂРµРґРјРµС‚Р°.
-	MaxArmor             float64 `json:"MaxArmor"`             // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РїСЂРѕС‡РЅРѕСЃС‚СЊ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	ConsumingPower       float64 `json:"ConsumingPower"`       // РџРѕС‚СЂРµР±Р»РµРЅРёРµ СЌРЅРµСЂРіРёРё РІРєР»СЋС‡РµРЅРЅС‹Рј РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµРј.
-	GeneratingPower      float64 `json:"GeneratingPower"`      // Р“РµРЅРµСЂР°С†РёСЏ СЌРЅРµСЂРіРёРё РІРєР»СЋС‡РµРЅРЅС‹Рј РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµРј.
-	AmmoItemModelID      int64   `json:"AmmoItemModelID"`      // РњРѕРґРµР»СЊ Р±РѕРµРїСЂРёРїР°СЃР° РґР»СЏ РѕСЂСѓР¶РёСЏ.
-	FiringRate           float64 `json:"FiringRate"`           // РљРѕР»РёС‡РµСЃС‚РІРѕ РІС‹СЃС‚СЂРµР»РѕРІ РІ СЃРµРєСѓРЅРґСѓ.
-	MagazineCapacity     int64   `json:"MagazineCapacity"`     // Р’РјРµСЃС‚РёРјРѕСЃС‚СЊ РјР°РіР°Р·РёРЅР° РѕСЂСѓР¶РёСЏ.
-	RechargeTime         float64 `json:"RechargeTime"`         // Р’СЂРµРјСЏ РїРµСЂРµР·Р°СЂСЏРґРєРё РІ СЃРµРєСѓРЅРґР°С….
-	Range                float64 `json:"Range"`                // Р”Р°Р»СЊРЅРѕСЃС‚СЊ РґРµР№СЃС‚РІРёСЏ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	Damage               float64 `json:"Damage"`               // РЈСЂРѕРЅ РѕРґРЅРѕРіРѕ РїРѕРїР°РґР°РЅРёСЏ РёР»Рё РІРѕР·РґРµР№СЃС‚РІРёСЏ.
+	ID                   int64   `json:"ID"`                   // Уникальный числовой идентификатор записи.
+	TitleRu              string  `json:"TitleRu"`              // Русское название для интерфейса и данных.
+	TitleEn              string  `json:"TitleEn"`              // Английское название для интерфейса и данных.
+	Acronym              string  `json:"Acronym"`              // Неизменяемый строковый идентификатор для логики и ссылок.
+	IconFilePath         string  `json:"IconFilePath"`         // Путь к файлу иконки предмета.
+	ItemTypeID           int64   `json:"ItemTypeID"`           // Тип предмета из справочника типов.
+	Mass                 float64 `json:"Mass"`                 // Масса одной единицы предмета.
+	Volume               float64 `json:"Volume"`               // Объем одной единицы предмета.
+	Capacity             float64 `json:"Capacity"`             // Вместимость оборудования или предмета.
+	MaxArmor             float64 `json:"MaxArmor"`             // Максимальная прочность установленного оборудования.
+	ConsumingPower       float64 `json:"ConsumingPower"`       // Потребление энергии включенным оборудованием.
+	GeneratingPower      float64 `json:"GeneratingPower"`      // Генерация энергии включенным оборудованием.
+	AmmoItemModelID      int64   `json:"AmmoItemModelID"`      // Модель боеприпаса для оружия.
+	FiringRate           float64 `json:"FiringRate"`           // Количество выстрелов в секунду.
+	MagazineCapacity     int64   `json:"MagazineCapacity"`     // Вместимость магазина оружия.
+	RechargeTime         float64 `json:"RechargeTime"`         // Время перезарядки в секундах.
+	Range                float64 `json:"Range"`                // Дальность действия оборудования.
+	Damage               float64 `json:"Damage"`               // Урон одного попадания или воздействия.
 	MiningSpeed          float64 `json:"MiningSpeed"`          // Скорость добычи ресурса в килограммах за секунду для одной установленной единицы.
-	ConsumingItemModelID int64   `json:"ConsumingItemModelID"` // РњРѕРґРµР»СЊ РїРѕС‚СЂРµР±Р»СЏРµРјРѕРіРѕ СЂРµСЃСѓСЂСЃР°.
-	ConsumingCount       float64 `json:"ConsumingCount"`       // Р Р°СЃС…РѕРґ СЂРµСЃСѓСЂСЃР° Р·Р° СЃРµРєСѓРЅРґСѓ.
-	MaxAlongForce        float64 `json:"MaxAlongForce"`        // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РїСЂРѕРґРѕР»СЊРЅР°СЏ СЃРёР»Р° РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	MaxAcrossForce       float64 `json:"MaxAcrossForce"`       // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РїРѕРїРµСЂРµС‡РЅР°СЏ СЃРёР»Р° РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	MaxTorque            float64 `json:"MaxTorque"`            // РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РєСЂСѓС‚СЏС‰РёР№ РјРѕРјРµРЅС‚ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	MaxEquipmentCount    int64   `json:"MaxEquipmentCount"`    // РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РµРґРёРЅРёС† РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РЅР° РѕР±СЉРµРєС‚Рµ.
-	ArmorRepairSpeed     float64 `json:"ArmorRepairSpeed"`     // РЎРєРѕСЂРѕСЃС‚СЊ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РїСЂРѕС‡РЅРѕСЃС‚Рё.
+	ConsumingItemModelID int64   `json:"ConsumingItemModelID"` // Модель потребляемого ресурса.
+	ConsumingCount       float64 `json:"ConsumingCount"`       // Расход ресурса за секунду.
+	MaxAlongForce        float64 `json:"MaxAlongForce"`        // Максимальная продольная сила оборудования.
+	MaxAcrossForce       float64 `json:"MaxAcrossForce"`       // Максимальная поперечная сила оборудования.
+	MaxTorque            float64 `json:"MaxTorque"`            // Максимальный крутящий момент оборудования.
+	MaxEquipmentCount    int64   `json:"MaxEquipmentCount"`    // Максимальное количество единиц оборудования на объекте.
+	ArmorRepairSpeed     float64 `json:"ArmorRepairSpeed"`     // Скорость восстановления прочности.
 	ProjectileSpeed      float64 `json:"ProjectileSpeed"`      // Скорость выпущенного боеприпаса в метрах за секунду.
-	Complexity           float64 `json:"Complexity"`           // РЎР»РѕР¶РЅРѕСЃС‚СЊ РёР·РіРѕС‚РѕРІР»РµРЅРёСЏ РёР»Рё РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ.
+	Complexity           float64 `json:"Complexity"`           // Сложность изготовления или обслуживания.
 	Efficiency           float64 `json:"Efficiency"`           // КПД оборудования при выполнении работы.
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 type ItemModels struct {
-	MaxID int64                `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РЅРѕРІС‹С… Р·Р°РїРёСЃРµР№.
-	Items map[int64]*ItemModel `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                `json:"MaxID"` // Последний выданный числовой идентификатор для новых записей.
+	Items map[int64]*ItemModel `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByAcronym map[string]*ItemModel `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+	ByAcronym map[string]*ItemModel `json:"-"` // Быстрый поиск записи по акрониму.
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func NewItemModels() *ItemModels {
 	models := &ItemModels{}
 	models.ensureMaps()
 	return models
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) Get(id int64) (*ItemModel, bool) {
 	models.ensureMaps()
 	model, ok := models.Items[id]
 	return model, ok
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) GetByAcronym(acronym string) (*ItemModel, bool) {
 	models.ensureMaps()
 	model, ok := models.ByAcronym[acronym]
 	return model, ok
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) RebuildIndexes() error {
 	models.ensureItems()
 	models.ByAcronym = make(map[string]*ItemModel)
@@ -99,7 +99,7 @@ func (models *ItemModels) RebuildIndexes() error {
 	return nil
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -118,13 +118,13 @@ func (models *ItemModels) LoadFromFile(path string) error {
 	return nil
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) SaveToFile(path string) error {
 	models.ensureMaps()
 	return saveTableWithOrderedItems(path, models.MaxID, models.Items)
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) ensureMaps() {
 	models.ensureItems()
 	if models.ByAcronym == nil {
@@ -132,14 +132,14 @@ func (models *ItemModels) ensureMaps() {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) ensureItems() {
 	if models.Items == nil {
 		models.Items = make(map[int64]*ItemModel)
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// Проверяет обязательные поля модели предмета.
 func (models *ItemModels) validateRequiredFields(model *ItemModel) error {
 	if model.Acronym == "" {
 		return errors.New("acronym is empty")

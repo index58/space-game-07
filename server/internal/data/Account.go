@@ -1,4 +1,4 @@
-﻿package data
+package data
 
 import (
 	"crypto/rand"
@@ -16,36 +16,36 @@ const (
 	accountPasswordSaltByteCount = 16
 )
 
-// РҐСЂР°РЅРёС‚ РґР°РЅРЅС‹Рµ РѕРґРЅРѕРіРѕ Р°РєРєР°СѓРЅС‚Р° РёРіСЂРѕРІРѕРіРѕ РјРёСЂР°.
+// Хранит данные одного аккаунта игрового мира.
 type Account struct {
-	ID                 int64     `json:"ID"`                 // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	Email              string    `json:"Email"`              // РђРґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹ РґР»СЏ РІС…РѕРґР° Рё РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РґРѕСЃС‚СѓРїР°.
-	Nickname           string    `json:"Nickname"`           // РћС‚РѕР±СЂР°Р¶Р°РµРјРѕРµ РёРјСЏ РёРіСЂРѕРєР° РІ РёРіСЂРѕРІРѕРј РјРёСЂРµ.
-	PasswordHash       string    `json:"PasswordHash"`       // РҐРµС€ РїР°СЂРѕР»СЏ Р±РµР· С…СЂР°РЅРµРЅРёСЏ РёСЃС…РѕРґРЅРѕРіРѕ СЃРµРєСЂРµС‚Р°.
-	Token              string    `json:"Token"`              // РЎРµРєСЂРµС‚ РґР»СЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕР№ Р°РІС‚РѕСЂРёР·Р°С†РёРё РєР»РёРµРЅС‚Р°.
-	RegistrationTime   time.Time `json:"RegistrationTime"`   // РњРѕРјРµРЅС‚ СЃРѕР·РґР°РЅРёСЏ СѓС‡РµС‚РЅРѕР№ Р·Р°РїРёСЃРё.
-	CurrentCharacterID int64     `json:"CurrentCharacterID"` // РђРєС‚РёРІРЅС‹Р№ РїРµСЂСЃРѕРЅР°Р¶, РєРѕС‚РѕСЂС‹Рј СЃРµР№С‡Р°СЃ РёРіСЂР°РµС‚ Р°РєРєР°СѓРЅС‚.
+	ID                 int64     `json:"ID"`                 // Уникальный числовой идентификатор записи.
+	Email              string    `json:"Email"`              // Адрес электронной почты для входа и восстановления доступа.
+	Nickname           string    `json:"Nickname"`           // Отображаемое имя игрока в игровом мире.
+	PasswordHash       string    `json:"PasswordHash"`       // Хеш пароля без хранения исходного секрета.
+	Token              string    `json:"Token"`              // Секрет для автоматической авторизации клиента.
+	RegistrationTime   time.Time `json:"RegistrationTime"`   // Момент создания учетной записи.
+	CurrentCharacterID int64     `json:"CurrentCharacterID"` // Активный персонаж, которым сейчас играет аккаунт.
 }
 
-// РҐСЂР°РЅРёС‚ Р°РєРєР°СѓРЅС‚С‹ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РґР»СЏ РїРѕРёСЃРєР° РїРѕ СѓРЅРёРєР°Р»СЊРЅС‹Рј РїРѕР»СЏРј.
+// Хранит аккаунты и быстрые индексы для поиска по уникальным полям.
 type Accounts struct {
-	MaxID int64              `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РЅРѕРІС‹С… Р·Р°РїРёСЃРµР№.
-	Items map[int64]*Account `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64              `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*Account `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByEmail              map[string]*Account `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РґСЂРµСЃСѓ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹.
-	ByNickname           map[string]*Account `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ РёРјРµРЅРё РёРіСЂРѕРєР°.
-	ByToken              map[string]*Account `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ СЃРµРєСЂРµС‚Сѓ Р°РІС‚РѕСЂРёР·Р°С†РёРё.
-	ByCurrentCharacterID map[int64]*Account  `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РєС‚РёРІРЅРѕРјСѓ РїРµСЂСЃРѕРЅР°Р¶Сѓ.
+	ByEmail              map[string]*Account `json:"-"` // Быстрый поиск записи по адресу электронной почты.
+	ByNickname           map[string]*Account `json:"-"` // Быстрый поиск записи по имени игрока.
+	ByToken              map[string]*Account `json:"-"` // Быстрый поиск записи по секрету авторизации.
+	ByCurrentCharacterID map[int64]*Account  `json:"-"` // Быстрый поиск записи по активному персонажу.
 }
 
-// РЎРѕР·РґР°С‘С‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р°РєРєР°СѓРЅС‚РѕРІ СЃ РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
+// Создаёт пустое хранилище аккаунтов с подготовленными индексами.
 func NewAccounts() *Accounts {
 	accounts := &Accounts{}
 	accounts.ensureMaps()
 	return accounts
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ Р°РєРєР°СѓРЅС‚, РЅР°Р·РЅР°С‡Р°РµС‚ РЅРѕРІС‹Р№ ID Рё РіРµРЅРµСЂРёСЂСѓРµС‚ СѓРЅРёРєР°Р»СЊРЅС‹Р№ С‚РѕРєРµРЅ.
+// Добавляет новый аккаунт, назначает новый ID и генерирует уникальный токен.
 func (accounts *Accounts) Add(account *Account) (*Account, error) {
 	if account == nil {
 		return nil, errors.New("account is nil")
@@ -75,14 +75,14 @@ func (accounts *Accounts) Add(account *Account) (*Account, error) {
 	return account, nil
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РєРєР°СѓРЅС‚ РїРѕ ID.
+// Возвращает аккаунт по ID.
 func (accounts *Accounts) Get(id int64) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.Items[id]
 	return account, ok
 }
 
-// РЈРґР°Р»СЏРµС‚ Р°РєРєР°СѓРЅС‚ Рё РІСЃРµ РµРіРѕ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Удаляет аккаунт и все его быстрые индексы.
 func (accounts *Accounts) Delete(id int64) bool {
 	accounts.ensureMaps()
 	account, ok := accounts.Items[id]
@@ -95,7 +95,7 @@ func (accounts *Accounts) Delete(id int64) bool {
 	return true
 }
 
-// РњРµРЅСЏРµС‚ e-mail Р°РєРєР°СѓРЅС‚Р° Рё РѕР±РЅРѕРІР»СЏРµС‚ РёРЅРґРµРєСЃ СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё.
+// Меняет e-mail аккаунта и обновляет индекс уникальности.
 func (accounts *Accounts) SetEmail(id int64, email string) error {
 	accounts.ensureMaps()
 	if email == "" {
@@ -116,7 +116,7 @@ func (accounts *Accounts) SetEmail(id int64, email string) error {
 	return nil
 }
 
-// РњРµРЅСЏРµС‚ РЅРёРєРЅРµР№Рј Р°РєРєР°СѓРЅС‚Р° Рё РѕР±РЅРѕРІР»СЏРµС‚ РёРЅРґРµРєСЃ СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё.
+// Меняет никнейм аккаунта и обновляет индекс уникальности.
 func (accounts *Accounts) SetNickname(id int64, nickname string) error {
 	accounts.ensureMaps()
 	if nickname == "" {
@@ -137,7 +137,7 @@ func (accounts *Accounts) SetNickname(id int64, nickname string) error {
 	return nil
 }
 
-// РҐРµС€РёСЂСѓРµС‚ РїР°СЂРѕР»СЊ Рё СЃРѕС…СЂР°РЅСЏРµС‚ С‚РѕР»СЊРєРѕ С…РµС€.
+// Хеширует пароль и сохраняет только хеш.
 func (accounts *Accounts) SetPassword(id int64, password string) error {
 	accounts.ensureMaps()
 	if password == "" {
@@ -157,7 +157,7 @@ func (accounts *Accounts) SetPassword(id int64, password string) error {
 	return nil
 }
 
-// РЎРѕР·РґР°С‘С‚ РЅРѕРІС‹Р№ СѓРЅРёРєР°Р»СЊРЅС‹Р№ С‚РѕРєРµРЅ Р°РєРєР°СѓРЅС‚Р° Рё РѕР±РЅРѕРІР»СЏРµС‚ РёРЅРґРµРєСЃ С‚РѕРєРµРЅРѕРІ.
+// Создаёт новый уникальный токен аккаунта и обновляет индекс токенов.
 func (accounts *Accounts) GenerateToken(id int64) (string, error) {
 	accounts.ensureMaps()
 	account, ok := accounts.Items[id]
@@ -176,7 +176,7 @@ func (accounts *Accounts) GenerateToken(id int64) (string, error) {
 	return token, nil
 }
 
-// РњРµРЅСЏРµС‚ Р°РєС‚РёРІРЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° Рё РїРѕРґРґРµСЂР¶РёРІР°РµС‚ РёРЅРґРµРєСЃ СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё.
+// Меняет активного персонажа и поддерживает индекс уникальности.
 func (accounts *Accounts) SetCurrentCharacter(id int64, characterID int64) error {
 	accounts.ensureMaps()
 
@@ -200,35 +200,35 @@ func (accounts *Accounts) SetCurrentCharacter(id int64, characterID int64) error
 	return nil
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РєРєР°СѓРЅС‚ РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ e-mail.
+// Возвращает аккаунт по уникальному e-mail.
 func (accounts *Accounts) GetByEmail(email string) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByEmail[email]
 	return account, ok
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РєРєР°СѓРЅС‚ РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ РЅРёРєРЅРµР№РјСѓ.
+// Возвращает аккаунт по уникальному никнейму.
 func (accounts *Accounts) GetByNickname(nickname string) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByNickname[nickname]
 	return account, ok
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РєРєР°СѓРЅС‚ РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ С‚РѕРєРµРЅСѓ.
+// Возвращает аккаунт по уникальному токену.
 func (accounts *Accounts) GetByToken(token string) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByToken[token]
 	return account, ok
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°РїРёСЃСЊ РїРѕ Р°РєС‚РёРІРЅРѕРјСѓ РїРµСЂСЃРѕРЅР°Р¶Сѓ.
+// Возвращает запись по активному персонажу.
 func (accounts *Accounts) GetByCurrentCharacterID(characterID int64) (*Account, bool) {
 	accounts.ensureMaps()
 	account, ok := accounts.ByCurrentCharacterID[characterID]
 	return account, ok
 }
 
-// РџРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РёР· JSON.
+// Пересобирает быстрые индексы после загрузки из JSON.
 func (accounts *Accounts) RebuildIndexes() error {
 	accounts.ensureItems()
 	accounts.ByEmail = make(map[string]*Account)
@@ -261,7 +261,7 @@ func (accounts *Accounts) RebuildIndexes() error {
 	return nil
 }
 
-// Р—Р°РіСЂСѓР¶Р°РµС‚ Р°РєРєР°СѓРЅС‚С‹ РёР· JSON-С„Р°Р№Р»Р° Рё РїРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Загружает аккаунты из JSON-файла и пересобирает быстрые индексы.
 func (accounts *Accounts) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -280,13 +280,13 @@ func (accounts *Accounts) LoadFromFile(path string) error {
 	return nil
 }
 
-// РЎРѕС…СЂР°РЅСЏРµС‚ Р°РєРєР°СѓРЅС‚С‹ РІ JSON-С„Р°Р№Р» Р±РµР· РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РёРЅРґРµРєСЃРѕРІ.
+// Сохраняет аккаунты в JSON-файл без вспомогательных индексов.
 func (accounts *Accounts) SaveToFile(path string) error {
 	accounts.ensureMaps()
 	return saveTableWithOrderedItems(path, accounts.MaxID, accounts.Items)
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё РІСЃРµ РёРЅРґРµРєСЃС‹.
+// Подготавливает основное хранилище и все индексы.
 func (accounts *Accounts) ensureMaps() {
 	accounts.ensureItems()
 	if accounts.ByEmail == nil {
@@ -303,14 +303,14 @@ func (accounts *Accounts) ensureMaps() {
 	}
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅСѓСЋ map Р°РєРєР°СѓРЅС‚РѕРІ.
+// Подготавливает основную map аккаунтов.
 func (accounts *Accounts) ensureItems() {
 	if accounts.Items == nil {
 		accounts.Items = make(map[int64]*Account)
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ Р°РєРєР°СѓРЅС‚Р°.
+// Проверяет обязательные поля аккаунта.
 func (accounts *Accounts) validateRequiredFields(account *Account) error {
 	if account.Email == "" {
 		return errors.New("email is empty")
@@ -324,7 +324,7 @@ func (accounts *Accounts) validateRequiredFields(account *Account) error {
 	return nil
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ СѓР¶Рµ СЃРѕС…СЂР°РЅС‘РЅРЅРѕРіРѕ Р°РєРєР°СѓРЅС‚Р°.
+// Проверяет обязательные поля уже сохранённого аккаунта.
 func (accounts *Accounts) validateStoredAccount(account *Account) error {
 	if err := accounts.validateRequiredFields(account); err != nil {
 		return err
@@ -335,7 +335,7 @@ func (accounts *Accounts) validateStoredAccount(account *Account) error {
 	return nil
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РїРѕР»СЏ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј РІ РёРЅРґРµРєСЃС‹.
+// Проверяет уникальные поля перед добавлением в индексы.
 func (accounts *Accounts) ensureUniqueForNewAccount(account *Account) error {
 	if existing, ok := accounts.ByEmail[account.Email]; ok && existing.ID != account.ID {
 		return fmt.Errorf("email %q already exists", account.Email)
@@ -356,7 +356,7 @@ func (accounts *Accounts) ensureUniqueForNewAccount(account *Account) error {
 	return nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ Р°РєРєР°СѓРЅС‚ РІРѕ РІСЃРµ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет аккаунт во все быстрые индексы.
 func (accounts *Accounts) addIndexes(account *Account) {
 	accounts.ByEmail[account.Email] = account
 	accounts.ByNickname[account.Nickname] = account
@@ -366,7 +366,7 @@ func (accounts *Accounts) addIndexes(account *Account) {
 	}
 }
 
-// РЈРґР°Р»СЏРµС‚ Р°РєРєР°СѓРЅС‚ РёР· РІСЃРµС… Р±С‹СЃС‚СЂС‹С… РёРЅРґРµРєСЃРѕРІ.
+// Удаляет аккаунт из всех быстрых индексов.
 func (accounts *Accounts) deleteIndexes(account *Account) {
 	delete(accounts.ByEmail, account.Email)
 	delete(accounts.ByNickname, account.Nickname)
@@ -376,7 +376,7 @@ func (accounts *Accounts) deleteIndexes(account *Account) {
 	}
 }
 
-// РЎРѕР·РґР°С‘С‚ РєСЂРёРїС‚РѕСЃС‚РѕР№РєРёР№ С‚РѕРєРµРЅ, РєРѕС‚РѕСЂРѕРіРѕ РµС‰С‘ РЅРµС‚ РІ РёРЅРґРµРєСЃРµ.
+// Создаёт криптостойкий токен, которого ещё нет в индексе.
 func (accounts *Accounts) generateUniqueToken() (string, error) {
 	for {
 		token, err := randomHex(accountTokenByteCount)
@@ -389,7 +389,7 @@ func (accounts *Accounts) generateUniqueToken() (string, error) {
 	}
 }
 
-// РЎРѕР·РґР°С‘С‚ salted SHA-256 С…РµС€ РїР°СЂРѕР»СЏ.
+// Создаёт salted SHA-256 хеш пароля.
 func hashAccountPassword(password string) (string, error) {
 	salt, err := randomHex(accountPasswordSaltByteCount)
 	if err != nil {
@@ -399,7 +399,7 @@ func hashAccountPassword(password string) (string, error) {
 	return "sha256$" + salt + "$" + hex.EncodeToString(sum[:]), nil
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РєСЂРёРїС‚РѕСЃС‚РѕР№РєСѓСЋ СЃР»СѓС‡Р°Р№РЅСѓСЋ СЃС‚СЂРѕРєСѓ РІ hex-РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРё.
+// Возвращает криптостойкую случайную строку в hex-представлении.
 func randomHex(byteCount int) (string, error) {
 	buffer := make([]byte, byteCount)
 	if _, err := rand.Read(buffer); err != nil {

@@ -9,7 +9,7 @@ import (
 	"space-game-07-server/internal/world"
 )
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕСЃР»Рµ РїРµСЂРµСЃР°РґРєРё СЃРЅРёРјРѕРє РґР»СЏ WebSocket-РєР»РёРµРЅС‚Р° СѓРєР°Р·С‹РІР°РµС‚ РЅРѕРІС‹Р№ СѓРїСЂР°РІР»СЏРµРјС‹Р№ РѕР±СЉРµРєС‚.
+// Проверяет, что после пересадки снимок для WebSocket-клиента указывает новый управляемый объект.
 func TestBroadcastUsesTransferredCharacterObject(t *testing.T) {
 	gameWorld := world.New(1, testHubWorldData(t))
 	initialObjectID, ok := gameWorld.ConnectAccount(1)
@@ -89,7 +89,7 @@ func TestInitialExchangeEventsQueuedForReconnect(t *testing.T) {
 	}
 }
 
-// РЎРѕР±РёСЂР°РµС‚ РјРёРЅРёРјР°Р»СЊРЅС‹Р№ РјРёСЂ СЃ РїРµСЂСЃРѕРЅР°Р¶РµРј Рё РґРІСѓРјСЏ РїСЂРёСЃС‚С‹РєРѕРІР°РЅРЅС‹РјРё РѕР±СЉРµРєС‚Р°РјРё РѕРґРЅРѕРіРѕ РІР»Р°РґРµР»СЊС†Р°.
+// Собирает минимальный мир с персонажем и двумя пристыкованными объектами одного владельца.
 func testHubWorldData(t *testing.T) world.Data {
 	t.Helper()
 
@@ -108,13 +108,13 @@ func testHubWorldData(t *testing.T) world.Data {
 	cosmicObjectTypes := &data.CosmicObjectTypes{
 		MaxID: 1,
 		Items: map[int64]*data.CosmicObjectType{
-			1: {ID: 1, TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "Ship"},
+			1: {ID: 1, TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship"},
 		},
 	}
 	cosmicObjectModels := &data.CosmicObjectModels{
 		MaxID: 1,
 		Items: map[int64]*data.CosmicObjectModel{
-			1: {ID: 1, TitleRu: "РљРѕСЂР°Р±Р»СЊ", TitleEn: "Ship", Acronym: "Ship", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 20, TextureBodyLength: 40},
+			1: {ID: 1, TitleRu: "Корабль", TitleEn: "Ship", Acronym: "Ship", CosmicObjectTypeID: 1, TextureScale: 4, TextureBodyWidth: 20, TextureBodyLength: 40},
 		},
 	}
 	cosmicObjects := &data.CosmicObjects{

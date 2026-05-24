@@ -1,4 +1,4 @@
-﻿package world
+package world
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ const (
 	defaultCharacterTextColor = "D8F3FF"
 )
 
-// ChatStateForAccount РІРѕР·РІСЂР°С‰Р°РµС‚ РІРєР»Р°РґРєРё С‡Р°С‚Р°, РґРѕСЃС‚СѓРїРЅС‹Рµ С‚РµРєСѓС‰РµРјСѓ РїРµСЂСЃРѕРЅР°Р¶Сѓ Р°РєРєР°СѓРЅС‚Р°.
+// ChatStateForAccount возвращает вкладки чата, доступные текущему персонажу аккаунта.
 func (world *World) ChatStateForAccount(accountID int64, selectedChatID int64) (game.ChatState, bool) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
@@ -30,19 +30,19 @@ func (world *World) ChatStateForAccount(accountID int64, selectedChatID int64) (
 	return world.chatStateLocked(account, character, selectedChatID), true
 }
 
-// SendChatMessage СЃРѕС…СЂР°РЅСЏРµС‚ СЃРѕРѕР±С‰РµРЅРёРµ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕР±РЅРѕРІР»РµРЅРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РґР»СЏ РѕС‚РїСЂР°РІРёС‚РµР»СЏ.
+// SendChatMessage сохраняет сообщение и возвращает обновленное состояние для отправителя.
 func (world *World) SendChatMessage(accountID int64, chatID int64, targetNickname string, text string) (game.ChatState, []int64, string) {
 	world.mu.Lock()
 	defer world.mu.Unlock()
 
 	account, character, ok := world.currentAccountCharacterLocked(accountID)
 	if !ok {
-		return game.ChatState{}, nil, "РђРєРєР°СѓРЅС‚ РЅРµ РїРѕРґРєР»СЋС‡РµРЅ Рє РїРµСЂСЃРѕРЅР°Р¶Сѓ"
+		return game.ChatState{}, nil, "Аккаунт не подключен к персонажу"
 	}
 
 	text = strings.TrimSpace(text)
 	if text == "" {
-		return world.chatStateLocked(account, character, chatID), nil, "РќРµР»СЊР·СЏ РѕС‚РїСЂР°РІРёС‚СЊ РїСѓСЃС‚РѕРµ СЃРѕРѕР±С‰РµРЅРёРµ"
+		return world.chatStateLocked(account, character, chatID), nil, "Нельзя отправить пустое сообщение"
 	}
 
 	var chat *data.Chat
@@ -50,11 +50,11 @@ func (world *World) SendChatMessage(accountID int64, chatID int64, targetNicknam
 	if targetNickname != "" {
 		targetAccount, ok := world.data.Accounts.GetByNickname(targetNickname)
 		if !ok || targetAccount.CurrentCharacterID <= 0 {
-			return world.chatStateLocked(account, character, chatID), nil, "РђРґСЂРµСЃР°С‚ РЅРµ РЅР°Р№РґРµРЅ"
+			return world.chatStateLocked(account, character, chatID), nil, "Адресат не найден"
 		}
 		targetCharacter, ok := world.data.Characters.Get(targetAccount.CurrentCharacterID)
 		if !ok {
-			return world.chatStateLocked(account, character, chatID), nil, "РђРґСЂРµСЃР°С‚ РЅРµ РЅР°Р№РґРµРЅ"
+			return world.chatStateLocked(account, character, chatID), nil, "Адресат не найден"
 		}
 		chat = world.ensureDuoChatLocked(character.ID, targetCharacter.ID)
 		recipients = world.connectedAccountsByCharacterIDsLocked([]int64{character.ID, targetCharacter.ID})
@@ -62,14 +62,14 @@ func (world *World) SendChatMessage(accountID int64, chatID int64, targetNicknam
 		var ok bool
 		chat, ok = world.data.Chats.Get(chatID)
 		if !ok || !world.characterCanReadChatLocked(character.ID, chat) {
-			return world.chatStateLocked(account, character, chatID), nil, "Р§Р°С‚ РЅРµРґРѕСЃС‚СѓРїРµРЅ"
+			return world.chatStateLocked(account, character, chatID), nil, "Чат недоступен"
 		}
 		recipients = world.connectedAccountsForChatLocked(chat)
 	}
 
 	messageType, ok := world.data.MessageTypes.GetByAcronym(messageTypeFromCharacter)
 	if !ok {
-		return world.chatStateLocked(account, character, chat.ID), nil, "РўРёРї СЃРѕРѕР±С‰РµРЅРёСЏ РЅРµ РЅР°Р№РґРµРЅ"
+		return world.chatStateLocked(account, character, chat.ID), nil, "Тип сообщения не найден"
 	}
 	if _, err := world.data.Messages.Add(&data.Message{
 		ChatID:            chat.ID,
@@ -85,7 +85,7 @@ func (world *World) SendChatMessage(accountID int64, chatID int64, targetNicknam
 	return world.chatStateLocked(account, character, chat.ID), recipients, ""
 }
 
-// ensureChatData РіРѕС‚РѕРІРёС‚ РјРёРЅРёРјР°Р»СЊРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё Рё СЃРµСЂРІРµСЂРЅС‹Р№ С‡Р°С‚ РґР»СЏ РїРµСЂРІРѕР№ РІРµСЂСЃРёРё.
+// ensureChatData готовит минимальные справочники и серверный чат для первой версии.
 func (world *World) ensureChatData() {
 	if world.data.Chats == nil {
 		world.data.Chats = data.NewChats()
@@ -109,11 +109,11 @@ func (world *World) ensureChatData() {
 		world.data.MessageTypes = data.NewMessageTypes()
 	}
 
-	serverType := world.ensureCommunityType(communityTypeServer, "РЎРµСЂРІРµСЂ", "Server")
-	duoType := world.ensureCommunityType(communityTypeDuo, "Р”СѓСЌС‚", "Duo")
-	world.ensureCommunityRole(serverType.ID, communityChatRoleMember, "РЈС‡Р°СЃС‚РЅРёРє", "Member")
-	world.ensureCommunityRole(duoType.ID, communityChatRoleMember, "РЈС‡Р°СЃС‚РЅРёРє", "Member")
-	world.ensureMessageType(messageTypeFromCharacter, "РћС‚ РїРµСЂСЃРѕРЅР°Р¶Р°", "From character")
+	serverType := world.ensureCommunityType(communityTypeServer, "Сервер", "Server")
+	duoType := world.ensureCommunityType(communityTypeDuo, "Дуэт", "Duo")
+	world.ensureCommunityRole(serverType.ID, communityChatRoleMember, "Участник", "Member")
+	world.ensureCommunityRole(duoType.ID, communityChatRoleMember, "Участник", "Member")
+	world.ensureMessageType(messageTypeFromCharacter, "От персонажа", "From character")
 	if _, ok := world.data.Chats.GetByCommunity(serverType.ID, 0); !ok {
 		_, _ = world.data.Chats.Add(&data.Chat{
 			CommunityTypeID: serverType.ID,
@@ -123,7 +123,7 @@ func (world *World) ensureChatData() {
 	}
 }
 
-// ensureCommunityType РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ С‚РёРї СЃРѕРѕР±С‰РµСЃС‚РІР° РёР»Рё РґРѕР±Р°РІР»СЏРµС‚ Р±Р°Р·РѕРІСѓСЋ Р·Р°РїРёСЃСЊ.
+// ensureCommunityType возвращает существующий тип сообщества или добавляет базовую запись.
 func (world *World) ensureCommunityType(acronym string, titleRu string, titleEn string) *data.CommunityType {
 	if communityType, ok := world.data.CommunityTypes.GetByAcronym(acronym); ok {
 		return communityType
@@ -139,7 +139,7 @@ func (world *World) ensureCommunityType(acronym string, titleRu string, titleEn 
 	return communityType
 }
 
-// ensureCommunityRole РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰СѓСЋ СЂРѕР»СЊ РёР»Рё РґРѕР±Р°РІР»СЏРµС‚ Р±Р°Р·РѕРІСѓСЋ СЂРѕР»СЊ СѓС‡Р°СЃС‚РЅРёРєР°.
+// ensureCommunityRole возвращает существующую роль или добавляет базовую роль участника.
 func (world *World) ensureCommunityRole(communityTypeID int64, acronym string, titleRu string, titleEn string) *data.CommunityChatRole {
 	if role, ok := world.data.CommunityChatRoles.GetByTypeAndAcronym(communityTypeID, acronym); ok {
 		return role
@@ -156,7 +156,7 @@ func (world *World) ensureCommunityRole(communityTypeID int64, acronym string, t
 	return role
 }
 
-// ensureMessageType РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ С‚РёРї СЃРѕРѕР±С‰РµРЅРёСЏ РёР»Рё РґРѕР±Р°РІР»СЏРµС‚ Р±Р°Р·РѕРІСѓСЋ Р·Р°РїРёСЃСЊ.
+// ensureMessageType возвращает существующий тип сообщения или добавляет базовую запись.
 func (world *World) ensureMessageType(acronym string, titleRu string, titleEn string) *data.MessageType {
 	if messageType, ok := world.data.MessageTypes.GetByAcronym(acronym); ok {
 		return messageType
@@ -172,7 +172,7 @@ func (world *World) ensureMessageType(acronym string, titleRu string, titleEn st
 	return messageType
 }
 
-// chatStateLocked СЃРѕР±РёСЂР°РµС‚ РєР»РёРµРЅС‚СЃРєРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ С‡Р°С‚РѕРІ РїРѕРґ РѕР±С‰РµР№ Р±Р»РѕРєРёСЂРѕРІРєРѕР№ РјРёСЂР°.
+// chatStateLocked собирает клиентское представление чатов под общей блокировкой мира.
 func (world *World) chatStateLocked(account *data.Account, character *data.Character, selectedChatID int64) game.ChatState {
 	tabs := world.chatTabsForCharacterLocked(account, character)
 	if len(tabs) == 0 {
@@ -190,7 +190,7 @@ func (world *World) chatStateLocked(account *data.Account, character *data.Chara
 	}
 }
 
-// chatTabsForCharacterLocked СЃРѕР±РёСЂР°РµС‚ СЃРµСЂРІРµСЂРЅСѓСЋ РІРєР»Р°РґРєСѓ Рё РѕС‚РєСЂС‹С‚С‹Рµ РґСѓСЌС‚С‹ РїРµСЂСЃРѕРЅР°Р¶Р°.
+// chatTabsForCharacterLocked собирает серверную вкладку и открытые дуэты персонажа.
 func (world *World) chatTabsForCharacterLocked(account *data.Account, character *data.Character) []game.ChatTab {
 	chats := make([]*data.Chat, 0)
 	if serverType, ok := world.data.CommunityTypes.GetByAcronym(communityTypeServer); ok {
@@ -219,7 +219,7 @@ func (world *World) chatTabsForCharacterLocked(account *data.Account, character 
 	return tabs
 }
 
-// chatTabLocked СЃС‚СЂРѕРёС‚ РѕРґРЅСѓ РІРєР»Р°РґРєСѓ СЃ РїРѕР»РЅРѕР№ РґРѕСЃС‚СѓРїРЅРѕР№ РёСЃС‚РѕСЂРёРµР№ СЃРѕРѕР±С‰РµРЅРёР№.
+// chatTabLocked строит одну вкладку с полной доступной историей сообщений.
 func (world *World) chatTabLocked(character *data.Character, chat *data.Chat) game.ChatTab {
 	communityType, _ := world.data.CommunityTypes.Get(chat.CommunityTypeID)
 	title := communityType.Acronym
@@ -238,7 +238,7 @@ func (world *World) chatTabLocked(character *data.Character, chat *data.Chat) ga
 	}
 }
 
-// markChatReadLocked СЃРѕС…СЂР°РЅСЏРµС‚, С‡С‚Рѕ РїРµСЂСЃРѕРЅР°Р¶ РІРёРґРµР» РїРѕСЃР»РµРґРЅСЋСЋ СЃС‚СЂРѕРєСѓ РІС‹Р±СЂР°РЅРЅРѕРіРѕ С‡Р°С‚Р°.
+// markChatReadLocked сохраняет, что персонаж видел последнюю строку выбранного чата.
 func (world *World) markChatReadLocked(characterID int64, chatID int64) {
 	if world.data.MessageReads == nil {
 		return
@@ -251,7 +251,7 @@ func (world *World) markChatReadLocked(characterID int64, chatID int64) {
 	_, _ = world.data.MessageReads.SetLastRead(characterID, chatID, lastMessageID)
 }
 
-// unreadMessageCountLocked СЃС‡РёС‚Р°РµС‚ СЃС‚СЂРѕРєРё РїРѕСЃР»Рµ СЃРѕС…СЂР°РЅРµРЅРЅРѕР№ РїРѕР·РёС†РёРё С‡С‚РµРЅРёСЏ.
+// unreadMessageCountLocked считает строки после сохраненной позиции чтения.
 func (world *World) unreadMessageCountLocked(characterID int64, chatID int64, messages []*data.Message) int64 {
 	if world.data.MessageReads == nil {
 		return 0
@@ -269,7 +269,7 @@ func (world *World) unreadMessageCountLocked(characterID int64, chatID int64, me
 	return count
 }
 
-// chatMessagesLocked РїРµСЂРµРІРѕРґРёС‚ СЃРµСЂРІРµСЂРЅС‹Рµ Р·Р°РїРёСЃРё РІ СЃРµС‚РµРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ.
+// chatMessagesLocked переводит серверные записи в сетевое представление.
 func (world *World) chatMessagesLocked(messages []*data.Message) []game.ChatMessage {
 	result := make([]game.ChatMessage, 0, len(messages))
 	for _, message := range messages {
@@ -291,7 +291,7 @@ func (world *World) chatMessagesLocked(messages []*data.Message) []game.ChatMess
 	return result
 }
 
-// currentAccountCharacterLocked РІРѕР·РІСЂР°С‰Р°РµС‚ Р°РєРєР°СѓРЅС‚ Рё С‚РµРєСѓС‰РµРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РїРѕРґ РѕР±С‰РµР№ Р±Р»РѕРєРёСЂРѕРІРєРѕР№ РјРёСЂР°.
+// currentAccountCharacterLocked возвращает аккаунт и текущего персонажа под общей блокировкой мира.
 func (world *World) currentAccountCharacterLocked(accountID int64) (*data.Account, *data.Character, bool) {
 	if _, ok := world.accountObjectIDs[accountID]; !ok {
 		return nil, nil, false
@@ -307,7 +307,7 @@ func (world *World) currentAccountCharacterLocked(accountID int64) (*data.Accoun
 	return account, character, true
 }
 
-// ensureDuoChatLocked РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ РґСѓСЌС‚ РёР»Рё СЃРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ СЃ РґРІСѓРјСЏ СѓС‡Р°СЃС‚РЅРёРєР°РјРё.
+// ensureDuoChatLocked возвращает существующий дуэт или создает новый с двумя участниками.
 func (world *World) ensureDuoChatLocked(firstCharacterID int64, secondCharacterID int64) *data.Chat {
 	duoType, _ := world.data.CommunityTypes.GetByAcronym(communityTypeDuo)
 	key := duoChatKey(firstCharacterID, secondCharacterID)
@@ -331,7 +331,7 @@ func (world *World) ensureDuoChatLocked(firstCharacterID int64, secondCharacterI
 	return chat
 }
 
-// characterCanReadChatLocked РїСЂРѕРІРµСЂСЏРµС‚ РґРѕСЃС‚СѓРї РїРµСЂСЃРѕРЅР°Р¶Р° Рє СѓРєР°Р·Р°РЅРЅРѕРјСѓ С‡Р°С‚Сѓ.
+// characterCanReadChatLocked проверяет доступ персонажа к указанному чату.
 func (world *World) characterCanReadChatLocked(characterID int64, chat *data.Chat) bool {
 	communityType, ok := world.data.CommunityTypes.Get(chat.CommunityTypeID)
 	if !ok {
@@ -346,7 +346,7 @@ func (world *World) characterCanReadChatLocked(characterID int64, chat *data.Cha
 	return false
 }
 
-// connectedAccountsForChatLocked РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕРґРєР»СЋС‡РµРЅРЅС‹С… РїРѕР»СѓС‡Р°С‚РµР»РµР№ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‡Р°С‚Р°.
+// connectedAccountsForChatLocked возвращает подключенных получателей указанного чата.
 func (world *World) connectedAccountsForChatLocked(chat *data.Chat) []int64 {
 	communityType, ok := world.data.CommunityTypes.Get(chat.CommunityTypeID)
 	if !ok {
@@ -370,7 +370,7 @@ func (world *World) connectedAccountsForChatLocked(chat *data.Chat) []int64 {
 	return world.connectedAccountsByCharacterIDsLocked(characterIDs)
 }
 
-// connectedAccountsByCharacterIDsLocked РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕРґРєР»СЋС‡РµРЅРЅС‹Рµ Р°РєРєР°СѓРЅС‚С‹ СѓРєР°Р·Р°РЅРЅС‹С… РїРµСЂСЃРѕРЅР°Р¶РµР№.
+// connectedAccountsByCharacterIDsLocked возвращает подключенные аккаунты указанных персонажей.
 func (world *World) connectedAccountsByCharacterIDsLocked(characterIDs []int64) []int64 {
 	characterSet := map[int64]bool{}
 	for _, characterID := range characterIDs {
@@ -389,7 +389,7 @@ func (world *World) connectedAccountsByCharacterIDsLocked(characterIDs []int64) 
 	return accountIDs
 }
 
-// duoPeerNicknameLocked РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРёРє РІС‚РѕСЂРѕРіРѕ СѓС‡Р°СЃС‚РЅРёРєР° Р»РёС‡РЅРѕРіРѕ С‡Р°С‚Р°.
+// duoPeerNicknameLocked возвращает ник второго участника личного чата.
 func (world *World) duoPeerNicknameLocked(characterID int64, chat *data.Chat) string {
 	for _, member := range world.data.ChatMembers.GetByChatID(chat.ID) {
 		if member.MemberCharacterID != characterID {
@@ -399,7 +399,7 @@ func (world *World) duoPeerNicknameLocked(characterID int64, chat *data.Chat) st
 	return ""
 }
 
-// nicknameByCharacterIDLocked РІСЂРµРјРµРЅРЅРѕ Р±РµСЂРµС‚ РѕС‚РѕР±СЂР°Р¶Р°РµРјРѕРµ РёРјСЏ РёР· Р°РєРєР°СѓРЅС‚Р° РїРµСЂСЃРѕРЅР°Р¶Р°.
+// nicknameByCharacterIDLocked временно берет отображаемое имя из аккаунта персонажа.
 func (world *World) nicknameByCharacterIDLocked(characterID int64) string {
 	account, ok := world.data.Accounts.GetByCurrentCharacterID(characterID)
 	if !ok {

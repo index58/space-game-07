@@ -923,7 +923,7 @@ describe("GameUi", () => {
       selectedControlPanelEquipmentGroupId: 11,
       controlPanelEquipmentEnabledDrafts: { 11: true },
       controlPanelEquipmentEnabledCountDrafts: { 11: 1 },
-      controlPanelEquipmentTitleText: "Р“РµРЅРµСЂР°С‚РѕСЂ",
+      controlPanelEquipmentTitleText: "Генератор",
       controlPanelEquipmentTitleSelectionStart: 9,
       controlPanelEquipmentTitleSelectionEnd: 9,
       controlPanelEquipmentTitleFocused: false,
@@ -948,7 +948,7 @@ describe("GameUi", () => {
     expect(root.querySelector<HTMLElement>("#control-panel-equipment-enabled-slider .ui-kit-slider__fill")?.style.width).toBe("50%");
     expect(root.querySelector("#control-panel-equipment-enabled-slider .ui-kit-slider__label")?.textContent).toBe("1 / 2");
     expect(root.querySelector("#control-panel-equipment-title-input")?.classList.contains("ui-kit-text-input")).toBe(true);
-    expect(root.querySelector("#control-panel-equipment-title-input .ui-kit-text-input__text")?.textContent).toBe("Р“РµРЅРµСЂР°С‚РѕСЂ");
+    expect(root.querySelector("#control-panel-equipment-title-input .ui-kit-text-input__text")?.textContent).toBe("Генератор");
     expect(root.querySelector("#control-panel-equipment-usage-button")?.textContent).toBe("Использовать");
     expect(root.querySelector("#control-panel-equipment-usage-button")?.classList.contains("is-disabled")).toBe(true);
     expect(root.querySelector(".control-panel-equipment-action #control-panel-equipment-usage-button")?.textContent).toBe("Использовать");

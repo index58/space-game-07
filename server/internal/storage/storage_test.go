@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕСЃРЅРѕРІРЅРѕР№ Р·Р°РіСЂСѓР·С‡РёРє С‡РёС‚Р°РµС‚ Р°РєРєР°СѓРЅС‚С‹ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё СЃС‚СЂРѕРёС‚ РїРѕРёСЃРє РїРѕ РїРѕС‡С‚Рµ.
+// Проверяет, что основной загрузчик читает аккаунты из стандартного файла и строит поиск по почте.
 func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -61,7 +61,7 @@ func TestLoadServerDataLoadsAccountsFromDefaultFile(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕС‚СЃСѓС‚СЃС‚РІРёРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРіРѕ С„Р°Р№Р»Р° Р°РєРєР°СѓРЅС‚РѕРІ СЃС‡РёС‚Р°РµС‚СЃСЏ РѕС€РёР±РєРѕР№ Р·Р°РіСЂСѓР·РєРё.
+// Проверяет, что отсутствие обязательного файла аккаунтов считается ошибкой загрузки.
 func TestLoadServerDataReturnsErrorWhenAccountsFileIsMissing(t *testing.T) {
 	_, err := LoadServerData(t.TempDir())
 	if err == nil {
@@ -69,7 +69,7 @@ func TestLoadServerDataReturnsErrorWhenAccountsFileIsMissing(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРµСЂСЃРѕРЅР°Р¶Рё С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё РґРѕСЃС‚СѓРїРЅС‹ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+// Проверяет, что персонажи читаются из стандартного файла и доступны по числовому идентификатору.
 func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -125,7 +125,7 @@ func TestLoadServerDataLoadsCharactersFromDefaultFile(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ С‚РёРїС‹ РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё РёРЅРґРµРєСЃРёСЂСѓСЋС‚СЃСЏ РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+// Проверяет, что типы космических объектов читаются из стандартного файла и индексируются по акрониму.
 func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -153,7 +153,7 @@ func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
   "Items": {
     "1": {
       "ID": 1,
-      "TitleRu": "РљРѕСЂР°Р±Р»СЊ",
+      "TitleRu": "Корабль",
       "TitleEn": "Ship",
       "Acronym": "Ship",
       "CharacterLocatable": true,
@@ -175,12 +175,12 @@ func TestLoadServerDataLoadsCosmicObjectTypesFromDefaultFile(t *testing.T) {
 	if !ok {
 		t.Fatal("cosmic object type is not available by acronym")
 	}
-	if cosmicObjectType.TitleRu != "РљРѕСЂР°Р±Р»СЊ" {
-		t.Fatalf("cosmic object type TitleRu = %q, want РљРѕСЂР°Р±Р»СЊ", cosmicObjectType.TitleRu)
+	if cosmicObjectType.TitleRu != "Корабль" {
+		t.Fatalf("cosmic object type TitleRu = %q, want Корабль", cosmicObjectType.TitleRu)
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РєРѕСЃРјРёС‡РµСЃРєРёРµ РѕР±СЉРµРєС‚С‹ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° СЃ СЃРѕС…СЂР°РЅРµРЅРёРµРј РјРѕРґРµР»Рё.
+// Проверяет, что космические объекты читаются из стандартного файла с сохранением модели.
 func TestLoadServerDataLoadsCosmicObjectsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -260,7 +260,7 @@ func TestLoadServerDataLoadsCosmicObjectsFromDefaultFile(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ С‚РёРїС‹ РїСЂРµРґРјРµС‚РѕРІ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° Рё РёРЅРґРµРєСЃРёСЂСѓСЋС‚СЃСЏ РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
+// Проверяет, что типы предметов читаются из стандартного файла и индексируются по акрониму.
 func TestLoadServerDataLoadsitemTypesFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -288,7 +288,7 @@ func TestLoadServerDataLoadsitemTypesFromDefaultFile(t *testing.T) {
   "Items": {
     "1": {
       "ID": 1,
-      "TitleRu": "РћСЂСѓР¶РёРµ",
+      "TitleRu": "Оружие",
       "TitleEn": "Weapon",
       "Acronym": "Weapon",
       "IsEquipmentForShip": true,
@@ -311,12 +311,12 @@ func TestLoadServerDataLoadsitemTypesFromDefaultFile(t *testing.T) {
 	if !ok {
 		t.Fatal("itemType is not available by acronym")
 	}
-	if itemType.TitleRu != "РћСЂСѓР¶РёРµ" {
-		t.Fatalf("itemType TitleRu = %q, want РћСЂСѓР¶РёРµ", itemType.TitleRu)
+	if itemType.TitleRu != "Оружие" {
+		t.Fatalf("itemType TitleRu = %q, want Оружие", itemType.TitleRu)
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РјРѕРґРµР»Рё РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ С‡РёС‚Р°СЋС‚СЃСЏ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С„Р°Р№Р»Р° СЃ РІС‹С‡РёСЃР»РµРЅРЅС‹РјРё СЂР°Р·РјРµСЂР°РјРё С‚РµР»Р°.
+// Проверяет, что модели космических объектов читаются из стандартного файла с вычисленными размерами тела.
 func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -344,7 +344,7 @@ func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
   "Items": {
     "1": {
       "ID": 1,
-      "TitleRu": "РђСЃС‚РµСЂРѕРёРґ 1",
+      "TitleRu": "Астероид 1",
       "TitleEn": "Asteroid 1",
       "Acronym": "asteroid_0001",
       "IconFilePath": "",
@@ -386,7 +386,7 @@ func TestLoadServerDataLoadsCosmicObjectModelsFromDefaultFile(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЂРµР°Р»СЊРЅС‹Рµ С„Р°Р№Р»С‹ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РєР°Рє РµРґРёРЅС‹Р№ РЅР°Р±РѕСЂ СЃРµСЂРІРµСЂРЅС‹С… РґР°РЅРЅС‹С….
+// Проверяет, что реальные файлы репозитория загружаются как единый набор серверных данных.
 func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	serverData, err := LoadServerData(filepath.Join("..", ".."))
 	if err != nil {
@@ -413,7 +413,7 @@ func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёРµ С„Р°Р№Р»С‹ С‡Р°С‚-С‚Р°Р±Р»РёС† РґР°СЋС‚ РїСѓСЃС‚С‹Рµ С…СЂР°РЅРёР»РёС‰Р° РґР»СЏ РїРµСЂРІРѕР№ СЃРµСЂРІРµСЂРЅРѕР№ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё.
+// Проверяет, что отсутствующие файлы чат-таблиц дают пустые хранилища для первой серверной инициализации.
 func TestLoadServerDataCreatesEmptyChatTablesWhenFilesAreMissing(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")

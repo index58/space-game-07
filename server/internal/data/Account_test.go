@@ -1,4 +1,4 @@
-﻿package data
+package data
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРѕР±Р°РІР»РµРЅРёРµ Р°РєРєР°СѓРЅС‚Р° РЅР°Р·РЅР°С‡Р°РµС‚ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ, СЃРѕР·РґР°С‘С‚ С‚РѕРєРµРЅ Рё СЃС‚СЂРѕРёС‚ РІСЃРµ РїРѕРёСЃРєРѕРІС‹Рµ РёРЅРґРµРєСЃС‹.
+// Проверяет, что добавление аккаунта назначает идентификатор, создаёт токен и строит все поисковые индексы.
 func TestAccountsAddAssignsIDGeneratesTokenAndIndexesAccount(t *testing.T) {
 	accounts := NewAccounts()
 
@@ -52,7 +52,7 @@ func TestAccountsAddAssignsIDGeneratesTokenAndIndexesAccount(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕРІС‚РѕСЂСЏСЋС‰РёРµСЃСЏ РїРѕС‡С‚Р° Рё РЅРёРєРЅРµР№Рј РЅРµ РґРѕРїСѓСЃРєР°СЋС‚СЃСЏ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё Р°РєРєР°СѓРЅС‚Р°.
+// Проверяет, что повторяющиеся почта и никнейм не допускаются при добавлении аккаунта.
 func TestAccountsAddRejectsDuplicateEmailAndNickname(t *testing.T) {
 	accounts := NewAccounts()
 
@@ -69,7 +69,7 @@ func TestAccountsAddRejectsDuplicateEmailAndNickname(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РёР·РјРµРЅРµРЅРёРµ РїРѕС‡С‚С‹ Рё РЅРёРєРЅРµР№РјР° СѓРґР°Р»СЏРµС‚ СЃС‚Р°СЂС‹Рµ РёРЅРґРµРєСЃРЅС‹Рµ Р·Р°РїРёСЃРё Рё РґРѕР±Р°РІР»СЏРµС‚ РЅРѕРІС‹Рµ.
+// Проверяет, что изменение почты и никнейма удаляет старые индексные записи и добавляет новые.
 func TestAccountsSetEmailAndNicknameUpdateIndexes(t *testing.T) {
 	accounts := NewAccounts()
 	account, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"})
@@ -98,7 +98,7 @@ func TestAccountsSetEmailAndNicknameUpdateIndexes(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РЅРѕРІС‹Р№ РїР°СЂРѕР»СЊ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ РІРёРґРµ С…РµС€Р° СЃ РѕР¶РёРґР°РµРјС‹Рј РїСЂРµС„РёРєСЃРѕРј.
+// Проверяет, что новый пароль сохраняется только в виде хеша с ожидаемым префиксом.
 func TestAccountsSetPasswordHashesPassword(t *testing.T) {
 	accounts := NewAccounts()
 	account, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "old-hash"})
@@ -118,7 +118,7 @@ func TestAccountsSetPasswordHashesPassword(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРµСЂРµРІС‹РїСѓСЃРє С‚РѕРєРµРЅР° СѓРґР°Р»СЏРµС‚ СЃС‚Р°СЂС‹Р№ РёРЅРґРµРєСЃ Рё РґРѕР±Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№.
+// Проверяет, что перевыпуск токена удаляет старый индекс и добавляет новый.
 func TestAccountsGenerateTokenReplacesTokenIndex(t *testing.T) {
 	accounts := NewAccounts()
 	account, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"})
@@ -143,7 +143,7 @@ func TestAccountsGenerateTokenReplacesTokenIndex(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РІС‹Р±РѕСЂ С‚РµРєСѓС‰РµРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РІ Р°РєРєР°СѓРЅС‚Рµ Рё РґРѕСЃС‚СѓРїРµРЅ С‡РµСЂРµР· РѕС‚РґРµР»СЊРЅС‹Р№ РёРЅРґРµРєСЃ.
+// Проверяет, что выбор текущего персонажа сохраняется в аккаунте и доступен через отдельный индекс.
 func TestAccountsSetCurrentCharacterUpdatesIndex(t *testing.T) {
 	accounts := NewAccounts()
 	account, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"})
@@ -163,7 +163,7 @@ func TestAccountsSetCurrentCharacterUpdatesIndex(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СѓРґР°Р»РµРЅРёРµ Р°РєРєР°СѓРЅС‚Р° РѕС‡РёС‰Р°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё РІСЃРµ СѓРЅРёРєР°Р»СЊРЅС‹Рµ РёРЅРґРµРєСЃС‹.
+// Проверяет, что удаление аккаунта очищает основное хранилище и все уникальные индексы.
 func TestAccountsDeleteRemovesAccountAndIndexes(t *testing.T) {
 	accounts := NewAccounts()
 	account, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"})
@@ -189,7 +189,7 @@ func TestAccountsDeleteRemovesAccountAndIndexes(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Рµ Р°РєРєР°СѓРЅС‚С‹ Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РѕР±СЂР°С‚РЅРѕ СЃ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
+// Проверяет, что сохранённые аккаунты загружаются обратно с восстановленными индексами.
 func TestAccountsSaveLoadAndRebuildIndexes(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "accounts.json")
 	accounts := NewAccounts()
@@ -225,7 +225,7 @@ func TestAccountsSaveLoadAndRebuildIndexes(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ JSON-С„Р°Р№Р» СЃРѕС…СЂР°РЅСЏРµС‚ Р·Р°РїРёСЃРё РІ РїРѕСЂСЏРґРєРµ РІРѕР·СЂР°СЃС‚Р°РЅРёСЏ С‡РёСЃР»РѕРІС‹С… РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ.
+// Проверяет, что JSON-файл сохраняет записи в порядке возрастания числовых идентификаторов.
 func TestAccountsSaveToFileOrdersItemsByNumericID(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "accounts.json")
 	accounts := NewAccounts()
@@ -254,7 +254,7 @@ func TestAccountsSaveToFileOrdersItemsByNumericID(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ JSON-РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РёСЃРїРѕР»СЊР·СѓРµС‚ РёРјРµРЅР° РїРѕР»РµР№ РёР· Go-СЃС‚СЂСѓРєС‚СѓСЂ.
+// Проверяет, что JSON-представление использует имена полей из Go-структур.
 func TestAccountsJSONKeysMatchGoFieldNames(t *testing.T) {
 	accounts := NewAccounts()
 	if _, err := accounts.Add(&Account{Email: "pilot@example.com", Nickname: "Pilot", PasswordHash: "hash"}); err != nil {
@@ -285,7 +285,7 @@ func TestAccountsJSONKeysMatchGoFieldNames(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РёРЅРґРµРєСЃРѕРІ РѕС‚РєР»РѕРЅСЏРµС‚ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ Р°РєРєР°СѓРЅС‚ Р±РµР· С‚РѕРєРµРЅР°.
+// Проверяет, что восстановление индексов отклоняет сохранённый аккаунт без токена.
 func TestAccountsRebuildIndexesRejectsStoredAccountWithoutToken(t *testing.T) {
 	accounts := NewAccounts()
 	accounts.Items[1] = &Account{
@@ -300,7 +300,7 @@ func TestAccountsRebuildIndexesRejectsStoredAccountWithoutToken(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РёРЅРґРµРєСЃРѕРІ РѕС‚РєР»РѕРЅСЏРµС‚ РґРІР° Р°РєРєР°СѓРЅС‚Р° СЃ РѕРґРЅРёРј С‚РµРєСѓС‰РёРј РїРµСЂСЃРѕРЅР°Р¶РµРј.
+// Проверяет, что восстановление индексов отклоняет два аккаунта с одним текущим персонажем.
 func TestAccountsRebuildIndexesRejectsDuplicateCurrentCharacterID(t *testing.T) {
 	accounts := NewAccounts()
 	accounts.Items[1] = &Account{

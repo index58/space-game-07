@@ -9,26 +9,26 @@ import (
 	"space-game-07-server/internal/world"
 )
 
-// РҐСЂР°РЅРёС‚ РѕРґРЅРѕ WebSocket-РїРѕРґРєР»СЋС‡РµРЅРёРµ Рё СЃР»СѓР¶РµР±РЅС‹Рµ РєР°РЅР°Р»С‹ Р·Р°РїРёСЃРё.
+// Хранит одно WebSocket-подключение и служебные каналы записи.
 type Client struct {
-	connection        *websocket.Conn // РђРєС‚РёРІРЅРѕРµ СЃРµС‚РµРІРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ СЃ Р±СЂР°СѓР·РµСЂРѕРј.
-	accountID         int64           // РџРѕРґРєР»СЋС‡РµРЅРЅС‹Р№ Р°РєРєР°СѓРЅС‚, РєРѕС‚РѕСЂРѕРјСѓ РїСЂРёРЅР°РґР»РµР¶РёС‚ СЃРѕРµРґРёРЅРµРЅРёРµ.
-	objectID          int64           // РћР±СЉРµРєС‚ РјРёСЂР°, РєРѕС‚РѕСЂС‹Рј СѓРїСЂР°РІР»СЏРµС‚ РїРѕРґРєР»СЋС‡РµРЅРЅС‹Р№ Р°РєРєР°СѓРЅС‚.
-	selectedChatID    int64           // РџРѕСЃР»РµРґРЅСЏСЏ РІС‹Р±СЂР°РЅРЅР°СЏ РІРєР»Р°РґРєР° С‡Р°С‚Р° РІ СЌС‚РѕРј Р±СЂР°СѓР·РµСЂРµ.
-	mutationSessionID string          // РџРѕСЃР»РµРґРЅСЏСЏ СЃРµСЃСЃРёСЏ РєР»РёРµРЅС‚Р°, РѕС‚РїСЂР°РІР»СЏРІС€Р°СЏ РєРѕРјР°РЅРґС‹ РїР°РЅРµР»Рё.
-	send              chan []byte     // РћС‡РµСЂРµРґСЊ РёСЃС…РѕРґСЏС‰РёС… СЃРѕРѕР±С‰РµРЅРёР№ РґР»СЏ РѕС‚РґРµР»СЊРЅРѕР№ РіРѕСЂСѓС‚РёРЅС‹ Р·Р°РїРёСЃРё.
-	done              chan struct{}   // РЎРёРіРЅР°Р» Р·Р°РІРµСЂС€РµРЅРёСЏ С‡С‚РµРЅРёСЏ, Р·Р°РїРёСЃРё Рё РѕС‡РёСЃС‚РєРё СЃРѕРµРґРёРЅРµРЅРёСЏ.
-	closeOnce         sync.Once       // Р—Р°С‰РёС‚Р° РѕС‚ РїРѕРІС‚РѕСЂРЅРѕРіРѕ Р·Р°РєСЂС‹С‚РёСЏ СЃР»СѓР¶РµР±РЅРѕРіРѕ РєР°РЅР°Р»Р°.
+	connection        *websocket.Conn // Активное сетевое соединение с браузером.
+	accountID         int64           // Подключенный аккаунт, которому принадлежит соединение.
+	objectID          int64           // Объект мира, которым управляет подключенный аккаунт.
+	selectedChatID    int64           // Последняя выбранная вкладка чата в этом браузере.
+	mutationSessionID string          // Последняя сессия клиента, отправлявшая команды панели.
+	send              chan []byte     // Очередь исходящих сообщений для отдельной горутины записи.
+	done              chan struct{}   // Сигнал завершения чтения, записи и очистки соединения.
+	closeOnce         sync.Once       // Защита от повторного закрытия служебного канала.
 }
 
-// РљРѕРѕСЂРґРёРЅРёСЂСѓРµС‚ РІСЃРµ Р°РєС‚РёРІРЅС‹Рµ WebSocket-РєР»РёРµРЅС‚С‹ РІРѕРєСЂСѓРі РѕРґРЅРѕРіРѕ РёРіСЂРѕРІРѕРіРѕ РјРёСЂР°.
+// Координирует все активные WebSocket-клиенты вокруг одного игрового мира.
 type Hub struct {
-	mu      sync.Mutex           // Р—Р°С‰РёС‰Р°РµС‚ РЅР°Р±РѕСЂ Р°РєС‚РёРІРЅС‹С… РєР»РёРµРЅС‚РѕРІ.
-	world   *world.World         // РРіСЂРѕРІРѕР№ РјРёСЂ, РїРѕР»СѓС‡Р°СЋС‰РёР№ РІРІРѕРґ Рё РѕС‚РґР°СЋС‰РёР№ СЃРЅРёРјРєРё.
-	clients map[*Client]struct{} // РќР°Р±РѕСЂ С‚РµРєСѓС‰РёС… WebSocket-РїРѕРґРєР»СЋС‡РµРЅРёР№.
+	mu      sync.Mutex           // Защищает набор активных клиентов.
+	world   *world.World         // Игровой мир, получающий ввод и отдающий снимки.
+	clients map[*Client]struct{} // Набор текущих WebSocket-подключений.
 }
 
-// РЎРѕР·РґР°РµС‚ РїСѓСЃС‚РѕР№ РґРёСЃРїРµС‚С‡РµСЂ РїРѕРґРєР»СЋС‡РµРЅРёР№ РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РјРёСЂР°.
+// Создает пустой диспетчер подключений для указанного мира.
 func NewHub(gameWorld *world.World) *Hub {
 	return &Hub{
 		world:   gameWorld,
@@ -36,7 +36,7 @@ func NewHub(gameWorld *world.World) *Hub {
 	}
 }
 
-// Р РµРіРёСЃС‚СЂРёСЂСѓРµС‚ РЅРѕРІРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рё Р·Р°РїСѓСЃРєР°РµС‚ РѕС‚РґРµР»СЊРЅС‹Рµ С†РёРєР»С‹ С‡С‚РµРЅРёСЏ Рё Р·Р°РїРёСЃРё.
+// Регистрирует новое подключение и запускает отдельные циклы чтения и записи.
 func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initialMessages ...[]byte) {
 	objectID, ok := hub.world.ConnectAccount(accountID)
 	if !ok {
@@ -73,7 +73,7 @@ func (hub *Hub) AddConnection(connection *websocket.Conn, accountID int64, initi
 	go hub.writeLoop(client)
 }
 
-// РћС‚РїСЂР°РІР»СЏРµС‚ СЃРЅРёРјРѕРє РІСЃРµРј РєР»РёРµРЅС‚Р°Рј, РїРѕРґСЃС‚Р°РІР»СЏСЏ РєР°Р¶РґРѕРјСѓ РµРіРѕ СЃРѕР±СЃС‚РІРµРЅРЅС‹Р№ РѕР±СЉРµРєС‚.
+// Отправляет снимок всем клиентам, подставляя каждому его собственный объект.
 func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 	hub.mu.Lock()
 	clients := make([]struct {
@@ -115,7 +115,7 @@ func (hub *Hub) Broadcast(snapshot game.Snapshot) {
 	hub.sendExchangeEvents(hub.world.DrainExchangeEvents())
 }
 
-// РџСЂРёРЅРёРјР°РµС‚ РІРІРѕРґ РѕС‚ РєР»РёРµРЅС‚Р° Рё РїРµСЂРµРґР°РµС‚ РїРѕСЃР»РµРґРЅРёР№ РІР°Р»РёРґРЅС‹Р№ РїР°РєРµС‚ РІ РјРёСЂ.
+// Принимает ввод от клиента и передает последний валидный пакет в мир.
 func (hub *Hub) readLoop(client *Client) {
 	defer hub.removeClient(client)
 
@@ -224,7 +224,7 @@ func (hub *Hub) readLoop(client *Client) {
 	}
 }
 
-// handleDockingRequest Р·Р°РїСѓСЃРєР°РµС‚ РёСЃС…РѕРґСЏС‰РёР№ Р·Р°РїСЂРѕСЃ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёС‡РёРЅСѓ РѕС‚РєР°Р·Р° С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// handleDockingRequest запускает исходящий запрос или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleDockingRequest(client *Client) {
 	if err := hub.world.SendDockingRequest(client.accountID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -233,7 +233,7 @@ func (hub *Hub) handleDockingRequest(client *Client) {
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleDockingApprove РїСЂРёРЅРёРјР°РµС‚ РІС…РѕРґСЏС‰РёР№ Р·Р°РїСЂРѕСЃ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёС‡РёРЅСѓ РѕС‚РєР°Р·Р° С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// handleDockingApprove принимает входящий запрос или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleDockingApprove(client *Client) {
 	if err := hub.world.ApproveDockingRequest(client.accountID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -241,7 +241,7 @@ func (hub *Hub) handleDockingApprove(client *Client) {
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleDockingReject РѕС‚РєР»РѕРЅСЏРµС‚ РІС…РѕРґСЏС‰РёР№ Р·Р°РїСЂРѕСЃ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёС‡РёРЅСѓ РѕС‚РєР°Р·Р° С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// handleDockingReject отклоняет входящий запрос или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleDockingReject(client *Client) {
 	if err := hub.world.RejectDockingRequest(client.accountID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -250,7 +250,7 @@ func (hub *Hub) handleDockingReject(client *Client) {
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleDockingUndock РІС‹РІРѕРґРёС‚ РѕР±СЉРµРєС‚ РёР· РєР»Р°СЃС‚РµСЂР° РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёС‡РёРЅСѓ РѕС‚РєР°Р·Р° С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// handleDockingUndock выводит объект из кластера или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleDockingUndock(client *Client) {
 	if err := hub.world.UndockControlledObject(client.accountID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -259,7 +259,7 @@ func (hub *Hub) handleDockingUndock(client *Client) {
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleLandingBegin Р·Р°РїСѓСЃРєР°РµС‚ РїРµСЂРµСЃР°РґРєСѓ РїРµСЂСЃРѕРЅР°Р¶Р° РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёС‡РёРЅСѓ РѕС‚РєР°Р·Р° С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// handleLandingBegin запускает пересадку персонажа или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleLandingBegin(client *Client) {
 	if err := hub.world.BeginCharacterTransfer(client.accountID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -268,7 +268,7 @@ func (hub *Hub) handleLandingBegin(client *Client) {
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleLandingApprove РїСЂРёРЅРёРјР°РµС‚ РІС…РѕРґСЏС‰РёР№ Р·Р°РїСЂРѕСЃ РїРѕСЃР°РґРєРё РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёС‡РёРЅСѓ РѕС‚РєР°Р·Р° С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// handleLandingApprove принимает входящий запрос посадки или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleLandingApprove(client *Client) {
 	if err := hub.world.ApproveCharacterLanding(client.accountID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -277,7 +277,7 @@ func (hub *Hub) handleLandingApprove(client *Client) {
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleLandingReject РѕС‚РєР»РѕРЅСЏРµС‚ РІС…РѕРґСЏС‰РёР№ Р·Р°РїСЂРѕСЃ РїРѕСЃР°РґРєРё РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёС‡РёРЅСѓ РѕС‚РєР°Р·Р° С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// handleLandingReject отклоняет входящий запрос посадки или возвращает причину отказа текущему подключению.
 func (hub *Hub) handleLandingReject(client *Client) {
 	if err := hub.world.RejectCharacterLanding(client.accountID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -286,7 +286,7 @@ func (hub *Hub) handleLandingReject(client *Client) {
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleLandingRequest РѕС‚РїСЂР°РІР»СЏРµС‚ Р·Р°РїСЂРѕСЃ РїРѕСЃР°РґРєРё РІ РІС‹Р±СЂР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚ РЅР°Р·РЅР°С‡РµРЅРёСЏ.
+// handleLandingRequest отправляет запрос посадки в выбранный объект назначения.
 func (hub *Hub) handleLandingRequest(client *Client, message LandingRequestMessage) {
 	if err := hub.world.RequestCharacterLanding(client.accountID, message.TargetObjectID); err != nil {
 		hub.sendDockingError(client, err.Error())
@@ -295,7 +295,7 @@ func (hub *Hub) handleLandingRequest(client *Client, message LandingRequestMessa
 	hub.sendDockingEvents(hub.world.DrainDockingEvents())
 }
 
-// handleControlPanelObjectUpdate РїСЂРёРјРµРЅСЏРµС‚ РёР·РјРµРЅРµРЅРёРµ РѕР±СЉРµРєС‚Р° РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
+// handleControlPanelObjectUpdate применяет изменение объекта или возвращает отказ с номером мутации.
 func (hub *Hub) handleControlPanelObjectUpdate(client *Client, message ControlPanelObjectUpdateMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
 	err := hub.world.ApplyControlPanelObjectUpdate(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelObjectUpdate{
@@ -307,7 +307,7 @@ func (hub *Hub) handleControlPanelObjectUpdate(client *Client, message ControlPa
 	}
 }
 
-// handleControlPanelEquipmentUpdate РїСЂРёРјРµРЅСЏРµС‚ РёР·РјРµРЅРµРЅРёРµ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
+// handleControlPanelEquipmentUpdate применяет изменение оборудования или возвращает отказ с номером мутации.
 func (hub *Hub) handleControlPanelEquipmentUpdate(client *Client, message ControlPanelEquipmentUpdateMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
 	err := hub.world.ApplyControlPanelEquipmentUpdate(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelEquipmentUpdate{
@@ -321,8 +321,8 @@ func (hub *Hub) handleControlPanelEquipmentUpdate(client *Client, message Contro
 	}
 }
 
-// handleControlPanelContainerTransfer РїСЂРёРјРµРЅСЏРµС‚ РїРµСЂРµРЅРѕСЃ РјРµР¶РґСѓ РєРѕРЅС‚РµР№РЅРµСЂР°РјРё РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
-// handleControlPanelEquipmentGroupRelationUpdate РїСЂРёРјРµРЅСЏРµС‚ СЃРѕС…СЂР°РЅРµРЅРёРµ СЃРІСЏР·Рё РіСЂСѓРїРї РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
+// handleControlPanelContainerTransfer применяет перенос между контейнерами или возвращает отказ с номером мутации.
+// handleControlPanelEquipmentGroupRelationUpdate применяет сохранение связи групп оборудования или возвращает отказ с номером мутации.
 func (hub *Hub) handleControlPanelEquipmentGroupRelationUpdate(client *Client, message ControlPanelEquipmentGroupRelationUpdateMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
 	err := hub.world.ApplyControlPanelEquipmentGroupRelationUpdate(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelEquipmentGroupRelationUpdate{
@@ -350,8 +350,8 @@ func (hub *Hub) handleControlPanelContainerTransfer(client *Client, message Cont
 	}
 }
 
-// setClientMutationSession Р·Р°РїРѕРјРёРЅР°РµС‚ СЃРµСЃСЃРёСЋ РєРѕРјР°РЅРґ РїР°РЅРµР»Рё РїРѕРґ mutex РґРёСЃРїРµС‚С‡РµСЂР°.
-// handleControlPanelFuelTransfer РїСЂРёРјРµРЅСЏРµС‚ РїРµСЂРµРЅРѕСЃ С‚РѕРїР»РёРІР° РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
+// setClientMutationSession запоминает сессию команд панели под mutex диспетчера.
+// handleControlPanelFuelTransfer применяет перенос топлива или возвращает отказ с номером мутации.
 func (hub *Hub) handleControlPanelFuelTransfer(client *Client, message ControlPanelFuelTransferMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
 	err := hub.world.ApplyControlPanelFuelTransfer(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelFuelTransfer{
@@ -365,7 +365,7 @@ func (hub *Hub) handleControlPanelFuelTransfer(client *Client, message ControlPa
 	}
 }
 
-// handleControlPanelConstructorProduceItem РїСЂРёРјРµРЅСЏРµС‚ РёР·РіРѕС‚РѕРІР»РµРЅРёРµ РїСЂРµРґРјРµС‚Р° РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
+// handleControlPanelConstructorProduceItem применяет изготовление предмета или возвращает отказ с номером мутации.
 // handleControlPanelItemDeconstruction применяет запуск разбора предметов или возвращает отказ с номером мутации.
 func (hub *Hub) handleControlPanelItemDeconstruction(client *Client, message ControlPanelItemDeconstructionMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
@@ -396,7 +396,7 @@ func (hub *Hub) handleControlPanelConstructorProduceItem(client *Client, message
 	}
 }
 
-// handleControlPanelConstructorQueueCommand РїСЂРёРјРµРЅСЏРµС‚ РёР·РјРµРЅРµРЅРёРµ РѕС‡РµСЂРµРґРё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєР°Р· СЃ РЅРѕРјРµСЂРѕРј РјСѓС‚Р°С†РёРё.
+// handleControlPanelConstructorQueueCommand применяет изменение очереди конструктора или возвращает отказ с номером мутации.
 func (hub *Hub) handleControlPanelConstructorQueueCommand(client *Client, message ControlPanelConstructorQueueCommandMessage) {
 	hub.setClientMutationSession(client, message.ClientSessionID)
 	err := hub.world.ApplyControlPanelConstructorQueueCommand(client.accountID, message.ClientSessionID, message.MutationSeq, world.ControlPanelConstructorQueueCommand{
@@ -416,7 +416,7 @@ func (hub *Hub) setClientMutationSession(client *Client, sessionID string) {
 	client.mutationSessionID = sessionID
 }
 
-// sendControlPanelError РѕС‚РїСЂР°РІР»СЏРµС‚ РѕС‚РєР°Р· РєРѕРјР°РЅРґС‹ РїР°РЅРµР»Рё СѓРїСЂР°РІР»РµРЅРёСЏ С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// sendControlPanelError отправляет отказ команды панели управления текущему подключению.
 func (hub *Hub) sendControlPanelError(client *Client, sessionID string, mutationSeq int64, message string) {
 	payload, err := EncodeControlPanelErrorMessage(sessionID, mutationSeq, message)
 	if err != nil {
@@ -425,7 +425,7 @@ func (hub *Hub) sendControlPanelError(client *Client, sessionID string, mutation
 	hub.sendToClient(client, payload)
 }
 
-// sendDockingError РѕС‚РїСЂР°РІР»СЏРµС‚ РѕС‚РєР°Р· РєРѕРјР°РЅРґС‹ СЃС‚С‹РєРѕРІРєРё С‚РѕР»СЊРєРѕ С‚РµРєСѓС‰РµРјСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЋ.
+// sendDockingError отправляет отказ команды стыковки только текущему подключению.
 func (hub *Hub) sendDockingError(client *Client, message string) {
 	payload, err := EncodeDockingEventMessage(game.DockingEvent{
 		Type:    "dockingEvent",
@@ -464,7 +464,7 @@ func dockingErrorText(message string) string {
 	}
 }
 
-// handleInputSettingsRequest РІРѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РёРµ СЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё Р°РєРєР°СѓРЅС‚Р° Р±РµР· РёР·РјРµРЅРµРЅРёСЏ РјРёСЂР°.
+// handleInputSettingsRequest возвращает текущие сохраненные настройки аккаунта без изменения мира.
 func (hub *Hub) handleInputSettingsRequest(client *Client) {
 	payload, err := EncodeInputSettingsMessage(hub.world.AccountInputSettings(client.accountID))
 	if err != nil {
@@ -473,7 +473,7 @@ func (hub *Hub) handleInputSettingsRequest(client *Client) {
 	hub.sendToClient(client, payload)
 }
 
-// handleInputSettingsSave СЃРѕС…СЂР°РЅСЏРµС‚ РЅРѕРІС‹Рµ РїСЂРёРІСЏР·РєРё Рё РІРѕР·РІСЂР°С‰Р°РµС‚ Р°РєС‚СѓР°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ Р°РєРєР°СѓРЅС‚Р°.
+// handleInputSettingsSave сохраняет новые привязки и возвращает актуальное состояние аккаунта.
 func (hub *Hub) handleInputSettingsSave(client *Client, message InputSettingsSaveMessage) {
 	settings := make([]data.AccountActionInputSetting, 0, len(message.Settings))
 	for _, item := range message.Settings {
@@ -498,7 +498,7 @@ func (hub *Hub) handleInputSettingsSave(client *Client, message InputSettingsSav
 	hub.sendToAccount(client.accountID, payload)
 }
 
-// РћР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РѕС‚РїСЂР°РІРєСѓ С‚РµРєСЃС‚Р° Рё СЂР°СЃСЃС‹Р»Р°РµС‚ РѕР±РЅРѕРІР»РµРЅРёСЏ РІРєР»Р°РґРѕРє РІСЃРµРј РґРѕСЃС‚СѓРїРЅС‹Рј РїРѕР»СѓС‡Р°С‚РµР»СЏРј.
+// Обрабатывает отправку текста и рассылает обновления вкладок всем доступным получателям.
 func (hub *Hub) handleChatSend(client *Client, message ChatSendMessage) {
 	chatState, recipientIDs, chatError := hub.world.SendChatMessage(client.accountID, message.ChatID, message.TargetNickname, message.Text)
 	if chatError != "" {
@@ -535,7 +535,7 @@ func (hub *Hub) handleChatSend(client *Client, message ChatSendMessage) {
 	}
 }
 
-// РћР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РІС‹Р±РѕСЂ РІРєР»Р°РґРєРё Рё РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРѕСЃС‚РѕСЏРЅРёРµ СЃ РѕР±РЅРѕРІР»РµРЅРЅРѕР№ РїРѕР·РёС†РёРµР№ С‡С‚РµРЅРёСЏ.
+// Обрабатывает выбор вкладки и возвращает состояние с обновленной позицией чтения.
 func (hub *Hub) handleChatSelect(client *Client, message ChatSelectMessage) {
 	chatState, ok := hub.world.ChatStateForAccount(client.accountID, message.ChatID)
 	if !ok {
@@ -549,7 +549,7 @@ func (hub *Hub) handleChatSelect(client *Client, message ChatSelectMessage) {
 	hub.sendToClient(client, payload)
 }
 
-// РљР»Р°РґРµС‚ РїР°РєРµС‚ РІ РѕС‡РµСЂРµРґСЊ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РїРѕРґРєР»СЋС‡РµРЅРёСЏ.
+// Кладет пакет в очередь конкретного подключения.
 func (hub *Hub) sendToClient(client *Client, payload []byte) {
 	select {
 	case client.send <- payload:
@@ -559,7 +559,7 @@ func (hub *Hub) sendToClient(client *Client, payload []byte) {
 	}
 }
 
-// РљР»Р°РґРµС‚ РїР°РєРµС‚ РІРѕ РІСЃРµ СЃРѕРµРґРёРЅРµРЅРёСЏ СѓРєР°Р·Р°РЅРЅРѕР№ СѓС‡РµС‚РЅРѕР№ Р·Р°РїРёСЃРё.
+// Кладет пакет во все соединения указанной учетной записи.
 func (hub *Hub) sendToAccount(accountID int64, payload []byte) {
 	hub.mu.Lock()
 	clients := make([]*Client, 0)
@@ -575,7 +575,7 @@ func (hub *Hub) sendToAccount(accountID int64, payload []byte) {
 	}
 }
 
-// sendDockingEvents СЂР°СЃСЃС‹Р»Р°РµС‚ СЃРѕР±С‹С‚РёСЏ РёРіСЂРѕРєР°Рј, СѓРїСЂР°РІР»СЏСЋС‰РёРј СѓРєР°Р·Р°РЅРЅС‹РјРё РѕР±СЉРµРєС‚Р°РјРё.
+// sendDockingEvents рассылает события игрокам, управляющим указанными объектами.
 func (hub *Hub) sendDockingEvents(events []game.DockingEvent) {
 	if len(events) == 0 {
 		return
@@ -608,7 +608,7 @@ func (hub *Hub) sendDockingEvents(events []game.DockingEvent) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃРїРёСЃРѕРє РїРѕР»СѓС‡Р°С‚РµР»РµР№ СЃРѕРґРµСЂР¶РёС‚ СѓРєР°Р·Р°РЅРЅС‹Р№ Р°РєРєР°СѓРЅС‚.
+// Проверяет, что список получателей содержит указанный аккаунт.
 func containsAccountID(accountIDs []int64, accountID int64) bool {
 	for _, candidateID := range accountIDs {
 		if candidateID == accountID {
@@ -618,7 +618,7 @@ func containsAccountID(accountIDs []int64, accountID int64) bool {
 	return false
 }
 
-// containsObjectID РїСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ СЃРїРёСЃРѕРє РїРѕР»СѓС‡Р°С‚РµР»РµР№ СЃРѕРґРµСЂР¶РёС‚ СѓРєР°Р·Р°РЅРЅС‹Р№ РѕР±СЉРµРєС‚.
+// containsObjectID проверяет, что список получателей содержит указанный объект.
 func containsObjectID(objectIDs []int64, objectID int64) bool {
 	for _, candidateID := range objectIDs {
 		if candidateID == objectID {
@@ -628,7 +628,7 @@ func containsObjectID(objectIDs []int64, objectID int64) bool {
 	return false
 }
 
-// РџРёС€РµС‚ РёСЃС…РѕРґСЏС‰РёРµ СЃРЅРёРјРєРё РІ WebSocket, РїРѕРєР° РєР»РёРµРЅС‚ РЅРµ РѕС‚РєР»СЋС‡РёР»СЃСЏ.
+// Пишет исходящие снимки в WebSocket, пока клиент не отключился.
 func (hub *Hub) writeLoop(client *Client) {
 	defer hub.removeClient(client)
 
@@ -644,7 +644,7 @@ func (hub *Hub) writeLoop(client *Client) {
 	}
 }
 
-// РРґРµРјРїРѕС‚РµРЅС‚РЅРѕ Р·Р°РєСЂС‹РІР°РµС‚ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рё РѕС‡РёС‰Р°РµС‚ РїСЂРёРІСЏР·РєСѓ Р°РєРєР°СѓРЅС‚Р° РІ РјРёСЂРµ.
+// Идемпотентно закрывает подключение и очищает привязку аккаунта в мире.
 func (hub *Hub) removeClient(client *Client) {
 	hub.mu.Lock()
 	if _, ok := hub.clients[client]; !ok {

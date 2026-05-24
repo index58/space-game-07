@@ -2,10 +2,11 @@
   "name": "space-game-07",
   "private": true,
   "scripts": {
+    "check:text": "node scripts/check-text-encoding.mjs",
     "dev": "npm.cmd --prefix client run dev -- --port 5173 --strictPort",
-    "build": "npm.cmd --prefix client run build",
-    "test": "npm.cmd --prefix client test",
-    "server:test": "powershell -NoProfile -Command \"Set-Location server; go test ./...\"",
-    "server:build": "powershell -NoProfile -Command \"Set-Location server; go build ./app/space-game-server\""
+    "build": "npm.cmd run check:text && npm.cmd --prefix client run build",
+    "test": "npm.cmd run check:text && npm.cmd --prefix client test",
+    "server:test": "npm.cmd run check:text && powershell -NoProfile -Command \"Set-Location server; go test ./...\"",
+    "server:build": "npm.cmd run check:text && powershell -NoProfile -Command \"Set-Location server; go build ./app/space-game-server\""
   }
 }

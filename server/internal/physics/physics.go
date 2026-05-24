@@ -1,4 +1,4 @@
-﻿package physics
+package physics
 
 import (
 	"math"
@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	// Р—Р°С‰РёС‰Р°РµС‚ РІС‹С‡РёСЃР»РµРЅРёСЏ РѕС‚ РґСЂРѕР¶Р°РЅРёСЏ РѕРєРѕР»Рѕ РЅСѓР»СЏ РїСЂРё СЂР°Р±РѕС‚Рµ СЃ float64.
+	// Защищает вычисления от дрожания около нуля при работе с float64.
 	Epsilon = 0.000001
-	// Р—Р°РґР°РµС‚ РґРѕРїСѓСЃРє, РїСЂРё РєРѕС‚РѕСЂРѕРј РєРѕСЂР°Р±Р»СЊ СЃС‡РёС‚Р°РµС‚СЃСЏ РїРѕС‡С‚Рё РїРѕРІРµСЂРЅСѓС‚С‹Рј Рє С†РµР»Рё.
+	// Задает допуск, при котором корабль считается почти повернутым к цели.
 	angleEpsilon = 0.0001
-	// Р—Р°РґР°РµС‚ С‚РѕСЂРјРѕР¶РµРЅРёРµ РІСЂР°С‰РµРЅРёСЏ РґР»СЏ РєРѕСЂР°Р±Р»СЏ Р±РµР· РїРѕРґРєР»СЋС‡РµРЅРЅРѕРіРѕ РїРёР»РѕС‚Р°.
+	// Задает торможение вращения для корабля без подключенного пилота.
 	unpilotedShipAngularBrake = 1.0
 )
 
-// РџРµСЂРµРІРѕРґРёС‚ РїРёРєСЃРµР»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ С„РёР·РёС‡РµСЃРєРѕРіРѕ С‚РµР»Р° РјРѕРґРµР»Рё РІ РјРµС‚СЂС‹ РјРёСЂР°.
+// Переводит пиксельный размер физического тела модели в метры мира.
 func BodySizeMeters(model data.CosmicObjectModel) game.WorldVector {
 	return game.WorldVector{
 		X: float64(model.TextureBodyWidth) / model.TextureScale,
@@ -24,13 +24,13 @@ func BodySizeMeters(model data.CosmicObjectModel) game.WorldVector {
 	}
 }
 
-// РћС†РµРЅРёРІР°РµС‚ РјРѕРјРµРЅС‚ РёРЅРµСЂС†РёРё РєРѕСЂР°Р±Р»СЏ РєР°Рє РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРѕРіРѕ С‚РµР»Р°.
+// Оценивает момент инерции корабля как прямоугольного тела.
 func MomentOfInertia(cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
 	body := BodySizeMeters(model)
 	return cosmicObject.Mass * (body.X*body.X + body.Y*body.Y) / 16
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р»РѕРєР°Р»СЊРЅСѓСЋ РѕСЃСЊ "РІРїРµСЂРµРґ" РґР»СЏ С‚РµРєСѓС‰РµРіРѕ СѓРіР»Р° РєРѕСЂР°Р±Р»СЏ.
+// Возвращает локальную ось "вперед" для текущего угла корабля.
 func ForwardVector(rotation float64) game.WorldVector {
 	return game.WorldVector{
 		X: math.Sin(rotation),
@@ -38,7 +38,7 @@ func ForwardVector(rotation float64) game.WorldVector {
 	}
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р»РѕРєР°Р»СЊРЅСѓСЋ РѕСЃСЊ "РІРїСЂР°РІРѕ" РґР»СЏ С‚РµРєСѓС‰РµРіРѕ СѓРіР»Р° РєРѕСЂР°Р±Р»СЏ.
+// Возвращает локальную ось "вправо" для текущего угла корабля.
 func RightVector(rotation float64) game.WorldVector {
 	return game.WorldVector{
 		X: math.Cos(rotation),
@@ -46,7 +46,7 @@ func RightVector(rotation float64) game.WorldVector {
 	}
 }
 
-// РЈРјРµРЅСЊС€Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ Рє РЅСѓР»СЋ СЃ Р·Р°РґР°РЅРЅС‹Рј СѓСЃРєРѕСЂРµРЅРёРµРј Р±РµР· СЃРјРµРЅС‹ Р·РЅР°РєР°.
+// Уменьшает значение к нулю с заданным ускорением без смены знака.
 func brakeValue(value float64, acceleration float64, dtSeconds float64) float64 {
 	delta := acceleration * dtSeconds
 
@@ -57,7 +57,7 @@ func brakeValue(value float64, acceleration float64, dtSeconds float64) float64 
 	return value - math.Copysign(delta, value)
 }
 
-// РћРіСЂР°РЅРёС‡РёРІР°РµС‚ РґР»РёРЅСѓ РІРµРєС‚РѕСЂР° РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ СЃРєРѕСЂРѕСЃС‚СЊСЋ.
+// Ограничивает длину вектора максимальной скоростью.
 func clampVectorLength(x float64, y float64, maxLength float64) game.WorldVector {
 	length := math.Hypot(x, y)
 
@@ -70,7 +70,7 @@ func clampVectorLength(x float64, y float64, maxLength float64) game.WorldVector
 	return game.WorldVector{X: x * scale, Y: y * scale}
 }
 
-// РћРіСЂР°РЅРёС‡РёРІР°РµС‚ РјРѕРґСѓР»СЊ СЃРєР°Р»СЏСЂРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ Рё Р·Р°РЅСѓР»СЏРµС‚ РјРёРєСЂРѕРґСЂРѕР¶Р°РЅРёРµ.
+// Ограничивает модуль скалярного значения и зануляет микродрожание.
 func clampAbsoluteValue(value float64, maxAbsoluteValue float64) float64 {
 	if math.Abs(value) <= Epsilon {
 		return 0
@@ -79,7 +79,7 @@ func clampAbsoluteValue(value float64, maxAbsoluteValue float64) float64 {
 	return math.Copysign(math.Min(math.Abs(value), maxAbsoluteValue), value)
 }
 
-// РЈРјРµРЅСЊС€Р°РµС‚ Р»РёРЅРµР№РЅСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ РїРѕСЃС‚РѕСЏРЅРЅС‹Рј СѓСЃРєРѕСЂРµРЅРёРµРј Р±РµР· СЂР°Р·РІРѕСЂРѕС‚Р° РЅР°РїСЂР°РІР»РµРЅРёСЏ.
+// Уменьшает линейную скорость постоянным ускорением без разворота направления.
 func applyConstantBrake(cosmicObject data.CosmicObject, dtSeconds float64) data.CosmicObject {
 	speed := math.Hypot(cosmicObject.VelocityX, cosmicObject.VelocityY)
 	if speed <= Epsilon {
@@ -113,7 +113,7 @@ func applyConstantBrake(cosmicObject data.CosmicObject, dtSeconds float64) data.
 	return cosmicObject
 }
 
-// Р”РІРёРіР°РµС‚ Р·РЅР°С‡РµРЅРёРµ Рє С†РµР»Рё РЅРµ РґР°Р»СЊС€Рµ СЂР°Р·СЂРµС€РµРЅРЅРѕР№ РґРµР»СЊС‚С‹ Р·Р° С€Р°Рі.
+// Двигает значение к цели не дальше разрешенной дельты за шаг.
 func moveToward(value float64, target float64, maxDelta float64) float64 {
 	delta := target - value
 
@@ -124,17 +124,17 @@ func moveToward(value float64, target float64, maxDelta float64) float64 {
 	return value + math.Copysign(maxDelta, delta)
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРєР°Р»СЏСЂРЅСѓСЋ РїСЂРѕРµРєС†РёСЋ РІРµРєС‚РѕСЂР° РЅР° Р·Р°РґР°РЅРЅСѓСЋ РѕСЃСЊ.
+// Возвращает скалярную проекцию вектора на заданную ось.
 func projection(vector game.WorldVector, axis game.WorldVector) float64 {
 	return vector.X*axis.X + vector.Y*axis.Y
 }
 
-// РЎС‡РёС‚Р°РµС‚ РґРѕСЃС‚СѓРїРЅРѕРµ СѓРіР»РѕРІРѕРµ СѓСЃРєРѕСЂРµРЅРёРµ РѕС‚ РєСЂСѓС‚СЏС‰РµРіРѕ РјРѕРјРµРЅС‚Р° РѕР±СЉРµРєС‚Р°.
+// Считает доступное угловое ускорение от крутящего момента объекта.
 func angularAcceleration(cosmicObject data.CosmicObject, model data.CosmicObjectModel) float64 {
 	return cosmicObject.MaxTorque / MomentOfInertia(cosmicObject, model)
 }
 
-// Р’РµРґРµС‚ СѓРіРѕР» Рє С†РµР»РµРІРѕРјСѓ С‚Р°Рє, С‡С‚РѕР±С‹ СѓСЃРїРµС‚СЊ Р·Р°С‚РѕСЂРјРѕР·РёС‚СЊ Р±РµР· РїРµСЂРµР»РµС‚Р°.
+// Ведет угол к целевому так, чтобы успеть затормозить без перелета.
 func stepAngularVelocityToTarget(cosmicObject data.CosmicObject, model data.CosmicObjectModel, targetRotation float64, targetRotationSpeed float64, dtSeconds float64) (float64, float64) {
 	acceleration := angularAcceleration(cosmicObject, model)
 	angleError := targetRotation - cosmicObject.Rotation
@@ -170,7 +170,7 @@ func stepAngularVelocityToTarget(cosmicObject data.CosmicObject, model data.Cosm
 	remainingAngleError := targetRotation - rotation
 	crossedTarget := math.Copysign(1, remainingAngleError) != directionToTarget || remainingAngleError == 0
 
-	// РћР±РЅСѓР»СЏРµРј СѓРіР»РѕРІСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ Сѓ С†РµР»Рё С‚РѕР»СЊРєРѕ РєРѕРіРґР° С†РµР»РµРІРѕР№ СѓРіРѕР» СЃРµР№С‡Р°СЃ РЅРµ РґРІРёРіР°РµС‚СЃСЏ.
+	// Обнуляем угловую скорость у цели только когда целевой угол сейчас не двигается.
 	if isTargetRotationStopped && crossedTarget {
 		return targetRotation, 0
 	}
@@ -178,7 +178,7 @@ func stepAngularVelocityToTarget(cosmicObject data.CosmicObject, model data.Cosm
 	return rotation, angularVelocity
 }
 
-// РџСЂРёРјРµРЅСЏРµС‚ РІРІРѕРґ РїРёР»РѕС‚Р° Рє РѕР±СЉРµРєС‚Сѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РїРѕСЃР»Рµ РѕРґРЅРѕРіРѕ С„РёР·РёС‡РµСЃРєРѕРіРѕ С€Р°РіР°.
+// Применяет ввод пилота к объекту и возвращает новое состояние после одного физического шага.
 func StepShip(cosmicObject data.CosmicObject, model data.CosmicObjectModel, input game.ShipInput, dtSeconds float64) data.CosmicObject {
 	forward := ForwardVector(cosmicObject.Rotation)
 	right := RightVector(cosmicObject.Rotation)
@@ -244,7 +244,7 @@ func StepShip(cosmicObject data.CosmicObject, model data.CosmicObjectModel, inpu
 	return cosmicObject
 }
 
-// Р”РІРёРіР°РµС‚ СЃРІРѕР±РѕРґРЅРѕРµ С‚РµР»Рѕ Р±РµР· СѓРїСЂР°РІР»СЏСЋС‰РµР№ С‚СЏРіРё Рё Р°РІС‚РѕРїРёР»РѕС‚РЅРѕРіРѕ С‚РѕСЂРјРѕР¶РµРЅРёСЏ.
+// Двигает свободное тело без управляющей тяги и автопилотного торможения.
 func StepFreeBody(cosmicObject data.CosmicObject, dtSeconds float64) data.CosmicObject {
 	cosmicObject.X += cosmicObject.VelocityX * dtSeconds
 	cosmicObject.Y += cosmicObject.VelocityY * dtSeconds
@@ -256,14 +256,14 @@ func StepFreeBody(cosmicObject data.CosmicObject, dtSeconds float64) data.Cosmic
 	return cosmicObject
 }
 
-// Р”РІРёРіР°РµС‚ РєРѕСЂР°Р±Р»СЊ Р±РµР· РїРѕРґРєР»СЋС‡РµРЅРЅРѕРіРѕ РїРёР»РѕС‚Р° СЃ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рј СЃРѕРїСЂРѕС‚РёРІР»РµРЅРёРµРј.
+// Двигает корабль без подключенного пилота с дополнительным сопротивлением.
 func StepUnpilotedShip(cosmicObject data.CosmicObject, dtSeconds float64) data.CosmicObject {
 	cosmicObject = applyConstantBrake(cosmicObject, dtSeconds)
 	cosmicObject.AngularSpeed = brakeValue(cosmicObject.AngularSpeed, unpilotedShipAngularBrake, dtSeconds)
 	return StepFreeBody(cosmicObject, dtSeconds)
 }
 
-// РџРµСЂРµРІРѕРґРёС‚ РїР°СЂСѓ РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РєРЅРѕРїРѕРє РІ СЃРёР»Сѓ РїРѕ РѕРґРЅРѕР№ Р»РѕРєР°Р»СЊРЅРѕР№ РѕСЃРё.
+// Переводит пару противоположных кнопок в силу по одной локальной оси.
 func axisForce(positive bool, negative bool, maxForce float64) float64 {
 	if positive == negative {
 		return 0

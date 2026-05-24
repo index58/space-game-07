@@ -1,4 +1,4 @@
-﻿package data
+package data
 
 import (
 	"encoding/json"
@@ -9,31 +9,31 @@ import (
 	"time"
 )
 
-// РҐСЂР°РЅРёС‚ РґР°РЅРЅС‹Рµ РѕРґРЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РёРіСЂРѕРІРѕРіРѕ РјРёСЂР°.
+// Хранит данные одного персонажа игрового мира.
 type Character struct {
-	ID                     int64     `json:"ID"`                     // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	AccountID              int64     `json:"AccountID"`              // РЈС‡РµС‚РЅР°СЏ Р·Р°РїРёСЃСЊ, РєРѕС‚РѕСЂРѕР№ РїСЂРёРЅР°РґР»РµР¶РёС‚ РїРµСЂСЃРѕРЅР°Р¶.
-	CreationTime           time.Time `json:"CreationTime"`           // РњРѕРјРµРЅС‚ СЃРѕР·РґР°РЅРёСЏ РїРµСЂСЃРѕРЅР°Р¶Р°.
-	Balance                int64     `json:"Balance"`                // РљРѕР»РёС‡РµСЃС‚РІРѕ РґРµРЅРµР¶РЅС‹С… РµРґРёРЅРёС† РЅР° СЃС‡РµС‚Рµ РїРµСЂСЃРѕРЅР°Р¶Р°.
-	LocationCosmicObjectID int64     `json:"LocationCosmicObjectID"` // РљРѕСЃРјРёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚, РЅР° РєРѕС‚РѕСЂРѕРј РїРµСЂСЃРѕРЅР°Р¶ РЅР°С…РѕРґРёС‚СЃСЏ СЃРµР№С‡Р°СЃ.
+	ID                     int64     `json:"ID"`                     // Уникальный числовой идентификатор записи.
+	AccountID              int64     `json:"AccountID"`              // Учетная запись, которой принадлежит персонаж.
+	CreationTime           time.Time `json:"CreationTime"`           // Момент создания персонажа.
+	Balance                int64     `json:"Balance"`                // Количество денежных единиц на счете персонажа.
+	LocationCosmicObjectID int64     `json:"LocationCosmicObjectID"` // Космический объект, на котором персонаж находится сейчас.
 }
 
-// РҐСЂР°РЅРёС‚ РїРµСЂСЃРѕРЅР°Р¶РµР№ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РґР»СЏ РїРѕРёСЃРєР° РїРѕ СЃРІСЏР·Р°РЅРЅС‹Рј РѕР±СЉРµРєС‚Р°Рј.
+// Хранит персонажей и быстрые индексы для поиска по связанным объектам.
 type Characters struct {
-	MaxID int64                `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РЅРѕРІС‹С… Р·Р°РїРёСЃРµР№.
-	Items map[int64]*Character `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                `json:"MaxID"` // Последний выданный идентификатор для новых записей.
+	Items map[int64]*Character `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByAccountID map[int64]map[int64]*Character `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РІСЃРµС… РїРµСЂСЃРѕРЅР°Р¶РµР№ СѓРєР°Р·Р°РЅРЅРѕР№ СѓС‡РµС‚РЅРѕР№ Р·Р°РїРёСЃРё.
+	ByAccountID map[int64]map[int64]*Character `json:"-"` // Быстрый поиск всех персонажей указанной учетной записи.
 }
 
-// РЎРѕР·РґР°С‘С‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ РїРµСЂСЃРѕРЅР°Р¶РµР№ СЃ РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
+// Создаёт пустое хранилище персонажей с подготовленными индексами.
 func NewCharacters() *Characters {
 	characters := &Characters{}
 	characters.ensureMaps()
 	return characters
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РЅР°Р·РЅР°С‡Р°РµС‚ РЅРѕРІС‹Р№ ID Рё РІСЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ.
+// Добавляет нового персонажа, назначает новый ID и время создания.
 func (characters *Characters) Add(character *Character) (*Character, error) {
 	if character == nil {
 		return nil, errors.New("character is nil")
@@ -54,14 +54,14 @@ func (characters *Characters) Add(character *Character) (*Character, error) {
 	return character, nil
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРµСЂСЃРѕРЅР°Р¶Р° РїРѕ ID.
+// Возвращает персонажа по ID.
 func (characters *Characters) Get(id int64) (*Character, bool) {
 	characters.ensureMaps()
 	character, ok := characters.Items[id]
 	return character, ok
 }
 
-// РЈРґР°Р»СЏРµС‚ РїРµСЂСЃРѕРЅР°Р¶Р° Рё РІСЃРµ РµРіРѕ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Удаляет персонажа и все его быстрые индексы.
 func (characters *Characters) Delete(id int64) bool {
 	characters.ensureMaps()
 	character, ok := characters.Items[id]
@@ -74,7 +74,7 @@ func (characters *Characters) Delete(id int64) bool {
 	return true
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРµСЂСЃРѕРЅР°Р¶РµР№ СѓРєР°Р·Р°РЅРЅРѕРіРѕ Р°РєРєР°СѓРЅС‚Р° РІ РїРѕСЂСЏРґРєРµ РІРѕР·СЂР°СЃС‚Р°РЅРёСЏ ID.
+// Возвращает персонажей указанного аккаунта в порядке возрастания ID.
 func (characters *Characters) GetByAccountID(accountID int64) []*Character {
 	characters.ensureMaps()
 	indexItems := characters.ByAccountID[accountID]
@@ -97,7 +97,7 @@ func (characters *Characters) GetByAccountID(accountID int64) []*Character {
 	return result
 }
 
-// РџРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РёР· JSON.
+// Пересобирает быстрые индексы после загрузки из JSON.
 func (characters *Characters) RebuildIndexes() error {
 	characters.ensureItems()
 	characters.ByAccountID = make(map[int64]map[int64]*Character)
@@ -124,7 +124,7 @@ func (characters *Characters) RebuildIndexes() error {
 	return nil
 }
 
-// Р—Р°РіСЂСѓР¶Р°РµС‚ РїРµСЂСЃРѕРЅР°Р¶РµР№ РёР· JSON-С„Р°Р№Р»Р° Рё РїРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Загружает персонажей из JSON-файла и пересобирает быстрые индексы.
 func (characters *Characters) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -143,13 +143,13 @@ func (characters *Characters) LoadFromFile(path string) error {
 	return nil
 }
 
-// РЎРѕС…СЂР°РЅСЏРµС‚ РїРµСЂСЃРѕРЅР°Р¶РµР№ РІ JSON-С„Р°Р№Р» Р±РµР· РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РёРЅРґРµРєСЃРѕРІ.
+// Сохраняет персонажей в JSON-файл без вспомогательных индексов.
 func (characters *Characters) SaveToFile(path string) error {
 	characters.ensureMaps()
 	return saveTableWithOrderedItems(path, characters.MaxID, characters.Items)
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё РІСЃРµ РёРЅРґРµРєСЃС‹.
+// Подготавливает основное хранилище и все индексы.
 func (characters *Characters) ensureMaps() {
 	characters.ensureItems()
 	if characters.ByAccountID == nil {
@@ -157,14 +157,14 @@ func (characters *Characters) ensureMaps() {
 	}
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅСѓСЋ map РїРµСЂСЃРѕРЅР°Р¶РµР№.
+// Подготавливает основную map персонажей.
 func (characters *Characters) ensureItems() {
 	if characters.Items == nil {
 		characters.Items = make(map[int64]*Character)
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р°.
+// Проверяет обязательные поля персонажа.
 func (characters *Characters) validateRequiredFields(character *Character) error {
 	if character.AccountID <= 0 {
 		return errors.New("account ID is empty")
@@ -172,7 +172,7 @@ func (characters *Characters) validateRequiredFields(character *Character) error
 	return nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РїРµСЂСЃРѕРЅР°Р¶Р° РІРѕ РІСЃРµ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет персонажа во все быстрые индексы.
 func (characters *Characters) addIndexes(character *Character) {
 	if characters.ByAccountID[character.AccountID] == nil {
 		characters.ByAccountID[character.AccountID] = make(map[int64]*Character)
@@ -180,7 +180,7 @@ func (characters *Characters) addIndexes(character *Character) {
 	characters.ByAccountID[character.AccountID][character.ID] = character
 }
 
-// РЈРґР°Р»СЏРµС‚ РїРµСЂСЃРѕРЅР°Р¶Р° РёР· РІСЃРµС… Р±С‹СЃС‚СЂС‹С… РёРЅРґРµРєСЃРѕРІ.
+// Удаляет персонажа из всех быстрых индексов.
 func (characters *Characters) deleteIndexes(character *Character) {
 	accountCharacters := characters.ByAccountID[character.AccountID]
 	if accountCharacters == nil {

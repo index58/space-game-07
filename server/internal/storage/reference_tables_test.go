@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅС‹Рµ С‚Р°Р±Р»РёС†С‹ Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РёР· С„Р°Р№Р»РѕРІ РїСЂРё РёС… РЅР°Р»РёС‡РёРё.
+// Проверяет, что дополнительные справочные таблицы загружаются из файлов при их наличии.
 func TestLoadServerDataLoadsOptionalReferenceTablesWhenFilesExist(t *testing.T) {
 	workingDirectory := t.TempDir()
 	dataDirectory := filepath.Join(workingDirectory, "data")
@@ -25,7 +25,7 @@ func TestLoadServerDataLoadsOptionalReferenceTablesWhenFilesExist(t *testing.T) 
 		"ItemGroups.json":              `{"MaxID":1,"Items":{"1":{"ID":1,"ContainerEquipmentGroupID":1,"ContentItemModelID":2,"Count":3}}}`,
 		"Assemblies.json":              `{"MaxID":1,"Items":{"1":{"ID":1,"Title":"Default","CosmicObjectModelID":1,"IsPublic":true}}}`,
 		"AssemblyEquipmentGroups.json": `{"MaxID":1,"Items":{"1":{"ID":1,"AssemblyID":1,"Title":"Thrusters","EquipmentItemModelID":1,"Count":2}}}`,
-		"NpcClans.json":                `{"MaxID":1,"Items":{"1":{"ID":1,"TitleRu":"РљР»Р°РЅ","TitleEn":"Clan","Acronym":"Clan"}}}`,
+		"NpcClans.json":                `{"MaxID":1,"Items":{"1":{"ID":1,"TitleRu":"Клан","TitleEn":"Clan","Acronym":"Clan"}}}`,
 		"ItemModels.json":              `{"MaxID":1,"Items":{"1":{"ID":1,"Acronym":"MagicThruster"}}}`,
 		"Blueprints.json":              `{"MaxID":1,"Items":{"1":{"ID":1,"TitleEn":"Ship"}}}`,
 		"BlueprintComponents.json":     `{"MaxID":1,"Items":{"1":{"ID":1,"BlueprintID":1}}}`,

@@ -8,39 +8,39 @@ import (
 	"sort"
 )
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 type EquipmentGroup struct {
-	ID                          int64  `json:"ID"`                          // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
-	CosmicObjectID              int64  `json:"CosmicObjectID"`              // РљРѕСЃРјРёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚, РЅР° РєРѕС‚РѕСЂРѕРј СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµ.
-	Title                       string `json:"Title"`                       // РќР°Р·РІР°РЅРёРµ РіСЂСѓРїРїС‹ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	EquipmentItemModelID        int64  `json:"EquipmentItemModelID"`        // РњРѕРґРµР»СЊ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	Count                       int64  `json:"Count"`                       // РљРѕР»РёС‡РµСЃС‚РІРѕ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹С… РµРґРёРЅРёС† РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	EnabledCount                int64  `json:"EnabledCount"`                // РљРѕР»РёС‡РµСЃС‚РІРѕ РІРєР»СЋС‡РµРЅРЅС‹С… РµРґРёРЅРёС† РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	Enabled                     bool   `json:"Enabled"`                     // РџСЂРёР·РЅР°Рє РІРєР»СЋС‡РµРЅРёСЏ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
-	Active                      bool   `json:"Active"`                      // РџСЂРёР·РЅР°Рє РІС‹РїРѕР»РЅРµРЅРёСЏ СЂР°Р±РѕС‚С‹ РІРєР»СЋС‡РµРЅРЅС‹Рј РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµРј.
+	ID                          int64  `json:"ID"`                          // Уникальный числовой идентификатор записи.
+	CosmicObjectID              int64  `json:"CosmicObjectID"`              // Космический объект, на котором установлено оборудование.
+	Title                       string `json:"Title"`                       // Название группы установленного оборудования.
+	EquipmentItemModelID        int64  `json:"EquipmentItemModelID"`        // Модель установленного оборудования.
+	Count                       int64  `json:"Count"`                       // Количество установленных единиц оборудования.
+	EnabledCount                int64  `json:"EnabledCount"`                // Количество включенных единиц оборудования.
+	Enabled                     bool   `json:"Enabled"`                     // Признак включения группы оборудования.
+	Active                      bool   `json:"Active"`                      // Признак выполнения работы включенным оборудованием.
 	MagazineCount               int64  `json:"MagazineCount"`               // Количество боеприпасов, уже заряженных для ближайших выстрелов.
-	LastRechargeStartTime       int64  `json:"LastRechargeStartTime"`       // Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р° РїРѕСЃР»РµРґРЅРµР№ РїРµСЂРµР·Р°СЂСЏРґРєРё РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С… Unix.
+	LastRechargeStartTime       int64  `json:"LastRechargeStartTime"`       // Время начала последней перезарядки в миллисекундах Unix.
 	SourceEquipmentGroupID      int64  `json:"SourceEquipmentGroupID"`      // Источник материалов или груза для работы оборудования.
 	DestinationEquipmentGroupID int64  `json:"DestinationEquipmentGroupID"` // Приемник результата или груза после работы оборудования.
 	OppositeEquipmentGroupID    int64  `json:"OppositeEquipmentGroupID"`    // Противоположная группа оборудования в парном интерфейсе использования.
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 type EquipmentGroups struct {
-	MaxID int64                     `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРµР№.
-	Items map[int64]*EquipmentGroup `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
+	MaxID int64                     `json:"MaxID"` // Последний выданный числовой идентификатор записей.
+	Items map[int64]*EquipmentGroup `json:"Items"` // Основное хранилище записей по числовому идентификатору.
 
-	ByCosmicObjectID map[int64][]*EquipmentGroup `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РіСЂСѓРїРї РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РїРѕ РѕР±СЉРµРєС‚Сѓ.
+	ByCosmicObjectID map[int64][]*EquipmentGroup `json:"-"` // Быстрый поиск групп оборудования по объекту.
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func NewEquipmentGroups() *EquipmentGroups {
 	groups := &EquipmentGroups{}
 	groups.ensureMaps()
 	return groups
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) Add(group *EquipmentGroup) (*EquipmentGroup, error) {
 	if group == nil {
 		return nil, errors.New("equipment group is nil")
@@ -57,20 +57,20 @@ func (groups *EquipmentGroups) Add(group *EquipmentGroup) (*EquipmentGroup, erro
 	return group, nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) Get(id int64) (*EquipmentGroup, bool) {
 	groups.ensureMaps()
 	group, ok := groups.Items[id]
 	return group, ok
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) GetByCosmicObjectID(cosmicObjectID int64) []*EquipmentGroup {
 	groups.ensureMaps()
 	return groups.ByCosmicObjectID[cosmicObjectID]
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) DeleteByCosmicObjectID(cosmicObjectID int64) {
 	groups.ensureMaps()
 	for _, group := range groups.ByCosmicObjectID[cosmicObjectID] {
@@ -79,7 +79,7 @@ func (groups *EquipmentGroups) DeleteByCosmicObjectID(cosmicObjectID int64) {
 	delete(groups.ByCosmicObjectID, cosmicObjectID)
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) RebuildIndexes() error {
 	groups.ensureItems()
 	groups.ByCosmicObjectID = make(map[int64][]*EquipmentGroup)
@@ -114,7 +114,7 @@ func (groups *EquipmentGroups) RebuildIndexes() error {
 	return nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -133,13 +133,13 @@ func (groups *EquipmentGroups) LoadFromFile(path string) error {
 	return nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) SaveToFile(path string) error {
 	groups.ensureMaps()
 	return saveTableWithOrderedItems(path, groups.MaxID, groups.Items)
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) ensureMaps() {
 	groups.ensureItems()
 	if groups.ByCosmicObjectID == nil {
@@ -147,14 +147,14 @@ func (groups *EquipmentGroups) ensureMaps() {
 	}
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) ensureItems() {
 	if groups.Items == nil {
 		groups.Items = make(map[int64]*EquipmentGroup)
 	}
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) validateRequiredFields(group *EquipmentGroup) error {
 	if group.CosmicObjectID <= 0 {
 		return errors.New("cosmic object ID is empty")
@@ -174,7 +174,7 @@ func (groups *EquipmentGroups) validateRequiredFields(group *EquipmentGroup) err
 	return nil
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Добавляет группу оборудования в быстрые индексы.
 func (groups *EquipmentGroups) addIndexes(group *EquipmentGroup) {
 	groups.ByCosmicObjectID[group.CosmicObjectID] = append(groups.ByCosmicObjectID[group.CosmicObjectID], group)
 }

@@ -1,4 +1,4 @@
-﻿package ws
+package ws
 
 import (
 	"net/http/httptest"
@@ -8,7 +8,7 @@ import (
 	"space-game-07-server/internal/world"
 )
 
-// Р“РѕС‚РѕРІРёС‚ РёРЅРґРµРєСЃРёСЂРѕРІР°РЅРЅС‹Р№ РЅР°Р±РѕСЂ Р°РєРєР°СѓРЅС‚РѕРІ РґР»СЏ РїСЂРѕРІРµСЂРєРё Р°РІС‚РѕСЂРёР·Р°С†РёРё РѕР±СЂР°Р±РѕС‚С‡РёРєР°.
+// Готовит индексированный набор аккаунтов для проверки авторизации обработчика.
 func testAccounts(t *testing.T) *data.Accounts {
 	t.Helper()
 
@@ -24,7 +24,7 @@ func testAccounts(t *testing.T) *data.Accounts {
 	return accounts
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ Р·Р°РїСЂРѕСЃ СЃ РёР·РІРµСЃС‚РЅС‹Рј С‚РѕРєРµРЅРѕРј СЃРѕРїРѕСЃС‚Р°РІР»СЏРµС‚СЃСЏ СЃ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРј Р°РєРєР°СѓРЅС‚РѕРј.
+// Проверяет, что запрос с известным токеном сопоставляется с существующим аккаунтом.
 func TestHandlerFindsAccountByToken(t *testing.T) {
 	handler := NewHandler(nil, testAccounts(t))
 	request := httptest.NewRequest("GET", "/ws?token=token", nil)
@@ -35,7 +35,7 @@ func TestHandlerFindsAccountByToken(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РЅРµРёР·РІРµСЃС‚РЅС‹Р№ С‚РѕРєРµРЅ РѕС‚РєР»РѕРЅСЏРµС‚СЃСЏ Р±РµР· СЃРѕР·РґР°РЅРёСЏ Р°РєРєР°СѓРЅС‚Р° Рё РЅРѕРІРѕРіРѕ С‚РѕРєРµРЅР°.
+// Проверяет, что неизвестный токен отклоняется без создания аккаунта и нового токена.
 func TestHandlerRejectsUnknownToken(t *testing.T) {
 	handler := NewHandler(nil, testAccounts(t))
 	request := httptest.NewRequest("GET", "/ws?token=unknown", nil)
@@ -49,7 +49,7 @@ func TestHandlerRejectsUnknownToken(t *testing.T) {
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ Р·Р°РїСЂРѕСЃ Р±РµР· С‚РѕРєРµРЅР° СЃРѕР·РґР°С‘С‚ СЃС‚Р°СЂС‚РѕРІС‹Р№ Р°РєРєР°СѓРЅС‚, РїРµСЂСЃРѕРЅР°Р¶Р° Рё РєРѕСЂР°Р±Р»СЊ.
+// Проверяет, что запрос без токена создаёт стартовый аккаунт, персонажа и корабль.
 func TestHandlerCreatesStarterAccountWhenTokenIsMissing(t *testing.T) {
 	accounts := data.NewAccounts()
 	handler := NewHandler(NewHub(testWorld(t, accounts)), accounts)
@@ -89,7 +89,7 @@ func testWorld(t *testing.T, accounts *data.Accounts) *world.World {
 
 	models := data.NewCosmicObjectModels()
 	if _, err := models.Add(&data.CosmicObjectModel{
-		TitleRu:            "РЎС‚Р°СЂС‚РѕРІС‹Р№ РєРѕСЂР°Р±Р»СЊ",
+		TitleRu:            "Стартовый корабль",
 		TitleEn:            "Starter Ship",
 		Acronym:            "ship_bat",
 		TextureScale:       4,
