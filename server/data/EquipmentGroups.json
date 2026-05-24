@@ -1,5 +1,5 @@
 {
-  "MaxID": 3043,
+  "MaxID": 3044,
   "Items": {
     "603": {
       "ID": 603,
@@ -1420,7 +1420,7 @@
       "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "MagazineCount": 32,
+      "MagazineCount": 20,
       "LastRechargeStartTime": 0,
       "SourceEquipmentGroupID": 0,
       "DestinationEquipmentGroupID": 0,
@@ -1570,7 +1570,22 @@
       "EnabledCount": 4,
       "Enabled": true,
       "Active": false,
-      "MagazineCount": 80,
+      "MagazineCount": 48,
+      "LastRechargeStartTime": 0,
+      "SourceEquipmentGroupID": 0,
+      "DestinationEquipmentGroupID": 0,
+      "OppositeEquipmentGroupID": 0
+    },
+    "3044": {
+      "ID": 3044,
+      "CosmicObjectID": 11,
+      "Title": "LightPlasmaGun",
+      "EquipmentItemModelID": 26,
+      "Count": 4,
+      "EnabledCount": 4,
+      "Enabled": true,
+      "Active": false,
+      "MagazineCount": 28,
       "LastRechargeStartTime": 0,
       "SourceEquipmentGroupID": 0,
       "DestinationEquipmentGroupID": 0,

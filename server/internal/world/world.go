@@ -76,6 +76,7 @@ type activeProjectile struct {
 	Damage          float64           // Урон броне при попадании.
 	VelocityX       float64           // Горизонтальная часть скорости в метрах за секунду.
 	VelocityY       float64           // Вертикальная часть скорости в метрах за секунду.
+	AngularSpeed    float64           // Скорость вращения снаряда в радианах за секунду.
 	ProjectileSpeed float64           // Собственная скорость снаряда относительно выпустившего корабля.
 	RemainingRange  float64           // Оставшаяся дальность полета в метрах.
 }
@@ -2879,6 +2880,7 @@ func (world *World) spawnWeaponProjectilesLocked(source data.CosmicObject, param
 		velocityX := source.VelocityX + forward.X*parameters.ProjectileSpeed
 		velocityY := source.VelocityY + forward.Y*parameters.ProjectileSpeed
 		speed := math.Hypot(velocityX, velocityY)
+		angularSpeed := projectileModel.MaxAngularSpeed
 		cosmicObject := data.CosmicObject{
 			ID:                  projectileID,
 			Title:               projectileModel.Acronym,
@@ -2890,6 +2892,7 @@ func (world *World) spawnWeaponProjectilesLocked(source data.CosmicObject, param
 			Speed:               speed,
 			VelocityX:           velocityX,
 			VelocityY:           velocityY,
+			AngularSpeed:        angularSpeed,
 			Enabled:             true,
 		}
 		world.projectiles = append(world.projectiles, activeProjectile{
@@ -2899,6 +2902,7 @@ func (world *World) spawnWeaponProjectilesLocked(source data.CosmicObject, param
 			Damage:          parameters.Damage,
 			VelocityX:       velocityX,
 			VelocityY:       velocityY,
+			AngularSpeed:    angularSpeed,
 			ProjectileSpeed: parameters.ProjectileSpeed,
 			RemainingRange:  parameters.Range,
 		})
@@ -2945,9 +2949,12 @@ func (world *World) stepProjectilesLocked(dtSeconds float64) {
 
 		projectile.CosmicObject.X = endX
 		projectile.CosmicObject.Y = endY
+		projectile.CosmicObject.Rotation += projectile.AngularSpeed * moveSeconds
+		projectile.CosmicObject.TargetRotation = projectile.CosmicObject.Rotation
 		projectile.CosmicObject.Speed = speed
 		projectile.CosmicObject.VelocityX = projectile.VelocityX
 		projectile.CosmicObject.VelocityY = projectile.VelocityY
+		projectile.CosmicObject.AngularSpeed = projectile.AngularSpeed
 		projectile.RemainingRange -= moveDistance
 		if projectile.RemainingRange > physics.Epsilon {
 			remaining = append(remaining, projectile)

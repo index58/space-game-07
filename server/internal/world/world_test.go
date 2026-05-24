@@ -237,6 +237,60 @@ func addLaserWeaponTestData(t *testing.T, serverData *world.Data) {
 	}
 }
 
+// Добавляет тестовое плазменное оружие с летящим снарядом.
+func addPlasmaWeaponTestData(t *testing.T, serverData *world.Data) {
+	t.Helper()
+	serverData.ItemTypes.Items[1].IsPilotInstrument = true
+	serverData.CosmicObjectTypes.Items[7] = &data.CosmicObjectType{ID: 7, TitleRu: "Плазма", TitleEn: "Plasma", Acronym: "Plasma", Movable: true, Rotatable: true, IsProjectile: true}
+	serverData.CosmicObjectTypes.MaxID = 7
+	serverData.CosmicObjectModels.Items[903] = &data.CosmicObjectModel{
+		ID:                 903,
+		TitleRu:            "Плазменный снаряд",
+		TitleEn:            "Plasma Projectile",
+		Acronym:            "PlasmaProjectile",
+		TextureWidth:       18,
+		TextureHeight:      30,
+		TextureBodyOriginX: 9,
+		TextureBodyOriginY: 15,
+		TextureBodyWidth:   18,
+		TextureBodyLength:  30,
+		TextureScale:       1,
+		CosmicObjectTypeID: 7,
+		BodyLength:         30,
+		BodyWidth:          18,
+		MaxSpeed:           100,
+		MaxAngularSpeed:    8,
+		Damage:             90,
+	}
+	serverData.ItemModels.Items[302].Range = 500
+	serverData.ItemModels.Items[302].FiringRate = 1
+	serverData.ItemModels.Items[302].ProjectileObjectModelID = 903
+	serverData.EquipmentGroups.Items[600] = &data.EquipmentGroup{
+		ID:                   600,
+		CosmicObjectID:       1,
+		Title:                "Plasma",
+		EquipmentItemModelID: 302,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	}
+	if err := serverData.CosmicObjectTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.CosmicObjectModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.EquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
 	for _, event := range events {
 		if event.Message != "" && (strings.Contains(event.Message, message) || strings.Contains(message, event.Message)) {
@@ -1162,6 +1216,34 @@ func TestSelectedWeaponProjectileStartsAtShipNose(t *testing.T) {
 
 // Проверяет, что скорость корабля не меняет время жизни выпущенного снаряда.
 // Проверяет, что дальность полета снаряда расходуется по скорости его модели объекта.
+// Проверяет, что плазменный снаряд летит как обычный снаряд и вращается в полёте.
+func TestSelectedPlasmaWeaponProjectileRotatesInFlight(t *testing.T) {
+	serverData := testWorldData(t)
+	addPlasmaWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(0.1)
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: false})
+	snapshot := gameWorld.Tick(0.5)
+
+	projectile, ok := findCosmicObjectModelInSnapshot(snapshot, 903)
+	if !ok {
+		t.Fatalf("plasma projectile was not found: %+v", snapshot.Objects)
+	}
+	closeWorldFloat(t, projectile.Y, serverData.CosmicObjectModels.Items[1].BodyLength/2+serverData.CosmicObjectModels.Items[903].MaxSpeed*0.6)
+	if projectile.AngularSpeed <= 0 || projectile.Rotation <= 0 {
+		t.Fatalf("plasma projectile did not rotate: %+v", projectile.CosmicObject)
+	}
+}
+
 func TestSelectedWeaponProjectileLifetimeUsesWeaponRangeAndProjectileModelMaxSpeed(t *testing.T) {
 	serverData := testWorldData(t)
 	addWeaponTestData(t, &serverData)

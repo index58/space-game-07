@@ -666,7 +666,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.renderBodyPolygons(objects, camera);
     this.renderDrillBeams(objects, camera, selfObject.Rotation, timeMs);
-    this.renderProjectiles(objects, camera, selfObject.Rotation);
+    this.renderProjectiles(objects, camera, selfObject.Rotation, timeMs);
     this.renderArmorBars(objects, selfObject, camera);
   }
 
@@ -819,6 +819,7 @@ export class GameScene extends Phaser.Scene {
     objects: CosmicObject[],
     camera: Parameters<typeof worldToPilotScreen>[1],
     selfRotation: number,
+    timeMs: number = 0,
   ): void {
     const graphics = this.projectileGraphics;
     graphics.clear();
@@ -833,6 +834,10 @@ export class GameScene extends Phaser.Scene {
       }
       const center = worldToPilotScreen({ x: object.X, y: object.Y }, camera);
       const rotation = rotationToPilotScreen(object.Rotation, selfRotation);
+      if (model.Acronym === "PlasmaProjectile") {
+        this.renderPlasmaProjectile(center, rotation, model, timeMs);
+        continue;
+      }
       const direction = {
         x: Math.sin(rotation),
         y: -Math.cos(rotation),
@@ -858,6 +863,42 @@ export class GameScene extends Phaser.Scene {
   }
 
   // Рисует один световой отрезок бура по готовой экранной геометрии.
+  // Рисует плазменный снаряд как синее вращающееся энергетическое ядро.
+  private renderPlasmaProjectile(
+    center: { x: number; y: number },
+    rotation: number,
+    model: CosmicObjectModelReference,
+    timeMs: number,
+  ): void {
+    const graphics = this.projectileGraphics;
+    const radius = clamp(model.BodyWidth * this.zoomScale * 0.55, 5, 18);
+    const pulse = 0.78 + Math.sin(timeMs * 0.025) * 0.18;
+    graphics.fillStyle(0x55f7ff, 0.18 * pulse);
+    graphics.fillCircle(center.x, center.y, radius * 2.1);
+    graphics.fillStyle(0x23a8ff, 0.42 * pulse);
+    graphics.fillCircle(center.x, center.y, radius * 1.25);
+    graphics.fillStyle(0xd9ffff, 0.86);
+    graphics.fillCircle(center.x, center.y, radius * 0.48);
+
+    const spin = rotation + timeMs * 0.012;
+    for (let index = 0; index < 3; index += 1) {
+      const angle = spin + index * (Math.PI * 2 / 3);
+      const start = {
+        x: center.x + Math.cos(angle) * radius * 0.35,
+        y: center.y + Math.sin(angle) * radius * 0.35,
+      };
+      const end = {
+        x: center.x + Math.cos(angle) * radius * 1.75,
+        y: center.y + Math.sin(angle) * radius * 1.75,
+      };
+      graphics.lineStyle(clamp(radius * 0.22, 1.5, 4), 0x9ffcff, 0.64);
+      graphics.beginPath();
+      graphics.moveTo(start.x, start.y);
+      graphics.lineTo(end.x, end.y);
+      graphics.strokePath();
+    }
+  }
+
   private renderDrillBeamGeometry(geometry: DrillBeamGeometry, timeMs: number): void {
     const graphics = this.pilotToolEffectGraphics;
 

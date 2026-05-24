@@ -172,6 +172,42 @@ describe("GameScene", () => {
   });
 
   // Проверяет, что свободный луч получает полукруглое окончание слоёв без отдельного светового пятна.
+  // Проверяет, что плазменный снаряд рисуется синим светящимся телом и вращающимися штрихами.
+  it("renders plasma projectiles as blue rotating energy orbs", async () => {
+    const { GameScene } = await import("./GameScene");
+    const fillStyle = vi.fn();
+    const fillCircle = vi.fn();
+    const lineStyle = vi.fn();
+    const graphics = createProjectileGraphics({ fillStyle, fillCircle, lineStyle });
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      projectileGraphics: ProjectileGraphics;
+      zoomScale: number;
+      renderProjectiles: (objects: CosmicObject[], camera: TestCamera, selfRotation: number, timeMs: number) => void;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "903": testModel({ ID: 903, Acronym: "PlasmaProjectile", CosmicObjectTypeID: 7, BodyWidth: 18, BodyLength: 30 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "7": { Acronym: "Plasma", IsProjectile: true },
+        },
+      },
+    };
+    scene.projectileGraphics = graphics;
+    scene.zoomScale = 1;
+
+    scene.renderProjectiles([testCosmicObject({ ID: -1, CosmicObjectModelID: 903, Rotation: 0.5 })], testCamera({}), 0, 1000);
+
+    expect(fillStyle).toHaveBeenCalledWith(0x55f7ff, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0xd9ffff, expect.any(Number));
+    expect(fillCircle).toHaveBeenCalled();
+    expect(lineStyle).toHaveBeenCalledWith(expect.any(Number), 0x9ffcff, expect.any(Number));
+  });
+
   it("does not render drill beam end cap without object hit", async () => {
     const { GameScene } = await import("./GameScene");
     const fillCircle = vi.fn();
@@ -687,6 +723,10 @@ type DrillBeamGraphics = {
 };
 
 type ProjectileGraphics = {
+  // Выбирает цвет и прозрачность следующей заливки.
+  fillStyle: ReturnType<typeof vi.fn>;
+  // Рисует залитый круг.
+  fillCircle: ReturnType<typeof vi.fn>;
   // Очищает предыдущий кадр векторного слоя.
   clear: ReturnType<typeof vi.fn>;
   // Выбирает цвет, прозрачность и толщину линии.
@@ -720,6 +760,8 @@ const createDrillBeamGraphics = (overrides: Partial<DrillBeamGraphics> = {}): Dr
 });
 
 const createProjectileGraphics = (overrides: Partial<ProjectileGraphics> = {}): ProjectileGraphics => ({
+  fillStyle: vi.fn(),
+  fillCircle: vi.fn(),
   clear: vi.fn(),
   lineStyle: vi.fn(),
   beginPath: vi.fn(),
