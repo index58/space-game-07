@@ -15,6 +15,10 @@ export type ExchangeSelectValue = "receiverObject" | "receiverContainer" | "sour
 export type GameUiState = {
   // Состояние сетевого подключения.
   status: ConnectionStatus;
+  // Текущее время кадра в миллисекундах Unix.
+  nowMs: number;
+  // Локальные моменты, когда клиент впервые увидел текущую подготовку зарядов.
+  reloadDisplayStartMsByGroupId: Record<number, number>;
   // Посещаемый объект игрока, если он уже получен.
   selfObject: CosmicObject | null;
   // Объекты последнего серверного снимка, доступные клиенту.
@@ -208,6 +212,8 @@ export type GameUiController = {
 
 const initialGameUiState: GameUiState = {
   status: "connecting",
+  nowMs: 0,
+  reloadDisplayStartMsByGroupId: {},
   selfObject: null,
   objects: [],
   equipmentGroups: [],

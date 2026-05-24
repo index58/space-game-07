@@ -1,4 +1,4 @@
-export const SIMPLE_DRILL_RAY_ACRONYM = "SimpleDrillRay";
+export const DRILL_RAY_ACRONYM = "DrillRay";
 
 const INTERSECTION_EPSILON = 0.000000001;
 

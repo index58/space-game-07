@@ -535,6 +535,8 @@ export type EquipmentGroup = {
   Active: boolean;
   // Время начала последней перезарядки в миллисекундах Unix.
   LastRechargeStartTime: number;
+  // Количество боеприпасов, уже заряженных для ближайших выстрелов.
+  MagazineCount?: number;
   // Связанный контейнер, из которого берутся материалы.
   SourceEquipmentGroupID?: number;
   // Связанный контейнер, в который кладется результат.
@@ -757,10 +759,14 @@ export type ItemModelReference = Record<string, unknown> & {
   IconFilePath?: string;
   // Дальность действия инструмента в метрах, если она задана.
   Range?: number;
+  // Скорость выпущенного боеприпаса в метрах за секунду.
+  ProjectileSpeed?: number;
   // Скорость добычи ресурса в килограммах за секунду.
   MiningSpeed?: number;
   // Вместимость магазина, если у инструмента есть магазин.
   MagazineCapacity?: number;
+  // Время подготовки следующей порции зарядов в секундах.
+  RechargeTime?: number;
 };
 
 export type ActionTypeReference = Record<string, unknown> & {

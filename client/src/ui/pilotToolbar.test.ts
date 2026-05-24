@@ -67,7 +67,7 @@ const referenceData: ReferenceDataMessage = {
   ItemModel: {
     MaxID: 3,
     Items: {
-      "101": { ID: 101, ItemTypeID: 1, Acronym: "Laser", TitleRu: "Лазер", IconFilePath: "", MagazineCapacity: 6 },
+      "101": { ID: 101, ItemTypeID: 1, Acronym: "Laser", TitleRu: "Лазер", IconFilePath: "", MagazineCapacity: 6, RechargeTime: 6 },
       "102": { ID: 102, ItemTypeID: 1, Acronym: "Drill", TitleRu: "Бур", IconFilePath: "", MagazineCapacity: 0 },
       "201": { ID: 201, ItemTypeID: 2, Acronym: "Box", TitleRu: "Контейнер", IconFilePath: "" },
     },
@@ -94,6 +94,7 @@ describe("pilot toolbar", () => {
       ],
       referenceData,
       selectedToolIndex: 1,
+      nowMs: 0,
     });
 
     expect(toolbar.slots).toHaveLength(10);
@@ -122,6 +123,7 @@ describe("pilot toolbar", () => {
       ],
       referenceData,
       selectedToolIndex: 0,
+      nowMs: 0,
     });
 
     expect(toolbar.slots[0].tool).toMatchObject({
@@ -145,10 +147,69 @@ describe("pilot toolbar", () => {
       equipmentGroups: [group(5, 101, 2)],
       referenceData,
       selectedToolIndex: 4,
+      nowMs: 0,
     });
 
     expect(toolbar.slots[4].tool).toBeNull();
     expect(toolbar.slots[4].isSelected).toBe(true);
     expect(toolbar.magazine).toBeNull();
+  });
+
+  // Проверяет, что индикатор магазина показывает текущие боеприпасы из серверного состояния.
+  it("uses equipment group magazine count for selected tool", () => {
+    const toolbar = getPilotToolbarView({
+      selfObject: emptyObject(),
+      equipmentGroups: [
+        { ...group(5, 101, 2), Count: 2, MagazineCount: 7 },
+      ],
+      referenceData,
+      selectedToolIndex: 0,
+      nowMs: 0,
+    });
+
+    expect(toolbar.magazine).toEqual({
+      fillPercent: 58.333333333333336,
+      valueText: "7 / 12",
+      isReloading: false,
+    });
+  });
+
+  // Проверяет плавное отображение подготовки новой порции зарядов между серверными снимками.
+  it("shows reload progress for selected tool magazine", () => {
+    const toolbar = getPilotToolbarView({
+      selfObject: emptyObject(),
+      equipmentGroups: [
+        { ...group(5, 101, 2), Count: 2, MagazineCount: 0, LastRechargeStartTime: 1000 },
+      ],
+      referenceData,
+      selectedToolIndex: 0,
+      nowMs: 4000,
+    });
+
+    expect(toolbar.magazine).toEqual({
+      fillPercent: 50,
+      valueText: "Перезарядка",
+      isReloading: true,
+    });
+  });
+
+  // Проверяет, что локальное начало отображения не даёт старому серверному времени заполнить шкалу мгновенно.
+  it("uses local reload display start for selected tool magazine", () => {
+    const toolbar = getPilotToolbarView({
+      selfObject: emptyObject(),
+      equipmentGroups: [
+        { ...group(5, 101, 2), Count: 2, MagazineCount: 0, LastRechargeStartTime: 1000 },
+      ],
+      referenceData,
+      selectedToolIndex: 0,
+      nowMs: 100000,
+      reloadDisplayStartMsByGroupId: { 5: 97000 },
+    });
+
+    expect(toolbar.magazine).toEqual({
+      fillPercent: 50,
+      valueText: "Перезарядка",
+      isReloading: true,
+    });
   });
 });

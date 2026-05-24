@@ -1891,13 +1891,15 @@ const PilotToolbarPanel = (props: PilotToolbarPanelProps) => (
           equipmentGroups: props.state().equipmentGroups,
           referenceData: ready().referenceData,
           selectedToolIndex: props.state().selectedPilotToolIndex,
+          nowMs: props.state().nowMs,
+          reloadDisplayStartMsByGroupId: props.state().reloadDisplayStartMsByGroupId,
         });
 
       return (
         <HudPanel position="bottom-center" className="pilot-toolbar" ariaLabel="Панель инструментов пилота">
           <Show when={toolbar().magazine}>
             {(magazine) => (
-              <div class="pilot-toolbar__magazine">
+              <div class={`pilot-toolbar__magazine ${magazine().isReloading ? "is-reloading" : ""}`}>
                 <div class="pilot-toolbar__magazine-fill" style={{ width: `${magazine().fillPercent}%` }} />
                 <div class="pilot-toolbar__magazine-value">{magazine().valueText}</div>
               </div>

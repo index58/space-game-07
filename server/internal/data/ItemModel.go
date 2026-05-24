@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// РҐСЂР°РЅРёС‚ СЃРІРѕР№СЃС‚РІР° РѕРґРЅРѕР№ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 type ItemModel struct {
 	ID                   int64   `json:"ID"`                   // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
 	TitleRu              string  `json:"TitleRu"`              // Р СѓСЃСЃРєРѕРµ РЅР°Р·РІР°РЅРёРµ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° Рё РґР°РЅРЅС‹С….
@@ -35,11 +35,12 @@ type ItemModel struct {
 	MaxTorque            float64 `json:"MaxTorque"`            // РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РєСЂСѓС‚СЏС‰РёР№ РјРѕРјРµРЅС‚ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 	MaxEquipmentCount    int64   `json:"MaxEquipmentCount"`    // РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РµРґРёРЅРёС† РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РЅР° РѕР±СЉРµРєС‚Рµ.
 	ArmorRepairSpeed     float64 `json:"ArmorRepairSpeed"`     // РЎРєРѕСЂРѕСЃС‚СЊ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РїСЂРѕС‡РЅРѕСЃС‚Рё.
+	ProjectileSpeed      float64 `json:"ProjectileSpeed"`      // Скорость выпущенного боеприпаса в метрах за секунду.
 	Complexity           float64 `json:"Complexity"`           // РЎР»РѕР¶РЅРѕСЃС‚СЊ РёР·РіРѕС‚РѕРІР»РµРЅРёСЏ РёР»Рё РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ.
 	Efficiency           float64 `json:"Efficiency"`           // КПД оборудования при выполнении работы.
 }
 
-// РҐСЂР°РЅРёС‚ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚РѕРІ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕ СѓРЅРёРєР°Р»СЊРЅС‹Рј РїРѕР»СЏРј.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 type ItemModels struct {
 	MaxID int64                `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РЅРѕРІС‹С… Р·Р°РїРёСЃРµР№.
 	Items map[int64]*ItemModel `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
@@ -47,28 +48,28 @@ type ItemModels struct {
 	ByAcronym map[string]*ItemModel `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р·Р°РїРёСЃРё РїРѕ Р°РєСЂРѕРЅРёРјСѓ.
 }
 
-// РЎРѕР·РґР°РµС‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ РјРѕРґРµР»РµР№ РїСЂРµРґРјРµС‚РѕРІ СЃ РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func NewItemModels() *ItemModels {
 	models := &ItemModels{}
 	models.ensureMaps()
 	return models
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРѕРґРµР»СЊ РїСЂРµРґРјРµС‚Р° РїРѕ ID.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func (models *ItemModels) Get(id int64) (*ItemModel, bool) {
 	models.ensureMaps()
 	model, ok := models.Items[id]
 	return model, ok
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРѕРґРµР»СЊ РїСЂРµРґРјРµС‚Р° РїРѕ СѓРЅРёРєР°Р»СЊРЅРѕРјСѓ Р°РєСЂРѕРЅРёРјСѓ.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func (models *ItemModels) GetByAcronym(acronym string) (*ItemModel, bool) {
 	models.ensureMaps()
 	model, ok := models.ByAcronym[acronym]
 	return model, ok
 }
 
-// РџРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РёР· JSON.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func (models *ItemModels) RebuildIndexes() error {
 	models.ensureItems()
 	models.ByAcronym = make(map[string]*ItemModel)
@@ -98,7 +99,7 @@ func (models *ItemModels) RebuildIndexes() error {
 	return nil
 }
 
-// Р—Р°РіСЂСѓР¶Р°РµС‚ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚РѕРІ РёР· JSON-С„Р°Р№Р»Р° Рё РїРµСЂРµСЃРѕР±РёСЂР°РµС‚ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func (models *ItemModels) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -117,13 +118,13 @@ func (models *ItemModels) LoadFromFile(path string) error {
 	return nil
 }
 
-// РЎРѕС…СЂР°РЅСЏРµС‚ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚РѕРІ РІ JSON-С„Р°Р№Р» Р±РµР· РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РёРЅРґРµРєСЃРѕРІ.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func (models *ItemModels) SaveToFile(path string) error {
 	models.ensureMaps()
 	return saveTableWithOrderedItems(path, models.MaxID, models.Items)
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func (models *ItemModels) ensureMaps() {
 	models.ensureItems()
 	if models.ByAcronym == nil {
@@ -131,7 +132,7 @@ func (models *ItemModels) ensureMaps() {
 	}
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅСѓСЋ map.
+// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РјРѕРґРµР»Рё РїСЂРµРґРјРµС‚Р°.
 func (models *ItemModels) ensureItems() {
 	if models.Items == nil {
 		models.Items = make(map[int64]*ItemModel)

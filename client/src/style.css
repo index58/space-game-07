@@ -1718,6 +1718,12 @@ body {
   top: 0;
   height: 100%;
   background: rgba(126, 212, 255, 0.42);
+  transition: width 80ms linear;
+}
+
+.pilot-toolbar__magazine.is-reloading .pilot-toolbar__magazine-fill {
+  /* Во время подготовки зарядов шкала приглушается, чтобы отличаться от готового магазина. */
+  background: rgba(154, 96, 100, 0.58);
 }
 
 .pilot-toolbar__magazine-value {

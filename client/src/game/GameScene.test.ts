@@ -93,6 +93,84 @@ describe("GameScene", () => {
     expect(scene.shouldRenderArmorBar(testCosmicObject({ ID: 1, OwnerCharacterID: 10 }), selfObject, testModel({ CosmicObjectTypeID: 1 }))).toBe(false);
   });
 
+  // Проверяет, что буровой луч распознаётся по новой модели космического объекта.
+  it("detects drill ray by cosmic object model", async () => {
+    const { GameScene } = await import("./GameScene");
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      isDrillRayObject: (object: CosmicObject) => boolean;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "900": testModel({ ID: 900, Acronym: "DrillRay", CosmicObjectTypeID: 6 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "6": { Acronym: "Ray" },
+        },
+      },
+    };
+
+    expect(scene.isDrillRayObject(testCosmicObject({ CosmicObjectModelID: 900 }))).toBe(true);
+  });
+
+  // Проверяет, что снаряд распознаётся по типу модели космического объекта.
+  it("detects projectile by cosmic object type", async () => {
+    const { GameScene } = await import("./GameScene");
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      isProjectileObject: (object: CosmicObject) => boolean;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "901": testModel({ ID: 901, Acronym: "BallisticProjectile", CosmicObjectTypeID: 5 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "5": { Acronym: "Projectile" },
+        },
+      },
+    };
+
+    expect(scene.isProjectileObject(testCosmicObject({ CosmicObjectModelID: 901 }))).toBe(true);
+  });
+
+  // Проверяет, что снаряд без текстуры рисуется в векторном слое.
+  it("renders projectile objects with graphics layer", async () => {
+    const { GameScene } = await import("./GameScene");
+    const graphics = createProjectileGraphics();
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      projectileGraphics: ProjectileGraphics;
+      zoomScale: number;
+      renderProjectiles: (objects: CosmicObject[], camera: TestCamera, selfRotation: number) => void;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "901": testModel({ ID: 901, Acronym: "BallisticProjectile", CosmicObjectTypeID: 5, BodyWidth: 12, BodyLength: 32 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "5": { Acronym: "Projectile" },
+        },
+      },
+    };
+    scene.projectileGraphics = graphics;
+    scene.zoomScale = 1;
+
+    scene.renderProjectiles([testCosmicObject({ ID: -1, CosmicObjectModelID: 901 })], testCamera({}), 0);
+
+    expect(graphics.clear).toHaveBeenCalled();
+    expect(graphics.lineStyle).toHaveBeenCalledTimes(1);
+    expect(graphics.strokePath).toHaveBeenCalled();
+  });
+
   // Проверяет, что свободный луч получает полукруглое окончание слоёв без отдельного светового пятна.
   it("does not render drill beam end cap without object hit", async () => {
     const { GameScene } = await import("./GameScene");
@@ -588,6 +666,23 @@ type DrillBeamGraphics = {
   arc: ReturnType<typeof vi.fn>;
 };
 
+type ProjectileGraphics = {
+  // Очищает предыдущий кадр векторного слоя.
+  clear: ReturnType<typeof vi.fn>;
+  // Выбирает цвет, прозрачность и толщину линии.
+  lineStyle: ReturnType<typeof vi.fn>;
+  // Начинает новый векторный путь.
+  beginPath: ReturnType<typeof vi.fn>;
+  // Переносит текущую точку пути.
+  moveTo: ReturnType<typeof vi.fn>;
+  // Добавляет прямой участок пути.
+  lineTo: ReturnType<typeof vi.fn>;
+  // Обводит текущий путь.
+  strokePath: ReturnType<typeof vi.fn>;
+};
+
+type TestCamera = ReturnType<typeof testCamera>;
+
 const createDrillBeamGraphics = (overrides: Partial<DrillBeamGraphics> = {}): DrillBeamGraphics => ({
   fillStyle: vi.fn(),
   beginPath: vi.fn(),
@@ -601,6 +696,37 @@ const createDrillBeamGraphics = (overrides: Partial<DrillBeamGraphics> = {}): Dr
   strokeCircle: vi.fn(),
   slice: vi.fn(),
   arc: vi.fn(),
+  ...overrides,
+});
+
+const createProjectileGraphics = (overrides: Partial<ProjectileGraphics> = {}): ProjectileGraphics => ({
+  clear: vi.fn(),
+  lineStyle: vi.fn(),
+  beginPath: vi.fn(),
+  moveTo: vi.fn(),
+  lineTo: vi.fn(),
+  strokePath: vi.fn(),
+  ...overrides,
+});
+
+const testCamera = (overrides: Partial<{
+  shipPosition: { x: number; y: number };
+  shipRotation: number;
+  zoom: number;
+  viewportWidth: number;
+  viewportHeight: number;
+}>): {
+  shipPosition: { x: number; y: number };
+  shipRotation: number;
+  zoom: number;
+  viewportWidth: number;
+  viewportHeight: number;
+} => ({
+  shipPosition: { x: 0, y: 0 },
+  shipRotation: 0,
+  zoom: 1,
+  viewportWidth: 800,
+  viewportHeight: 600,
   ...overrides,
 });
 

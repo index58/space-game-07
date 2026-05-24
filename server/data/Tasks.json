@@ -1,4 +1,20 @@
 {
-  "MaxID": 103,
-  "Items": {}
+  "MaxID": 105,
+  "Items": {
+    "105": {
+      "ID": 105,
+      "ControllerEquipmentGroupID": 2049,
+      "ParentTaskID": 0,
+      "TaskTypeID": 1,
+      "RemainingEnergy": 32341800,
+      "TotalEnergy": 57600000,
+      "SchemaID": 7,
+      "BlueprintID": 0,
+      "LeftToRightDirection": false,
+      "BatchCount": 100,
+      "SourceContainerEquipmentGroupID": 0,
+      "TargetContainerEquipmentGroupID": 0,
+      "FuelTankEquipmentGroupID": 0
+    }
+  }
 }

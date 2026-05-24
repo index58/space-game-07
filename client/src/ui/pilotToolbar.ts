@@ -15,6 +15,8 @@ export type PilotToolView = {
   enabledCount: number;
   // Вместимость магазина, если у инструмента есть магазин.
   magazineCapacity: number;
+  // Количество боеприпасов, уже готовых к ближайшим выстрелам.
+  magazineCount: number;
 };
 
 export type PilotToolSlotView = {
@@ -31,6 +33,8 @@ export type PilotToolMagazineView = {
   fillPercent: number;
   // Текстовое значение заполненности магазина.
   valueText: string;
+  // Признак подготовки новой порции зарядов.
+  isReloading: boolean;
 };
 
 export type PilotToolbarView = {
@@ -49,6 +53,10 @@ type PilotToolbarInput = {
   referenceData: ReferenceDataMessage;
   // Выбранный индекс среди десяти ячеек панели.
   selectedToolIndex: number;
+  // Текущее время кадра в миллисекундах Unix.
+  nowMs: number;
+  // Локальные моменты первого отображения подготовки зарядов.
+  reloadDisplayStartMsByGroupId?: Record<number, number>;
 };
 
 type AggregatedPilotTool = {
@@ -56,6 +64,14 @@ type AggregatedPilotTool = {
   itemModel: ItemModelReference;
   // Сумма включенных единиц оборудования этой модели.
   enabledCount: number;
+  // Суммарная вместимость магазинов всех групп этой модели.
+  magazineCapacity: number;
+  // Суммарное количество снарядов, уже заряженных в эти магазины.
+  magazineCount: number;
+  // Плавное значение для отображения подготовки зарядов.
+  displayedMagazineCount: number;
+  // Признак подготовки хотя бы одной группы этой модели.
+  isReloading: boolean;
   // Минимальный ID группы, задающий временный порядок панели.
   firstGroupId: number;
 };
@@ -77,10 +93,11 @@ export const getPilotToolbarView = (input: PilotToolbarInput): PilotToolbarView 
 
   return {
     slots,
-    magazine: selectedTool && selectedTool.itemModel.MagazineCapacity && selectedTool.itemModel.MagazineCapacity > 0
+    magazine: selectedTool && selectedTool.magazineCapacity > 0
       ? {
-        fillPercent: 100,
-        valueText: `${selectedTool.itemModel.MagazineCapacity} / ${selectedTool.itemModel.MagazineCapacity}`,
+        fillPercent: Math.max(0, Math.min(100, selectedTool.displayedMagazineCount / selectedTool.magazineCapacity * 100)),
+        valueText: selectedTool.isReloading ? "Перезарядка" : `${selectedTool.magazineCount} / ${selectedTool.magazineCapacity}`,
+        isReloading: selectedTool.isReloading,
       }
       : null,
   };
@@ -113,6 +130,10 @@ const getAggregatedPilotTools = (input: PilotToolbarInput): AggregatedPilotTool[
     const existing = byModelId.get(itemModel.ID);
     if (existing) {
       existing.enabledCount += group.EnabledCount;
+      existing.magazineCapacity += getEquipmentGroupMagazineCapacity(group, itemModel);
+      existing.magazineCount += getEquipmentGroupMagazineCount(group, itemModel);
+      existing.displayedMagazineCount += getEquipmentGroupDisplayedMagazineCount(group, itemModel, input.nowMs, input.reloadDisplayStartMsByGroupId);
+      existing.isReloading = existing.isReloading || isEquipmentGroupReloading(group, itemModel);
       existing.firstGroupId = Math.min(existing.firstGroupId, group.ID);
       continue;
     }
@@ -120,6 +141,10 @@ const getAggregatedPilotTools = (input: PilotToolbarInput): AggregatedPilotTool[
     byModelId.set(itemModel.ID, {
       itemModel,
       enabledCount: group.EnabledCount,
+      magazineCapacity: getEquipmentGroupMagazineCapacity(group, itemModel),
+      magazineCount: getEquipmentGroupMagazineCount(group, itemModel),
+      displayedMagazineCount: getEquipmentGroupDisplayedMagazineCount(group, itemModel, input.nowMs, input.reloadDisplayStartMsByGroupId),
+      isReloading: isEquipmentGroupReloading(group, itemModel),
       firstGroupId: group.ID,
     });
   }
@@ -139,5 +164,44 @@ const toPilotToolView = (tool: AggregatedPilotTool): PilotToolView => ({
   title: tool.itemModel.TitleRu || tool.itemModel.TitleEn || tool.itemModel.Acronym,
   iconFilePath: tool.itemModel.IconFilePath || null,
   enabledCount: tool.enabledCount,
-  magazineCapacity: tool.itemModel.MagazineCapacity ?? 0,
+  magazineCapacity: tool.magazineCapacity,
+  magazineCount: tool.magazineCount,
 });
+
+// Считает суммарный размер магазина с учётом количества установленных единиц.
+const getEquipmentGroupMagazineCapacity = (group: EquipmentGroup, itemModel: ItemModelReference): number => {
+  const singleCapacity = itemModel.MagazineCapacity ?? 0;
+  return Math.max(0, group.Count) * Math.max(0, singleCapacity);
+};
+
+// Берёт серверное значение магазина, а для старых снимков считает магазин полным.
+const getEquipmentGroupMagazineCount = (group: EquipmentGroup, itemModel: ItemModelReference): number => {
+  const capacity = getEquipmentGroupMagazineCapacity(group, itemModel);
+  if (capacity <= 0) {
+    return 0;
+  }
+  return Math.max(0, Math.min(capacity, group.MagazineCount ?? capacity));
+};
+
+// Возвращает значение для шкалы с учётом незавершённой подготовки зарядов.
+const getEquipmentGroupDisplayedMagazineCount = (group: EquipmentGroup, itemModel: ItemModelReference, nowMs: number, reloadDisplayStartMsByGroupId?: Record<number, number>): number => {
+  const capacity = getEquipmentGroupMagazineCapacity(group, itemModel);
+  const magazineCount = getEquipmentGroupMagazineCount(group, itemModel);
+  if (capacity <= 0 || !isEquipmentGroupReloading(group, itemModel)) {
+    return magazineCount;
+  }
+
+  const rechargeDurationMs = Math.max(0, (itemModel.RechargeTime ?? 0) * 1000);
+  if (rechargeDurationMs <= 0) {
+    return capacity;
+  }
+
+  const displayStartMs = reloadDisplayStartMsByGroupId?.[group.ID] ?? group.LastRechargeStartTime;
+  const progress = Math.max(0, Math.min(1, (nowMs - displayStartMs) / rechargeDurationMs));
+  return Math.max(0, Math.min(capacity, magazineCount + (capacity - magazineCount) * progress));
+};
+
+// Проверяет, что сервер уже начал подготовку новой порции зарядов.
+const isEquipmentGroupReloading = (group: EquipmentGroup, itemModel: ItemModelReference): boolean => {
+  return group.LastRechargeStartTime > 0 && (itemModel.RechargeTime ?? 0) > 0;
+};

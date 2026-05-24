@@ -1,4 +1,21 @@
 {
-  "MaxID": 442,
-  "Items": {}
+  "MaxID": 446,
+  "Items": {
+    "445": {
+      "ID": 445,
+      "TaskID": 105,
+      "ItemModelID": 11,
+      "Count": 100,
+      "IsStored": false,
+      "IsReadyToExchange": false
+    },
+    "446": {
+      "ID": 446,
+      "TaskID": 105,
+      "ItemModelID": 9,
+      "Count": 300,
+      "IsStored": false,
+      "IsReadyToExchange": false
+    }
+  }
 }

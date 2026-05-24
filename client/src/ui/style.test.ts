@@ -390,6 +390,13 @@ describe("HUD styles", () => {
     expect(readCssBlock(".ui-kit-dropdown")).toContain("background: rgb(0, 0, 0);");
   });
 
+  // Проверяет, что шкала подготовки зарядов получает отдельный приглушённый цвет.
+  it("uses reloading magazine color on pilot toolbar", () => {
+    const fill = readCssBlock(".pilot-toolbar__magazine.is-reloading .pilot-toolbar__magazine-fill");
+
+    expect(fill).toContain("background: rgba(154, 96, 100, 0.58);");
+  });
+
   // Проверяет, что раскрытый список UI Kit рисуется поверх панели и не участвует в её раскладке.
   it("keeps ui kit dropdown menu out of panel flow", () => {
     const dropdown = readCssBlock(".ui-kit-dropdown");

@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-// РҐСЂР°РЅРёС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ, СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РЅР° РєРѕРЅРєСЂРµС‚РЅРѕРј РєРѕСЃРјРёС‡РµСЃРєРѕРј РѕР±СЉРµРєС‚Рµ.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 type EquipmentGroup struct {
 	ID                          int64  `json:"ID"`                          // РЈРЅРёРєР°Р»СЊРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРё.
 	CosmicObjectID              int64  `json:"CosmicObjectID"`              // РљРѕСЃРјРёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚, РЅР° РєРѕС‚РѕСЂРѕРј СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµ.
@@ -18,13 +18,14 @@ type EquipmentGroup struct {
 	EnabledCount                int64  `json:"EnabledCount"`                // РљРѕР»РёС‡РµСЃС‚РІРѕ РІРєР»СЋС‡РµРЅРЅС‹С… РµРґРёРЅРёС† РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 	Enabled                     bool   `json:"Enabled"`                     // РџСЂРёР·РЅР°Рє РІРєР»СЋС‡РµРЅРёСЏ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
 	Active                      bool   `json:"Active"`                      // РџСЂРёР·РЅР°Рє РІС‹РїРѕР»РЅРµРЅРёСЏ СЂР°Р±РѕС‚С‹ РІРєР»СЋС‡РµРЅРЅС‹Рј РѕР±РѕСЂСѓРґРѕРІР°РЅРёРµРј.
+	MagazineCount               int64  `json:"MagazineCount"`               // Количество боеприпасов, уже заряженных для ближайших выстрелов.
 	LastRechargeStartTime       int64  `json:"LastRechargeStartTime"`       // Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р° РїРѕСЃР»РµРґРЅРµР№ РїРµСЂРµР·Р°СЂСЏРґРєРё РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С… Unix.
 	SourceEquipmentGroupID      int64  `json:"SourceEquipmentGroupID"`      // Источник материалов или груза для работы оборудования.
 	DestinationEquipmentGroupID int64  `json:"DestinationEquipmentGroupID"` // Приемник результата или груза после работы оборудования.
 	OppositeEquipmentGroupID    int64  `json:"OppositeEquipmentGroupID"`    // Противоположная группа оборудования в парном интерфейсе использования.
 }
 
-// РҐСЂР°РЅРёС‚ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РєРѕСЃРјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 type EquipmentGroups struct {
 	MaxID int64                     `json:"MaxID"` // РџРѕСЃР»РµРґРЅРёР№ РІС‹РґР°РЅРЅС‹Р№ С‡РёСЃР»РѕРІРѕР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РїРёСЃРµР№.
 	Items map[int64]*EquipmentGroup `json:"Items"` // РћСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Р·Р°РїРёСЃРµР№ РїРѕ С‡РёСЃР»РѕРІРѕРјСѓ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ.
@@ -32,14 +33,14 @@ type EquipmentGroups struct {
 	ByCosmicObjectID map[int64][]*EquipmentGroup `json:"-"` // Р‘С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє РіСЂСѓРїРї РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РїРѕ РѕР±СЉРµРєС‚Сѓ.
 }
 
-// РЎРѕР·РґР°РµС‚ РїСѓСЃС‚РѕРµ С…СЂР°РЅРёР»РёС‰Рµ РіСЂСѓРїРї РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РѕР±СЉРµРєС‚РѕРІ.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func NewEquipmentGroups() *EquipmentGroups {
 	groups := &EquipmentGroups{}
 	groups.ensureMaps()
 	return groups
 }
 
-// Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІСѓСЋ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ Рё РЅР°Р·РЅР°С‡Р°РµС‚ РЅРѕРІС‹Р№ ID.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) Add(group *EquipmentGroup) (*EquipmentGroup, error) {
 	if group == nil {
 		return nil, errors.New("equipment group is nil")
@@ -56,20 +57,20 @@ func (groups *EquipmentGroups) Add(group *EquipmentGroup) (*EquipmentGroup, erro
 	return group, nil
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РїРѕ ID.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) Get(id int64) (*EquipmentGroup, bool) {
 	groups.ensureMaps()
 	group, ok := groups.Items[id]
 	return group, ok
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) GetByCosmicObjectID(cosmicObjectID int64) []*EquipmentGroup {
 	groups.ensureMaps()
 	return groups.ByCosmicObjectID[cosmicObjectID]
 }
 
-// РЈРґР°Р»СЏРµС‚ РІСЃРµ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РєРѕСЃРјРёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) DeleteByCosmicObjectID(cosmicObjectID int64) {
 	groups.ensureMaps()
 	for _, group := range groups.ByCosmicObjectID[cosmicObjectID] {
@@ -78,7 +79,7 @@ func (groups *EquipmentGroups) DeleteByCosmicObjectID(cosmicObjectID int64) {
 	delete(groups.ByCosmicObjectID, cosmicObjectID)
 }
 
-// РџРµСЂРµСЃРѕР±РёСЂР°РµС‚ С…СЂР°РЅРёР»РёС‰Рµ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РёР· JSON.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) RebuildIndexes() error {
 	groups.ensureItems()
 	groups.ByCosmicObjectID = make(map[int64][]*EquipmentGroup)
@@ -113,7 +114,7 @@ func (groups *EquipmentGroups) RebuildIndexes() error {
 	return nil
 }
 
-// Р—Р°РіСЂСѓР¶Р°РµС‚ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РѕР±СЉРµРєС‚РѕРІ РёР· JSON-С„Р°Р№Р»Р°.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) LoadFromFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -132,13 +133,13 @@ func (groups *EquipmentGroups) LoadFromFile(path string) error {
 	return nil
 }
 
-// РЎРѕС…СЂР°РЅСЏРµС‚ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РѕР±СЉРµРєС‚РѕРІ РІ JSON-С„Р°Р№Р».
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) SaveToFile(path string) error {
 	groups.ensureMaps()
 	return saveTableWithOrderedItems(path, groups.MaxID, groups.Items)
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ Рё Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) ensureMaps() {
 	groups.ensureItems()
 	if groups.ByCosmicObjectID == nil {
@@ -146,14 +147,14 @@ func (groups *EquipmentGroups) ensureMaps() {
 	}
 }
 
-// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РѕСЃРЅРѕРІРЅСѓСЋ map.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) ensureItems() {
 	if groups.Items == nil {
 		groups.Items = make(map[int64]*EquipmentGroup)
 	}
 }
 
-// РџСЂРѕРІРµСЂСЏРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РіСЂСѓРїРїС‹ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ.
+// Р”РѕР±Р°РІР»СЏРµС‚ РіСЂСѓРїРїСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ РІ Р±С‹СЃС‚СЂС‹Рµ РёРЅРґРµРєСЃС‹.
 func (groups *EquipmentGroups) validateRequiredFields(group *EquipmentGroup) error {
 	if group.CosmicObjectID <= 0 {
 		return errors.New("cosmic object ID is empty")

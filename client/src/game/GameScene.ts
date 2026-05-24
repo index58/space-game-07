@@ -38,7 +38,7 @@ import { getControlPanelFuelFillMaxAmount } from "./controlPanelFuelAmount";
 import { applyControlPanelListSelection } from "./controlPanelListSelection";
 import { applyActiveControlPanelUsageRelations, normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
 import {
-  SIMPLE_DRILL_RAY_ACRONYM,
+  DRILL_RAY_ACRONYM,
   clipDrillBeamGeometryToPolygons,
   getDrillBeamGeometry,
   getDrillBeamIntakeProgress,
@@ -50,6 +50,14 @@ import { getGameUiControlLayoutSignature } from "./gameUiControlSignature";
 import { InputController, type ChatScrollState } from "./InputController";
 
 const BODY_POLYGON_DEBUG_COLOR = 0x35d7ff;
+// Цвет обычных баллистических боеприпасов без текстуры.
+const PROJECTILE_BALLISTIC_COLOR = 0xffd166;
+// Цвет плазменных боеприпасов без текстуры.
+const PROJECTILE_PLASMA_COLOR = 0x55f7ff;
+// Цвет ракетных боеприпасов без текстуры.
+const PROJECTILE_MISSILE_COLOR = 0xff8a3d;
+// Цвет остальных боеприпасов без текстуры.
+const PROJECTILE_DEFAULT_COLOR = 0xf6f8ff;
 // Высота экранной полоски брони над чужим боевым объектом.
 const ARMOR_BAR_HEIGHT_PX = 4;
 // Минимальная ширина полоски, чтобы маленькие цели оставались читаемыми.
@@ -89,6 +97,8 @@ export class GameScene extends Phaser.Scene {
   private bodyPolygonGraphics!: Phaser.GameObjects.Graphics;
   // Векторный слой активных эффектов инструментов пилота.
   private pilotToolEffectGraphics!: Phaser.GameObjects.Graphics;
+  // Векторный слой летящих боеприпасов без текстур.
+  private projectileGraphics!: Phaser.GameObjects.Graphics;
   // Векторный слой индикаторов брони над видимыми объектами.
   private armorBarGraphics!: Phaser.GameObjects.Graphics;
   // Измеряет простую среднюю частоту кадров за последнюю секунду.
@@ -105,6 +115,8 @@ export class GameScene extends Phaser.Scene {
   private referenceData: ReferenceDataMessage | null = null;
   // Ключи текстур, для которых уже запущена асинхронная загрузка.
   private loadingTextureKeys = new Set<string>();
+  // Локальные моменты первого отображения текущей подготовки зарядов.
+  private reloadDisplayStarts = new Map<number, { serverStartMs: number; displayStartMs: number }>();
   // Сообщение об ошибке начальной загрузки, если сервер не отдал справочники.
   private startupErrorMessage: string | null = null;
   // Текст ожидания, показанный до появления валидного снимка.
@@ -289,6 +301,7 @@ export class GameScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.pilotToolEffectGraphics = this.add.graphics().setDepth(900).setBlendMode(Phaser.BlendModes.ADD);
+    this.projectileGraphics = this.add.graphics().setDepth(950).setBlendMode(Phaser.BlendModes.NORMAL);
     this.bodyPolygonGraphics = this.add.graphics().setDepth(1000);
     this.armorBarGraphics = this.add.graphics().setDepth(1100);
 
@@ -323,6 +336,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.zoomLevel = this.inputController.getZoom();
 
+    const nowMs = Date.now();
     const status = this.gameClient?.getStatus() ?? "connecting";
     const settingsVisible = this.inputController.isSettingsVisible();
     const controlPanelVisible = this.inputController.isControlPanelVisible();
@@ -347,6 +361,7 @@ export class GameScene extends Phaser.Scene {
     const inputSettingsDropdownScroll = this.getSettingsDropdownScrollState();
     const serverSelfObject = snapshot?.objects.find((object) => object.ID === snapshot.selfObjectId) ?? null;
     const effectiveEquipmentGroups = snapshot ? applyControlPanelPendingToEquipmentGroups(snapshot.equipmentGroups ?? [], this.controlPanelPending) : [];
+    const reloadDisplayStartMsByGroupId = this.updateReloadDisplayStartMsByGroupId(effectiveEquipmentGroups, nowMs);
     const snapshotTasks = snapshot?.tasks ?? [];
     const snapshotTaskItemGroups = snapshot?.taskItemGroups ?? [];
     const constructorProductionJobs = this.constructorProductionJobsFromTasks(snapshotTasks, effectiveEquipmentGroups);
@@ -377,6 +392,8 @@ export class GameScene extends Phaser.Scene {
       this.renderWaiting(status);
       this.gameUi.update({
         status,
+        nowMs,
+        reloadDisplayStartMsByGroupId,
         selfObject: null,
         objects: snapshot?.objects ?? [],
         equipmentGroups: effectiveEquipmentGroups,
@@ -477,6 +494,8 @@ export class GameScene extends Phaser.Scene {
     this.renderWorld(snapshot.objects, selfObject, time);
     this.gameUi.update({
       status,
+      nowMs,
+      reloadDisplayStartMsByGroupId,
       selfObject,
       objects: snapshot.objects,
       equipmentGroups: effectiveEquipmentGroups,
@@ -593,6 +612,7 @@ export class GameScene extends Phaser.Scene {
       sprite.setVisible(false);
     }
     this.pilotToolEffectGraphics.clear();
+    this.projectileGraphics.clear();
     this.bodyPolygonGraphics.clear();
     this.armorBarGraphics.clear();
   }
@@ -617,7 +637,7 @@ export class GameScene extends Phaser.Scene {
 
     const activeObjectIds = new Set<number>();
     for (const object of objects) {
-      if (this.isDrillRayObject(object)) {
+      if (this.isDrillRayObject(object) || this.isProjectileObject(object)) {
         continue;
       }
       activeObjectIds.add(object.ID);
@@ -644,6 +664,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.renderBodyPolygons(objects, camera);
     this.renderDrillBeams(objects, camera, selfObject.Rotation, timeMs);
+    this.renderProjectiles(objects, camera, selfObject.Rotation);
     this.renderArmorBars(objects, selfObject, camera);
   }
 
@@ -784,6 +805,49 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // Рисует летящие снаряды как короткие световые отрезки без загрузки текстур.
+  private renderProjectiles(
+    objects: CosmicObject[],
+    camera: Parameters<typeof worldToPilotScreen>[1],
+    selfRotation: number,
+  ): void {
+    const graphics = this.projectileGraphics;
+    graphics.clear();
+
+    for (const object of objects) {
+      if (!this.isProjectileObject(object)) {
+        continue;
+      }
+      const model = this.modelForObject(object);
+      if (!model) {
+        continue;
+      }
+      const center = worldToPilotScreen({ x: object.X, y: object.Y }, camera);
+      const rotation = rotationToPilotScreen(object.Rotation, selfRotation);
+      const direction = {
+        x: Math.sin(rotation),
+        y: -Math.cos(rotation),
+      };
+      const length = clamp(model.BodyLength * this.zoomScale, 8, 72);
+      const width = clamp(model.BodyWidth * this.zoomScale * 0.45, 2, 7);
+      const start = {
+        x: center.x - direction.x * length * 0.5,
+        y: center.y - direction.y * length * 0.5,
+      };
+      const end = {
+        x: center.x + direction.x * length * 0.5,
+        y: center.y + direction.y * length * 0.5,
+      };
+      const color = this.projectileColor(model);
+
+      graphics.lineStyle(width, color, 0.9);
+      graphics.beginPath();
+      graphics.moveTo(start.x, start.y);
+      graphics.lineTo(end.x, end.y);
+      graphics.strokePath();
+    }
+  }
+
   // Рисует один световой отрезок бура по готовой экранной геометрии.
   private renderDrillBeamGeometry(geometry: DrillBeamGeometry, timeMs: number): void {
     const graphics = this.pilotToolEffectGraphics;
@@ -921,15 +985,38 @@ export class GameScene extends Phaser.Scene {
     return this.referenceData?.CosmicObjectModel.Items[String(object.CosmicObjectModelID)] ?? null;
   }
 
-  // Возвращает ключ текстуры модели и запускает загрузку, если Phaser еще не получил файл.
   // Проверяет, что объект является серверным лучом простого бура.
   private isDrillRayObject(object: CosmicObject): boolean {
     const model = this.modelForObject(object);
-    if (!model || model.Acronym !== SIMPLE_DRILL_RAY_ACRONYM) {
+    if (!model || model.Acronym !== DRILL_RAY_ACRONYM) {
       return false;
     }
     const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)] as { Acronym?: unknown } | undefined;
     return objectType?.Acronym === "Ray";
+  }
+
+  // Проверяет, что объект является летящим снарядом.
+  private isProjectileObject(object: CosmicObject): boolean {
+    const model = this.modelForObject(object);
+    if (!model) {
+      return false;
+    }
+    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)] as { Acronym?: unknown } | undefined;
+    return objectType?.Acronym === "Projectile";
+  }
+
+  // Возвращает цвет отрисовки для снаряда без текстуры.
+  private projectileColor(model: CosmicObjectModelReference): number {
+    switch (model.Acronym) {
+      case "BallisticProjectile":
+        return PROJECTILE_BALLISTIC_COLOR;
+      case "PlasmaProjectile":
+        return PROJECTILE_PLASMA_COLOR;
+      case "Missile":
+        return PROJECTILE_MISSILE_COLOR;
+      default:
+        return PROJECTILE_DEFAULT_COLOR;
+    }
   }
 
   // Ставит точку привязки спрайта на центр текстуры, потому что смещение тела уже учтено в полигоне.
@@ -943,9 +1030,10 @@ export class GameScene extends Phaser.Scene {
     sprite.setOrigin(0.5, 0.5);
   }
 
+  // Возвращает ключ текстуры модели и запускает загрузку, если Phaser еще не получил файл.
   private textureKeyForObject(object: CosmicObject): string | null {
     const model = this.modelForObject(object);
-    if (!model) {
+    if (!model || !model.TextureFilePath) {
       return null;
     }
 
@@ -1028,6 +1116,30 @@ export class GameScene extends Phaser.Scene {
 
     this.gameUiControlRefreshFrames--;
     this.inputController.updateGameUiControls(this.collectGameUiControls());
+  }
+
+  // Синхронизирует локальное начало отрисовки перезарядки с последним серверным состоянием.
+  private updateReloadDisplayStartMsByGroupId(equipmentGroups: EquipmentGroup[], nowMs: number): Record<number, number> {
+    const activeGroupIds = new Set<number>();
+    for (const group of equipmentGroups) {
+      if (group.LastRechargeStartTime <= 0) {
+        continue;
+      }
+
+      activeGroupIds.add(group.ID);
+      const existing = this.reloadDisplayStarts.get(group.ID);
+      if (!existing || existing.serverStartMs !== group.LastRechargeStartTime) {
+        this.reloadDisplayStarts.set(group.ID, { serverStartMs: group.LastRechargeStartTime, displayStartMs: nowMs });
+      }
+    }
+
+    for (const groupId of Array.from(this.reloadDisplayStarts.keys())) {
+      if (!activeGroupIds.has(groupId)) {
+        this.reloadDisplayStarts.delete(groupId);
+      }
+    }
+
+    return Object.fromEntries(Array.from(this.reloadDisplayStarts.entries()).map(([groupId, state]) => [groupId, state.displayStartMs]));
   }
 
   // Снимает подтвержденные или отклоненные сервером pending-изменения панели управления.

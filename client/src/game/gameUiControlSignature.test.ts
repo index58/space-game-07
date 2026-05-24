@@ -12,6 +12,8 @@ const scrollState = {
 
 const state = (partial: Partial<GameUiState> = {}): GameUiState => ({
   status: "connected",
+  nowMs: 0,
+  reloadDisplayStartMsByGroupId: {},
   selfObject: null,
   objects: [],
   equipmentGroups: [],

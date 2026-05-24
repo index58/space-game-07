@@ -157,6 +157,8 @@ const rect = (width: number): DOMRect => ({
 
 const state = (): GameUiState => ({
   status: "connected",
+  nowMs: 0,
+  reloadDisplayStartMsByGroupId: {},
   selfObject: object(),
   objects: [object()],
   equipmentGroups: [],
@@ -278,6 +280,39 @@ describe("GameUi", () => {
       ["hud-panel", "hud-panel--right-bottom", "minimap"],
       ["hud-panel", "hud-panel--left-top", "debug-overlay"],
     ]);
+  });
+
+  // Проверяет, что панель пилота показывает процесс подготовки зарядов отдельным состоянием.
+  it("renders pilot toolbar reload state", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+
+    dispose = render(() => <GameUi state={() => ({
+      ...state(),
+      nowMs: 4000,
+      referenceData: {
+        ...referenceData,
+        ItemType: {
+          MaxID: 1,
+          Items: {
+            "1": { ID: 1, Acronym: "Weapon", IsPilotInstrument: true, IsInternalUsable: false },
+          },
+        },
+        ItemModel: {
+          MaxID: 1,
+          Items: {
+            "1": { ID: 1, ItemTypeID: 1, Acronym: "Laser", TitleRu: "Лазер", IconFilePath: "", MagazineCapacity: 6, RechargeTime: 6 },
+          },
+        },
+      },
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 1, Title: "Лазер", EquipmentItemModelID: 1, Count: 2, EnabledCount: 2, Enabled: true, Active: false, LastRechargeStartTime: 1000, MagazineCount: 0 },
+      ],
+    })} />, root);
+
+    expect(root.querySelector(".pilot-toolbar__magazine")?.classList.contains("is-reloading")).toBe(true);
+    expect(root.querySelector(".pilot-toolbar__magazine-fill")?.getAttribute("style")).toContain("width: 50%");
+    expect(root.querySelector(".pilot-toolbar__magazine-value")?.textContent).toBe("Перезарядка");
   });
 
   it("renders docking process progress as increasing fill", () => {
