@@ -985,8 +985,8 @@ func TestSelectedWeaponProjectileLifetimeUsesWeaponRangeAndProjectileSpeed(t *te
 	}
 }
 
-// Проверяет, что несколько орудий одной модели дают одновременный залп по ширине корпуса.
-func TestSelectedWeaponMultipleCannonsFireAcrossShipWidth(t *testing.T) {
+// Проверяет, что боковой отступ до крайних снарядов вдвое больше расстояния между соседними снарядами.
+func TestSelectedWeaponMultipleCannonsUseDoubleEdgeMarginAcrossShipWidth(t *testing.T) {
 	serverData := testWorldData(t)
 	addWeaponTestData(t, &serverData)
 	serverData.CosmicObjects.Items[1].X = 0
@@ -1012,9 +1012,12 @@ func TestSelectedWeaponMultipleCannonsFireAcrossShipWidth(t *testing.T) {
 	})
 	shipModel := serverData.CosmicObjectModels.Items[1]
 	expectedY := shipModel.BodyLength/2 + serverData.ItemModels.Items[302].ProjectileSpeed*0.1
-	closeWorldFloat(t, projectiles[0].X, -shipModel.BodyWidth/2)
+	expectedGap := shipModel.BodyWidth / 6
+	closeWorldFloat(t, projectiles[0].X, -expectedGap)
 	closeWorldFloat(t, projectiles[1].X, 0)
-	closeWorldFloat(t, projectiles[2].X, shipModel.BodyWidth/2)
+	closeWorldFloat(t, projectiles[2].X, expectedGap)
+	closeWorldFloat(t, projectiles[0].X+shipModel.BodyWidth/2, (projectiles[1].X-projectiles[0].X)*2)
+	closeWorldFloat(t, shipModel.BodyWidth/2-projectiles[2].X, (projectiles[2].X-projectiles[1].X)*2)
 	for _, projectile := range projectiles {
 		closeWorldFloat(t, projectile.Y, expectedY)
 	}

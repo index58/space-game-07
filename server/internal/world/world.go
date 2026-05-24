@@ -4680,13 +4680,14 @@ func modelVisualForwardOffsetMeters(model data.CosmicObjectModel) float64 {
 }
 
 // cross2D РЎРѓРЎвЂЎР С‘РЎвЂљР В°Р ВµРЎвЂљ Р С—РЎРѓР ВµР Р†Р Т‘Р С•РЎРѓР С”Р В°Р В»РЎРЏРЎР‚Р Р…Р С•Р Вµ Р С—РЎР‚Р С•Р С‘Р В·Р Р†Р ВµР Т‘Р ВµР Р…Р С‘Р Вµ Р Т‘Р Р†РЎС“РЎвЂ¦ Р С—Р В»Р С•РЎРѓР С”Р С‘РЎвЂ¦ Р Р†Р ВµР С”РЎвЂљР С•РЎР‚Р С•Р Р†.
-// Возвращает поперечное смещение орудия внутри равномерного ряда по ширине корпуса.
+// Возвращает поперечное смещение орудия с удвоенным боковым отступом от края корпуса.
 func weaponBarrelLateralOffsetMeters(model data.CosmicObjectModel, barrelIndex int64, barrelCount int64) float64 {
 	if barrelCount <= 1 {
 		return 0
 	}
 	halfWidth := modelVisualHalfWidthMeters(model)
-	return -halfWidth + float64(barrelIndex)*(halfWidth*2)/float64(barrelCount-1)
+	gap := halfWidth * 2 / float64(barrelCount+3)
+	return -halfWidth + gap*(float64(barrelIndex)+2)
 }
 
 // Возвращает половину визуальной ширины физического корпуса.
