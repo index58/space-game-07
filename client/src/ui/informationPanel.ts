@@ -1,5 +1,6 @@
 import { buildBodyPolygon } from "../game/bodyPolygon";
-import type { CosmicObject, CosmicObjectModelReference, ReferenceDataMessage } from "../network/protocol";
+import { formatNumber } from "../domain/format";
+import type { CosmicObject, CosmicObjectModelReference, EquipmentGroup, ItemGroup, ItemModelReference, ReferenceDataMessage } from "../network/protocol";
 
 const probeLengthMeters = 100;
 const intersectionEpsilon = 0.000000001;
@@ -23,6 +24,10 @@ export type InformationPanelInput = {
   selfObject: CosmicObject;
   // Объекты последнего серверного снимка.
   objects: CosmicObject[];
+  // Группы оборудования последнего серверного снимка.
+  equipmentGroups?: EquipmentGroup[];
+  // Группы предметов последнего серверного снимка.
+  itemGroups?: ItemGroup[];
   // Справочники клиента для названий моделей и типов.
   referenceData: ReferenceDataMessage;
 };
@@ -41,7 +46,7 @@ export const getInformationPanelView = (input: InformationPanelInput): Informati
     return null;
   }
 
-  const rows = getInformationRows(target, input.referenceData);
+  const rows = getInformationRows(target, input.referenceData, input.equipmentGroups ?? [], input.itemGroups ?? []);
   return rows.length > 0 ? { object: target, rows } : null;
 };
 
@@ -184,7 +189,12 @@ const subtract = (left: WorldPoint, right: WorldPoint): WorldPoint => ({
 const cross = (left: WorldPoint, right: WorldPoint): number => left.x * right.y - left.y * right.x;
 
 // Собирает строки панели по доступным клиенту данным.
-const getInformationRows = (object: CosmicObject, referenceData: ReferenceDataMessage): InformationPanelRow[] => {
+const getInformationRows = (
+  object: CosmicObject,
+  referenceData: ReferenceDataMessage,
+  equipmentGroups: EquipmentGroup[],
+  itemGroups: ItemGroup[],
+): InformationPanelRow[] => {
   const rows: InformationPanelRow[] = [];
   if (object.Title.trim()) {
     rows.push({ label: "Название", value: object.Title });
@@ -209,7 +219,64 @@ const getInformationRows = (object: CosmicObject, referenceData: ReferenceDataMe
     }
   }
 
+  if (model && isAsteroidModel(model, referenceData)) {
+    rows.push(...getAsteroidResourceRows(object, referenceData, equipmentGroups, itemGroups));
+  }
+
   return rows;
+};
+
+// Проверяет тип модели, чтобы ресурсные строки не появлялись у кораблей и станций.
+const isAsteroidModel = (model: CosmicObjectModelReference, referenceData: ReferenceDataMessage): boolean => {
+  const objectType = referenceData.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
+  return objectType?.Acronym === "Asteroid";
+};
+
+// Собирает остатки ресурсов из контейнеров выбранного астероида.
+const getAsteroidResourceRows = (
+  object: CosmicObject,
+  referenceData: ReferenceDataMessage,
+  equipmentGroups: EquipmentGroup[],
+  itemGroups: ItemGroup[],
+): InformationPanelRow[] => {
+  const containerIDs = new Set(
+    equipmentGroups
+      .filter((group) => group.CosmicObjectID === object.ID)
+      .map((group) => group.ID),
+  );
+  const countsByModelID = new Map<number, number>();
+
+  for (const itemGroup of itemGroups) {
+    if (!containerIDs.has(itemGroup.ContainerEquipmentGroupID) || itemGroup.Count <= 0) {
+      continue;
+    }
+
+    const itemModel = referenceData.ItemModel.Items[String(itemGroup.ContentItemModelID)];
+    if (!itemModel || !isResourceItemModel(itemModel, referenceData)) {
+      continue;
+    }
+
+    countsByModelID.set(
+      itemGroup.ContentItemModelID,
+      (countsByModelID.get(itemGroup.ContentItemModelID) ?? 0) + itemGroup.Count,
+    );
+  }
+
+  return Array.from(countsByModelID.entries())
+    .sort(([leftModelID], [rightModelID]) => leftModelID - rightModelID)
+    .flatMap(([itemModelID, count]) => {
+      const itemModel = referenceData.ItemModel.Items[String(itemModelID)];
+      return [
+        { label: "Ресурс", value: getTitle(itemModel) },
+        { label: "Количество", value: formatNumber(count, 0) },
+      ];
+    });
+};
+
+// Проверяет тип предмета через неизменяемый строковый идентификатор.
+const isResourceItemModel = (model: ItemModelReference, referenceData: ReferenceDataMessage): boolean => {
+  const itemType = referenceData.ItemType.Items[String(model.ItemTypeID)];
+  return itemType?.Acronym === "Resource";
 };
 
 // Выбирает человекочитаемое название из справочной записи.

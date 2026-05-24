@@ -2015,9 +2015,13 @@ body {
 
 .docking-notification {
   box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
   padding: 0.95vh 1.1vh;
   font-size: 1.1vh;
   line-height: 1.25;
+  overflow-wrap: anywhere;
+  white-space: normal;
   color: #eaf9ff;
   background: rgba(8, 18, 24, 0.9);
   border: 0.14vh solid rgba(216, 243, 255, 0.34);

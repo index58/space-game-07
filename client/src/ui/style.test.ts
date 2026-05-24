@@ -106,6 +106,16 @@ describe("HUD styles", () => {
     expect(readCssBlock(".hud-panel--left-top")).toContain("top: 1vh;");
   });
 
+  // Проверяет, что длинное уведомление стыковки переносится внутри правого края экрана.
+  it("wraps docking notifications inside the viewport", () => {
+    const notification = readCssBlock(".docking-notification");
+
+    expect(notification).toContain("max-width: 100%;");
+    expect(notification).toContain("min-width: 0;");
+    expect(notification).toContain("overflow-wrap: anywhere;");
+    expect(notification).toContain("white-space: normal;");
+  });
+
   // Проверяет, что информационная панель наследует плотный HUD-стиль без отдельных отступов от края экрана.
   it("styles information panel as compact HUD panel", () => {
     const panel = readCssBlock(".information-panel");

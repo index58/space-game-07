@@ -439,6 +439,8 @@ const InformationPanel = (props: InformationPanelProps) => {
     return getInformationPanelView({
       selfObject: state.selfObject,
       objects: state.objects,
+      equipmentGroups: state.equipmentGroups,
+      itemGroups: state.itemGroups,
       referenceData: state.referenceData,
     });
   };

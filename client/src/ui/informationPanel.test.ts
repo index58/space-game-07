@@ -63,7 +63,12 @@ const referenceData = {
       "20": { ID: 20, CosmicObjectTypeID: 2, TitleRu: "Астероид", TextureWidth: 40, TextureHeight: 40, TextureBodyOriginX: 20, TextureBodyOriginY: 20, TextureScale: 1, BodyWidth: 20, BodyLength: 20 },
     },
   },
-  ItemModel: { MaxID: 0, Items: {} },
+  ItemModel: {
+    MaxID: 1,
+    Items: {
+      "1": { ID: 1, ItemTypeID: 1, Acronym: "SiliconPlate", TitleRu: "Кремниевая пластина" },
+    },
+  },
   Blueprint: { MaxID: 0, Items: {} },
   BlueprintComponent: { MaxID: 0, Items: {} },
   Schema: { MaxID: 0, Items: {} },
@@ -115,5 +120,29 @@ describe("getInformationPanelView", () => {
     const view = getInformationPanelView({ selfObject, objects: [selfObject, target], referenceData });
 
     expect(view?.rows).toContainEqual({ label: "Владелец", value: "Pilot2" });
+  });
+
+  // Проверяет, что название и количество ресурса астероида выводятся отдельными строками.
+  it("shows asteroid resource title and amount as separate rows", () => {
+    const selfObject = object({ ID: 1, CosmicObjectModelID: 10, X: 0, Y: 0, Rotation: 0 });
+    const target = object({ ID: 2, Title: "Asteroid", CosmicObjectModelID: 20, X: 0, Y: 55 });
+
+    const view = getInformationPanelView({
+      selfObject,
+      objects: [selfObject, target],
+      referenceData: {
+        ...referenceData,
+        ItemType: { MaxID: 1, Items: { "1": { ID: 1, Acronym: "Resource", IsPilotInstrument: false, IsInternalUsable: false } } },
+      },
+      equipmentGroups: [
+        { ID: 10, CosmicObjectID: 2, Title: "Asteroid container", EquipmentItemModelID: 2, Count: 1, EnabledCount: 1, Enabled: true, Active: false, LastRechargeStartTime: 0 },
+      ],
+      itemGroups: [
+        { ID: 100, ContainerEquipmentGroupID: 10, ContentItemModelID: 1, Count: 4685 },
+      ],
+    });
+
+    expect(view?.rows).toContainEqual({ label: "Ресурс", value: "Кремниевая пластина" });
+    expect(view?.rows).toContainEqual({ label: "Количество", value: "4685" });
   });
 });

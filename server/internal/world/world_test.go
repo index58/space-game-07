@@ -173,7 +173,7 @@ func addWeaponTestData(t *testing.T, serverData *world.Data) {
 
 func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
 	for _, event := range events {
-		if event.Message != "" && (strings.Contains(event.Message, message) || strings.Contains(message, event.Message) || message != "") {
+		if event.Message != "" && (strings.Contains(event.Message, message) || strings.Contains(message, event.Message)) {
 			return true
 		}
 	}
@@ -1400,6 +1400,7 @@ func TestDockingRequestTimeoutClosesRequestWindow(t *testing.T) {
 }
 
 // Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎвЂўР РЋРІР‚В¦Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РўвЂР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В РЎвЂР РЋР С“Р РЋРІР‚в„–Р В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР В Р’В±Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р’В»Р РЋРІР‚ВР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂќР В РЎвЂўР РЋР С“Р В РЎВР В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.
+// Проверяет, что чужой корабль без пилота не открывает окно запроса и отправляет уведомление.
 func TestDockingRequestRejectsForeignShipWithoutPilotImmediately(t *testing.T) {
 	serverData := testWorldData(t)
 	serverData.CosmicObjects.Items[3].OwnerCharacterID = 2
@@ -1418,7 +1419,7 @@ func TestDockingRequestRejectsForeignShipWithoutPilotImmediately(t *testing.T) {
 	if dockingEventsContainKind(events, "dockingRequestStarted") {
 		t.Fatal("request window was shown for receiver without pilot")
 	}
-	if !dockingEventsContainMessage(events, "Р В РІР‚в„ў Р В РЎСџР В РЎвЂўР В Р’В»Р РЋРЎвЂњР РЋРІР‚РЋР В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р В Р’Вµ Р В Р вЂ¦Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂ”Р В Р’ВµР РЋР вЂљР РЋР С“Р В РЎвЂўР В Р вЂ¦Р В Р’В°Р В Р’В¶Р В Р’В° Р В РўвЂР В Р’В»Р РЋР РЏ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂР В Р вЂ¦Р РЋР РЏР РЋРІР‚С™Р В РЎвЂР РЋР РЏ Р РЋР вЂљР В Р’ВµР РЋРІвЂљВ¬Р В Р’ВµР В Р вЂ¦Р В РЎвЂР РЋР РЏ") {
+	if !dockingEventsContainMessage(events, "В Получателе нет персонажа для принятия решения") {
 		t.Fatalf("missing no-pilot notification: %+v", events)
 	}
 }
@@ -1447,6 +1448,7 @@ func TestBeginCharacterTransferFromSecondaryToOwnedMainMovesCharacter(t *testing
 }
 
 // Р В РЎСџР РЋР вЂљР В РЎвЂўР В Р вЂ Р В Р’ВµР РЋР вЂљР РЋР РЏР В Р’ВµР РЋРІР‚С™, Р РЋРІР‚РЋР РЋРІР‚С™Р В РЎвЂў Р РЋР С“Р В РЎвЂўР РЋРІР‚В¦Р РЋР вЂљР В Р’В°Р В Р вЂ¦Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РўвЂР В Р’В°Р В Р вЂ¦Р В Р вЂ¦Р РЋРІР‚в„–Р РЋРІР‚В¦ Р В Р’В·Р В Р’В°Р В РЎвЂ”Р В РЎвЂР РЋР С“Р РЋРІР‚в„–Р В Р вЂ Р В Р’В°Р В Р’ВµР РЋРІР‚С™ Р В РЎвЂўР В Р’В±Р В Р вЂ¦Р В РЎвЂўР В Р вЂ Р В Р’В»Р РЋРІР‚ВР В Р вЂ¦Р В Р вЂ¦Р В РЎвЂўР В Р’Вµ Р В РЎвЂ”Р В РЎвЂўР В Р’В»Р В РЎвЂўР В Р’В¶Р В Р’ВµР В Р вЂ¦Р В РЎвЂР В Р’Вµ Р В РЎвЂќР В РЎвЂўР РЋР С“Р В РЎВР В РЎвЂР РЋРІР‚РЋР В Р’ВµР РЋР С“Р В РЎвЂќР В РЎвЂўР В РЎвЂ“Р В РЎвЂў Р В РЎвЂўР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.
+// Проверяет, что пересадка вне стыкованной группы оставляет персонажа на месте и отправляет уведомление.
 func TestBeginCharacterTransferOutsideClusterShowsNotification(t *testing.T) {
 	serverData := testWorldData(t)
 	gameWorld := world.New(1, serverData)
@@ -1461,7 +1463,7 @@ func TestBeginCharacterTransferOutsideClusterShowsNotification(t *testing.T) {
 	if serverData.Characters.Items[1].LocationCosmicObjectID != 1 {
 		t.Fatalf("character location changed to %d", serverData.Characters.Items[1].LocationCosmicObjectID)
 	}
-	if !dockingEventsContainMessage(gameWorld.DrainDockingEvents(), "Р В РЎвЂєР В Р’В±Р РЋР вЂ°Р В Р’ВµР В РЎвЂќР РЋРІР‚С™ Р В Р вЂ¦Р В Р’Вµ Р В РЎвЂ”Р РЋР вЂљР В РЎвЂР РЋР С“Р РЋРІР‚С™Р РЋРІР‚в„–Р В РЎвЂќР В РЎвЂўР В Р вЂ Р В Р’В°Р В Р вЂ¦") {
+	if !dockingEventsContainMessage(gameWorld.DrainDockingEvents(), "Объект не пристыкован") {
 		t.Fatal("missing not-docked notification")
 	}
 }
