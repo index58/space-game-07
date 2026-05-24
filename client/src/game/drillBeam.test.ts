@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clipDrillBeamGeometryToPolygons, getDrillBeamGeometry, getDrillBeamIntakeProgress } from "./drillBeam";
+import { clipDrillBeamGeometryToPolygons, getDrillBeamGeometry, getDrillBeamIntakeProgress, getLaserBeamOutflowProgress } from "./drillBeam";
 
 describe("getDrillBeamGeometry", () => {
   // Проверяет, что центр мирового объекта луча превращается в экранный отрезок с учетом масштаба.
@@ -84,5 +84,14 @@ describe("getDrillBeamGeometry", () => {
     const next = getDrillBeamIntakeProgress(100, 0);
 
     expect(next).toBeLessThan(first);
+  });
+
+  // Проверяет, что лазерные штрихи идут от корабля к цели вдвое быстрее буровых.
+  it("moves laser inner lines away from source twice as fast", () => {
+    const first = getLaserBeamOutflowProgress(0, 0);
+    const next = getLaserBeamOutflowProgress(100, 0);
+
+    expect(first).toBe(0);
+    expect(next).toBeCloseTo(0.084);
   });
 });

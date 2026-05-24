@@ -27,6 +27,7 @@ const (
 	pilotToolSlotCount        = 10
 	simpleDrillAcronym        = "SimpleDrill"
 	drillRayAcronym           = "DrillRay"
+	laserRayAcronym           = "LaserRay"
 	weaponItemTypeAcronym     = "Weapon"
 )
 
@@ -51,6 +52,7 @@ type weaponAttackParameters struct {
 	ProjectileModelID      int64               // Модель космического объекта, который появляется после выстрела.
 	Damage                 float64             // Урон броне при одном попадании.
 	ProjectileSpeed        float64             // Скорость движения в метрах за секунду.
+	InstantRay             bool                // Показывает, что оружие бьёт лучом без летящего снаряда.
 	ShotsPerSecond         float64             // Количество выстрелов за секунду с учётом включённых единиц.
 	InitialProjectileCount int64               // Количество объектов, появляющихся сразу при начале стрельбы.
 	Range                  float64             // Дальность попадания в метрах.
@@ -2712,7 +2714,11 @@ func (world *World) stepWeaponFireLocked(dtSeconds float64, inputsByObjectID map
 			if firedCount <= 0 {
 				continue
 			}
-			world.spawnWeaponProjectilesLocked(*cosmicObject, groupParameters, firedCount, attackGroup.BarrelStartIndex, attackGroup.EnabledCount, parameters.InitialProjectileCount)
+			if groupParameters.InstantRay {
+				world.fireInstantWeaponRaysLocked(*cosmicObject, groupParameters, firedCount, attackGroup.BarrelStartIndex, attackGroup.EnabledCount, parameters.InitialProjectileCount)
+			} else {
+				world.spawnWeaponProjectilesLocked(*cosmicObject, groupParameters, firedCount, attackGroup.BarrelStartIndex, attackGroup.EnabledCount, parameters.InitialProjectileCount)
+			}
 		}
 	}
 }
@@ -2899,7 +2905,18 @@ func (world *World) spawnWeaponProjectilesLocked(source data.CosmicObject, param
 	}
 }
 
-// cross2D считает псевдоскалярное произведение двух плоских векторов.
+// Создаёт видимый лазерный луч и сразу применяет урон к первой цели на линии огня.
+func (world *World) fireInstantWeaponRaysLocked(source data.CosmicObject, parameters weaponAttackParameters, shotCount int, barrelStartIndex int64, groupBarrelCount int64, totalBarrelCount int64) {
+	if shotCount <= 0 {
+		return
+	}
+	for index := 0; index < shotCount; index++ {
+		if hitObject, hitModel, ok := world.nearestRayHitObjectLocked(source, parameters.Range); ok && world.cosmicObjectModelCanReceiveWeaponDamageLocked(hitModel) {
+			world.damageObjectArmorLocked(hitObject, parameters.Damage)
+		}
+	}
+}
+
 func (world *World) stepProjectilesLocked(dtSeconds float64) {
 	if dtSeconds <= 0 || len(world.projectiles) == 0 || world.data.CosmicObjects == nil || world.data.CosmicObjectModels == nil || world.data.CosmicObjectTypes == nil {
 		return
@@ -4771,7 +4788,89 @@ func (world *World) activeProjectileObjectsLocked() []game.SnapshotCosmicObject 
 	return objects
 }
 
-// cross2D считает псевдоскалярное произведение двух плоских векторов.
+// Возвращает мгновенные лучи оружия для текущего снимка мира.
+func (world *World) activeInstantWeaponRayObjectsLocked() []game.SnapshotCosmicObject {
+	if world.data.CosmicObjects == nil || world.data.CosmicObjectModels == nil {
+		return nil
+	}
+	inputs := world.inputsByObjectID()
+	objectIDs := make([]int64, 0, len(inputs))
+	for objectID, input := range inputs {
+		if input.PrimaryPointerAction {
+			objectIDs = append(objectIDs, objectID)
+		}
+	}
+	sort.Slice(objectIDs, func(left int, right int) bool {
+		return objectIDs[left] < objectIDs[right]
+	})
+
+	rays := make([]game.SnapshotCosmicObject, 0, len(objectIDs))
+	for _, objectID := range objectIDs {
+		input := inputs[objectID]
+		source, ok := world.data.CosmicObjects.Get(objectID)
+		if !ok || !source.Enabled {
+			continue
+		}
+		sourceModel, ok := world.data.CosmicObjectModels.Get(source.CosmicObjectModelID)
+		if !ok {
+			continue
+		}
+		parameters, ok := world.selectedWeaponAttackParametersLocked(objectID, input)
+		if !ok || !parameters.InstantRay {
+			continue
+		}
+		if !world.weaponInstantRayCanStayVisibleLocked(parameters) {
+			continue
+		}
+		rayModel, ok := world.data.CosmicObjectModels.Get(parameters.ProjectileModelID)
+		if !ok {
+			continue
+		}
+		forward := physics.ForwardVector(source.Rotation)
+		right := physics.RightVector(source.Rotation)
+		centerDistance := modelVisualForwardOffsetMeters(*sourceModel) + rayModel.BodyLength/2
+		for _, group := range parameters.Groups {
+			if group.EquipmentGroup == nil || group.EnabledCount <= 0 {
+				continue
+			}
+			for index := int64(0); index < group.EnabledCount; index++ {
+				barrelIndex := group.BarrelStartIndex + index
+				sideOffset := weaponBarrelLateralOffsetMeters(*sourceModel, barrelIndex, parameters.InitialProjectileCount)
+				rayID := -(objectID*100000 + barrelIndex + 1)
+				ray := data.CosmicObject{
+					ID:                  rayID,
+					Title:               rayModel.Acronym,
+					CosmicObjectModelID: rayModel.ID,
+					X:                   source.X + forward.X*centerDistance + right.X*sideOffset,
+					Y:                   source.Y + forward.Y*centerDistance + right.Y*sideOffset,
+					Rotation:            source.Rotation,
+					TargetRotation:      source.Rotation,
+					Enabled:             true,
+				}
+				rays = append(rays, game.SnapshotCosmicObject{CosmicObject: ray})
+			}
+		}
+	}
+	return rays
+}
+
+// Проверяет, что выбранный лазер не находится на перезарядке и ещё может держать видимый луч.
+func (world *World) weaponInstantRayCanStayVisibleLocked(parameters weaponAttackParameters) bool {
+	for _, group := range parameters.Groups {
+		if group.EquipmentGroup == nil {
+			continue
+		}
+		model, ok := world.data.ItemModels.Get(group.EquipmentGroup.EquipmentItemModelID)
+		if !ok || weaponMagazineCapacity(group.EquipmentGroup, model) <= 0 || model.AmmoItemModelID <= 0 {
+			return true
+		}
+		if group.EquipmentGroup.MagazineCount > 0 && group.EquipmentGroup.LastRechargeStartTime <= 0 {
+			return true
+		}
+	}
+	return false
+}
+
 func (world *World) selectedWeaponAttackParametersLocked(objectID int64, input game.ShipInput) (weaponAttackParameters, bool) {
 	modelID, ok := world.activePrimaryPilotToolModelIDLocked(objectID, input)
 	if !ok || world.data.EquipmentGroups == nil || world.data.ItemModels == nil || world.data.ItemTypes == nil {
@@ -4789,13 +4888,15 @@ func (world *World) selectedWeaponAttackParametersLocked(objectID int64, input g
 			continue
 		}
 		projectileModel, ok := world.projectileModelForWeaponLocked(model)
-		if !ok || projectileModel.Damage <= 0 || projectileModel.MaxSpeed <= 0 || !world.cosmicObjectModelHasProjectileTypeLocked(projectileModel) {
+		instantRay := ok && projectileModel.Acronym == laserRayAcronym
+		if !ok || projectileModel.Damage <= 0 || (!instantRay && projectileModel.MaxSpeed <= 0) || !world.cosmicObjectModelHasProjectileTypeLocked(projectileModel) {
 			continue
 		}
 		parameters.ItemModelID = model.ID
 		parameters.ProjectileModelID = projectileModel.ID
 		parameters.Damage = projectileModel.Damage
 		parameters.ProjectileSpeed = projectileModel.MaxSpeed
+		parameters.InstantRay = instantRay
 		if model.Range > parameters.Range {
 			parameters.Range = model.Range
 		}
@@ -4812,7 +4913,7 @@ func (world *World) selectedWeaponAttackParametersLocked(objectID int64, input g
 		})
 	}
 
-	return parameters, parameters.ItemModelID > 0 && parameters.ProjectileModelID > 0 && parameters.Range > 0 && parameters.Damage > 0 && parameters.ProjectileSpeed > 0 && parameters.ShotsPerSecond > 0 && parameters.InitialProjectileCount > 0 && len(parameters.Groups) > 0
+	return parameters, parameters.ItemModelID > 0 && parameters.ProjectileModelID > 0 && parameters.Range > 0 && parameters.Damage > 0 && (parameters.InstantRay || parameters.ProjectileSpeed > 0) && parameters.ShotsPerSecond > 0 && parameters.InitialProjectileCount > 0 && len(parameters.Groups) > 0
 }
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
@@ -4886,6 +4987,7 @@ func (world *World) snapshotLocked(selfObjectID int64) game.Snapshot {
 		})
 	}
 	objects = append(objects, world.activeDrillRayObjectsLocked()...)
+	objects = append(objects, world.activeInstantWeaponRayObjectsLocked()...)
 	objects = append(objects, world.activeProjectileObjectsLocked()...)
 
 	equipmentGroups := make([]data.EquipmentGroup, 0)

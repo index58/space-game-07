@@ -39,9 +39,11 @@ import { applyControlPanelListSelection } from "./controlPanelListSelection";
 import { applyActiveControlPanelUsageRelations, normalizeControlPanelUsageSelection } from "./controlPanelUsageSelection";
 import {
   DRILL_RAY_ACRONYM,
+  LASER_RAY_ACRONYM,
   clipDrillBeamGeometryToPolygons,
   getDrillBeamGeometry,
   getDrillBeamIntakeProgress,
+  getLaserBeamOutflowProgress,
   type DrillBeamGeometry,
   type DrillBeamPoint,
 } from "./drillBeam";
@@ -778,7 +780,9 @@ export class GameScene extends Phaser.Scene {
     graphics.clear();
 
     for (const object of objects) {
-      if (!this.isDrillRayObject(object)) {
+      const isDrillRay = this.isDrillRayObject(object);
+      const isLaserRay = this.isLaserRayObject(object);
+      if (!isDrillRay && !isLaserRay) {
         continue;
       }
       const model = this.modelForObject(object);
@@ -794,13 +798,18 @@ export class GameScene extends Phaser.Scene {
       if (geometry) {
         const sourceObjectId = -object.ID;
         const obstaclePolygons = objects.flatMap((obstacle) => {
-          if (obstacle.ID === object.ID || obstacle.ID === sourceObjectId || this.isDrillRayObject(obstacle)) {
+          if (obstacle.ID === object.ID || obstacle.ID === sourceObjectId || this.isDrillRayObject(obstacle) || this.isLaserRayObject(obstacle)) {
             return [];
           }
           const obstacleModel = this.modelForObject(obstacle);
           return obstacleModel ? [bodyPolygonToPilotScreen(obstacle, obstacleModel, camera)] : [];
         });
-        this.renderDrillBeamGeometry(clipDrillBeamGeometryToPolygons(geometry, obstaclePolygons), timeMs);
+        const clippedGeometry = clipDrillBeamGeometryToPolygons(geometry, obstaclePolygons);
+        if (isLaserRay) {
+          this.renderLaserBeamGeometry(clippedGeometry, timeMs);
+        } else {
+          this.renderDrillBeamGeometry(clippedGeometry, timeMs);
+        }
       }
     }
   }
@@ -815,7 +824,7 @@ export class GameScene extends Phaser.Scene {
     graphics.clear();
 
     for (const object of objects) {
-      if (this.isDrillRayObject(object) || !this.isProjectileObject(object)) {
+      if (this.isDrillRayObject(object) || this.isLaserRayObject(object) || !this.isProjectileObject(object)) {
         continue;
       }
       const model = this.modelForObject(object);
@@ -894,6 +903,56 @@ export class GameScene extends Phaser.Scene {
       graphics.lineStyle(width * 0.55, 0x9ffcff, 0.72);
       graphics.strokeCircle(geometry.end.x, geometry.end.y, sideWidth * 1.35 * pulse);
       graphics.fillStyle(0xe9ffff, 0.62);
+      graphics.fillCircle(geometry.end.x, geometry.end.y, width * 1.8);
+    }
+  }
+
+  // Рисует один световой отрезок лазера по готовой экранной геометрии.
+  private renderLaserBeamGeometry(geometry: DrillBeamGeometry, timeMs: number): void {
+    const graphics = this.pilotToolEffectGraphics;
+
+    const pulse = 0.82 + Math.sin(timeMs * 0.018) * 0.16;
+    const width = geometry.widthPx;
+    const sideWidth = width * 2.4;
+    const direction = normalizeScreenVector({
+      x: geometry.end.x - geometry.start.x,
+      y: geometry.end.y - geometry.start.y,
+    });
+    const normal = { x: -direction.y, y: direction.x };
+
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 1.4, sideWidth, 0xff2a1f, 0.08 * pulse);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 4.5, width * 4.5, 0x9e0b0b, 0.18 * pulse);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 2.75, width * 2.75, 0xff3b30, 0.28 * pulse);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 1.1, width * 1.1, 0xff9a8c, 0.58);
+    this.fillPilotToolEffectRoundedBeam(geometry.start, geometry.end, width * 0.325, width * 0.325, 0xffffff, 0.95);
+
+    for (let index = 0; index < 10; index += 1) {
+      const progress = getLaserBeamOutflowProgress(timeMs, index);
+      const center = {
+        x: lerp(geometry.start.x, geometry.end.x, progress),
+        y: lerp(geometry.start.y, geometry.end.y, progress),
+      };
+      const shimmer = Math.sin(timeMs * 0.01 + index * 2.17);
+      const offset = shimmer * sideWidth * (0.35 + progress * 0.85);
+      const segmentLength = clamp(geometry.lengthPx * 0.045, 12, 46);
+      this.strokePilotToolEffectLine(
+        { x: center.x + normal.x * offset, y: center.y + normal.y * offset },
+        {
+          x: center.x - direction.x * segmentLength + normal.x * shimmer * width * 0.5,
+          y: center.y - direction.y * segmentLength + normal.y * shimmer * width * 0.5,
+        },
+        width * 0.75,
+        index % 2 === 0 ? 0xffffff : 0xff6a5f,
+        0.32,
+      );
+    }
+
+    if (geometry.hitObject) {
+      graphics.fillStyle(0xff2a1f, 0.2);
+      graphics.fillCircle(geometry.end.x, geometry.end.y, sideWidth * 2.2 * pulse);
+      graphics.lineStyle(width * 0.55, 0xff9a8c, 0.72);
+      graphics.strokeCircle(geometry.end.x, geometry.end.y, sideWidth * 1.35 * pulse);
+      graphics.fillStyle(0xffeeee, 0.62);
       graphics.fillCircle(geometry.end.x, geometry.end.y, width * 1.8);
     }
   }
@@ -989,6 +1048,16 @@ export class GameScene extends Phaser.Scene {
   private isDrillRayObject(object: CosmicObject): boolean {
     const model = this.modelForObject(object);
     if (!model || model.Acronym !== DRILL_RAY_ACRONYM) {
+      return false;
+    }
+    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
+    return objectType?.Acronym === "Ray";
+  }
+
+  // Проверяет, что объект является серверным лазерным лучом.
+  private isLaserRayObject(object: CosmicObject): boolean {
+    const model = this.modelForObject(object);
+    if (!model || model.Acronym !== LASER_RAY_ACRONYM) {
       return false;
     }
     const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];

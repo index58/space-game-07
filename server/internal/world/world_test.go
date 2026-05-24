@@ -172,6 +172,71 @@ func addWeaponTestData(t *testing.T, serverData *world.Data) {
 	}
 }
 
+// Добавляет тестовое лазерное оружие с мгновенным лучом.
+func addLaserWeaponTestData(t *testing.T, serverData *world.Data) {
+	t.Helper()
+	serverData.ItemTypes.Items[1].IsPilotInstrument = true
+	serverData.CosmicObjectTypes.Items[6] = &data.CosmicObjectType{ID: 6, TitleRu: "Луч", TitleEn: "Ray", Acronym: "Ray", Movable: true, Rotatable: true, IsProjectile: true}
+	serverData.CosmicObjectTypes.MaxID = 6
+	serverData.CosmicObjectModels.Items[902] = &data.CosmicObjectModel{
+		ID:                 902,
+		TitleRu:            "Лазерный луч",
+		TitleEn:            "Laser Ray",
+		Acronym:            "LaserRay",
+		TextureWidth:       8,
+		TextureHeight:      500,
+		TextureBodyOriginX: 4,
+		TextureBodyOriginY: 250,
+		TextureBodyWidth:   8,
+		TextureBodyLength:  500,
+		TextureScale:       1,
+		CosmicObjectTypeID: 6,
+		BodyLength:         500,
+		BodyWidth:          8,
+		MaxSpeed:           0,
+		Damage:             80,
+	}
+	serverData.ItemTypes.Items[18] = &data.ItemType{ID: 18, TitleRu: "Боеприпас", TitleEn: "Ammunition", Acronym: "Ammunition", CountMustBeInteger: true}
+	serverData.ItemModels.Items[711] = &data.ItemModel{
+		ID:         711,
+		TitleRu:    "Лазерный заряд",
+		TitleEn:    "Laser Charge",
+		Acronym:    "LaserCharge",
+		ItemTypeID: 18,
+		Mass:       1,
+		Volume:     0.01,
+		Complexity: 15,
+	}
+	serverData.ItemModels.Items[302].Range = 500
+	serverData.ItemModels.Items[302].FiringRate = 1
+	serverData.ItemModels.Items[302].ProjectileObjectModelID = 902
+	serverData.EquipmentGroups.Items[600] = &data.EquipmentGroup{
+		ID:                   600,
+		CosmicObjectID:       1,
+		Title:                "Laser",
+		EquipmentItemModelID: 302,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+		MagazineCount:        10,
+	}
+	if err := serverData.CosmicObjectTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.CosmicObjectModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.EquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
 	for _, event := range events {
 		if event.Message != "" && (strings.Contains(event.Message, message) || strings.Contains(message, event.Message)) {
@@ -933,7 +998,142 @@ func TestSelectedWeaponCreatesProjectileObjectOnPrimaryAction(t *testing.T) {
 	closeWorldFloat(t, serverData.CosmicObjects.Items[4].Armor, 300)
 }
 
-// Проверяет, что сохранение данных записывает обновлённое положение космического объекта.
+// Проверяет, что лазерный луч сразу наносит урон и появляется только в снимке мира.
+func TestSelectedLaserWeaponDamagesShipImmediatelyAndShowsRay(t *testing.T) {
+	serverData := testWorldData(t)
+	addLaserWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	serverData.CosmicObjects.Items[4] = &data.CosmicObject{ID: 4, Title: "Target ship", CosmicObjectModelID: 1, X: 0, Y: 100, MaxArmor: 300, Armor: 300, Enabled: true, Anchored: true}
+	serverData.CosmicObjects.MaxID = 4
+	if err := serverData.CosmicObjects.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	snapshot := gameWorld.Tick(0.1)
+
+	closeWorldFloat(t, serverData.CosmicObjects.Items[4].Armor, 220)
+	ray, ok := findCosmicObjectModelInSnapshot(snapshot, 902)
+	if !ok {
+		t.Fatalf("laser ray was not added to snapshot: %+v", snapshot.Objects)
+	}
+	if ray.ID >= 0 || ray.Title != "LaserRay" || !ray.Enabled {
+		t.Fatalf("laser ray uses wrong temporary state: %+v", ray.CosmicObject)
+	}
+	if _, ok := serverData.CosmicObjects.Get(ray.ID); ok {
+		t.Fatalf("laser ray was saved in persistent objects")
+	}
+}
+
+// Проверяет, что лазерный луч остаётся видимым между списаниями магазина при удержании огня.
+func TestSelectedLaserWeaponShowsRayBetweenMagazineShots(t *testing.T) {
+	serverData := testWorldData(t)
+	addLaserWeaponTestData(t, &serverData)
+	serverData.ItemModels.Items[302].FiringRate = 1
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(0.1)
+	snapshot := gameWorld.Tick(0.1)
+
+	if _, ok := findCosmicObjectModelInSnapshot(snapshot, 902); !ok {
+		t.Fatalf("laser ray disappeared between shots: %+v", snapshot.Objects)
+	}
+}
+
+// Проверяет, что несколько лазеров выходят из тех же боковых точек корпуса, что и пушки.
+func TestSelectedLaserWeaponUsesBarrelOffsetsForVisibleRays(t *testing.T) {
+	serverData := testWorldData(t)
+	addLaserWeaponTestData(t, &serverData)
+	serverData.EquipmentGroups.Items[600].Count = 3
+	serverData.EquipmentGroups.Items[600].EnabledCount = 3
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	snapshot := gameWorld.Tick(0.1)
+
+	rays := findCosmicObjectModelsInSnapshot(snapshot, 902)
+	if len(rays) != 3 {
+		t.Fatalf("laser ray count = %d, want 3: %+v", len(rays), snapshot.Objects)
+	}
+	sort.Slice(rays, func(left int, right int) bool {
+		return rays[left].X < rays[right].X
+	})
+	shipModel := serverData.CosmicObjectModels.Items[1]
+	expectedGap := shipModel.BodyWidth / 6
+	closeWorldFloat(t, rays[0].X, -expectedGap)
+	closeWorldFloat(t, rays[1].X, 0)
+	closeWorldFloat(t, rays[2].X, expectedGap)
+}
+
+// Проверяет, что лазер тратит заряды из магазина и перезаряжается из контейнера.
+func TestSelectedLaserWeaponConsumesMagazineAndReloadsFromLaserCharges(t *testing.T) {
+	serverData := testWorldData(t)
+	addLaserWeaponTestData(t, &serverData)
+	serverData.ItemModels.Items[302].AmmoItemModelID = 711
+	serverData.ItemModels.Items[302].MagazineCapacity = 1
+	serverData.ItemModels.Items[302].RechargeTime = 0.1
+	serverData.EquipmentGroups.Items[600].MagazineCount = 1
+	serverData.EquipmentGroups.Items[601] = &data.EquipmentGroup{
+		ID:                   601,
+		CosmicObjectID:       1,
+		Title:                "Laser charge box",
+		EquipmentItemModelID: 301,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	}
+	serverData.EquipmentGroups.MaxID = 601
+	if _, err := serverData.ItemGroups.Add(&data.ItemGroup{
+		ContainerEquipmentGroupID: 601,
+		ContentItemModelID:        711,
+		Count:                     5,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.EquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(0.1)
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: false})
+	gameWorld.Tick(0.11)
+
+	if serverData.EquipmentGroups.Items[600].MagazineCount != 1 {
+		t.Fatalf("laser magazine count = %d, want 1", serverData.EquipmentGroups.Items[600].MagazineCount)
+	}
+	items := serverData.ItemGroups.GetByContainerEquipmentGroupID(601)
+	if len(items) != 1 || items[0].Count != 4 {
+		t.Fatalf("laser charges in container = %+v, want one group with 4", items)
+	}
+}
+
 // Проверяет, что снаряд появляется у переднего края корпуса без дополнительного выноса вперед.
 func TestSelectedWeaponProjectileStartsAtShipNose(t *testing.T) {
 	serverData := testWorldData(t)

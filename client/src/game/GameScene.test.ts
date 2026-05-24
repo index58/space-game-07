@@ -217,6 +217,26 @@ describe("GameScene", () => {
     expect(arc).toHaveBeenCalledWith(0, 0, 0.9750000000000001, -Math.PI, 0);
   });
 
+  // Проверяет, что лазерный луч использует те же слои, но с красной палитрой.
+  it("renders laser beam visual layers with red colors", async () => {
+    const { GameScene } = await import("./GameScene");
+    const fillStyle = vi.fn();
+    const graphics = createDrillBeamGraphics({ fillStyle });
+    const scene = Object.create(GameScene.prototype) as {
+      pilotToolEffectGraphics: typeof graphics;
+      renderLaserBeamGeometry: (geometry: DrillBeamGeometry, timeMs: number) => void;
+    };
+    scene.pilotToolEffectGraphics = graphics;
+
+    scene.renderLaserBeamGeometry(testDrillBeamGeometry({ hitObject: false }), 1000);
+
+    expect(fillStyle).toHaveBeenCalledWith(0xff2a1f, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0x9e0b0b, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0xff3b30, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0xff9a8c, 0.58);
+    expect(fillStyle).toHaveBeenCalledWith(0xffffff, 0.95);
+  });
+
   // Проверяет, что конец луча получает световое пятно только при попадании в объект.
   it("renders drill beam end cap on object hit", async () => {
     const { GameScene } = await import("./GameScene");

@@ -1,4 +1,5 @@
 export const DRILL_RAY_ACRONYM = "DrillRay";
+export const LASER_RAY_ACRONYM = "LaserRay";
 
 const INTERSECTION_EPSILON = 0.000000001;
 
@@ -147,3 +148,7 @@ export const getDrillBeamIntakeProgress = (timeMs: number, index: number): numbe
   const progress = (timeMs * 0.00042 + index * 0.173) % 1;
   return 1 - progress;
 };
+
+// Возвращает положение внутренних штрихов лазера так, чтобы движение шло от корабля к цели.
+export const getLaserBeamOutflowProgress = (timeMs: number, index: number): number =>
+  (timeMs * 0.00084 + index * 0.173) % 1;
