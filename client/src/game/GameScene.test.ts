@@ -131,7 +131,7 @@ describe("GameScene", () => {
       },
       CosmicObjectType: {
         Items: {
-          "5": { Acronym: "Projectile" },
+          "5": { Acronym: "Bullet", IsProjectile: true },
         },
       },
     };
@@ -157,7 +157,7 @@ describe("GameScene", () => {
       },
       CosmicObjectType: {
         Items: {
-          "5": { Acronym: "Projectile" },
+          "5": { Acronym: "Bullet", IsProjectile: true },
         },
       },
     };

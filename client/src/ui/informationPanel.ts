@@ -91,7 +91,7 @@ const getProbeTarget = (input: InformationPanelInput): CosmicObject | null => {
 // Проверяет служебные типы объектов, которые не должны выбираться обзорным лучом.
 const isIgnoredProbeTarget = (model: CosmicObjectModelReference, referenceData: ReferenceDataMessage): boolean => {
   const objectType = referenceData.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
-  return objectType?.Acronym === "Ray" || objectType?.Acronym === "Projectile";
+  return objectType?.IsProjectile === true;
 };
 
 // Возвращает самую переднюю точку физического тела в мировых координатах.

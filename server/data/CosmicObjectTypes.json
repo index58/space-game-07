@@ -1,5 +1,5 @@
 {
-  "MaxID": 6,
+  "MaxID": 8,
   "Items": {
     "1": {
       "ID": 1,
@@ -8,7 +8,8 @@
       "Acronym": "Ship",
       "CharacterLocatable": true,
       "Movable": true,
-      "Rotatable": true
+      "Rotatable": true,
+      "IsProjectile": false
     },
     "2": {
       "ID": 2,
@@ -17,7 +18,8 @@
       "Acronym": "Station",
       "CharacterLocatable": true,
       "Movable": false,
-      "Rotatable": false
+      "Rotatable": false,
+      "IsProjectile": false
     },
     "3": {
       "ID": 3,
@@ -26,7 +28,8 @@
       "Acronym": "Asteroid",
       "CharacterLocatable": false,
       "Movable": false,
-      "Rotatable": false
+      "Rotatable": false,
+      "IsProjectile": false
     },
     "4": {
       "ID": 4,
@@ -35,16 +38,18 @@
       "Acronym": "Loot",
       "CharacterLocatable": false,
       "Movable": false,
-      "Rotatable": true
+      "Rotatable": true,
+      "IsProjectile": false
     },
     "5": {
       "ID": 5,
-      "TitleRu": "Снаряд",
-      "TitleEn": "Projectile",
-      "Acronym": "Projectile",
+      "TitleRu": "Пуля",
+      "TitleEn": "Bullet",
+      "Acronym": "Bullet",
       "CharacterLocatable": false,
       "Movable": true,
-      "Rotatable": true
+      "Rotatable": true,
+      "IsProjectile": true
     },
     "6": {
       "ID": 6,
@@ -53,7 +58,28 @@
       "Acronym": "Ray",
       "CharacterLocatable": false,
       "Movable": true,
-      "Rotatable": true
+      "Rotatable": true,
+      "IsProjectile": true
+    },
+    "7": {
+      "ID": 7,
+      "TitleRu": "Плазма",
+      "TitleEn": "Plasma",
+      "Acronym": "Plasma",
+      "CharacterLocatable": false,
+      "Movable": true,
+      "Rotatable": true,
+      "IsProjectile": true
+    },
+    "8": {
+      "ID": 8,
+      "TitleRu": "Ракета",
+      "TitleEn": "Rocket",
+      "Acronym": "Rocket",
+      "CharacterLocatable": false,
+      "Movable": true,
+      "Rotatable": true,
+      "IsProjectile": true
     }
   }
 }

@@ -717,7 +717,7 @@ export class GameScene extends Phaser.Scene {
       return false;
     }
 
-    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)] as { Acronym?: unknown } | undefined;
+    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
     return objectType?.Acronym === "Ship" || objectType?.Acronym === "Station";
   }
 
@@ -815,7 +815,7 @@ export class GameScene extends Phaser.Scene {
     graphics.clear();
 
     for (const object of objects) {
-      if (!this.isProjectileObject(object)) {
+      if (this.isDrillRayObject(object) || !this.isProjectileObject(object)) {
         continue;
       }
       const model = this.modelForObject(object);
@@ -991,7 +991,7 @@ export class GameScene extends Phaser.Scene {
     if (!model || model.Acronym !== DRILL_RAY_ACRONYM) {
       return false;
     }
-    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)] as { Acronym?: unknown } | undefined;
+    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
     return objectType?.Acronym === "Ray";
   }
 
@@ -1001,8 +1001,8 @@ export class GameScene extends Phaser.Scene {
     if (!model) {
       return false;
     }
-    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)] as { Acronym?: unknown } | undefined;
-    return objectType?.Acronym === "Projectile";
+    const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
+    return objectType?.IsProjectile === true;
   }
 
   // Возвращает цвет отрисовки для снаряда без текстуры.

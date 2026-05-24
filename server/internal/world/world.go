@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"path/filepath"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 
@@ -19,20 +18,16 @@ import (
 )
 
 const (
-	defaultAccountEmailDomain  = "auto.local"
-	defaultAccountPassword     = "auto"
-	defaultStarterShipAcronym  = "ship_bat"
-	dockingDurationSeconds     = 10
-	dockingProbeDistance       = 10
-	miningNotificationSeconds  = 1
-	pilotToolSlotCount         = 10
-	simpleDrillAcronym         = "SimpleDrill"
-	drillRayAcronym            = "DrillRay"
-	weaponItemTypeAcronym      = "Weapon"
-	ballisticProjectileAcronym = "BallisticProjectile"
-	plasmaProjectileAcronym    = "PlasmaProjectile"
-	missileProjectileAcronym   = "Missile"
-	laserRayAcronym            = "LaserRay"
+	defaultAccountEmailDomain = "auto.local"
+	defaultAccountPassword    = "auto"
+	defaultStarterShipAcronym = "ship_bat"
+	dockingDurationSeconds    = 10
+	dockingProbeDistance      = 10
+	miningNotificationSeconds = 1
+	pilotToolSlotCount        = 10
+	simpleDrillAcronym        = "SimpleDrill"
+	drillRayAcronym           = "DrillRay"
+	weaponItemTypeAcronym     = "Weapon"
 )
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
@@ -2983,7 +2978,7 @@ func (world *World) nearestProjectileHitObjectLocked(projectile activeProjectile
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
 func (world *World) cosmicObjectModelIgnoresProjectileHitLocked(model *data.CosmicObjectModel) bool {
-	return world.cosmicObjectModelHasTypeAcronymLocked(model, "Projectile") || world.cosmicObjectModelHasTypeAcronymLocked(model, "Ray")
+	return world.cosmicObjectModelHasProjectileTypeLocked(model)
 }
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
@@ -3118,6 +3113,14 @@ func (world *World) cosmicObjectModelHasTypeAcronymLocked(model *data.CosmicObje
 	return ok && cosmicObjectType.Acronym == acronym
 }
 
+func (world *World) cosmicObjectModelHasProjectileTypeLocked(model *data.CosmicObjectModel) bool {
+	if model == nil {
+		return false
+	}
+	cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
+	return ok && cosmicObjectType.IsProjectile
+}
+
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
 func (world *World) itemModelHasTypeAcronymLocked(model *data.ItemModel, acronym string) bool {
 	if model == nil {
@@ -3132,23 +3135,7 @@ func (world *World) projectileModelForWeaponLocked(model *data.ItemModel) (*data
 	if model == nil || world.data.CosmicObjectModels == nil {
 		return nil, false
 	}
-	searchText := model.Acronym
-	if model.AmmoItemModelID > 0 && world.data.ItemModels != nil {
-		if ammoModel, ok := world.data.ItemModels.Get(model.AmmoItemModelID); ok {
-			searchText += " " + ammoModel.Acronym
-		}
-	}
-	projectileAcronym := ballisticProjectileAcronym
-	normalized := strings.ToLower(searchText)
-	switch {
-	case strings.Contains(normalized, "laser"):
-		projectileAcronym = laserRayAcronym
-	case strings.Contains(normalized, "plasma"):
-		projectileAcronym = plasmaProjectileAcronym
-	case strings.Contains(normalized, "missile") || strings.Contains(normalized, "rocket"):
-		projectileAcronym = missileProjectileAcronym
-	}
-	return world.data.CosmicObjectModels.GetByAcronym(projectileAcronym)
+	return world.data.CosmicObjectModels.Get(model.ProjectileObjectModelID)
 }
 
 func (world *World) Tick(dtSeconds float64) game.Snapshot {
@@ -4798,17 +4785,17 @@ func (world *World) selectedWeaponAttackParametersLocked(objectID int64, input g
 			continue
 		}
 		model, ok := world.data.ItemModels.Get(group.EquipmentItemModelID)
-		if !ok || !world.itemModelHasTypeAcronymLocked(model, weaponItemTypeAcronym) || model.Range <= 0 || model.Damage <= 0 || model.FiringRate <= 0 || model.ProjectileSpeed <= 0 {
+		if !ok || !world.itemModelHasTypeAcronymLocked(model, weaponItemTypeAcronym) || model.Range <= 0 || model.FiringRate <= 0 || model.ProjectileObjectModelID <= 0 {
 			continue
 		}
 		projectileModel, ok := world.projectileModelForWeaponLocked(model)
-		if !ok {
+		if !ok || projectileModel.Damage <= 0 || projectileModel.MaxSpeed <= 0 || !world.cosmicObjectModelHasProjectileTypeLocked(projectileModel) {
 			continue
 		}
 		parameters.ItemModelID = model.ID
 		parameters.ProjectileModelID = projectileModel.ID
-		parameters.Damage = model.Damage
-		parameters.ProjectileSpeed = model.ProjectileSpeed
+		parameters.Damage = projectileModel.Damage
+		parameters.ProjectileSpeed = projectileModel.MaxSpeed
 		if model.Range > parameters.Range {
 			parameters.Range = model.Range
 		}

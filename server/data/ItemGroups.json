@@ -443,7 +443,7 @@
       "ID": 2184,
       "ContainerEquipmentGroupID": 2025,
       "ContentItemModelID": 16,
-      "Count": 8166.666666666333
+      "Count": 6204.444444443754
     },
     "2185": {
       "ID": 2185,
@@ -683,7 +683,7 @@
       "ID": 3736,
       "ContainerEquipmentGroupID": 2910,
       "ContentItemModelID": 16,
-      "Count": 1000
+      "Count": 2962.2222222221776
     },
     "3737": {
       "ID": 3737,
@@ -713,7 +713,7 @@
       "ID": 3741,
       "ContainerEquipmentGroupID": 2910,
       "ContentItemModelID": 7,
-      "Count": 9952
+      "Count": 9928
     }
   }
 }

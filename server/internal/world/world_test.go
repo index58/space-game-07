@@ -123,12 +123,12 @@ func addDrillRayTestData(t *testing.T, serverData *world.Data) {
 func addWeaponTestData(t *testing.T, serverData *world.Data) {
 	t.Helper()
 	serverData.ItemTypes.Items[1].IsPilotInstrument = true
-	serverData.CosmicObjectTypes.Items[5] = &data.CosmicObjectType{ID: 5, TitleRu: "Снаряд", TitleEn: "Projectile", Acronym: "Projectile", Movable: true, Rotatable: true}
+	serverData.CosmicObjectTypes.Items[5] = &data.CosmicObjectType{ID: 5, TitleRu: "Пуля", TitleEn: "Bullet", Acronym: "Bullet", Movable: true, Rotatable: true, IsProjectile: true}
 	serverData.CosmicObjectTypes.MaxID = 5
 	serverData.CosmicObjectModels.Items[901] = &data.CosmicObjectModel{
 		ID:                 901,
-		TitleRu:            "Баллистический снаряд",
-		TitleEn:            "Ballistic Projectile",
+		TitleRu:            "Пуля",
+		TitleEn:            "Bullet",
 		Acronym:            "BallisticProjectile",
 		TextureWidth:       12,
 		TextureHeight:      32,
@@ -140,11 +140,12 @@ func addWeaponTestData(t *testing.T, serverData *world.Data) {
 		CosmicObjectTypeID: 5,
 		BodyLength:         32,
 		BodyWidth:          12,
+		MaxSpeed:           100,
+		Damage:             120,
 	}
 	serverData.ItemModels.Items[302].Range = 500
-	serverData.ItemModels.Items[302].Damage = 120
 	serverData.ItemModels.Items[302].FiringRate = 1
-	serverData.ItemModels.Items[302].ProjectileSpeed = 100
+	serverData.ItemModels.Items[302].ProjectileObjectModelID = 901
 	serverData.EquipmentGroups.Items[600] = &data.EquipmentGroup{
 		ID:                   600,
 		CosmicObjectID:       1,
@@ -954,17 +955,18 @@ func TestSelectedWeaponProjectileStartsAtShipNose(t *testing.T) {
 		t.Fatalf("projectile was not added to snapshot: %+v", snapshot.Objects)
 	}
 	shipModel := serverData.CosmicObjectModels.Items[1]
-	expectedY := shipModel.BodyLength/2 + serverData.ItemModels.Items[302].ProjectileSpeed*0.1
+	expectedY := shipModel.BodyLength/2 + serverData.CosmicObjectModels.Items[901].MaxSpeed*0.1
 	closeWorldFloat(t, projectile.X, 0)
 	closeWorldFloat(t, projectile.Y, expectedY)
 }
 
 // Проверяет, что скорость корабля не меняет время жизни выпущенного снаряда.
-func TestSelectedWeaponProjectileLifetimeUsesWeaponRangeAndProjectileSpeed(t *testing.T) {
+// Проверяет, что дальность полета снаряда расходуется по скорости его модели объекта.
+func TestSelectedWeaponProjectileLifetimeUsesWeaponRangeAndProjectileModelMaxSpeed(t *testing.T) {
 	serverData := testWorldData(t)
 	addWeaponTestData(t, &serverData)
 	serverData.ItemModels.Items[302].Range = 100
-	serverData.ItemModels.Items[302].ProjectileSpeed = 100
+	serverData.CosmicObjectModels.Items[901].MaxSpeed = 100
 	serverData.CosmicObjects.Items[1].X = 0
 	serverData.CosmicObjects.Items[1].Y = 0
 	serverData.CosmicObjects.Items[1].Rotation = 0
@@ -1011,7 +1013,7 @@ func TestSelectedWeaponMultipleCannonsUseDoubleEdgeMarginAcrossShipWidth(t *test
 		return projectiles[left].X < projectiles[right].X
 	})
 	shipModel := serverData.CosmicObjectModels.Items[1]
-	expectedY := shipModel.BodyLength/2 + serverData.ItemModels.Items[302].ProjectileSpeed*0.1
+	expectedY := shipModel.BodyLength/2 + serverData.CosmicObjectModels.Items[901].MaxSpeed*0.1
 	expectedGap := shipModel.BodyWidth / 6
 	closeWorldFloat(t, projectiles[0].X, -expectedGap)
 	closeWorldFloat(t, projectiles[1].X, 0)

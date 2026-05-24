@@ -203,6 +203,7 @@ func TestCosmicObjectModelsJSONKeysMatchGoFieldNames(t *testing.T) {
 		`"CosmicObjectTypeID"`,
 		`"BodyLength"`,
 		`"BodyWidth"`,
+		`"Damage"`,
 	}
 	for _, expectedKey := range expectedKeys {
 		if !strings.Contains(text, expectedKey) {

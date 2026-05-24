@@ -9,35 +9,34 @@ import (
 
 // Проверяет обязательные поля модели предмета.
 type ItemModel struct {
-	ID                   int64   `json:"ID"`                   // Уникальный числовой идентификатор записи.
-	TitleRu              string  `json:"TitleRu"`              // Русское название для интерфейса и данных.
-	TitleEn              string  `json:"TitleEn"`              // Английское название для интерфейса и данных.
-	Acronym              string  `json:"Acronym"`              // Неизменяемый строковый идентификатор для логики и ссылок.
-	IconFilePath         string  `json:"IconFilePath"`         // Путь к файлу иконки предмета.
-	ItemTypeID           int64   `json:"ItemTypeID"`           // Тип предмета из справочника типов.
-	Mass                 float64 `json:"Mass"`                 // Масса одной единицы предмета.
-	Volume               float64 `json:"Volume"`               // Объем одной единицы предмета.
-	Capacity             float64 `json:"Capacity"`             // Вместимость оборудования или предмета.
-	MaxArmor             float64 `json:"MaxArmor"`             // Максимальная прочность установленного оборудования.
-	ConsumingPower       float64 `json:"ConsumingPower"`       // Потребление энергии включенным оборудованием.
-	GeneratingPower      float64 `json:"GeneratingPower"`      // Генерация энергии включенным оборудованием.
-	AmmoItemModelID      int64   `json:"AmmoItemModelID"`      // Модель боеприпаса для оружия.
-	FiringRate           float64 `json:"FiringRate"`           // Количество выстрелов в секунду.
-	MagazineCapacity     int64   `json:"MagazineCapacity"`     // Вместимость магазина оружия.
-	RechargeTime         float64 `json:"RechargeTime"`         // Время перезарядки в секундах.
-	Range                float64 `json:"Range"`                // Дальность действия оборудования.
-	Damage               float64 `json:"Damage"`               // Урон одного попадания или воздействия.
-	MiningSpeed          float64 `json:"MiningSpeed"`          // Скорость добычи ресурса в килограммах за секунду для одной установленной единицы.
-	ConsumingItemModelID int64   `json:"ConsumingItemModelID"` // Модель потребляемого ресурса.
-	ConsumingCount       float64 `json:"ConsumingCount"`       // Расход ресурса за секунду.
-	MaxAlongForce        float64 `json:"MaxAlongForce"`        // Максимальная продольная сила оборудования.
-	MaxAcrossForce       float64 `json:"MaxAcrossForce"`       // Максимальная поперечная сила оборудования.
-	MaxTorque            float64 `json:"MaxTorque"`            // Максимальный крутящий момент оборудования.
-	MaxEquipmentCount    int64   `json:"MaxEquipmentCount"`    // Максимальное количество единиц оборудования на объекте.
-	ArmorRepairSpeed     float64 `json:"ArmorRepairSpeed"`     // Скорость восстановления прочности.
-	ProjectileSpeed      float64 `json:"ProjectileSpeed"`      // Скорость выпущенного боеприпаса в метрах за секунду.
-	Complexity           float64 `json:"Complexity"`           // Сложность изготовления или обслуживания.
-	Efficiency           float64 `json:"Efficiency"`           // КПД оборудования при выполнении работы.
+	ID                      int64   `json:"ID"`                      // Уникальный числовой идентификатор записи.
+	TitleRu                 string  `json:"TitleRu"`                 // Русское название для интерфейса и данных.
+	TitleEn                 string  `json:"TitleEn"`                 // Английское название для интерфейса и данных.
+	Acronym                 string  `json:"Acronym"`                 // Неизменяемый строковый идентификатор для логики и ссылок.
+	IconFilePath            string  `json:"IconFilePath"`            // Путь к файлу иконки предмета.
+	ItemTypeID              int64   `json:"ItemTypeID"`              // Тип предмета из справочника типов.
+	Mass                    float64 `json:"Mass"`                    // Масса одной единицы предмета.
+	Volume                  float64 `json:"Volume"`                  // Объем одной единицы предмета.
+	Capacity                float64 `json:"Capacity"`                // Вместимость оборудования или предмета.
+	MaxArmor                float64 `json:"MaxArmor"`                // Максимальная прочность установленного оборудования.
+	ConsumingPower          float64 `json:"ConsumingPower"`          // Потребление энергии включенным оборудованием.
+	GeneratingPower         float64 `json:"GeneratingPower"`         // Генерация энергии включенным оборудованием.
+	AmmoItemModelID         int64   `json:"AmmoItemModelID"`         // Модель боеприпаса для оружия.
+	FiringRate              float64 `json:"FiringRate"`              // Количество выстрелов в секунду.
+	MagazineCapacity        int64   `json:"MagazineCapacity"`        // Вместимость магазина оружия.
+	RechargeTime            float64 `json:"RechargeTime"`            // Время перезарядки в секундах.
+	Range                   float64 `json:"Range"`                   // Дальность действия оборудования.
+	MiningSpeed             float64 `json:"MiningSpeed"`             // Скорость добычи ресурса в килограммах за секунду для одной установленной единицы.
+	ProjectileObjectModelID int64   `json:"ProjectileObjectModelID"` // Модель космического объекта, создаваемого оружием при выстреле.
+	ConsumingItemModelID    int64   `json:"ConsumingItemModelID"`    // Модель потребляемого ресурса.
+	ConsumingCount          float64 `json:"ConsumingCount"`          // Расход ресурса за секунду.
+	MaxAlongForce           float64 `json:"MaxAlongForce"`           // Максимальная продольная сила оборудования.
+	MaxAcrossForce          float64 `json:"MaxAcrossForce"`          // Максимальная поперечная сила оборудования.
+	MaxTorque               float64 `json:"MaxTorque"`               // Максимальный крутящий момент оборудования.
+	MaxEquipmentCount       int64   `json:"MaxEquipmentCount"`       // Максимальное количество единиц оборудования на объекте.
+	ArmorRepairSpeed        float64 `json:"ArmorRepairSpeed"`        // Скорость восстановления прочности.
+	Complexity              float64 `json:"Complexity"`              // Сложность изготовления или обслуживания.
+	Efficiency              float64 `json:"Efficiency"`              // КПД оборудования при выполнении работы.
 }
 
 // Проверяет обязательные поля модели предмета.

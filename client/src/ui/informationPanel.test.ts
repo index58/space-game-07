@@ -49,8 +49,8 @@ const referenceData = {
     Items: {
       "1": { ID: 1, Acronym: "Ship" },
       "2": { ID: 2, Acronym: "Asteroid" },
-      "3": { ID: 3, Acronym: "Ray" },
-      "4": { ID: 4, Acronym: "Projectile" },
+      "3": { ID: 3, Acronym: "Ray", IsProjectile: true },
+      "4": { ID: 4, Acronym: "Bullet", IsProjectile: true },
     },
   },
   ItemType: { MaxID: 0, Items: {} },

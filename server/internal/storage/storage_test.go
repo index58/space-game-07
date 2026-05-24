@@ -411,6 +411,26 @@ func TestLoadServerDataLoadsRepositoryAccountsFile(t *testing.T) {
 	if _, ok := serverData.ItemTypes.GetByAcronym("Weapon"); !ok {
 		t.Fatal("repository itemTypes.json does not contain Weapon")
 	}
+	for _, acronym := range []string{"Bullet", "Plasma", "Rocket", "Ray"} {
+		cosmicObjectType, ok := serverData.CosmicObjectTypes.GetByAcronym(acronym)
+		if !ok {
+			t.Fatalf("repository CosmicObjectTypes.json does not contain %s", acronym)
+		}
+		if !cosmicObjectType.IsProjectile {
+			t.Fatalf("repository CosmicObjectTypes.json type %s is not marked as projectile", acronym)
+		}
+	}
+	weaponModel, ok := serverData.ItemModels.GetByAcronym("LightCannon120mm")
+	if !ok {
+		t.Fatal("repository ItemModels.json does not contain LightCannon120mm")
+	}
+	projectileModel, ok := serverData.CosmicObjectModels.Get(weaponModel.ProjectileObjectModelID)
+	if !ok {
+		t.Fatal("repository ItemModels.json points to missing projectile model")
+	}
+	if projectileModel.Damage <= 0 || projectileModel.MaxSpeed <= 0 {
+		t.Fatal("repository projectile model does not contain damage and speed")
+	}
 }
 
 // Проверяет, что отсутствующие файлы чат-таблиц дают пустые хранилища для первой серверной инициализации.

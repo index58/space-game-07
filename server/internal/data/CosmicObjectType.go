@@ -16,6 +16,7 @@ type CosmicObjectType struct {
 	CharacterLocatable bool   `json:"CharacterLocatable"` // Может ли персонаж находиться внутри объекта этого типа.
 	Movable            bool   `json:"Movable"`            // Может ли объект этого типа менять положение в мире.
 	Rotatable          bool   `json:"Rotatable"`          // Может ли объект этого типа менять угол поворота.
+	IsProjectile       bool   `json:"IsProjectile"`       // Является ли объект этого типа снарядом.
 }
 
 // Хранит типы космических объектов и быстрые индексы по уникальным полям.

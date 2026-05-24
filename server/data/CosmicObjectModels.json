@@ -23,7 +23,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 47959,
       "BodyLength": 206.625,
-      "BodyWidth": 209.475
+      "BodyWidth": 209.475,
+      "Damage": 0
     },
     "2": {
       "ID": 2,
@@ -47,7 +48,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 39346,
       "BodyLength": 185.96249999999998,
-      "BodyWidth": 190.95
+      "BodyWidth": 190.95,
+      "Damage": 0
     },
     "3": {
       "ID": 3,
@@ -71,7 +73,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 87924,
       "BodyLength": 258.4,
-      "BodyWidth": 307.0875
+      "BodyWidth": 307.0875,
+      "Damage": 0
     },
     "4": {
       "ID": 4,
@@ -95,7 +98,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 108796,
       "BodyLength": 317.775,
-      "BodyWidth": 308.9875
+      "BodyWidth": 308.9875,
+      "Damage": 0
     },
     "5": {
       "ID": 5,
@@ -119,7 +123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 118670,
       "BodyLength": 330.3625,
-      "BodyWidth": 324.1875
+      "BodyWidth": 324.1875,
+      "Damage": 0
     },
     "6": {
       "ID": 6,
@@ -143,7 +148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 77203,
       "BodyLength": 260.775,
-      "BodyWidth": 267.1875
+      "BodyWidth": 267.1875,
+      "Damage": 0
     },
     "7": {
       "ID": 7,
@@ -167,7 +173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 95077,
       "BodyLength": 283.8125,
-      "BodyWidth": 302.3375
+      "BodyWidth": 302.3375,
+      "Damage": 0
     },
     "8": {
       "ID": 8,
@@ -191,7 +198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 79735,
       "BodyLength": 267.425,
-      "BodyWidth": 269.0875
+      "BodyWidth": 269.0875,
+      "Damage": 0
     },
     "9": {
       "ID": 9,
@@ -215,7 +223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 61476,
       "BodyLength": 177.65,
-      "BodyWidth": 312.3125
+      "BodyWidth": 312.3125,
+      "Damage": 0
     },
     "10": {
       "ID": 10,
@@ -239,7 +248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 90598,
       "BodyLength": 287.6125,
-      "BodyWidth": 284.28749999999997
+      "BodyWidth": 284.28749999999997,
+      "Damage": 0
     },
     "11": {
       "ID": 11,
@@ -263,7 +273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 107964,
       "BodyLength": 259.825,
-      "BodyWidth": 375.0125
+      "BodyWidth": 375.0125,
+      "Damage": 0
     },
     "12": {
       "ID": 12,
@@ -287,7 +298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 61281,
       "BodyLength": 219.6875,
-      "BodyWidth": 251.75
+      "BodyWidth": 251.75,
+      "Damage": 0
     },
     "13": {
       "ID": 13,
@@ -311,7 +323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 58831,
       "BodyLength": 216.83749999999998,
-      "BodyWidth": 244.86249999999998
+      "BodyWidth": 244.86249999999998,
+      "Damage": 0
     },
     "14": {
       "ID": 14,
@@ -335,7 +348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 162493,
       "BodyLength": 379.04999999999995,
-      "BodyWidth": 386.8875
+      "BodyWidth": 386.8875,
+      "Damage": 0
     },
     "15": {
       "ID": 15,
@@ -359,7 +373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 72424,
       "BodyLength": 257.6875,
-      "BodyWidth": 253.64999999999998
+      "BodyWidth": 253.64999999999998,
+      "Damage": 0
     },
     "16": {
       "ID": 16,
@@ -383,7 +398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1310,
       "BodyLength": 40.137499999999996,
-      "BodyWidth": 29.45
+      "BodyWidth": 29.45,
+      "Damage": 0
     },
     "17": {
       "ID": 17,
@@ -407,7 +423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 818,
       "BodyLength": 30.162499999999998,
-      "BodyWidth": 24.4625
+      "BodyWidth": 24.4625,
+      "Damage": 0
     },
     "18": {
       "ID": 18,
@@ -431,7 +448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1301,
       "BodyLength": 40.85,
-      "BodyWidth": 28.737499999999997
+      "BodyWidth": 28.737499999999997,
+      "Damage": 0
     },
     "19": {
       "ID": 19,
@@ -455,7 +473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 851,
       "BodyLength": 29.924999999999997,
-      "BodyWidth": 25.65
+      "BodyWidth": 25.65,
+      "Damage": 0
     },
     "20": {
       "ID": 20,
@@ -479,7 +498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1019,
       "BodyLength": 28.2625,
-      "BodyWidth": 32.5375
+      "BodyWidth": 32.5375,
+      "Damage": 0
     },
     "21": {
       "ID": 21,
@@ -503,7 +523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1064,
       "BodyLength": 30.4,
-      "BodyWidth": 31.5875
+      "BodyWidth": 31.5875,
+      "Damage": 0
     },
     "22": {
       "ID": 22,
@@ -527,7 +548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 607,
       "BodyLength": 29.2125,
-      "BodyWidth": 18.7625
+      "BodyWidth": 18.7625,
+      "Damage": 0
     },
     "23": {
       "ID": 23,
@@ -551,7 +573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 495,
       "BodyLength": 21.375,
-      "BodyWidth": 20.9
+      "BodyWidth": 20.9,
+      "Damage": 0
     },
     "24": {
       "ID": 24,
@@ -575,7 +598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1024,
       "BodyLength": 30.162499999999998,
-      "BodyWidth": 30.6375
+      "BodyWidth": 30.6375,
+      "Damage": 0
     },
     "25": {
       "ID": 25,
@@ -599,7 +623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1126,
       "BodyLength": 29.924999999999997,
-      "BodyWidth": 33.9625
+      "BodyWidth": 33.9625,
+      "Damage": 0
     },
     "26": {
       "ID": 26,
@@ -623,7 +648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 744,
       "BodyLength": 28.2625,
-      "BodyWidth": 23.75
+      "BodyWidth": 23.75,
+      "Damage": 0
     },
     "27": {
       "ID": 27,
@@ -647,7 +673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 654,
       "BodyLength": 29.924999999999997,
-      "BodyWidth": 19.7125
+      "BodyWidth": 19.7125,
+      "Damage": 0
     },
     "28": {
       "ID": 28,
@@ -671,7 +698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2322,
       "BodyLength": 58.425,
-      "BodyWidth": 35.8625
+      "BodyWidth": 35.8625,
+      "Damage": 0
     },
     "29": {
       "ID": 29,
@@ -695,7 +723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 852,
       "BodyLength": 33.725,
-      "BodyWidth": 22.799999999999997
+      "BodyWidth": 22.799999999999997,
+      "Damage": 0
     },
     "30": {
       "ID": 30,
@@ -719,7 +748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1544,
       "BodyLength": 41.324999999999996,
-      "BodyWidth": 33.725
+      "BodyWidth": 33.725,
+      "Damage": 0
     },
     "31": {
       "ID": 31,
@@ -743,7 +773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1134,
       "BodyLength": 34.199999999999996,
-      "BodyWidth": 29.924999999999997
+      "BodyWidth": 29.924999999999997,
+      "Damage": 0
     },
     "32": {
       "ID": 32,
@@ -767,7 +798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 502,
       "BodyLength": 26.125,
-      "BodyWidth": 17.3375
+      "BodyWidth": 17.3375,
+      "Damage": 0
     },
     "33": {
       "ID": 33,
@@ -791,7 +823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1106,
       "BodyLength": 37.525,
-      "BodyWidth": 26.599999999999998
+      "BodyWidth": 26.599999999999998,
+      "Damage": 0
     },
     "34": {
       "ID": 34,
@@ -815,7 +848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 724,
       "BodyLength": 22.5625,
-      "BodyWidth": 28.974999999999998
+      "BodyWidth": 28.974999999999998,
+      "Damage": 0
     },
     "35": {
       "ID": 35,
@@ -839,7 +873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1783,
       "BodyLength": 38.7125,
-      "BodyWidth": 41.5625
+      "BodyWidth": 41.5625,
+      "Damage": 0
     },
     "36": {
       "ID": 36,
@@ -863,7 +898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1395,
       "BodyLength": 36.8125,
-      "BodyWidth": 34.199999999999996
+      "BodyWidth": 34.199999999999996,
+      "Damage": 0
     },
     "37": {
       "ID": 37,
@@ -887,7 +923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1056,
       "BodyLength": 31.112499999999997,
-      "BodyWidth": 30.6375
+      "BodyWidth": 30.6375,
+      "Damage": 0
     },
     "38": {
       "ID": 38,
@@ -911,7 +948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 736,
       "BodyLength": 30.4,
-      "BodyWidth": 21.849999999999998
+      "BodyWidth": 21.849999999999998,
+      "Damage": 0
     },
     "39": {
       "ID": 39,
@@ -935,7 +973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1583,
       "BodyLength": 40.375,
-      "BodyWidth": 35.387499999999996
+      "BodyWidth": 35.387499999999996,
+      "Damage": 0
     },
     "40": {
       "ID": 40,
@@ -959,7 +998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2067,
       "BodyLength": 44.887499999999996,
-      "BodyWidth": 41.5625
+      "BodyWidth": 41.5625,
+      "Damage": 0
     },
     "41": {
       "ID": 41,
@@ -983,7 +1023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 1868,
       "BodyLength": 44.65,
-      "BodyWidth": 37.762499999999996
+      "BodyWidth": 37.762499999999996,
+      "Damage": 0
     },
     "42": {
       "ID": 42,
@@ -1007,7 +1048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 957,
       "BodyLength": 31.349999999999998,
-      "BodyWidth": 27.549999999999997
+      "BodyWidth": 27.549999999999997,
+      "Damage": 0
     },
     "43": {
       "ID": 43,
@@ -1031,7 +1073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4208,
       "BodyLength": 61.037499999999994,
-      "BodyWidth": 62.224999999999994
+      "BodyWidth": 62.224999999999994,
+      "Damage": 0
     },
     "44": {
       "ID": 44,
@@ -1055,7 +1098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5068,
       "BodyLength": 92.14999999999999,
-      "BodyWidth": 49.637499999999996
+      "BodyWidth": 49.637499999999996,
+      "Damage": 0
     },
     "45": {
       "ID": 45,
@@ -1079,7 +1123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9636,
       "BodyLength": 135.61249999999998,
-      "BodyWidth": 64.125
+      "BodyWidth": 64.125,
+      "Damage": 0
     },
     "46": {
       "ID": 46,
@@ -1103,7 +1148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6256,
       "BodyLength": 77.1875,
-      "BodyWidth": 73.14999999999999
+      "BodyWidth": 73.14999999999999,
+      "Damage": 0
     },
     "47": {
       "ID": 47,
@@ -1127,7 +1173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5714,
       "BodyLength": 95.2375,
-      "BodyWidth": 54.15
+      "BodyWidth": 54.15,
+      "Damage": 0
     },
     "48": {
       "ID": 48,
@@ -1151,7 +1198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3242,
       "BodyLength": 64.83749999999999,
-      "BodyWidth": 45.125
+      "BodyWidth": 45.125,
+      "Damage": 0
     },
     "49": {
       "ID": 49,
@@ -1175,7 +1223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4339,
       "BodyLength": 80.0375,
-      "BodyWidth": 48.925
+      "BodyWidth": 48.925,
+      "Damage": 0
     },
     "50": {
       "ID": 50,
@@ -1199,7 +1248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4869,
       "BodyLength": 86.45,
-      "BodyWidth": 50.824999999999996
+      "BodyWidth": 50.824999999999996,
+      "Damage": 0
     },
     "51": {
       "ID": 51,
@@ -1223,7 +1273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3850,
       "BodyLength": 66.5,
-      "BodyWidth": 52.25
+      "BodyWidth": 52.25,
+      "Damage": 0
     },
     "52": {
       "ID": 52,
@@ -1247,7 +1298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3308,
       "BodyLength": 69.825,
-      "BodyWidth": 42.75
+      "BodyWidth": 42.75,
+      "Damage": 0
     },
     "53": {
       "ID": 53,
@@ -1271,7 +1323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7807,
       "BodyLength": 100.225,
-      "BodyWidth": 70.3
+      "BodyWidth": 70.3,
+      "Damage": 0
     },
     "54": {
       "ID": 54,
@@ -1295,7 +1348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8279,
       "BodyLength": 87.875,
-      "BodyWidth": 85.02499999999999
+      "BodyWidth": 85.02499999999999,
+      "Damage": 0
     },
     "55": {
       "ID": 55,
@@ -1319,7 +1373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7557,
       "BodyLength": 127.0625,
-      "BodyWidth": 53.675
+      "BodyWidth": 53.675,
+      "Damage": 0
     },
     "56": {
       "ID": 56,
@@ -1343,7 +1398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4720,
       "BodyLength": 58.425,
-      "BodyWidth": 72.9125
+      "BodyWidth": 72.9125,
+      "Damage": 0
     },
     "57": {
       "ID": 57,
@@ -1367,7 +1423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6184,
       "BodyLength": 70.77499999999999,
-      "BodyWidth": 78.85
+      "BodyWidth": 78.85,
+      "Damage": 0
     },
     "58": {
       "ID": 58,
@@ -1391,7 +1448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7773,
       "BodyLength": 106.63749999999999,
-      "BodyWidth": 65.7875
+      "BodyWidth": 65.7875,
+      "Damage": 0
     },
     "59": {
       "ID": 59,
@@ -1415,7 +1473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5673,
       "BodyLength": 87.6375,
-      "BodyWidth": 58.425
+      "BodyWidth": 58.425,
+      "Damage": 0
     },
     "60": {
       "ID": 60,
@@ -1439,7 +1498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6319,
       "BodyLength": 76.475,
-      "BodyWidth": 74.575
+      "BodyWidth": 74.575,
+      "Damage": 0
     },
     "61": {
       "ID": 61,
@@ -1463,7 +1523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4764,
       "BodyLength": 76.71249999999999,
-      "BodyWidth": 56.05
+      "BodyWidth": 56.05,
+      "Damage": 0
     },
     "62": {
       "ID": 62,
@@ -1487,7 +1548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4522,
       "BodyLength": 71.0125,
-      "BodyWidth": 57.474999999999994
+      "BodyWidth": 57.474999999999994,
+      "Damage": 0
     },
     "63": {
       "ID": 63,
@@ -1511,7 +1573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6491,
       "BodyLength": 92.38749999999999,
-      "BodyWidth": 63.412499999999994
+      "BodyWidth": 63.412499999999994,
+      "Damage": 0
     },
     "64": {
       "ID": 64,
@@ -1535,7 +1598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2864,
       "BodyLength": 81.225,
-      "BodyWidth": 31.825
+      "BodyWidth": 31.825,
+      "Damage": 0
     },
     "65": {
       "ID": 65,
@@ -1559,7 +1623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4839,
       "BodyLength": 60.0875,
-      "BodyWidth": 72.675
+      "BodyWidth": 72.675,
+      "Damage": 0
     },
     "66": {
       "ID": 66,
@@ -1583,7 +1648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3200,
       "BodyLength": 49.637499999999996,
-      "BodyWidth": 58.1875
+      "BodyWidth": 58.1875,
+      "Damage": 0
     },
     "67": {
       "ID": 67,
@@ -1607,7 +1673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6724,
       "BodyLength": 116.13749999999999,
-      "BodyWidth": 52.25
+      "BodyWidth": 52.25,
+      "Damage": 0
     },
     "68": {
       "ID": 68,
@@ -1631,7 +1698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4281,
       "BodyLength": 69.825,
-      "BodyWidth": 55.3375
+      "BodyWidth": 55.3375,
+      "Damage": 0
     },
     "69": {
       "ID": 69,
@@ -1655,7 +1723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4418,
       "BodyLength": 67.6875,
-      "BodyWidth": 58.9
+      "BodyWidth": 58.9,
+      "Damage": 0
     },
     "70": {
       "ID": 70,
@@ -1679,7 +1748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4202,
       "BodyLength": 90.725,
-      "BodyWidth": 41.8
+      "BodyWidth": 41.8,
+      "Damage": 0
     },
     "71": {
       "ID": 71,
@@ -1703,7 +1773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5221,
       "BodyLength": 83.3625,
-      "BodyWidth": 56.525
+      "BodyWidth": 56.525,
+      "Damage": 0
     },
     "72": {
       "ID": 72,
@@ -1727,7 +1798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7420,
       "BodyLength": 105.21249999999999,
-      "BodyWidth": 63.65
+      "BodyWidth": 63.65,
+      "Damage": 0
     },
     "73": {
       "ID": 73,
@@ -1751,7 +1823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5046,
       "BodyLength": 82.64999999999999,
-      "BodyWidth": 55.099999999999994
+      "BodyWidth": 55.099999999999994,
+      "Damage": 0
     },
     "74": {
       "ID": 74,
@@ -1775,7 +1848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4631,
       "BodyLength": 71.25,
-      "BodyWidth": 58.662499999999994
+      "BodyWidth": 58.662499999999994,
+      "Damage": 0
     },
     "75": {
       "ID": 75,
@@ -1799,7 +1873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5606,
       "BodyLength": 70.3,
-      "BodyWidth": 71.96249999999999
+      "BodyWidth": 71.96249999999999,
+      "Damage": 0
     },
     "76": {
       "ID": 76,
@@ -1823,7 +1898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9216,
       "BodyLength": 91.4375,
-      "BodyWidth": 90.96249999999999
+      "BodyWidth": 90.96249999999999,
+      "Damage": 0
     },
     "77": {
       "ID": 77,
@@ -1847,7 +1923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6612,
       "BodyLength": 110.19999999999999,
-      "BodyWidth": 54.15
+      "BodyWidth": 54.15,
+      "Damage": 0
     },
     "78": {
       "ID": 78,
@@ -1871,7 +1948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5850,
       "BodyLength": 74.1,
-      "BodyWidth": 71.25
+      "BodyWidth": 71.25,
+      "Damage": 0
     },
     "79": {
       "ID": 79,
@@ -1895,7 +1973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4524,
       "BodyLength": 73.14999999999999,
-      "BodyWidth": 55.8125
+      "BodyWidth": 55.8125,
+      "Damage": 0
     },
     "80": {
       "ID": 80,
@@ -1919,7 +1998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3504,
       "BodyLength": 50.824999999999996,
-      "BodyWidth": 62.224999999999994
+      "BodyWidth": 62.224999999999994,
+      "Damage": 0
     },
     "81": {
       "ID": 81,
@@ -1943,7 +2023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3816,
       "BodyLength": 63.887499999999996,
-      "BodyWidth": 53.912499999999994
+      "BodyWidth": 53.912499999999994,
+      "Damage": 0
     },
     "82": {
       "ID": 82,
@@ -1967,7 +2048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4115,
       "BodyLength": 67.6875,
-      "BodyWidth": 54.8625
+      "BodyWidth": 54.8625,
+      "Damage": 0
     },
     "83": {
       "ID": 83,
@@ -1991,7 +2073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4359,
       "BodyLength": 59.375,
-      "BodyWidth": 66.2625
+      "BodyWidth": 66.2625,
+      "Damage": 0
     },
     "84": {
       "ID": 84,
@@ -2015,7 +2098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2391,
       "BodyLength": 53.4375,
-      "BodyWidth": 40.375
+      "BodyWidth": 40.375,
+      "Damage": 0
     },
     "85": {
       "ID": 85,
@@ -2039,7 +2123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6317,
       "BodyLength": 113.76249999999999,
-      "BodyWidth": 50.1125
+      "BodyWidth": 50.1125,
+      "Damage": 0
     },
     "86": {
       "ID": 86,
@@ -2063,7 +2148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7497,
       "BodyLength": 96.89999999999999,
-      "BodyWidth": 69.825
+      "BodyWidth": 69.825,
+      "Damage": 0
     },
     "87": {
       "ID": 87,
@@ -2087,7 +2173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5556,
       "BodyLength": 64.3625,
-      "BodyWidth": 77.89999999999999
+      "BodyWidth": 77.89999999999999,
+      "Damage": 0
     },
     "88": {
       "ID": 88,
@@ -2111,7 +2198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4016,
       "BodyLength": 60.0875,
-      "BodyWidth": 60.324999999999996
+      "BodyWidth": 60.324999999999996,
+      "Damage": 0
     },
     "89": {
       "ID": 89,
@@ -2135,7 +2223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5462,
       "BodyLength": 78.6125,
-      "BodyWidth": 62.699999999999996
+      "BodyWidth": 62.699999999999996,
+      "Damage": 0
     },
     "90": {
       "ID": 90,
@@ -2159,7 +2248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9545,
       "BodyLength": 95.94999999999999,
-      "BodyWidth": 89.77499999999999
+      "BodyWidth": 89.77499999999999,
+      "Damage": 0
     },
     "91": {
       "ID": 91,
@@ -2183,7 +2273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5947,
       "BodyLength": 117.08749999999999,
-      "BodyWidth": 45.8375
+      "BodyWidth": 45.8375,
+      "Damage": 0
     },
     "92": {
       "ID": 92,
@@ -2207,7 +2298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4511,
       "BodyLength": 92.14999999999999,
-      "BodyWidth": 44.175
+      "BodyWidth": 44.175,
+      "Damage": 0
     },
     "93": {
       "ID": 93,
@@ -2231,7 +2323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5871,
       "BodyLength": 94.52499999999999,
-      "BodyWidth": 56.05
+      "BodyWidth": 56.05,
+      "Damage": 0
     },
     "94": {
       "ID": 94,
@@ -2255,7 +2348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6039,
       "BodyLength": 96.425,
-      "BodyWidth": 56.525
+      "BodyWidth": 56.525,
+      "Damage": 0
     },
     "95": {
       "ID": 95,
@@ -2279,7 +2373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3206,
       "BodyLength": 54.387499999999996,
-      "BodyWidth": 53.199999999999996
+      "BodyWidth": 53.199999999999996,
+      "Damage": 0
     },
     "96": {
       "ID": 96,
@@ -2303,7 +2398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4807,
       "BodyLength": 68.1625,
-      "BodyWidth": 63.65
+      "BodyWidth": 63.65,
+      "Damage": 0
     },
     "97": {
       "ID": 97,
@@ -2327,7 +2423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3960,
       "BodyLength": 85.02499999999999,
-      "BodyWidth": 42.0375
+      "BodyWidth": 42.0375,
+      "Damage": 0
     },
     "98": {
       "ID": 98,
@@ -2351,7 +2448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3408,
       "BodyLength": 55.8125,
-      "BodyWidth": 55.099999999999994
+      "BodyWidth": 55.099999999999994,
+      "Damage": 0
     },
     "99": {
       "ID": 99,
@@ -2375,7 +2473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3622,
       "BodyLength": 72.4375,
-      "BodyWidth": 45.125
+      "BodyWidth": 45.125,
+      "Damage": 0
     },
     "100": {
       "ID": 100,
@@ -2399,7 +2498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5231,
       "BodyLength": 89.5375,
-      "BodyWidth": 52.724999999999994
+      "BodyWidth": 52.724999999999994,
+      "Damage": 0
     },
     "101": {
       "ID": 101,
@@ -2423,7 +2523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5551,
       "BodyLength": 80.5125,
-      "BodyWidth": 62.224999999999994
+      "BodyWidth": 62.224999999999994,
+      "Damage": 0
     },
     "102": {
       "ID": 102,
@@ -2447,7 +2548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3715,
       "BodyLength": 73.14999999999999,
-      "BodyWidth": 45.8375
+      "BodyWidth": 45.8375,
+      "Damage": 0
     },
     "103": {
       "ID": 103,
@@ -2471,7 +2573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3445,
       "BodyLength": 50.349999999999994,
-      "BodyWidth": 61.75
+      "BodyWidth": 61.75,
+      "Damage": 0
     },
     "104": {
       "ID": 104,
@@ -2495,7 +2598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2820,
       "BodyLength": 57,
-      "BodyWidth": 44.65
+      "BodyWidth": 44.65,
+      "Damage": 0
     },
     "105": {
       "ID": 105,
@@ -2519,7 +2623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5204,
       "BodyLength": 76.95,
-      "BodyWidth": 61.037499999999994
+      "BodyWidth": 61.037499999999994,
+      "Damage": 0
     },
     "106": {
       "ID": 106,
@@ -2543,7 +2648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5885,
       "BodyLength": 104.5,
-      "BodyWidth": 50.824999999999996
+      "BodyWidth": 50.824999999999996,
+      "Damage": 0
     },
     "107": {
       "ID": 107,
@@ -2567,7 +2673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4225,
       "BodyLength": 62.224999999999994,
-      "BodyWidth": 61.275
+      "BodyWidth": 61.275,
+      "Damage": 0
     },
     "108": {
       "ID": 108,
@@ -2591,7 +2698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3739,
       "BodyLength": 73.625,
-      "BodyWidth": 45.8375
+      "BodyWidth": 45.8375,
+      "Damage": 0
     },
     "109": {
       "ID": 109,
@@ -2615,7 +2723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5005,
       "BodyLength": 61.75,
-      "BodyWidth": 73.14999999999999
+      "BodyWidth": 73.14999999999999,
+      "Damage": 0
     },
     "110": {
       "ID": 110,
@@ -2639,7 +2748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4710,
       "BodyLength": 75.52499999999999,
-      "BodyWidth": 56.287499999999994
+      "BodyWidth": 56.287499999999994,
+      "Damage": 0
     },
     "111": {
       "ID": 111,
@@ -2663,7 +2773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6754,
       "BodyLength": 83.6,
-      "BodyWidth": 72.9125
+      "BodyWidth": 72.9125,
+      "Damage": 0
     },
     "112": {
       "ID": 112,
@@ -2687,7 +2798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3040,
       "BodyLength": 60.8,
-      "BodyWidth": 45.125
+      "BodyWidth": 45.125,
+      "Damage": 0
     },
     "113": {
       "ID": 113,
@@ -2711,7 +2823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5017,
       "BodyLength": 75.05,
-      "BodyWidth": 60.324999999999996
+      "BodyWidth": 60.324999999999996,
+      "Damage": 0
     },
     "114": {
       "ID": 114,
@@ -2735,7 +2848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6367,
       "BodyLength": 90.96249999999999,
-      "BodyWidth": 63.175
+      "BodyWidth": 63.175,
+      "Damage": 0
     },
     "115": {
       "ID": 115,
@@ -2759,7 +2873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4903,
       "BodyLength": 84.3125,
-      "BodyWidth": 52.4875
+      "BodyWidth": 52.4875,
+      "Damage": 0
     },
     "116": {
       "ID": 116,
@@ -2783,7 +2898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4518,
       "BodyLength": 68.39999999999999,
-      "BodyWidth": 59.6125
+      "BodyWidth": 59.6125,
+      "Damage": 0
     },
     "117": {
       "ID": 117,
@@ -2807,7 +2923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4029,
       "BodyLength": 75.05,
-      "BodyWidth": 48.449999999999996
+      "BodyWidth": 48.449999999999996,
+      "Damage": 0
     },
     "118": {
       "ID": 118,
@@ -2831,7 +2948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5273,
       "BodyLength": 90.25,
-      "BodyWidth": 52.724999999999994
+      "BodyWidth": 52.724999999999994,
+      "Damage": 0
     },
     "119": {
       "ID": 119,
@@ -2855,7 +2973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2870,
       "BodyLength": 53.199999999999996,
-      "BodyWidth": 48.6875
+      "BodyWidth": 48.6875,
+      "Damage": 0
     },
     "120": {
       "ID": 120,
@@ -2879,7 +2998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3319,
       "BodyLength": 67.45,
-      "BodyWidth": 44.4125
+      "BodyWidth": 44.4125,
+      "Damage": 0
     },
     "121": {
       "ID": 121,
@@ -2903,7 +3023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3959,
       "BodyLength": 73.3875,
-      "BodyWidth": 48.6875
+      "BodyWidth": 48.6875,
+      "Damage": 0
     },
     "122": {
       "ID": 122,
@@ -2927,7 +3048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4489,
       "BodyLength": 89.3,
-      "BodyWidth": 45.3625
+      "BodyWidth": 45.3625,
+      "Damage": 0
     },
     "123": {
       "ID": 123,
@@ -2951,7 +3073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2875,
       "BodyLength": 40.6125,
-      "BodyWidth": 63.887499999999996
+      "BodyWidth": 63.887499999999996,
+      "Damage": 0
     },
     "124": {
       "ID": 124,
@@ -2975,7 +3098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2778,
       "BodyLength": 44.175,
-      "BodyWidth": 56.762499999999996
+      "BodyWidth": 56.762499999999996,
+      "Damage": 0
     },
     "125": {
       "ID": 125,
@@ -2999,7 +3123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3674,
       "BodyLength": 67.45,
-      "BodyWidth": 49.162499999999994
+      "BodyWidth": 49.162499999999994,
+      "Damage": 0
     },
     "126": {
       "ID": 126,
@@ -3023,7 +3148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2965,
       "BodyLength": 59.6125,
-      "BodyWidth": 44.887499999999996
+      "BodyWidth": 44.887499999999996,
+      "Damage": 0
     },
     "127": {
       "ID": 127,
@@ -3047,7 +3173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4399,
       "BodyLength": 56.287499999999994,
-      "BodyWidth": 70.5375
+      "BodyWidth": 70.5375,
+      "Damage": 0
     },
     "128": {
       "ID": 128,
@@ -3071,7 +3198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5466,
       "BodyLength": 80.5125,
-      "BodyWidth": 61.275
+      "BodyWidth": 61.275,
+      "Damage": 0
     },
     "129": {
       "ID": 129,
@@ -3095,7 +3223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5996,
       "BodyLength": 80.5125,
-      "BodyWidth": 67.21249999999999
+      "BodyWidth": 67.21249999999999,
+      "Damage": 0
     },
     "130": {
       "ID": 130,
@@ -3119,7 +3248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4867,
       "BodyLength": 73.3875,
-      "BodyWidth": 59.849999999999994
+      "BodyWidth": 59.849999999999994,
+      "Damage": 0
     },
     "131": {
       "ID": 131,
@@ -3143,7 +3273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6769,
       "BodyLength": 82.175,
-      "BodyWidth": 74.33749999999999
+      "BodyWidth": 74.33749999999999,
+      "Damage": 0
     },
     "132": {
       "ID": 132,
@@ -3167,7 +3298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4278,
       "BodyLength": 70.0625,
-      "BodyWidth": 55.099999999999994
+      "BodyWidth": 55.099999999999994,
+      "Damage": 0
     },
     "133": {
       "ID": 133,
@@ -3191,7 +3323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5160,
       "BodyLength": 76,
-      "BodyWidth": 61.275
+      "BodyWidth": 61.275,
+      "Damage": 0
     },
     "134": {
       "ID": 134,
@@ -3215,7 +3348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 12737,
       "BodyLength": 139.8875,
-      "BodyWidth": 82.175
+      "BodyWidth": 82.175,
+      "Damage": 0
     },
     "135": {
       "ID": 135,
@@ -3239,7 +3373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10723,
       "BodyLength": 94.76249999999999,
-      "BodyWidth": 102.125
+      "BodyWidth": 102.125,
+      "Damage": 0
     },
     "136": {
       "ID": 136,
@@ -3263,7 +3398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8733,
       "BodyLength": 104.02499999999999,
-      "BodyWidth": 75.7625
+      "BodyWidth": 75.7625,
+      "Damage": 0
     },
     "137": {
       "ID": 137,
@@ -3287,7 +3423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10990,
       "BodyLength": 146.5375,
-      "BodyWidth": 67.6875
+      "BodyWidth": 67.6875,
+      "Damage": 0
     },
     "138": {
       "ID": 138,
@@ -3311,7 +3448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10083,
       "BodyLength": 108.5375,
-      "BodyWidth": 83.83749999999999
+      "BodyWidth": 83.83749999999999,
+      "Damage": 0
     },
     "139": {
       "ID": 139,
@@ -3335,7 +3473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10152,
       "BodyLength": 104.26249999999999,
-      "BodyWidth": 87.875
+      "BodyWidth": 87.875,
+      "Damage": 0
     },
     "140": {
       "ID": 140,
@@ -3359,7 +3498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5005,
       "BodyLength": 66.2625,
-      "BodyWidth": 68.1625
+      "BodyWidth": 68.1625,
+      "Damage": 0
     },
     "141": {
       "ID": 141,
@@ -3383,7 +3523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9042,
       "BodyLength": 81.225,
-      "BodyWidth": 100.46249999999999
+      "BodyWidth": 100.46249999999999,
+      "Damage": 0
     },
     "142": {
       "ID": 142,
@@ -3407,7 +3548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4872,
       "BodyLength": 82.64999999999999,
-      "BodyWidth": 53.199999999999996
+      "BodyWidth": 53.199999999999996,
+      "Damage": 0
     },
     "143": {
       "ID": 143,
@@ -3431,7 +3573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9250,
       "BodyLength": 107.82499999999999,
-      "BodyWidth": 77.425
+      "BodyWidth": 77.425,
+      "Damage": 0
     },
     "144": {
       "ID": 144,
@@ -3455,7 +3598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9715,
       "BodyLength": 121.83749999999999,
-      "BodyWidth": 71.96249999999999
+      "BodyWidth": 71.96249999999999,
+      "Damage": 0
     },
     "145": {
       "ID": 145,
@@ -3479,7 +3623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5802,
       "BodyLength": 75.7625,
-      "BodyWidth": 69.1125
+      "BodyWidth": 69.1125,
+      "Damage": 0
     },
     "146": {
       "ID": 146,
@@ -3503,7 +3648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10684,
       "BodyLength": 124.925,
-      "BodyWidth": 77.1875
+      "BodyWidth": 77.1875,
+      "Damage": 0
     },
     "147": {
       "ID": 147,
@@ -3527,7 +3673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 13053,
       "BodyLength": 107.82499999999999,
-      "BodyWidth": 109.25
+      "BodyWidth": 109.25,
+      "Damage": 0
     },
     "148": {
       "ID": 148,
@@ -3551,7 +3698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8541,
       "BodyLength": 139.8875,
-      "BodyWidth": 55.099999999999994
+      "BodyWidth": 55.099999999999994,
+      "Damage": 0
     },
     "149": {
       "ID": 149,
@@ -3575,7 +3723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6775,
       "BodyLength": 86.6875,
-      "BodyWidth": 70.5375
+      "BodyWidth": 70.5375,
+      "Damage": 0
     },
     "150": {
       "ID": 150,
@@ -3599,7 +3748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7617,
       "BodyLength": 86.925,
-      "BodyWidth": 79.08749999999999
+      "BodyWidth": 79.08749999999999,
+      "Damage": 0
     },
     "151": {
       "ID": 151,
@@ -3623,7 +3773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9998,
       "BodyLength": 102.125,
-      "BodyWidth": 88.35
+      "BodyWidth": 88.35,
+      "Damage": 0
     },
     "152": {
       "ID": 152,
@@ -3647,7 +3798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7467,
       "BodyLength": 103.55,
-      "BodyWidth": 65.075
+      "BodyWidth": 65.075,
+      "Damage": 0
     },
     "153": {
       "ID": 153,
@@ -3671,7 +3823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7865,
       "BodyLength": 101.64999999999999,
-      "BodyWidth": 69.825
+      "BodyWidth": 69.825,
+      "Damage": 0
     },
     "154": {
       "ID": 154,
@@ -3695,7 +3848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4690,
       "BodyLength": 79.5625,
-      "BodyWidth": 53.199999999999996
+      "BodyWidth": 53.199999999999996,
+      "Damage": 0
     },
     "155": {
       "ID": 155,
@@ -3719,7 +3873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 12381,
       "BodyLength": 147.48749999999998,
-      "BodyWidth": 75.7625
+      "BodyWidth": 75.7625,
+      "Damage": 0
     },
     "156": {
       "ID": 156,
@@ -3743,7 +3898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10454,
       "BodyLength": 90.4875,
-      "BodyWidth": 104.26249999999999
+      "BodyWidth": 104.26249999999999,
+      "Damage": 0
     },
     "157": {
       "ID": 157,
@@ -3767,7 +3923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8037,
       "BodyLength": 72.2,
-      "BodyWidth": 100.46249999999999
+      "BodyWidth": 100.46249999999999,
+      "Damage": 0
     },
     "158": {
       "ID": 158,
@@ -3791,7 +3948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7633,
       "BodyLength": 127.77499999999999,
-      "BodyWidth": 53.912499999999994
+      "BodyWidth": 53.912499999999994,
+      "Damage": 0
     },
     "159": {
       "ID": 159,
@@ -3815,7 +3973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 18625,
       "BodyLength": 192.85,
-      "BodyWidth": 87.1625
+      "BodyWidth": 87.1625,
+      "Damage": 0
     },
     "160": {
       "ID": 160,
@@ -3839,7 +3998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5943,
       "BodyLength": 68.6375,
-      "BodyWidth": 78.1375
+      "BodyWidth": 78.1375,
+      "Damage": 0
     },
     "161": {
       "ID": 161,
@@ -3863,7 +4023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8079,
       "BodyLength": 113.2875,
-      "BodyWidth": 64.3625
+      "BodyWidth": 64.3625,
+      "Damage": 0
     },
     "162": {
       "ID": 162,
@@ -3887,7 +4048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7178,
       "BodyLength": 85.5,
-      "BodyWidth": 75.7625
+      "BodyWidth": 75.7625,
+      "Damage": 0
     },
     "163": {
       "ID": 163,
@@ -3911,7 +4073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6054,
       "BodyLength": 79.325,
-      "BodyWidth": 68.875
+      "BodyWidth": 68.875,
+      "Damage": 0
     },
     "164": {
       "ID": 164,
@@ -3935,7 +4098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5384,
       "BodyLength": 69.35,
-      "BodyWidth": 70.0625
+      "BodyWidth": 70.0625,
+      "Damage": 0
     },
     "165": {
       "ID": 165,
@@ -3959,7 +4123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11735,
       "BodyLength": 127.77499999999999,
-      "BodyWidth": 82.8875
+      "BodyWidth": 82.8875,
+      "Damage": 0
     },
     "166": {
       "ID": 166,
@@ -3983,7 +4148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10557,
       "BodyLength": 145.35,
-      "BodyWidth": 65.55
+      "BodyWidth": 65.55,
+      "Damage": 0
     },
     "167": {
       "ID": 167,
@@ -4007,7 +4173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9359,
       "BodyLength": 93.1,
-      "BodyWidth": 90.725
+      "BodyWidth": 90.725,
+      "Damage": 0
     },
     "168": {
       "ID": 168,
@@ -4031,7 +4198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6242,
       "BodyLength": 82.64999999999999,
-      "BodyWidth": 68.1625
+      "BodyWidth": 68.1625,
+      "Damage": 0
     },
     "169": {
       "ID": 169,
@@ -4055,7 +4223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11704,
       "BodyLength": 125.63749999999999,
-      "BodyWidth": 84.075
+      "BodyWidth": 84.075,
+      "Damage": 0
     },
     "170": {
       "ID": 170,
@@ -4079,7 +4248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9298,
       "BodyLength": 130.86249999999998,
-      "BodyWidth": 64.125
+      "BodyWidth": 64.125,
+      "Damage": 0
     },
     "171": {
       "ID": 171,
@@ -4103,7 +4273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8344,
       "BodyLength": 105.6875,
-      "BodyWidth": 71.25
+      "BodyWidth": 71.25,
+      "Damage": 0
     },
     "172": {
       "ID": 172,
@@ -4127,7 +4298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9162,
       "BodyLength": 103.3125,
-      "BodyWidth": 80.0375
+      "BodyWidth": 80.0375,
+      "Damage": 0
     },
     "173": {
       "ID": 173,
@@ -4151,7 +4323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11488,
       "BodyLength": 109.96249999999999,
-      "BodyWidth": 94.2875
+      "BodyWidth": 94.2875,
+      "Damage": 0
     },
     "174": {
       "ID": 174,
@@ -4175,7 +4348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9136,
       "BodyLength": 110.9125,
-      "BodyWidth": 74.33749999999999
+      "BodyWidth": 74.33749999999999,
+      "Damage": 0
     },
     "175": {
       "ID": 175,
@@ -4199,7 +4373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 14481,
       "BodyLength": 125.63749999999999,
-      "BodyWidth": 104.02499999999999
+      "BodyWidth": 104.02499999999999,
+      "Damage": 0
     },
     "176": {
       "ID": 176,
@@ -4223,7 +4398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11340,
       "BodyLength": 128.25,
-      "BodyWidth": 79.8
+      "BodyWidth": 79.8,
+      "Damage": 0
     },
     "177": {
       "ID": 177,
@@ -4247,7 +4423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5405,
       "BodyLength": 55.8125,
-      "BodyWidth": 87.39999999999999
+      "BodyWidth": 87.39999999999999,
+      "Damage": 0
     },
     "178": {
       "ID": 178,
@@ -4271,7 +4448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7983,
       "BodyLength": 82.8875,
-      "BodyWidth": 86.925
+      "BodyWidth": 86.925,
+      "Damage": 0
     },
     "179": {
       "ID": 179,
@@ -4295,7 +4473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10731,
       "BodyLength": 86.21249999999999,
-      "BodyWidth": 112.33749999999999
+      "BodyWidth": 112.33749999999999,
+      "Damage": 0
     },
     "180": {
       "ID": 180,
@@ -4319,7 +4498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6479,
       "BodyLength": 80.9875,
-      "BodyWidth": 72.2
+      "BodyWidth": 72.2,
+      "Damage": 0
     },
     "181": {
       "ID": 181,
@@ -4343,7 +4523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4112,
       "BodyLength": 72.675,
-      "BodyWidth": 51.0625
+      "BodyWidth": 51.0625,
+      "Damage": 0
     },
     "182": {
       "ID": 182,
@@ -4367,7 +4548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8563,
       "BodyLength": 97.13749999999999,
-      "BodyWidth": 79.5625
+      "BodyWidth": 79.5625,
+      "Damage": 0
     },
     "183": {
       "ID": 183,
@@ -4391,7 +4573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8762,
       "BodyLength": 99.9875,
-      "BodyWidth": 79.08749999999999
+      "BodyWidth": 79.08749999999999,
+      "Damage": 0
     },
     "184": {
       "ID": 184,
@@ -4415,7 +4598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 2693,
       "BodyLength": 60.5625,
-      "BodyWidth": 40.137499999999996
+      "BodyWidth": 40.137499999999996,
+      "Damage": 0
     },
     "185": {
       "ID": 185,
@@ -4439,7 +4623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9192,
       "BodyLength": 131.8125,
-      "BodyWidth": 62.9375
+      "BodyWidth": 62.9375,
+      "Damage": 0
     },
     "186": {
       "ID": 186,
@@ -4463,7 +4648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7049,
       "BodyLength": 88.1125,
-      "BodyWidth": 72.2
+      "BodyWidth": 72.2,
+      "Damage": 0
     },
     "187": {
       "ID": 187,
@@ -4487,7 +4673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9125,
       "BodyLength": 109.725,
-      "BodyWidth": 75.05
+      "BodyWidth": 75.05,
+      "Damage": 0
     },
     "188": {
       "ID": 188,
@@ -4511,7 +4698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6296,
       "BodyLength": 86.6875,
-      "BodyWidth": 65.55
+      "BodyWidth": 65.55,
+      "Damage": 0
     },
     "189": {
       "ID": 189,
@@ -4535,7 +4723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8548,
       "BodyLength": 82.64999999999999,
-      "BodyWidth": 93.33749999999999
+      "BodyWidth": 93.33749999999999,
+      "Damage": 0
     },
     "190": {
       "ID": 190,
@@ -4559,7 +4748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5402,
       "BodyLength": 69.1125,
-      "BodyWidth": 70.5375
+      "BodyWidth": 70.5375,
+      "Damage": 0
     },
     "191": {
       "ID": 191,
@@ -4583,7 +4773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3890,
       "BodyLength": 59.849999999999994,
-      "BodyWidth": 58.662499999999994
+      "BodyWidth": 58.662499999999994,
+      "Damage": 0
     },
     "192": {
       "ID": 192,
@@ -4607,7 +4798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 14983,
       "BodyLength": 166.9625,
-      "BodyWidth": 80.9875
+      "BodyWidth": 80.9875,
+      "Damage": 0
     },
     "193": {
       "ID": 193,
@@ -4631,7 +4823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8928,
       "BodyLength": 76.2375,
-      "BodyWidth": 105.6875
+      "BodyWidth": 105.6875,
+      "Damage": 0
     },
     "194": {
       "ID": 194,
@@ -4655,7 +4848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7702,
       "BodyLength": 116.13749999999999,
-      "BodyWidth": 59.849999999999994
+      "BodyWidth": 59.849999999999994,
+      "Damage": 0
     },
     "195": {
       "ID": 195,
@@ -4679,7 +4873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8227,
       "BodyLength": 101.175,
-      "BodyWidth": 73.3875
+      "BodyWidth": 73.3875,
+      "Damage": 0
     },
     "196": {
       "ID": 196,
@@ -4703,7 +4898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4824,
       "BodyLength": 95.475,
-      "BodyWidth": 45.599999999999994
+      "BodyWidth": 45.599999999999994,
+      "Damage": 0
     },
     "197": {
       "ID": 197,
@@ -4727,7 +4923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 14438,
       "BodyLength": 128.48749999999998,
-      "BodyWidth": 101.4125
+      "BodyWidth": 101.4125,
+      "Damage": 0
     },
     "198": {
       "ID": 198,
@@ -4751,7 +4948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8125,
       "BodyLength": 98.32499999999999,
-      "BodyWidth": 74.575
+      "BodyWidth": 74.575,
+      "Damage": 0
     },
     "199": {
       "ID": 199,
@@ -4775,7 +4973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 3424,
       "BodyLength": 44.4125,
-      "BodyWidth": 69.58749999999999
+      "BodyWidth": 69.58749999999999,
+      "Damage": 0
     },
     "200": {
       "ID": 200,
@@ -4799,7 +4998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 17078,
       "BodyLength": 180.2625,
-      "BodyWidth": 85.5
+      "BodyWidth": 85.5,
+      "Damage": 0
     },
     "201": {
       "ID": 201,
@@ -4823,7 +5023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5647,
       "BodyLength": 67.6875,
-      "BodyWidth": 75.2875
+      "BodyWidth": 75.2875,
+      "Damage": 0
     },
     "202": {
       "ID": 202,
@@ -4847,7 +5048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6138,
       "BodyLength": 72.4375,
-      "BodyWidth": 76.475
+      "BodyWidth": 76.475,
+      "Damage": 0
     },
     "203": {
       "ID": 203,
@@ -4871,7 +5073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10346,
       "BodyLength": 139.4125,
-      "BodyWidth": 66.975
+      "BodyWidth": 66.975,
+      "Damage": 0
     },
     "204": {
       "ID": 204,
@@ -4895,7 +5098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8885,
       "BodyLength": 83.3625,
-      "BodyWidth": 96.1875
+      "BodyWidth": 96.1875,
+      "Damage": 0
     },
     "205": {
       "ID": 205,
@@ -4919,7 +5123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9856,
       "BodyLength": 106.39999999999999,
-      "BodyWidth": 83.6
+      "BodyWidth": 83.6,
+      "Damage": 0
     },
     "206": {
       "ID": 206,
@@ -4943,7 +5148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6153,
       "BodyLength": 68.1625,
-      "BodyWidth": 81.46249999999999
+      "BodyWidth": 81.46249999999999,
+      "Damage": 0
     },
     "207": {
       "ID": 207,
@@ -4967,7 +5173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4646,
       "BodyLength": 68.1625,
-      "BodyWidth": 61.512499999999996
+      "BodyWidth": 61.512499999999996,
+      "Damage": 0
     },
     "208": {
       "ID": 208,
@@ -4991,7 +5198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7884,
       "BodyLength": 103.3125,
-      "BodyWidth": 68.875
+      "BodyWidth": 68.875,
+      "Damage": 0
     },
     "209": {
       "ID": 209,
@@ -5015,7 +5223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9924,
       "BodyLength": 79.5625,
-      "BodyWidth": 112.57499999999999
+      "BodyWidth": 112.57499999999999,
+      "Damage": 0
     },
     "210": {
       "ID": 210,
@@ -5039,7 +5248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 12696,
       "BodyLength": 154.1375,
-      "BodyWidth": 74.33749999999999
+      "BodyWidth": 74.33749999999999,
+      "Damage": 0
     },
     "211": {
       "ID": 211,
@@ -5063,7 +5273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 5865,
       "BodyLength": 60.5625,
-      "BodyWidth": 87.39999999999999
+      "BodyWidth": 87.39999999999999,
+      "Damage": 0
     },
     "212": {
       "ID": 212,
@@ -5087,7 +5298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9694,
       "BodyLength": 124.44999999999999,
-      "BodyWidth": 70.3
+      "BodyWidth": 70.3,
+      "Damage": 0
     },
     "213": {
       "ID": 213,
@@ -5111,7 +5323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11040,
       "BodyLength": 109.25,
-      "BodyWidth": 91.19999999999999
+      "BodyWidth": 91.19999999999999,
+      "Damage": 0
     },
     "214": {
       "ID": 214,
@@ -5135,7 +5348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 4615,
       "BodyLength": 59.849999999999994,
-      "BodyWidth": 69.58749999999999
+      "BodyWidth": 69.58749999999999,
+      "Damage": 0
     },
     "215": {
       "ID": 215,
@@ -5159,7 +5373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 9234,
       "BodyLength": 101.4125,
-      "BodyWidth": 82.175
+      "BodyWidth": 82.175,
+      "Damage": 0
     },
     "216": {
       "ID": 216,
@@ -5183,7 +5398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8985,
       "BodyLength": 102.83749999999999,
-      "BodyWidth": 78.85
+      "BodyWidth": 78.85,
+      "Damage": 0
     },
     "217": {
       "ID": 217,
@@ -5207,7 +5423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7808,
       "BodyLength": 115.89999999999999,
-      "BodyWidth": 60.8
+      "BodyWidth": 60.8,
+      "Damage": 0
     },
     "218": {
       "ID": 218,
@@ -5231,7 +5448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 14226,
       "BodyLength": 142.2625,
-      "BodyWidth": 90.25
+      "BodyWidth": 90.25,
+      "Damage": 0
     },
     "219": {
       "ID": 219,
@@ -5255,7 +5473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11734,
       "BodyLength": 119.225,
-      "BodyWidth": 88.825
+      "BodyWidth": 88.825,
+      "Damage": 0
     },
     "220": {
       "ID": 220,
@@ -5279,7 +5498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10333,
       "BodyLength": 118.9875,
-      "BodyWidth": 78.375
+      "BodyWidth": 78.375,
+      "Damage": 0
     },
     "221": {
       "ID": 221,
@@ -5303,7 +5523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11962,
       "BodyLength": 120.88749999999999,
-      "BodyWidth": 89.3
+      "BodyWidth": 89.3,
+      "Damage": 0
     },
     "222": {
       "ID": 222,
@@ -5327,7 +5548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 6077,
       "BodyLength": 83.3625,
-      "BodyWidth": 65.7875
+      "BodyWidth": 65.7875,
+      "Damage": 0
     },
     "223": {
       "ID": 223,
@@ -5351,7 +5573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 7388,
       "BodyLength": 93.57499999999999,
-      "BodyWidth": 71.25
+      "BodyWidth": 71.25,
+      "Damage": 0
     },
     "224": {
       "ID": 224,
@@ -5375,7 +5598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 8873,
       "BodyLength": 129.67499999999998,
-      "BodyWidth": 61.75
+      "BodyWidth": 61.75,
+      "Damage": 0
     },
     "225": {
       "ID": 225,
@@ -5399,7 +5623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 24695,
       "BodyLength": 209,
-      "BodyWidth": 106.63749999999999
+      "BodyWidth": 106.63749999999999,
+      "Damage": 0
     },
     "226": {
       "ID": 226,
@@ -5423,7 +5648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 26176,
       "BodyLength": 161.73749999999998,
-      "BodyWidth": 146.0625
+      "BodyWidth": 146.0625,
+      "Damage": 0
     },
     "227": {
       "ID": 227,
@@ -5447,7 +5673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 15055,
       "BodyLength": 119.9375,
-      "BodyWidth": 113.2875
+      "BodyWidth": 113.2875,
+      "Damage": 0
     },
     "228": {
       "ID": 228,
@@ -5471,7 +5698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 29391,
       "BodyLength": 188.33749999999998,
-      "BodyWidth": 140.8375
+      "BodyWidth": 140.8375,
+      "Damage": 0
     },
     "229": {
       "ID": 229,
@@ -5495,7 +5723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25491,
       "BodyLength": 183.11249999999998,
-      "BodyWidth": 125.63749999999999
+      "BodyWidth": 125.63749999999999,
+      "Damage": 0
     },
     "230": {
       "ID": 230,
@@ -5519,7 +5748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 17909,
       "BodyLength": 123.7375,
-      "BodyWidth": 130.625
+      "BodyWidth": 130.625,
+      "Damage": 0
     },
     "231": {
       "ID": 231,
@@ -5543,7 +5773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 14323,
       "BodyLength": 160.54999999999998,
-      "BodyWidth": 80.5125
+      "BodyWidth": 80.5125,
+      "Damage": 0
     },
     "232": {
       "ID": 232,
@@ -5567,7 +5798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 26055,
       "BodyLength": 166.9625,
-      "BodyWidth": 140.8375
+      "BodyWidth": 140.8375,
+      "Damage": 0
     },
     "233": {
       "ID": 233,
@@ -5591,7 +5823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 15471,
       "BodyLength": 179.7875,
-      "BodyWidth": 77.6625
+      "BodyWidth": 77.6625,
+      "Damage": 0
     },
     "234": {
       "ID": 234,
@@ -5615,7 +5848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 24724,
       "BodyLength": 164.825,
-      "BodyWidth": 135.375
+      "BodyWidth": 135.375,
+      "Damage": 0
     },
     "235": {
       "ID": 235,
@@ -5639,7 +5873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 33166,
       "BodyLength": 198.7875,
-      "BodyWidth": 150.575
+      "BodyWidth": 150.575,
+      "Damage": 0
     },
     "236": {
       "ID": 236,
@@ -5663,7 +5898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 30086,
       "BodyLength": 161.025,
-      "BodyWidth": 168.625
+      "BodyWidth": 168.625,
+      "Damage": 0
     },
     "237": {
       "ID": 237,
@@ -5687,7 +5923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 20103,
       "BodyLength": 146.0625,
-      "BodyWidth": 124.21249999999999
+      "BodyWidth": 124.21249999999999,
+      "Damage": 0
     },
     "238": {
       "ID": 238,
@@ -5711,7 +5948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 30632,
       "BodyLength": 151.7625,
-      "BodyWidth": 182.1625
+      "BodyWidth": 182.1625,
+      "Damage": 0
     },
     "239": {
       "ID": 239,
@@ -5735,7 +5973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 31902,
       "BodyLength": 203.0625,
-      "BodyWidth": 141.7875
+      "BodyWidth": 141.7875,
+      "Damage": 0
     },
     "240": {
       "ID": 240,
@@ -5759,7 +5998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 28742,
       "BodyLength": 189.2875,
-      "BodyWidth": 137.0375
+      "BodyWidth": 137.0375,
+      "Damage": 0
     },
     "241": {
       "ID": 241,
@@ -5783,7 +6023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 16502,
       "BodyLength": 92.625,
-      "BodyWidth": 160.7875
+      "BodyWidth": 160.7875,
+      "Damage": 0
     },
     "242": {
       "ID": 242,
@@ -5807,7 +6048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 17370,
       "BodyLength": 137.5125,
-      "BodyWidth": 114
+      "BodyWidth": 114,
+      "Damage": 0
     },
     "243": {
       "ID": 243,
@@ -5831,7 +6073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 18485,
       "BodyLength": 176.9375,
-      "BodyWidth": 94.2875
+      "BodyWidth": 94.2875,
+      "Damage": 0
     },
     "244": {
       "ID": 244,
@@ -5855,7 +6098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 23829,
       "BodyLength": 170.525,
-      "BodyWidth": 126.1125
+      "BodyWidth": 126.1125,
+      "Damage": 0
     },
     "245": {
       "ID": 245,
@@ -5879,7 +6123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 24814,
       "BodyLength": 185.25,
-      "BodyWidth": 120.88749999999999
+      "BodyWidth": 120.88749999999999,
+      "Damage": 0
     },
     "246": {
       "ID": 246,
@@ -5903,7 +6148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 26598,
       "BodyLength": 191.42499999999998,
-      "BodyWidth": 125.39999999999999
+      "BodyWidth": 125.39999999999999,
+      "Damage": 0
     },
     "247": {
       "ID": 247,
@@ -5927,7 +6173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27632,
       "BodyLength": 207.1,
-      "BodyWidth": 120.4125
+      "BodyWidth": 120.4125,
+      "Damage": 0
     },
     "248": {
       "ID": 248,
@@ -5951,7 +6198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27601,
       "BodyLength": 185.96249999999998,
-      "BodyWidth": 133.95
+      "BodyWidth": 133.95,
+      "Damage": 0
     },
     "249": {
       "ID": 249,
@@ -5975,7 +6223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 21252,
       "BodyLength": 160.54999999999998,
-      "BodyWidth": 119.46249999999999
+      "BodyWidth": 119.46249999999999,
+      "Damage": 0
     },
     "250": {
       "ID": 250,
@@ -5999,7 +6248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27612,
       "BodyLength": 168.15,
-      "BodyWidth": 148.2
+      "BodyWidth": 148.2,
+      "Damage": 0
     },
     "251": {
       "ID": 251,
@@ -6023,7 +6273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25423,
       "BodyLength": 216.125,
-      "BodyWidth": 106.1625
+      "BodyWidth": 106.1625,
+      "Damage": 0
     },
     "252": {
       "ID": 252,
@@ -6047,7 +6298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 19258,
       "BodyLength": 148.4375,
-      "BodyWidth": 117.08749999999999
+      "BodyWidth": 117.08749999999999,
+      "Damage": 0
     },
     "253": {
       "ID": 253,
@@ -6071,7 +6323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 36537,
       "BodyLength": 200.92499999999998,
-      "BodyWidth": 164.11249999999998
+      "BodyWidth": 164.11249999999998,
+      "Damage": 0
     },
     "254": {
       "ID": 254,
@@ -6095,7 +6348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25828,
       "BodyLength": 156.0375,
-      "BodyWidth": 149.3875
+      "BodyWidth": 149.3875,
+      "Damage": 0
     },
     "255": {
       "ID": 255,
@@ -6119,7 +6373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 18782,
       "BodyLength": 188.8125,
-      "BodyWidth": 89.77499999999999
+      "BodyWidth": 89.77499999999999,
+      "Damage": 0
     },
     "256": {
       "ID": 256,
@@ -6143,7 +6398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 28581,
       "BodyLength": 194.98749999999998,
-      "BodyWidth": 132.2875
+      "BodyWidth": 132.2875,
+      "Damage": 0
     },
     "257": {
       "ID": 257,
@@ -6167,7 +6423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 34445,
       "BodyLength": 269.325,
-      "BodyWidth": 115.425
+      "BodyWidth": 115.425,
+      "Damage": 0
     },
     "258": {
       "ID": 258,
@@ -6191,7 +6448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 30968,
       "BodyLength": 238.21249999999998,
-      "BodyWidth": 117.32499999999999
+      "BodyWidth": 117.32499999999999,
+      "Damage": 0
     },
     "259": {
       "ID": 259,
@@ -6215,7 +6473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 17982,
       "BodyLength": 115.425,
-      "BodyWidth": 140.6
+      "BodyWidth": 140.6,
+      "Damage": 0
     },
     "260": {
       "ID": 260,
@@ -6239,7 +6498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 10587,
       "BodyLength": 116.6125,
-      "BodyWidth": 81.9375
+      "BodyWidth": 81.9375,
+      "Damage": 0
     },
     "261": {
       "ID": 261,
@@ -6263,7 +6523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 31588,
       "BodyLength": 198.075,
-      "BodyWidth": 143.92499999999998
+      "BodyWidth": 143.92499999999998,
+      "Damage": 0
     },
     "262": {
       "ID": 262,
@@ -6287,7 +6548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 20360,
       "BodyLength": 175.0375,
-      "BodyWidth": 104.975
+      "BodyWidth": 104.975,
+      "Damage": 0
     },
     "263": {
       "ID": 263,
@@ -6311,7 +6573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 19198,
       "BodyLength": 140.8375,
-      "BodyWidth": 123.02499999999999
+      "BodyWidth": 123.02499999999999,
+      "Damage": 0
     },
     "264": {
       "ID": 264,
@@ -6335,7 +6598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 21812,
       "BodyLength": 129.9125,
-      "BodyWidth": 151.525
+      "BodyWidth": 151.525,
+      "Damage": 0
     },
     "265": {
       "ID": 265,
@@ -6359,7 +6623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 22415,
       "BodyLength": 145.35,
-      "BodyWidth": 139.17499999999998
+      "BodyWidth": 139.17499999999998,
+      "Damage": 0
     },
     "266": {
       "ID": 266,
@@ -6383,7 +6648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 31736,
       "BodyLength": 194.5125,
-      "BodyWidth": 147.25
+      "BodyWidth": 147.25,
+      "Damage": 0
     },
     "267": {
       "ID": 267,
@@ -6407,7 +6673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 22155,
       "BodyLength": 190.475,
-      "BodyWidth": 104.975
+      "BodyWidth": 104.975,
+      "Damage": 0
     },
     "268": {
       "ID": 268,
@@ -6431,7 +6698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 18122,
       "BodyLength": 133.7125,
-      "BodyWidth": 122.3125
+      "BodyWidth": 122.3125,
+      "Damage": 0
     },
     "269": {
       "ID": 269,
@@ -6455,7 +6723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27906,
       "BodyLength": 197.83749999999998,
-      "BodyWidth": 127.3
+      "BodyWidth": 127.3,
+      "Damage": 0
     },
     "270": {
       "ID": 270,
@@ -6479,7 +6748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 33212,
       "BodyLength": 207.575,
-      "BodyWidth": 144.4
+      "BodyWidth": 144.4,
+      "Damage": 0
     },
     "271": {
       "ID": 271,
@@ -6503,7 +6773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 24248,
       "BodyLength": 175.5125,
-      "BodyWidth": 124.6875
+      "BodyWidth": 124.6875,
+      "Damage": 0
     },
     "272": {
       "ID": 272,
@@ -6527,7 +6798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 33002,
       "BodyLength": 279.3,
-      "BodyWidth": 106.63749999999999
+      "BodyWidth": 106.63749999999999,
+      "Damage": 0
     },
     "273": {
       "ID": 273,
@@ -6551,7 +6823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 26361,
       "BodyLength": 160.7875,
-      "BodyWidth": 147.9625
+      "BodyWidth": 147.9625,
+      "Damage": 0
     },
     "274": {
       "ID": 274,
@@ -6575,7 +6848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 23158,
       "BodyLength": 163.875,
-      "BodyWidth": 127.5375
+      "BodyWidth": 127.5375,
+      "Damage": 0
     },
     "275": {
       "ID": 275,
@@ -6599,7 +6873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 21784,
       "BodyLength": 167.9125,
-      "BodyWidth": 117.08749999999999
+      "BodyWidth": 117.08749999999999,
+      "Damage": 0
     },
     "276": {
       "ID": 276,
@@ -6623,7 +6898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27852,
       "BodyLength": 231.08749999999998,
-      "BodyWidth": 108.77499999999999
+      "BodyWidth": 108.77499999999999,
+      "Damage": 0
     },
     "277": {
       "ID": 277,
@@ -6647,7 +6923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 23537,
       "BodyLength": 164.11249999999998,
-      "BodyWidth": 129.4375
+      "BodyWidth": 129.4375,
+      "Damage": 0
     },
     "278": {
       "ID": 278,
@@ -6671,7 +6948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 18431,
       "BodyLength": 216.83749999999998,
-      "BodyWidth": 76.71249999999999
+      "BodyWidth": 76.71249999999999,
+      "Damage": 0
     },
     "279": {
       "ID": 279,
@@ -6695,7 +6973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 13896,
       "BodyLength": 77.425,
-      "BodyWidth": 161.975
+      "BodyWidth": 161.975,
+      "Damage": 0
     },
     "280": {
       "ID": 280,
@@ -6719,7 +6998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 31593,
       "BodyLength": 202.11249999999998,
-      "BodyWidth": 141.075
+      "BodyWidth": 141.075,
+      "Damage": 0
     },
     "281": {
       "ID": 281,
@@ -6743,7 +7023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 22263,
       "BodyLength": 162.6875,
-      "BodyWidth": 123.5
+      "BodyWidth": 123.5,
+      "Damage": 0
     },
     "282": {
       "ID": 282,
@@ -6767,7 +7048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 43263,
       "BodyLength": 216.6,
-      "BodyWidth": 180.2625
+      "BodyWidth": 180.2625,
+      "Damage": 0
     },
     "283": {
       "ID": 283,
@@ -6791,7 +7073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 24052,
       "BodyLength": 150.575,
-      "BodyWidth": 144.1625
+      "BodyWidth": 144.1625,
+      "Damage": 0
     },
     "284": {
       "ID": 284,
@@ -6815,7 +7098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25418,
       "BodyLength": 170.04999999999998,
-      "BodyWidth": 134.9
+      "BodyWidth": 134.9,
+      "Damage": 0
     },
     "285": {
       "ID": 285,
@@ -6839,7 +7123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25902,
       "BodyLength": 205.9125,
-      "BodyWidth": 113.52499999999999
+      "BodyWidth": 113.52499999999999,
+      "Damage": 0
     },
     "286": {
       "ID": 286,
@@ -6863,7 +7148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 21899,
       "BodyLength": 162.2125,
-      "BodyWidth": 121.83749999999999
+      "BodyWidth": 121.83749999999999,
+      "Damage": 0
     },
     "287": {
       "ID": 287,
@@ -6887,7 +7173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 45279,
       "BodyLength": 260.3,
-      "BodyWidth": 156.98749999999998
+      "BodyWidth": 156.98749999999998,
+      "Damage": 0
     },
     "288": {
       "ID": 288,
@@ -6911,7 +7198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 33800,
       "BodyLength": 247.95,
-      "BodyWidth": 123.02499999999999
+      "BodyWidth": 123.02499999999999,
+      "Damage": 0
     },
     "289": {
       "ID": 289,
@@ -6935,7 +7223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 35039,
       "BodyLength": 231.5625,
-      "BodyWidth": 136.5625
+      "BodyWidth": 136.5625,
+      "Damage": 0
     },
     "290": {
       "ID": 290,
@@ -6959,7 +7248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 16351,
       "BodyLength": 168.3875,
-      "BodyWidth": 87.6375
+      "BodyWidth": 87.6375,
+      "Damage": 0
     },
     "291": {
       "ID": 291,
@@ -6983,7 +7273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 26336,
       "BodyLength": 167.9125,
-      "BodyWidth": 141.54999999999998
+      "BodyWidth": 141.54999999999998,
+      "Damage": 0
     },
     "292": {
       "ID": 292,
@@ -7007,7 +7298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 30156,
       "BodyLength": 185.725,
-      "BodyWidth": 146.5375
+      "BodyWidth": 146.5375,
+      "Damage": 0
     },
     "293": {
       "ID": 293,
@@ -7031,7 +7323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 29017,
       "BodyLength": 203.0625,
-      "BodyWidth": 128.9625
+      "BodyWidth": 128.9625,
+      "Damage": 0
     },
     "294": {
       "ID": 294,
@@ -7055,7 +7348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 40549,
       "BodyLength": 239.6375,
-      "BodyWidth": 152.7125
+      "BodyWidth": 152.7125,
+      "Damage": 0
     },
     "295": {
       "ID": 295,
@@ -7079,7 +7373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 15535,
       "BodyLength": 127.77499999999999,
-      "BodyWidth": 109.725
+      "BodyWidth": 109.725,
+      "Damage": 0
     },
     "296": {
       "ID": 296,
@@ -7103,7 +7398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 14355,
       "BodyLength": 117.5625,
-      "BodyWidth": 110.19999999999999
+      "BodyWidth": 110.19999999999999,
+      "Damage": 0
     },
     "297": {
       "ID": 297,
@@ -7127,7 +7423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11463,
       "BodyLength": 109.725,
-      "BodyWidth": 94.2875
+      "BodyWidth": 94.2875,
+      "Damage": 0
     },
     "298": {
       "ID": 298,
@@ -7151,7 +7448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 19481,
       "BodyLength": 126.1125,
-      "BodyWidth": 139.4125
+      "BodyWidth": 139.4125,
+      "Damage": 0
     },
     "299": {
       "ID": 299,
@@ -7175,7 +7473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 31174,
       "BodyLength": 251.5125,
-      "BodyWidth": 111.8625
+      "BodyWidth": 111.8625,
+      "Damage": 0
     },
     "300": {
       "ID": 300,
@@ -7199,7 +7498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25223,
       "BodyLength": 180.5,
-      "BodyWidth": 126.1125
+      "BodyWidth": 126.1125,
+      "Damage": 0
     },
     "301": {
       "ID": 301,
@@ -7223,7 +7523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11044,
       "BodyLength": 135.375,
-      "BodyWidth": 73.625
+      "BodyWidth": 73.625,
+      "Damage": 0
     },
     "302": {
       "ID": 302,
@@ -7247,7 +7548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 19032,
       "BodyLength": 188.33749999999998,
-      "BodyWidth": 91.19999999999999
+      "BodyWidth": 91.19999999999999,
+      "Damage": 0
     },
     "303": {
       "ID": 303,
@@ -7271,7 +7573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 38861,
       "BodyLength": 204.25,
-      "BodyWidth": 171.7125
+      "BodyWidth": 171.7125,
+      "Damage": 0
     },
     "304": {
       "ID": 304,
@@ -7295,7 +7598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25090,
       "BodyLength": 179.54999999999998,
-      "BodyWidth": 126.1125
+      "BodyWidth": 126.1125,
+      "Damage": 0
     },
     "305": {
       "ID": 305,
@@ -7319,7 +7623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 31299,
       "BodyLength": 269.0875,
-      "BodyWidth": 104.975
+      "BodyWidth": 104.975,
+      "Damage": 0
     },
     "306": {
       "ID": 306,
@@ -7343,7 +7648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 20848,
       "BodyLength": 171.475,
-      "BodyWidth": 109.725
+      "BodyWidth": 109.725,
+      "Damage": 0
     },
     "307": {
       "ID": 307,
@@ -7367,7 +7673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27604,
       "BodyLength": 195.7,
-      "BodyWidth": 127.3
+      "BodyWidth": 127.3,
+      "Damage": 0
     },
     "308": {
       "ID": 308,
@@ -7391,7 +7698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 35113,
       "BodyLength": 217.3125,
-      "BodyWidth": 145.825
+      "BodyWidth": 145.825,
+      "Damage": 0
     },
     "309": {
       "ID": 309,
@@ -7415,7 +7723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 42316,
       "BodyLength": 254.83749999999998,
-      "BodyWidth": 149.86249999999998
+      "BodyWidth": 149.86249999999998,
+      "Damage": 0
     },
     "310": {
       "ID": 310,
@@ -7439,7 +7748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 37744,
       "BodyLength": 217.3125,
-      "BodyWidth": 156.75
+      "BodyWidth": 156.75,
+      "Damage": 0
     },
     "311": {
       "ID": 311,
@@ -7463,7 +7773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 83834,
       "BodyLength": 330.125,
-      "BodyWidth": 229.1875
+      "BodyWidth": 229.1875,
+      "Damage": 0
     },
     "312": {
       "ID": 312,
@@ -7487,7 +7798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 66912,
       "BodyLength": 311.59999999999997,
-      "BodyWidth": 193.79999999999998
+      "BodyWidth": 193.79999999999998,
+      "Damage": 0
     },
     "313": {
       "ID": 313,
@@ -7511,7 +7823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 56343,
       "BodyLength": 355.0625,
-      "BodyWidth": 143.2125
+      "BodyWidth": 143.2125,
+      "Damage": 0
     },
     "314": {
       "ID": 314,
@@ -7535,7 +7848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59870,
       "BodyLength": 308.275,
-      "BodyWidth": 175.275
+      "BodyWidth": 175.275,
+      "Damage": 0
     },
     "315": {
       "ID": 315,
@@ -7559,7 +7873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 67087,
       "BodyLength": 384.5125,
-      "BodyWidth": 157.4625
+      "BodyWidth": 157.4625,
+      "Damage": 0
     },
     "316": {
       "ID": 316,
@@ -7583,7 +7898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 78224,
       "BodyLength": 452.4375,
-      "BodyWidth": 156.0375
+      "BodyWidth": 156.0375,
+      "Damage": 0
     },
     "317": {
       "ID": 317,
@@ -7607,7 +7923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 54523,
       "BodyLength": 268.375,
-      "BodyWidth": 183.35
+      "BodyWidth": 183.35,
+      "Damage": 0
     },
     "318": {
       "ID": 318,
@@ -7631,7 +7948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 77052,
       "BodyLength": 379.7625,
-      "BodyWidth": 183.11249999999998
+      "BodyWidth": 183.11249999999998,
+      "Damage": 0
     },
     "319": {
       "ID": 319,
@@ -7655,7 +7973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 53344,
       "BodyLength": 270.275,
-      "BodyWidth": 178.125
+      "BodyWidth": 178.125,
+      "Damage": 0
     },
     "320": {
       "ID": 320,
@@ -7679,7 +7998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 102346,
       "BodyLength": 474.28749999999997,
-      "BodyWidth": 194.75
+      "BodyWidth": 194.75,
+      "Damage": 0
     },
     "321": {
       "ID": 321,
@@ -7703,7 +8023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 65722,
       "BodyLength": 278.1125,
-      "BodyWidth": 213.27499999999998
+      "BodyWidth": 213.27499999999998,
+      "Damage": 0
     },
     "322": {
       "ID": 322,
@@ -7727,7 +8048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 45644,
       "BodyLength": 314.2125,
-      "BodyWidth": 131.1
+      "BodyWidth": 131.1,
+      "Damage": 0
     },
     "323": {
       "ID": 323,
@@ -7751,7 +8073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 97241,
       "BodyLength": 439.375,
-      "BodyWidth": 199.73749999999998
+      "BodyWidth": 199.73749999999998,
+      "Damage": 0
     },
     "324": {
       "ID": 324,
@@ -7775,7 +8098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 53792,
       "BodyLength": 260.0625,
-      "BodyWidth": 186.67499999999998
+      "BodyWidth": 186.67499999999998,
+      "Damage": 0
     },
     "325": {
       "ID": 325,
@@ -7799,7 +8123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55199,
       "BodyLength": 345.5625,
-      "BodyWidth": 144.1625
+      "BodyWidth": 144.1625,
+      "Damage": 0
     },
     "326": {
       "ID": 326,
@@ -7823,7 +8148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 25421,
       "BodyLength": 249.61249999999998,
-      "BodyWidth": 91.9125
+      "BodyWidth": 91.9125,
+      "Damage": 0
     },
     "327": {
       "ID": 327,
@@ -7847,7 +8173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 45460,
       "BodyLength": 257.45,
-      "BodyWidth": 159.36249999999998
+      "BodyWidth": 159.36249999999998,
+      "Damage": 0
     },
     "328": {
       "ID": 328,
@@ -7871,7 +8198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 44925,
       "BodyLength": 346.275,
-      "BodyWidth": 117.08749999999999
+      "BodyWidth": 117.08749999999999,
+      "Damage": 0
     },
     "329": {
       "ID": 329,
@@ -7895,7 +8223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 68266,
       "BodyLength": 303.05,
-      "BodyWidth": 203.29999999999998
+      "BodyWidth": 203.29999999999998,
+      "Damage": 0
     },
     "330": {
       "ID": 330,
@@ -7919,7 +8248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 57292,
       "BodyLength": 330.3625,
-      "BodyWidth": 156.5125
+      "BodyWidth": 156.5125,
+      "Damage": 0
     },
     "331": {
       "ID": 331,
@@ -7943,7 +8273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59637,
       "BodyLength": 366.7,
-      "BodyWidth": 146.775
+      "BodyWidth": 146.775,
+      "Damage": 0
     },
     "332": {
       "ID": 332,
@@ -7967,7 +8298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 84102,
       "BodyLength": 373.34999999999997,
-      "BodyWidth": 203.29999999999998
+      "BodyWidth": 203.29999999999998,
+      "Damage": 0
     },
     "333": {
       "ID": 333,
@@ -7991,7 +8323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 76582,
       "BodyLength": 442.9375,
-      "BodyWidth": 156.0375
+      "BodyWidth": 156.0375,
+      "Damage": 0
     },
     "334": {
       "ID": 334,
@@ -8015,7 +8348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27366,
       "BodyLength": 227.04999999999998,
-      "BodyWidth": 108.77499999999999
+      "BodyWidth": 108.77499999999999,
+      "Damage": 0
     },
     "335": {
       "ID": 335,
@@ -8039,7 +8373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 38672,
       "BodyLength": 192.85,
-      "BodyWidth": 180.975
+      "BodyWidth": 180.975,
+      "Damage": 0
     },
     "336": {
       "ID": 336,
@@ -8063,7 +8398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 76701,
       "BodyLength": 328.22499999999997,
-      "BodyWidth": 210.89999999999998
+      "BodyWidth": 210.89999999999998,
+      "Damage": 0
     },
     "337": {
       "ID": 337,
@@ -8087,7 +8423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55334,
       "BodyLength": 256.7375,
-      "BodyWidth": 194.5125
+      "BodyWidth": 194.5125,
+      "Damage": 0
     },
     "338": {
       "ID": 338,
@@ -8111,7 +8448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 61030,
       "BodyLength": 330.3625,
-      "BodyWidth": 166.725
+      "BodyWidth": 166.725,
+      "Damage": 0
     },
     "339": {
       "ID": 339,
@@ -8135,7 +8473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 66402,
       "BodyLength": 339.15,
-      "BodyWidth": 176.7
+      "BodyWidth": 176.7,
+      "Damage": 0
     },
     "340": {
       "ID": 340,
@@ -8159,7 +8498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 46932,
       "BodyLength": 438.1875,
-      "BodyWidth": 96.6625
+      "BodyWidth": 96.6625,
+      "Damage": 0
     },
     "341": {
       "ID": 341,
@@ -8183,7 +8523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 61053,
       "BodyLength": 411.34999999999997,
-      "BodyWidth": 133.95
+      "BodyWidth": 133.95,
+      "Damage": 0
     },
     "342": {
       "ID": 342,
@@ -8207,7 +8548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 56527,
       "BodyLength": 259.1125,
-      "BodyWidth": 196.8875
+      "BodyWidth": 196.8875,
+      "Damage": 0
     },
     "343": {
       "ID": 343,
@@ -8231,7 +8573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 68182,
       "BodyLength": 333.45,
-      "BodyWidth": 184.5375
+      "BodyWidth": 184.5375,
+      "Damage": 0
     },
     "344": {
       "ID": 344,
@@ -8255,7 +8598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 41330,
       "BodyLength": 255.7875,
-      "BodyWidth": 145.825
+      "BodyWidth": 145.825,
+      "Damage": 0
     },
     "345": {
       "ID": 345,
@@ -8279,7 +8623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 34008,
       "BodyLength": 264.8125,
-      "BodyWidth": 115.89999999999999
+      "BodyWidth": 115.89999999999999,
+      "Damage": 0
     },
     "346": {
       "ID": 346,
@@ -8303,7 +8648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 38708,
       "BodyLength": 208.04999999999998,
-      "BodyWidth": 167.9125
+      "BodyWidth": 167.9125,
+      "Damage": 0
     },
     "347": {
       "ID": 347,
@@ -8327,7 +8673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 65570,
       "BodyLength": 352.925,
-      "BodyWidth": 167.67499999999998
+      "BodyWidth": 167.67499999999998,
+      "Damage": 0
     },
     "348": {
       "ID": 348,
@@ -8351,7 +8698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 53678,
       "BodyLength": 299.9625,
-      "BodyWidth": 161.5
+      "BodyWidth": 161.5,
+      "Damage": 0
     },
     "349": {
       "ID": 349,
@@ -8375,7 +8723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 89012,
       "BodyLength": 365.275,
-      "BodyWidth": 219.92499999999998
+      "BodyWidth": 219.92499999999998,
+      "Damage": 0
     },
     "350": {
       "ID": 350,
@@ -8399,7 +8748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 71015,
       "BodyLength": 348.65,
-      "BodyWidth": 183.825
+      "BodyWidth": 183.825,
+      "Damage": 0
     },
     "351": {
       "ID": 351,
@@ -8423,7 +8773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 46394,
       "BodyLength": 266.7125,
-      "BodyWidth": 156.98749999999998
+      "BodyWidth": 156.98749999999998,
+      "Damage": 0
     },
     "352": {
       "ID": 352,
@@ -8447,7 +8798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 79422,
       "BodyLength": 355.0625,
-      "BodyWidth": 201.875
+      "BodyWidth": 201.875,
+      "Damage": 0
     },
     "353": {
       "ID": 353,
@@ -8471,7 +8823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 62233,
       "BodyLength": 342.2375,
-      "BodyWidth": 164.11249999999998
+      "BodyWidth": 164.11249999999998,
+      "Damage": 0
     },
     "354": {
       "ID": 354,
@@ -8495,7 +8848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 40469,
       "BodyLength": 292.3625,
-      "BodyWidth": 124.925
+      "BodyWidth": 124.925,
+      "Damage": 0
     },
     "355": {
       "ID": 355,
@@ -8519,7 +8873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 74706,
       "BodyLength": 292.3625,
-      "BodyWidth": 230.61249999999998
+      "BodyWidth": 230.61249999999998,
+      "Damage": 0
     },
     "356": {
       "ID": 356,
@@ -8543,7 +8898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59247,
       "BodyLength": 323.47499999999997,
-      "BodyWidth": 165.29999999999998
+      "BodyWidth": 165.29999999999998,
+      "Damage": 0
     },
     "357": {
       "ID": 357,
@@ -8567,7 +8923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 49652,
       "BodyLength": 360.7625,
-      "BodyWidth": 124.21249999999999
+      "BodyWidth": 124.21249999999999,
+      "Damage": 0
     },
     "358": {
       "ID": 358,
@@ -8591,7 +8948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 83458,
       "BodyLength": 355.53749999999997,
-      "BodyWidth": 211.85
+      "BodyWidth": 211.85,
+      "Damage": 0
     },
     "359": {
       "ID": 359,
@@ -8615,7 +8973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 73646,
       "BodyLength": 341.28749999999997,
-      "BodyWidth": 194.75
+      "BodyWidth": 194.75,
+      "Damage": 0
     },
     "360": {
       "ID": 360,
@@ -8639,7 +8998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 57627,
       "BodyLength": 335.34999999999997,
-      "BodyWidth": 155.0875
+      "BodyWidth": 155.0875,
+      "Damage": 0
     },
     "361": {
       "ID": 361,
@@ -8663,7 +9023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 39413,
       "BodyLength": 329.8875,
-      "BodyWidth": 107.82499999999999
+      "BodyWidth": 107.82499999999999,
+      "Damage": 0
     },
     "362": {
       "ID": 362,
@@ -8687,7 +9048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 74733,
       "BodyLength": 451.48749999999995,
-      "BodyWidth": 149.3875
+      "BodyWidth": 149.3875,
+      "Damage": 0
     },
     "363": {
       "ID": 363,
@@ -8711,7 +9073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 31135,
       "BodyLength": 202.58749999999998,
-      "BodyWidth": 138.7
+      "BodyWidth": 138.7,
+      "Damage": 0
     },
     "364": {
       "ID": 364,
@@ -8735,7 +9098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 28649,
       "BodyLength": 194.75,
-      "BodyWidth": 132.7625
+      "BodyWidth": 132.7625,
+      "Damage": 0
     },
     "365": {
       "ID": 365,
@@ -8759,7 +9123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 48704,
       "BodyLength": 299.9625,
-      "BodyWidth": 146.5375
+      "BodyWidth": 146.5375,
+      "Damage": 0
     },
     "366": {
       "ID": 366,
@@ -8783,7 +9148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55610,
       "BodyLength": 254.6,
-      "BodyWidth": 197.125
+      "BodyWidth": 197.125,
+      "Damage": 0
     },
     "367": {
       "ID": 367,
@@ -8807,7 +9173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 42722,
       "BodyLength": 349.125,
-      "BodyWidth": 110.4375
+      "BodyWidth": 110.4375,
+      "Damage": 0
     },
     "368": {
       "ID": 368,
@@ -8831,7 +9198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 110804,
       "BodyLength": 411.5875,
-      "BodyWidth": 242.96249999999998
+      "BodyWidth": 242.96249999999998,
+      "Damage": 0
     },
     "369": {
       "ID": 369,
@@ -8855,7 +9223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 62469,
       "BodyLength": 376.2,
-      "BodyWidth": 149.86249999999998
+      "BodyWidth": 149.86249999999998,
+      "Damage": 0
     },
     "370": {
       "ID": 370,
@@ -8879,7 +9248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 58627,
       "BodyLength": 278.825,
-      "BodyWidth": 189.7625
+      "BodyWidth": 189.7625,
+      "Damage": 0
     },
     "371": {
       "ID": 371,
@@ -8903,7 +9273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 38984,
       "BodyLength": 192.1375,
-      "BodyWidth": 183.11249999999998
+      "BodyWidth": 183.11249999999998,
+      "Damage": 0
     },
     "372": {
       "ID": 372,
@@ -8927,7 +9298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 88102,
       "BodyLength": 382.61249999999995,
-      "BodyWidth": 207.8125
+      "BodyWidth": 207.8125,
+      "Damage": 0
     },
     "373": {
       "ID": 373,
@@ -8951,7 +9323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 54068,
       "BodyLength": 253.64999999999998,
-      "BodyWidth": 192.375
+      "BodyWidth": 192.375,
+      "Damage": 0
     },
     "374": {
       "ID": 374,
@@ -8975,7 +9348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 51827,
       "BodyLength": 331.55,
-      "BodyWidth": 141.075
+      "BodyWidth": 141.075,
+      "Damage": 0
     },
     "375": {
       "ID": 375,
@@ -8999,7 +9373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 67750,
       "BodyLength": 336.53749999999997,
-      "BodyWidth": 181.6875
+      "BodyWidth": 181.6875,
+      "Damage": 0
     },
     "376": {
       "ID": 376,
@@ -9023,7 +9398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 100453,
       "BodyLength": 430.34999999999997,
-      "BodyWidth": 210.6625
+      "BodyWidth": 210.6625,
+      "Damage": 0
     },
     "377": {
       "ID": 377,
@@ -9047,7 +9423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 48280,
       "BodyLength": 249.61249999999998,
-      "BodyWidth": 174.5625
+      "BodyWidth": 174.5625,
+      "Damage": 0
     },
     "378": {
       "ID": 378,
@@ -9071,7 +9448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 66950,
       "BodyLength": 359.3375,
-      "BodyWidth": 168.15
+      "BodyWidth": 168.15,
+      "Damage": 0
     },
     "379": {
       "ID": 379,
@@ -9095,7 +9473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 83409,
       "BodyLength": 322.7625,
-      "BodyWidth": 233.225
+      "BodyWidth": 233.225,
+      "Damage": 0
     },
     "380": {
       "ID": 380,
@@ -9119,7 +9498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 39444,
       "BodyLength": 191.42499999999998,
-      "BodyWidth": 185.96249999999998
+      "BodyWidth": 185.96249999999998,
+      "Damage": 0
     },
     "381": {
       "ID": 381,
@@ -9143,7 +9523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 52046,
       "BodyLength": 234.8875,
-      "BodyWidth": 199.975
+      "BodyWidth": 199.975,
+      "Damage": 0
     },
     "382": {
       "ID": 382,
@@ -9167,7 +9548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 48900,
       "BodyLength": 285,
-      "BodyWidth": 154.85
+      "BodyWidth": 154.85,
+      "Damage": 0
     },
     "383": {
       "ID": 383,
@@ -9191,7 +9573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 75299,
       "BodyLength": 396.86249999999995,
-      "BodyWidth": 171.23749999999998
+      "BodyWidth": 171.23749999999998,
+      "Damage": 0
     },
     "384": {
       "ID": 384,
@@ -9215,7 +9598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 48043,
       "BodyLength": 272.8875,
-      "BodyWidth": 158.8875
+      "BodyWidth": 158.8875,
+      "Damage": 0
     },
     "385": {
       "ID": 385,
@@ -9239,7 +9623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 39429,
       "BodyLength": 196.8875,
-      "BodyWidth": 180.73749999999998
+      "BodyWidth": 180.73749999999998,
+      "Damage": 0
     },
     "386": {
       "ID": 386,
@@ -9263,7 +9648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 87550,
       "BodyLength": 356.9625,
-      "BodyWidth": 221.35
+      "BodyWidth": 221.35,
+      "Damage": 0
     },
     "387": {
       "ID": 387,
@@ -9287,7 +9673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 36583,
       "BodyLength": 278.5875,
-      "BodyWidth": 118.51249999999999
+      "BodyWidth": 118.51249999999999,
+      "Damage": 0
     },
     "388": {
       "ID": 388,
@@ -9311,7 +9698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 53517,
       "BodyLength": 290.9375,
-      "BodyWidth": 166.0125
+      "BodyWidth": 166.0125,
+      "Damage": 0
     },
     "389": {
       "ID": 389,
@@ -9335,7 +9723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 70656,
       "BodyLength": 311.8375,
-      "BodyWidth": 204.48749999999998
+      "BodyWidth": 204.48749999999998,
+      "Damage": 0
     },
     "390": {
       "ID": 390,
@@ -9359,7 +9748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 54919,
       "BodyLength": 209.95,
-      "BodyWidth": 236.075
+      "BodyWidth": 236.075,
+      "Damage": 0
     },
     "391": {
       "ID": 391,
@@ -9383,7 +9773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 90713,
       "BodyLength": 389.5,
-      "BodyWidth": 210.1875
+      "BodyWidth": 210.1875,
+      "Damage": 0
     },
     "392": {
       "ID": 392,
@@ -9407,7 +9798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 41948,
       "BodyLength": 335.5875,
-      "BodyWidth": 112.8125
+      "BodyWidth": 112.8125,
+      "Damage": 0
     },
     "393": {
       "ID": 393,
@@ -9431,7 +9823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 91495,
       "BodyLength": 339.8625,
-      "BodyWidth": 242.96249999999998
+      "BodyWidth": 242.96249999999998,
+      "Damage": 0
     },
     "394": {
       "ID": 394,
@@ -9455,7 +9848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 43713,
       "BodyLength": 256.7375,
-      "BodyWidth": 153.6625
+      "BodyWidth": 153.6625,
+      "Damage": 0
     },
     "395": {
       "ID": 395,
@@ -9479,7 +9873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 82283,
       "BodyLength": 361.47499999999997,
-      "BodyWidth": 205.4375
+      "BodyWidth": 205.4375,
+      "Damage": 0
     },
     "396": {
       "ID": 396,
@@ -9503,7 +9898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 96732,
       "BodyLength": 441.275,
-      "BodyWidth": 197.83749999999998
+      "BodyWidth": 197.83749999999998,
+      "Damage": 0
     },
     "397": {
       "ID": 397,
@@ -9527,7 +9923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 68336,
       "BodyLength": 311.3625,
-      "BodyWidth": 198.075
+      "BodyWidth": 198.075,
+      "Damage": 0
     },
     "398": {
       "ID": 398,
@@ -9551,7 +9948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 82012,
       "BodyLength": 385.7,
-      "BodyWidth": 191.89999999999998
+      "BodyWidth": 191.89999999999998,
+      "Damage": 0
     },
     "399": {
       "ID": 399,
@@ -9575,7 +9973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55772,
       "BodyLength": 320.625,
-      "BodyWidth": 156.98749999999998
+      "BodyWidth": 156.98749999999998,
+      "Damage": 0
     },
     "400": {
       "ID": 400,
@@ -9599,7 +9998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 37929,
       "BodyLength": 326.0875,
-      "BodyWidth": 104.975
+      "BodyWidth": 104.975,
+      "Damage": 0
     },
     "401": {
       "ID": 401,
@@ -9623,7 +10023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 37017,
       "BodyLength": 249.85,
-      "BodyWidth": 133.7125
+      "BodyWidth": 133.7125,
+      "Damage": 0
     },
     "402": {
       "ID": 402,
@@ -9647,7 +10048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 85518,
       "BodyLength": 375.25,
-      "BodyWidth": 205.67499999999998
+      "BodyWidth": 205.67499999999998,
+      "Damage": 0
     },
     "403": {
       "ID": 403,
@@ -9671,7 +10073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 85259,
       "BodyLength": 358.3875,
-      "BodyWidth": 214.7
+      "BodyWidth": 214.7,
+      "Damage": 0
     },
     "404": {
       "ID": 404,
@@ -9695,7 +10098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 77087,
       "BodyLength": 396.3875,
-      "BodyWidth": 175.5125
+      "BodyWidth": 175.5125,
+      "Damage": 0
     },
     "405": {
       "ID": 405,
@@ -9719,7 +10123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 30621,
       "BodyLength": 246.52499999999998,
-      "BodyWidth": 112.1
+      "BodyWidth": 112.1,
+      "Damage": 0
     },
     "406": {
       "ID": 406,
@@ -9743,7 +10148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 81512,
       "BodyLength": 420.84999999999997,
-      "BodyWidth": 174.79999999999998
+      "BodyWidth": 174.79999999999998,
+      "Damage": 0
     },
     "407": {
       "ID": 407,
@@ -9767,7 +10173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59889,
       "BodyLength": 324.1875,
-      "BodyWidth": 166.725
+      "BodyWidth": 166.725,
+      "Damage": 0
     },
     "408": {
       "ID": 408,
@@ -9791,7 +10198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 66059,
       "BodyLength": 284.28749999999997,
-      "BodyWidth": 209.71249999999998
+      "BodyWidth": 209.71249999999998,
+      "Damage": 0
     },
     "409": {
       "ID": 409,
@@ -9815,7 +10223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 44120,
       "BodyLength": 312.78749999999997,
-      "BodyWidth": 127.3
+      "BodyWidth": 127.3,
+      "Damage": 0
     },
     "410": {
       "ID": 410,
@@ -9839,7 +10248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 44901,
       "BodyLength": 336.53749999999997,
-      "BodyWidth": 120.4125
+      "BodyWidth": 120.4125,
+      "Damage": 0
     },
     "411": {
       "ID": 411,
@@ -9863,7 +10273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 71206,
       "BodyLength": 329.175,
-      "BodyWidth": 195.225
+      "BodyWidth": 195.225,
+      "Damage": 0
     },
     "412": {
       "ID": 412,
@@ -9887,7 +10298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 100335,
       "BodyLength": 397.575,
-      "BodyWidth": 227.7625
+      "BodyWidth": 227.7625,
+      "Damage": 0
     },
     "413": {
       "ID": 413,
@@ -9911,7 +10323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 51173,
       "BodyLength": 288.0875,
-      "BodyWidth": 160.3125
+      "BodyWidth": 160.3125,
+      "Damage": 0
     },
     "414": {
       "ID": 414,
@@ -9935,7 +10348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 58114,
       "BodyLength": 254.125,
-      "BodyWidth": 206.3875
+      "BodyWidth": 206.3875,
+      "Damage": 0
     },
     "415": {
       "ID": 415,
@@ -9959,7 +10373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 66332,
       "BodyLength": 342.47499999999997,
-      "BodyWidth": 174.79999999999998
+      "BodyWidth": 174.79999999999998,
+      "Damage": 0
     },
     "416": {
       "ID": 416,
@@ -9983,7 +10398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55183,
       "BodyLength": 434.15,
-      "BodyWidth": 114.71249999999999
+      "BodyWidth": 114.71249999999999,
+      "Damage": 0
     },
     "417": {
       "ID": 417,
@@ -10007,7 +10423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 61699,
       "BodyLength": 355.775,
-      "BodyWidth": 156.5125
+      "BodyWidth": 156.5125,
+      "Damage": 0
     },
     "418": {
       "ID": 418,
@@ -10031,7 +10448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 49273,
       "BodyLength": 207.8125,
-      "BodyWidth": 213.98749999999998
+      "BodyWidth": 213.98749999999998,
+      "Damage": 0
     },
     "419": {
       "ID": 419,
@@ -10055,7 +10473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 69458,
       "BodyLength": 299.25,
-      "BodyWidth": 209.475
+      "BodyWidth": 209.475,
+      "Damage": 0
     },
     "420": {
       "ID": 420,
@@ -10079,7 +10498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55173,
       "BodyLength": 361.47499999999997,
-      "BodyWidth": 137.75
+      "BodyWidth": 137.75,
+      "Damage": 0
     },
     "421": {
       "ID": 421,
@@ -10103,7 +10523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 84717,
       "BodyLength": 400.9,
-      "BodyWidth": 190.71249999999998
+      "BodyWidth": 190.71249999999998,
+      "Damage": 0
     },
     "422": {
       "ID": 422,
@@ -10127,7 +10548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 90321,
       "BodyLength": 420.61249999999995,
-      "BodyWidth": 193.79999999999998
+      "BodyWidth": 193.79999999999998,
+      "Damage": 0
     },
     "423": {
       "ID": 423,
@@ -10151,7 +10573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 58482,
       "BodyLength": 381.1875,
-      "BodyWidth": 138.4625
+      "BodyWidth": 138.4625,
+      "Damage": 0
     },
     "424": {
       "ID": 424,
@@ -10175,7 +10598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 58032,
       "BodyLength": 263.15,
-      "BodyWidth": 199.02499999999998
+      "BodyWidth": 199.02499999999998,
+      "Damage": 0
     },
     "425": {
       "ID": 425,
@@ -10199,7 +10623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59597,
       "BodyLength": 381.9,
-      "BodyWidth": 140.8375
+      "BodyWidth": 140.8375,
+      "Damage": 0
     },
     "426": {
       "ID": 426,
@@ -10223,7 +10648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 103722,
       "BodyLength": 448.4,
-      "BodyWidth": 208.7625
+      "BodyWidth": 208.7625,
+      "Damage": 0
     },
     "427": {
       "ID": 427,
@@ -10247,7 +10673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 54096,
       "BodyLength": 305.9,
-      "BodyWidth": 159.6
+      "BodyWidth": 159.6,
+      "Damage": 0
     },
     "428": {
       "ID": 428,
@@ -10271,7 +10698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 68349,
       "BodyLength": 253.8875,
-      "BodyWidth": 242.96249999999998
+      "BodyWidth": 242.96249999999998,
+      "Damage": 0
     },
     "429": {
       "ID": 429,
@@ -10295,7 +10723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 72319,
       "BodyLength": 379.04999999999995,
-      "BodyWidth": 172.1875
+      "BodyWidth": 172.1875,
+      "Damage": 0
     },
     "430": {
       "ID": 430,
@@ -10319,7 +10748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 48276,
       "BodyLength": 234.8875,
-      "BodyWidth": 185.48749999999998
+      "BodyWidth": 185.48749999999998,
+      "Damage": 0
     },
     "431": {
       "ID": 431,
@@ -10343,7 +10773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 30932,
       "BodyLength": 167.67499999999998,
-      "BodyWidth": 166.48749999999998
+      "BodyWidth": 166.48749999999998,
+      "Damage": 0
     },
     "432": {
       "ID": 432,
@@ -10367,7 +10798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 86349,
       "BodyLength": 363.375,
-      "BodyWidth": 214.46249999999998
+      "BodyWidth": 214.46249999999998,
+      "Damage": 0
     },
     "433": {
       "ID": 433,
@@ -10391,7 +10823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 37781,
       "BodyLength": 231.5625,
-      "BodyWidth": 147.25
+      "BodyWidth": 147.25,
+      "Damage": 0
     },
     "434": {
       "ID": 434,
@@ -10415,7 +10848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 88241,
       "BodyLength": 358.625,
-      "BodyWidth": 222.0625
+      "BodyWidth": 222.0625,
+      "Damage": 0
     },
     "435": {
       "ID": 435,
@@ -10439,7 +10873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 46480,
       "BodyLength": 273.8375,
-      "BodyWidth": 153.1875
+      "BodyWidth": 153.1875,
+      "Damage": 0
     },
     "436": {
       "ID": 436,
@@ -10463,7 +10898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 100913,
       "BodyLength": 463.125,
-      "BodyWidth": 196.64999999999998
+      "BodyWidth": 196.64999999999998,
+      "Damage": 0
     },
     "437": {
       "ID": 437,
@@ -10487,7 +10923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 52960,
       "BodyLength": 271.22499999999997,
-      "BodyWidth": 176.225
+      "BodyWidth": 176.225,
+      "Damage": 0
     },
     "438": {
       "ID": 438,
@@ -10511,7 +10948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 33194,
       "BodyLength": 203.77499999999998,
-      "BodyWidth": 147.0125
+      "BodyWidth": 147.0125,
+      "Damage": 0
     },
     "439": {
       "ID": 439,
@@ -10535,7 +10973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 66204,
       "BodyLength": 375.48749999999995,
-      "BodyWidth": 159.125
+      "BodyWidth": 159.125,
+      "Damage": 0
     },
     "440": {
       "ID": 440,
@@ -10559,7 +10998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 58339,
       "BodyLength": 259.5875,
-      "BodyWidth": 202.825
+      "BodyWidth": 202.825,
+      "Damage": 0
     },
     "441": {
       "ID": 441,
@@ -10583,7 +11023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 63501,
       "BodyLength": 339.8625,
-      "BodyWidth": 168.625
+      "BodyWidth": 168.625,
+      "Damage": 0
     },
     "442": {
       "ID": 442,
@@ -10607,7 +11048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 62729,
       "BodyLength": 285.47499999999997,
-      "BodyWidth": 198.3125
+      "BodyWidth": 198.3125,
+      "Damage": 0
     },
     "443": {
       "ID": 443,
@@ -10631,7 +11073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 65087,
       "BodyLength": 328.4625,
-      "BodyWidth": 178.8375
+      "BodyWidth": 178.8375,
+      "Damage": 0
     },
     "444": {
       "ID": 444,
@@ -10655,7 +11098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 68688,
       "BodyLength": 307.8,
-      "BodyWidth": 201.39999999999998
+      "BodyWidth": 201.39999999999998,
+      "Damage": 0
     },
     "445": {
       "ID": 445,
@@ -10679,7 +11123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59449,
       "BodyLength": 394.25,
-      "BodyWidth": 136.0875
+      "BodyWidth": 136.0875,
+      "Damage": 0
     },
     "446": {
       "ID": 446,
@@ -10703,7 +11148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 22918,
       "BodyLength": 154.1375,
-      "BodyWidth": 134.1875
+      "BodyWidth": 134.1875,
+      "Damage": 0
     },
     "447": {
       "ID": 447,
@@ -10727,7 +11173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 38031,
       "BodyLength": 220.6375,
-      "BodyWidth": 155.5625
+      "BodyWidth": 155.5625,
+      "Damage": 0
     },
     "448": {
       "ID": 448,
@@ -10751,7 +11198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 66301,
       "BodyLength": 252.7,
-      "BodyWidth": 236.7875
+      "BodyWidth": 236.7875,
+      "Damage": 0
     },
     "449": {
       "ID": 449,
@@ -10775,7 +11223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 38026,
       "BodyLength": 249.1375,
-      "BodyWidth": 137.75
+      "BodyWidth": 137.75,
+      "Damage": 0
     },
     "450": {
       "ID": 450,
@@ -10799,7 +11248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 51350,
       "BodyLength": 370.2625,
-      "BodyWidth": 125.1625
+      "BodyWidth": 125.1625,
+      "Damage": 0
     },
     "451": {
       "ID": 451,
@@ -10823,7 +11273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 46370,
       "BodyLength": 350.3125,
-      "BodyWidth": 119.46249999999999
+      "BodyWidth": 119.46249999999999,
+      "Damage": 0
     },
     "452": {
       "ID": 452,
@@ -10847,7 +11298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 89244,
       "BodyLength": 381.9,
-      "BodyWidth": 210.89999999999998
+      "BodyWidth": 210.89999999999998,
+      "Damage": 0
     },
     "453": {
       "ID": 453,
@@ -10871,7 +11323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27884,
       "BodyLength": 230.85,
-      "BodyWidth": 109.01249999999999
+      "BodyWidth": 109.01249999999999,
+      "Damage": 0
     },
     "454": {
       "ID": 454,
@@ -10895,7 +11348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55376,
       "BodyLength": 323.2375,
-      "BodyWidth": 154.61249999999998
+      "BodyWidth": 154.61249999999998,
+      "Damage": 0
     },
     "455": {
       "ID": 455,
@@ -10919,7 +11373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 83770,
       "BodyLength": 332.97499999999997,
-      "BodyWidth": 227.04999999999998
+      "BodyWidth": 227.04999999999998,
+      "Damage": 0
     },
     "456": {
       "ID": 456,
@@ -10943,7 +11398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 72323,
       "BodyLength": 395.4375,
-      "BodyWidth": 165.0625
+      "BodyWidth": 165.0625,
+      "Damage": 0
     },
     "457": {
       "ID": 457,
@@ -10967,7 +11423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 87920,
       "BodyLength": 403.98749999999995,
-      "BodyWidth": 196.4125
+      "BodyWidth": 196.4125,
+      "Damage": 0
     },
     "458": {
       "ID": 458,
@@ -10991,7 +11448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 47685,
       "BodyLength": 343.1875,
-      "BodyWidth": 125.39999999999999
+      "BodyWidth": 125.39999999999999,
+      "Damage": 0
     },
     "459": {
       "ID": 459,
@@ -11015,7 +11473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 56858,
       "BodyLength": 238.21249999999998,
-      "BodyWidth": 215.4125
+      "BodyWidth": 215.4125,
+      "Damage": 0
     },
     "460": {
       "ID": 460,
@@ -11039,7 +11498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 41105,
       "BodyLength": 357.4375,
-      "BodyWidth": 103.7875
+      "BodyWidth": 103.7875,
+      "Damage": 0
     },
     "461": {
       "ID": 461,
@@ -11063,7 +11523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 79069,
       "BodyLength": 370.025,
-      "BodyWidth": 192.85
+      "BodyWidth": 192.85,
+      "Damage": 0
     },
     "462": {
       "ID": 462,
@@ -11087,7 +11548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 56391,
       "BodyLength": 301.3875,
-      "BodyWidth": 168.86249999999998
+      "BodyWidth": 168.86249999999998,
+      "Damage": 0
     },
     "463": {
       "ID": 463,
@@ -11111,7 +11573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 35326,
       "BodyLength": 276.2125,
-      "BodyWidth": 115.425
+      "BodyWidth": 115.425,
+      "Damage": 0
     },
     "464": {
       "ID": 464,
@@ -11135,7 +11598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 80952,
       "BodyLength": 406.36249999999995,
-      "BodyWidth": 179.7875
+      "BodyWidth": 179.7875,
+      "Damage": 0
     },
     "465": {
       "ID": 465,
@@ -11159,7 +11623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 46508,
       "BodyLength": 251.75,
-      "BodyWidth": 166.725
+      "BodyWidth": 166.725,
+      "Damage": 0
     },
     "466": {
       "ID": 466,
@@ -11183,7 +11648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 102960,
       "BodyLength": 444.59999999999997,
-      "BodyWidth": 209
+      "BodyWidth": 209,
+      "Damage": 0
     },
     "467": {
       "ID": 467,
@@ -11207,7 +11673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 71572,
       "BodyLength": 373.5875,
-      "BodyWidth": 172.9
+      "BodyWidth": 172.9,
+      "Damage": 0
     },
     "468": {
       "ID": 468,
@@ -11231,7 +11698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 57329,
       "BodyLength": 318.9625,
-      "BodyWidth": 162.2125
+      "BodyWidth": 162.2125,
+      "Damage": 0
     },
     "469": {
       "ID": 469,
@@ -11255,7 +11723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 52841,
       "BodyLength": 329.175,
-      "BodyWidth": 144.875
+      "BodyWidth": 144.875,
+      "Damage": 0
     },
     "470": {
       "ID": 470,
@@ -11279,7 +11748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 42851,
       "BodyLength": 298.775,
-      "BodyWidth": 129.4375
+      "BodyWidth": 129.4375,
+      "Damage": 0
     },
     "471": {
       "ID": 471,
@@ -11303,7 +11773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 33168,
       "BodyLength": 209.71249999999998,
-      "BodyWidth": 142.73749999999998
+      "BodyWidth": 142.73749999999998,
+      "Damage": 0
     },
     "472": {
       "ID": 472,
@@ -11327,7 +11798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 90538,
       "BodyLength": 385.7,
-      "BodyWidth": 211.85
+      "BodyWidth": 211.85,
+      "Damage": 0
     },
     "473": {
       "ID": 473,
@@ -11351,7 +11823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 40221,
       "BodyLength": 332.2625,
-      "BodyWidth": 109.25
+      "BodyWidth": 109.25,
+      "Damage": 0
     },
     "474": {
       "ID": 474,
@@ -11375,7 +11848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 69815,
       "BodyLength": 366.9375,
-      "BodyWidth": 171.7125
+      "BodyWidth": 171.7125,
+      "Damage": 0
     },
     "475": {
       "ID": 475,
@@ -11399,7 +11873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55552,
       "BodyLength": 339.3875,
-      "BodyWidth": 147.725
+      "BodyWidth": 147.725,
+      "Damage": 0
     },
     "476": {
       "ID": 476,
@@ -11423,7 +11898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 41973,
       "BodyLength": 193.5625,
-      "BodyWidth": 195.7
+      "BodyWidth": 195.7,
+      "Damage": 0
     },
     "477": {
       "ID": 477,
@@ -11447,7 +11923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 54706,
       "BodyLength": 365.98749999999995,
-      "BodyWidth": 134.9
+      "BodyWidth": 134.9,
+      "Damage": 0
     },
     "478": {
       "ID": 478,
@@ -11471,7 +11948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 100125,
       "BodyLength": 375.9625,
-      "BodyWidth": 240.35
+      "BodyWidth": 240.35,
+      "Damage": 0
     },
     "479": {
       "ID": 479,
@@ -11495,7 +11973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59501,
       "BodyLength": 294.025,
-      "BodyWidth": 182.6375
+      "BodyWidth": 182.6375,
+      "Damage": 0
     },
     "480": {
       "ID": 480,
@@ -11519,7 +11998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 89494,
       "BodyLength": 277.16249999999997,
-      "BodyWidth": 291.41249999999997
+      "BodyWidth": 291.41249999999997,
+      "Damage": 0
     },
     "481": {
       "ID": 481,
@@ -11543,7 +12023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 88651,
       "BodyLength": 237.73749999999998,
-      "BodyWidth": 336.53749999999997
+      "BodyWidth": 336.53749999999997,
+      "Damage": 0
     },
     "482": {
       "ID": 482,
@@ -11567,7 +12048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 72333,
       "BodyLength": 301.3875,
-      "BodyWidth": 216.6
+      "BodyWidth": 216.6,
+      "Damage": 0
     },
     "483": {
       "ID": 483,
@@ -11591,7 +12073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 48586,
       "BodyLength": 196.4125,
-      "BodyWidth": 223.25
+      "BodyWidth": 223.25,
+      "Damage": 0
     },
     "484": {
       "ID": 484,
@@ -11615,7 +12098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 60514,
       "BodyLength": 112.33749999999999,
-      "BodyWidth": 486.16249999999997
+      "BodyWidth": 486.16249999999997,
+      "Damage": 0
     },
     "485": {
       "ID": 485,
@@ -11639,7 +12123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 90566,
       "BodyLength": 188.575,
-      "BodyWidth": 433.4375
+      "BodyWidth": 433.4375,
+      "Damage": 0
     },
     "486": {
       "ID": 486,
@@ -11663,7 +12148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 56728,
       "BodyLength": 149.3875,
-      "BodyWidth": 342.7125
+      "BodyWidth": 342.7125,
+      "Damage": 0
     },
     "487": {
       "ID": 487,
@@ -11687,7 +12173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 37557,
       "BodyLength": 228.71249999999998,
-      "BodyWidth": 148.2
+      "BodyWidth": 148.2,
+      "Damage": 0
     },
     "488": {
       "ID": 488,
@@ -11711,7 +12198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59866,
       "BodyLength": 209.475,
-      "BodyWidth": 257.925
+      "BodyWidth": 257.925,
+      "Damage": 0
     },
     "489": {
       "ID": 489,
@@ -11735,7 +12223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 83269,
       "BodyLength": 170.7625,
-      "BodyWidth": 440.0875
+      "BodyWidth": 440.0875,
+      "Damage": 0
     },
     "490": {
       "ID": 490,
@@ -11759,7 +12248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 54384,
       "BodyLength": 232.98749999999998,
-      "BodyWidth": 210.6625
+      "BodyWidth": 210.6625,
+      "Damage": 0
     },
     "491": {
       "ID": 491,
@@ -11783,7 +12273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 19015,
       "BodyLength": 166.48749999999998,
-      "BodyWidth": 103.07499999999999
+      "BodyWidth": 103.07499999999999,
+      "Damage": 0
     },
     "492": {
       "ID": 492,
@@ -11807,7 +12298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 148330,
       "BodyLength": 308.5125,
-      "BodyWidth": 433.91249999999997
+      "BodyWidth": 433.91249999999997,
+      "Damage": 0
     },
     "493": {
       "ID": 493,
@@ -11831,7 +12323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 155444,
       "BodyLength": 288.5625,
-      "BodyWidth": 486.16249999999997
+      "BodyWidth": 486.16249999999997,
+      "Damage": 0
     },
     "494": {
       "ID": 494,
@@ -11855,7 +12348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 118560,
       "BodyLength": 361,
-      "BodyWidth": 296.4
+      "BodyWidth": 296.4,
+      "Damage": 0
     },
     "495": {
       "ID": 495,
@@ -11879,7 +12373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 80481,
       "BodyLength": 275.025,
-      "BodyWidth": 264.09999999999997
+      "BodyWidth": 264.09999999999997,
+      "Damage": 0
     },
     "496": {
       "ID": 496,
@@ -11903,7 +12398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 77613,
       "BodyLength": 260.53749999999997,
-      "BodyWidth": 268.84999999999997
+      "BodyWidth": 268.84999999999997,
+      "Damage": 0
     },
     "497": {
       "ID": 497,
@@ -11927,7 +12423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 21266,
       "BodyLength": 127.0625,
-      "BodyWidth": 151.04999999999998
+      "BodyWidth": 151.04999999999998,
+      "Damage": 0
     },
     "498": {
       "ID": 498,
@@ -11951,7 +12448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 63030,
       "BodyLength": 313.5,
-      "BodyWidth": 181.45
+      "BodyWidth": 181.45,
+      "Damage": 0
     },
     "499": {
       "ID": 499,
@@ -11975,7 +12473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 127091,
       "BodyLength": 337.4875,
-      "BodyWidth": 339.8625
+      "BodyWidth": 339.8625,
+      "Damage": 0
     },
     "500": {
       "ID": 500,
@@ -11999,7 +12498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 172575,
       "BodyLength": 370.5,
-      "BodyWidth": 420.375
+      "BodyWidth": 420.375,
+      "Damage": 0
     },
     "501": {
       "ID": 501,
@@ -12023,7 +12523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 101300,
       "BodyLength": 212.08749999999998,
-      "BodyWidth": 431.0625
+      "BodyWidth": 431.0625,
+      "Damage": 0
     },
     "502": {
       "ID": 502,
@@ -12047,7 +12548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 136056,
       "BodyLength": 315.6375,
-      "BodyWidth": 389.025
+      "BodyWidth": 389.025,
+      "Damage": 0
     },
     "503": {
       "ID": 503,
@@ -12071,7 +12573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 46359,
       "BodyLength": 213.27499999999998,
-      "BodyWidth": 196.17499999999998
+      "BodyWidth": 196.17499999999998,
+      "Damage": 0
     },
     "504": {
       "ID": 504,
@@ -12095,7 +12598,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 76442,
       "BodyLength": 223.96249999999998,
-      "BodyWidth": 308.03749999999997
+      "BodyWidth": 308.03749999999997,
+      "Damage": 0
     },
     "505": {
       "ID": 505,
@@ -12119,7 +12623,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 107094,
       "BodyLength": 296.4,
-      "BodyWidth": 326.0875
+      "BodyWidth": 326.0875,
+      "Damage": 0
     },
     "506": {
       "ID": 506,
@@ -12143,7 +12648,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 81076,
       "BodyLength": 313.7375,
-      "BodyWidth": 233.225
+      "BodyWidth": 233.225,
+      "Damage": 0
     },
     "507": {
       "ID": 507,
@@ -12167,7 +12673,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 110552,
       "BodyLength": 307.0875,
-      "BodyWidth": 324.9
+      "BodyWidth": 324.9,
+      "Damage": 0
     },
     "508": {
       "ID": 508,
@@ -12191,7 +12698,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 133004,
       "BodyLength": 352.45,
-      "BodyWidth": 340.575
+      "BodyWidth": 340.575,
+      "Damage": 0
     },
     "509": {
       "ID": 509,
@@ -12215,7 +12723,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 57648,
       "BodyLength": 185.48749999999998,
-      "BodyWidth": 280.4875
+      "BodyWidth": 280.4875,
+      "Damage": 0
     },
     "510": {
       "ID": 510,
@@ -12239,7 +12748,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 180484,
       "BodyLength": 374.775,
-      "BodyWidth": 434.625
+      "BodyWidth": 434.625,
+      "Damage": 0
     },
     "511": {
       "ID": 511,
@@ -12263,7 +12773,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 23548,
       "BodyLength": 135.375,
-      "BodyWidth": 156.98749999999998
+      "BodyWidth": 156.98749999999998,
+      "Damage": 0
     },
     "512": {
       "ID": 512,
@@ -12287,7 +12798,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 115866,
       "BodyLength": 311.59999999999997,
-      "BodyWidth": 335.5875
+      "BodyWidth": 335.5875,
+      "Damage": 0
     },
     "513": {
       "ID": 513,
@@ -12311,7 +12823,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 56603,
       "BodyLength": 248.6625,
-      "BodyWidth": 205.4375
+      "BodyWidth": 205.4375,
+      "Damage": 0
     },
     "514": {
       "ID": 514,
@@ -12335,7 +12848,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 99044,
       "BodyLength": 284.05,
-      "BodyWidth": 314.6875
+      "BodyWidth": 314.6875,
+      "Damage": 0
     },
     "515": {
       "ID": 515,
@@ -12359,7 +12873,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 78224,
       "BodyLength": 161.025,
-      "BodyWidth": 438.42499999999995
+      "BodyWidth": 438.42499999999995,
+      "Damage": 0
     },
     "516": {
       "ID": 516,
@@ -12383,7 +12898,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 85499,
       "BodyLength": 262.4375,
-      "BodyWidth": 294.025
+      "BodyWidth": 294.025,
+      "Damage": 0
     },
     "517": {
       "ID": 517,
@@ -12407,7 +12923,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 132357,
       "BodyLength": 369.54999999999995,
-      "BodyWidth": 323.2375
+      "BodyWidth": 323.2375,
+      "Damage": 0
     },
     "518": {
       "ID": 518,
@@ -12431,7 +12948,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 164463,
       "BodyLength": 313.2625,
-      "BodyWidth": 473.8125
+      "BodyWidth": 473.8125,
+      "Damage": 0
     },
     "519": {
       "ID": 519,
@@ -12455,7 +12973,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 163888,
       "BodyLength": 304.2375,
-      "BodyWidth": 486.16249999999997
+      "BodyWidth": 486.16249999999997,
+      "Damage": 0
     },
     "520": {
       "ID": 520,
@@ -12479,7 +12998,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 34020,
       "BodyLength": 153.9,
-      "BodyWidth": 199.5
+      "BodyWidth": 199.5,
+      "Damage": 0
     },
     "521": {
       "ID": 521,
@@ -12503,7 +13023,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 82290,
       "BodyLength": 180.025,
-      "BodyWidth": 412.53749999999997
+      "BodyWidth": 412.53749999999997,
+      "Damage": 0
     },
     "522": {
       "ID": 522,
@@ -12527,7 +13048,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 146598,
       "BodyLength": 331.78749999999997,
-      "BodyWidth": 398.7625
+      "BodyWidth": 398.7625,
+      "Damage": 0
     },
     "523": {
       "ID": 523,
@@ -12551,7 +13073,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 168698,
       "BodyLength": 386.17499999999995,
-      "BodyWidth": 394.25
+      "BodyWidth": 394.25,
+      "Damage": 0
     },
     "524": {
       "ID": 524,
@@ -12575,7 +13098,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 55045,
       "BodyLength": 191.89999999999998,
-      "BodyWidth": 258.875
+      "BodyWidth": 258.875,
+      "Damage": 0
     },
     "525": {
       "ID": 525,
@@ -12599,7 +13123,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 37247,
       "BodyLength": 181.92499999999998,
-      "BodyWidth": 184.77499999999998
+      "BodyWidth": 184.77499999999998,
+      "Damage": 0
     },
     "526": {
       "ID": 526,
@@ -12623,7 +13148,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 119216,
       "BodyLength": 394.9625,
-      "BodyWidth": 272.41249999999997
+      "BodyWidth": 272.41249999999997,
+      "Damage": 0
     },
     "527": {
       "ID": 527,
@@ -12647,7 +13173,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 76205,
       "BodyLength": 219.21249999999998,
-      "BodyWidth": 313.7375
+      "BodyWidth": 313.7375,
+      "Damage": 0
     },
     "528": {
       "ID": 528,
@@ -12671,7 +13198,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 170698,
       "BodyLength": 427.025,
-      "BodyWidth": 360.7625
+      "BodyWidth": 360.7625,
+      "Damage": 0
     },
     "529": {
       "ID": 529,
@@ -12695,7 +13223,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 83683,
       "BodyLength": 185.96249999999998,
-      "BodyWidth": 406.125
+      "BodyWidth": 406.125,
+      "Damage": 0
     },
     "530": {
       "ID": 530,
@@ -12719,7 +13248,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 53648,
       "BodyLength": 212.79999999999998,
-      "BodyWidth": 227.52499999999998
+      "BodyWidth": 227.52499999999998,
+      "Damage": 0
     },
     "531": {
       "ID": 531,
@@ -12743,7 +13273,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 220564,
       "BodyLength": 409.45,
-      "BodyWidth": 486.16249999999997
+      "BodyWidth": 486.16249999999997,
+      "Damage": 0
     },
     "532": {
       "ID": 532,
@@ -12767,7 +13298,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 61580,
       "BodyLength": 272.41249999999997,
-      "BodyWidth": 204.0125
+      "BodyWidth": 204.0125,
+      "Damage": 0
     },
     "533": {
       "ID": 533,
@@ -12791,7 +13323,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 36732,
       "BodyLength": 166.9625,
-      "BodyWidth": 198.54999999999998
+      "BodyWidth": 198.54999999999998,
+      "Damage": 0
     },
     "534": {
       "ID": 534,
@@ -12815,7 +13348,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 59427,
       "BodyLength": 134.9,
-      "BodyWidth": 397.575
+      "BodyWidth": 397.575,
+      "Damage": 0
     },
     "535": {
       "ID": 535,
@@ -12839,7 +13373,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 27181,
       "BodyLength": 132.7625,
-      "BodyWidth": 184.77499999999998
+      "BodyWidth": 184.77499999999998,
+      "Damage": 0
     },
     "536": {
       "ID": 536,
@@ -12863,7 +13398,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 61837,
       "BodyLength": 179.7875,
-      "BodyWidth": 310.41249999999997
+      "BodyWidth": 310.41249999999997,
+      "Damage": 0
     },
     "537": {
       "ID": 537,
@@ -12887,7 +13423,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 183779,
       "BodyLength": 356.4875,
-      "BodyWidth": 465.2625
+      "BodyWidth": 465.2625,
+      "Damage": 0
     },
     "538": {
       "ID": 538,
@@ -12911,7 +13448,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 40609,
       "BodyLength": 160.075,
-      "BodyWidth": 228.95
+      "BodyWidth": 228.95,
+      "Damage": 0
     },
     "539": {
       "ID": 539,
@@ -12935,7 +13473,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 30614,
       "BodyLength": 124.6875,
-      "BodyWidth": 221.58749999999998
+      "BodyWidth": 221.58749999999998,
+      "Damage": 0
     },
     "540": {
       "ID": 540,
@@ -12959,7 +13498,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 256035,
       "BodyLength": 479.75,
-      "BodyWidth": 481.65
+      "BodyWidth": 481.65,
+      "Damage": 0
     },
     "541": {
       "ID": 541,
@@ -12983,7 +13523,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 43287,
       "BodyLength": 189.2875,
-      "BodyWidth": 206.3875
+      "BodyWidth": 206.3875,
+      "Damage": 0
     },
     "542": {
       "ID": 542,
@@ -13007,7 +13548,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 53215,
       "BodyLength": 174.325,
-      "BodyWidth": 275.5
+      "BodyWidth": 275.5,
+      "Damage": 0
     },
     "543": {
       "ID": 543,
@@ -13031,7 +13573,8 @@
       "MaxAngularSpeed": 3,
       "Complexity": 11602,
       "BodyLength": 195.9375,
-      "BodyWidth": 53.4375
+      "BodyWidth": 53.4375,
+      "Damage": 0
     },
     "544": {
       "ID": 544,
@@ -13055,7 +13598,8 @@
       "MaxAngularSpeed": 0,
       "Complexity": 0,
       "BodyLength": 500.00000000000006,
-      "BodyWidth": 7.999999999999999
+      "BodyWidth": 7.999999999999999,
+      "Damage": 0
     },
     "545": {
       "ID": 545,
@@ -13079,12 +13623,13 @@
       "MaxAngularSpeed": 0,
       "Complexity": 0,
       "BodyLength": 855,
-      "BodyWidth": 3.8
+      "BodyWidth": 3.8,
+      "Damage": 0
     },
     "546": {
       "ID": 546,
-      "TitleRu": "Баллистический снаряд",
-      "TitleEn": "Ballistic Projectile",
+      "TitleRu": "Пуля",
+      "TitleEn": "Bullet",
       "Acronym": "BallisticProjectile",
       "IconFilePath": "",
       "TextureFilePath": "",
@@ -13099,11 +13644,12 @@
       "Mass": 1,
       "Capacity": 0,
       "MaxArmor": 0,
-      "MaxSpeed": 0,
+      "MaxSpeed": 700,
       "MaxAngularSpeed": 0,
       "Complexity": 0,
       "BodyLength": 30.4,
-      "BodyWidth": 11.399999999999999
+      "BodyWidth": 11.399999999999999,
+      "Damage": 180
     },
     "547": {
       "ID": 547,
@@ -13119,7 +13665,7 @@
       "TextureBodyWidth": 18,
       "TextureBodyLength": 30,
       "TextureScale": 1,
-      "CosmicObjectTypeID": 5,
+      "CosmicObjectTypeID": 7,
       "Mass": 0.5,
       "Capacity": 0,
       "MaxArmor": 0,
@@ -13127,7 +13673,8 @@
       "MaxAngularSpeed": 0,
       "Complexity": 0,
       "BodyLength": 28.5,
-      "BodyWidth": 17.099999999999998
+      "BodyWidth": 17.099999999999998,
+      "Damage": 0
     },
     "548": {
       "ID": 548,
@@ -13143,7 +13690,7 @@
       "TextureBodyWidth": 18,
       "TextureBodyLength": 58,
       "TextureScale": 1,
-      "CosmicObjectTypeID": 5,
+      "CosmicObjectTypeID": 8,
       "Mass": 6,
       "Capacity": 0,
       "MaxArmor": 0,
@@ -13151,7 +13698,8 @@
       "MaxAngularSpeed": 0,
       "Complexity": 0,
       "BodyLength": 55.099999999999994,
-      "BodyWidth": 17.099999999999998
+      "BodyWidth": 17.099999999999998,
+      "Damage": 0
     }
   }
 }

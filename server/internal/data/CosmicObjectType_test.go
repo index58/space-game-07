@@ -158,6 +158,7 @@ func TestCosmicObjectTypesJSONKeysMatchGoFieldNames(t *testing.T) {
 		`"CharacterLocatable"`,
 		`"Movable"`,
 		`"Rotatable"`,
+		`"IsProjectile"`,
 	}
 	for _, expectedKey := range expectedKeys {
 		if !strings.Contains(text, expectedKey) {

@@ -722,6 +722,20 @@ export type CosmicObjectModelReference = Record<string, unknown> & {
   BodyWidth: number;
   // Рассчитанная длина физического тела в метрах.
   BodyLength: number;
+  // Максимальная скорость объекта этой модели.
+  MaxSpeed?: number;
+  // Урон броне при попадании объекта этой модели в цель.
+  Damage?: number;
+};
+
+// Описывает поля типа космического объекта, нужные клиенту для игровой логики.
+export type CosmicObjectTypeReference = Record<string, unknown> & {
+  // Уникальный числовой идентификатор записи.
+  ID: number;
+  // Неизменяемый строковый идентификатор типа.
+  Acronym: string;
+  // Помечает тип как снаряд для отрисовки и фильтрации служебных объектов.
+  IsProjectile?: boolean;
 };
 
 // Описывает поля типа предмета, нужные клиентскому UI.
@@ -759,8 +773,8 @@ export type ItemModelReference = Record<string, unknown> & {
   IconFilePath?: string;
   // Дальность действия инструмента в метрах, если она задана.
   Range?: number;
-  // Скорость выпущенного боеприпаса в метрах за секунду.
-  ProjectileSpeed?: number;
+  // Модель космического объекта, создаваемого оружием при выстреле.
+  ProjectileObjectModelID?: number;
   // Скорость добычи ресурса в килограммах за секунду.
   MiningSpeed?: number;
   // Вместимость магазина, если у инструмента есть магазин.
@@ -865,7 +879,7 @@ export type ReferenceDataMessage = {
   // Справочник NPC-кланов.
   NpcClan: ReferenceTable;
   // Справочник типов космических объектов.
-  CosmicObjectType: ReferenceTable;
+  CosmicObjectType: ReferenceTable<CosmicObjectTypeReference>;
   // Справочник типов предметов.
   ItemType: ReferenceTable<ItemTypeReference>;
   // Справочник видов связей групп оборудования.

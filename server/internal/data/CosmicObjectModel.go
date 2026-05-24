@@ -45,6 +45,7 @@ type CosmicObjectModel struct {
 	Complexity         float64     `json:"Complexity"`         // Сложность производства и оценки стоимости модели.
 	BodyLength         float64     `json:"BodyLength"`         // Рассчитанная длина физического тела в метрах.
 	BodyWidth          float64     `json:"BodyWidth"`          // Рассчитанная ширина физического тела в метрах.
+	Damage             float64     `json:"Damage"`             // Урон броне при попадании объекта этой модели в цель.
 	BodyPolygon        []BodyPoint `json:"-"`                  // Локальные вершины физического тела, рассчитанные при загрузке справочника.
 }
 
