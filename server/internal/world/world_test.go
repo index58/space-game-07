@@ -291,6 +291,59 @@ func addPlasmaWeaponTestData(t *testing.T, serverData *world.Data) {
 	}
 }
 
+// Добавляет тестовую ракетную установку с разгоняющимся снарядом.
+func addRocketWeaponTestData(t *testing.T, serverData *world.Data) {
+	t.Helper()
+	serverData.ItemTypes.Items[1].IsPilotInstrument = true
+	serverData.CosmicObjectTypes.Items[8] = &data.CosmicObjectType{ID: 8, TitleRu: "Ракета", TitleEn: "Rocket", Acronym: "Rocket", Movable: true, Rotatable: true, IsProjectile: true}
+	serverData.CosmicObjectTypes.MaxID = 8
+	serverData.CosmicObjectModels.Items[904] = &data.CosmicObjectModel{
+		ID:                 904,
+		TitleRu:            "Ракетный снаряд",
+		TitleEn:            "Missile",
+		Acronym:            "Missile",
+		TextureWidth:       55,
+		TextureHeight:      18,
+		TextureBodyOriginX: 28,
+		TextureBodyOriginY: 9,
+		TextureBodyWidth:   18,
+		TextureBodyLength:  55,
+		TextureScale:       1,
+		CosmicObjectTypeID: 8,
+		BodyLength:         55,
+		BodyWidth:          18,
+		MaxSpeed:           700,
+		Damage:             240,
+	}
+	serverData.ItemModels.Items[302].Range = 1000
+	serverData.ItemModels.Items[302].FiringRate = 1
+	serverData.ItemModels.Items[302].ProjectileObjectModelID = 904
+	serverData.EquipmentGroups.Items[600] = &data.EquipmentGroup{
+		ID:                   600,
+		CosmicObjectID:       1,
+		Title:                "Rocket",
+		EquipmentItemModelID: 302,
+		Count:                1,
+		EnabledCount:         1,
+		Enabled:              true,
+	}
+	if err := serverData.CosmicObjectTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.CosmicObjectModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemTypes.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.ItemModels.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+	if err := serverData.EquipmentGroups.RebuildIndexes(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func dockingEventsContainMessage(events []game.DockingEvent, message string) bool {
 	for _, event := range events {
 		if event.Message != "" && (strings.Contains(event.Message, message) || strings.Contains(message, event.Message)) {
@@ -1241,6 +1294,68 @@ func TestSelectedPlasmaWeaponProjectileRotatesInFlight(t *testing.T) {
 	closeWorldFloat(t, projectile.Y, serverData.CosmicObjectModels.Items[1].BodyLength/2+serverData.CosmicObjectModels.Items[903].MaxSpeed*0.6)
 	if projectile.AngularSpeed <= 0 || projectile.Rotation <= 0 {
 		t.Fatalf("plasma projectile did not rotate: %+v", projectile.CosmicObject)
+	}
+}
+
+// Проверяет, что ракетный снаряд после запуска набирает скорость постепенно.
+func TestSelectedRocketWeaponProjectileAcceleratesInFlight(t *testing.T) {
+	serverData := testWorldData(t)
+	addRocketWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	gameWorld.Tick(0.1)
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: false})
+	snapshot := gameWorld.Tick(0.5)
+
+	projectile, ok := findCosmicObjectModelInSnapshot(snapshot, 904)
+	if !ok {
+		t.Fatalf("rocket projectile was not found: %+v", snapshot.Objects)
+	}
+	maxSpeed := serverData.CosmicObjectModels.Items[904].MaxSpeed
+	if projectile.Speed <= 0 || projectile.Speed >= maxSpeed {
+		t.Fatalf("rocket speed = %v, want gradual acceleration below %v", projectile.Speed, maxSpeed)
+	}
+	startY := serverData.CosmicObjectModels.Items[1].BodyLength / 2
+	fullSpeedY := startY + maxSpeed*0.6
+	if projectile.Y <= startY || projectile.Y >= fullSpeedY {
+		t.Fatalf("rocket Y = %v, want between %v and %v", projectile.Y, startY, fullSpeedY)
+	}
+}
+
+// Проверяет, что ракета наследует вертикальную скорость корабля, но не наследует горизонтальную.
+func TestSelectedRocketWeaponProjectileDoesNotInheritSourceHorizontalVelocity(t *testing.T) {
+	serverData := testWorldData(t)
+	addRocketWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = 0
+	serverData.CosmicObjects.Items[1].VelocityX = 20
+	serverData.CosmicObjects.Items[1].VelocityY = 50
+	serverData.CosmicObjects.Items[1].Speed = math.Hypot(20, 50)
+	serverData.CosmicObjects.Items[1].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	snapshot := gameWorld.Tick(0.1)
+
+	projectile, ok := findCosmicObjectModelInSnapshot(snapshot, 904)
+	if !ok {
+		t.Fatalf("rocket projectile was not found: %+v", snapshot.Objects)
+	}
+	closeWorldFloat(t, projectile.VelocityX, 0)
+	if projectile.VelocityY <= serverData.CosmicObjects.Items[1].VelocityY {
+		t.Fatalf("rocket vertical velocity = %v, want inherited source velocity plus own acceleration", projectile.VelocityY)
 	}
 }
 

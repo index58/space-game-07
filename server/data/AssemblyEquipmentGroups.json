@@ -1,5 +1,5 @@
 {
-  "MaxID": 6496,
+  "MaxID": 6960,
   "Items": {
     "1": {
       "ID": 1,
@@ -45471,6 +45471,3254 @@
       "AssemblyID": 464,
       "Title": "LightPlasmaGun",
       "EquipmentItemModelID": 26,
+      "Count": 4
+    },
+    "6497": {
+      "ID": 6497,
+      "AssemblyID": 1,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6498": {
+      "ID": 6498,
+      "AssemblyID": 2,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6499": {
+      "ID": 6499,
+      "AssemblyID": 3,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6500": {
+      "ID": 6500,
+      "AssemblyID": 4,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6501": {
+      "ID": 6501,
+      "AssemblyID": 5,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6502": {
+      "ID": 6502,
+      "AssemblyID": 6,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6503": {
+      "ID": 6503,
+      "AssemblyID": 7,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6504": {
+      "ID": 6504,
+      "AssemblyID": 8,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6505": {
+      "ID": 6505,
+      "AssemblyID": 9,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6506": {
+      "ID": 6506,
+      "AssemblyID": 10,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6507": {
+      "ID": 6507,
+      "AssemblyID": 11,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6508": {
+      "ID": 6508,
+      "AssemblyID": 12,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6509": {
+      "ID": 6509,
+      "AssemblyID": 13,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6510": {
+      "ID": 6510,
+      "AssemblyID": 14,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6511": {
+      "ID": 6511,
+      "AssemblyID": 15,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6512": {
+      "ID": 6512,
+      "AssemblyID": 16,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6513": {
+      "ID": 6513,
+      "AssemblyID": 17,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6514": {
+      "ID": 6514,
+      "AssemblyID": 18,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6515": {
+      "ID": 6515,
+      "AssemblyID": 19,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6516": {
+      "ID": 6516,
+      "AssemblyID": 20,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6517": {
+      "ID": 6517,
+      "AssemblyID": 21,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6518": {
+      "ID": 6518,
+      "AssemblyID": 22,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6519": {
+      "ID": 6519,
+      "AssemblyID": 23,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6520": {
+      "ID": 6520,
+      "AssemblyID": 24,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6521": {
+      "ID": 6521,
+      "AssemblyID": 25,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6522": {
+      "ID": 6522,
+      "AssemblyID": 26,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6523": {
+      "ID": 6523,
+      "AssemblyID": 27,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6524": {
+      "ID": 6524,
+      "AssemblyID": 28,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6525": {
+      "ID": 6525,
+      "AssemblyID": 29,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6526": {
+      "ID": 6526,
+      "AssemblyID": 30,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6527": {
+      "ID": 6527,
+      "AssemblyID": 31,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6528": {
+      "ID": 6528,
+      "AssemblyID": 32,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6529": {
+      "ID": 6529,
+      "AssemblyID": 33,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6530": {
+      "ID": 6530,
+      "AssemblyID": 34,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6531": {
+      "ID": 6531,
+      "AssemblyID": 35,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6532": {
+      "ID": 6532,
+      "AssemblyID": 36,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6533": {
+      "ID": 6533,
+      "AssemblyID": 37,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6534": {
+      "ID": 6534,
+      "AssemblyID": 38,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6535": {
+      "ID": 6535,
+      "AssemblyID": 39,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6536": {
+      "ID": 6536,
+      "AssemblyID": 40,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6537": {
+      "ID": 6537,
+      "AssemblyID": 41,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6538": {
+      "ID": 6538,
+      "AssemblyID": 42,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6539": {
+      "ID": 6539,
+      "AssemblyID": 43,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6540": {
+      "ID": 6540,
+      "AssemblyID": 44,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6541": {
+      "ID": 6541,
+      "AssemblyID": 45,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6542": {
+      "ID": 6542,
+      "AssemblyID": 46,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6543": {
+      "ID": 6543,
+      "AssemblyID": 47,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6544": {
+      "ID": 6544,
+      "AssemblyID": 48,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6545": {
+      "ID": 6545,
+      "AssemblyID": 49,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6546": {
+      "ID": 6546,
+      "AssemblyID": 50,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6547": {
+      "ID": 6547,
+      "AssemblyID": 51,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6548": {
+      "ID": 6548,
+      "AssemblyID": 52,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6549": {
+      "ID": 6549,
+      "AssemblyID": 53,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6550": {
+      "ID": 6550,
+      "AssemblyID": 54,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6551": {
+      "ID": 6551,
+      "AssemblyID": 55,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6552": {
+      "ID": 6552,
+      "AssemblyID": 56,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6553": {
+      "ID": 6553,
+      "AssemblyID": 57,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6554": {
+      "ID": 6554,
+      "AssemblyID": 58,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6555": {
+      "ID": 6555,
+      "AssemblyID": 59,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6556": {
+      "ID": 6556,
+      "AssemblyID": 60,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6557": {
+      "ID": 6557,
+      "AssemblyID": 61,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6558": {
+      "ID": 6558,
+      "AssemblyID": 62,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6559": {
+      "ID": 6559,
+      "AssemblyID": 63,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6560": {
+      "ID": 6560,
+      "AssemblyID": 64,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6561": {
+      "ID": 6561,
+      "AssemblyID": 65,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6562": {
+      "ID": 6562,
+      "AssemblyID": 66,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6563": {
+      "ID": 6563,
+      "AssemblyID": 67,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6564": {
+      "ID": 6564,
+      "AssemblyID": 68,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6565": {
+      "ID": 6565,
+      "AssemblyID": 69,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6566": {
+      "ID": 6566,
+      "AssemblyID": 70,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6567": {
+      "ID": 6567,
+      "AssemblyID": 71,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6568": {
+      "ID": 6568,
+      "AssemblyID": 72,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6569": {
+      "ID": 6569,
+      "AssemblyID": 73,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6570": {
+      "ID": 6570,
+      "AssemblyID": 74,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6571": {
+      "ID": 6571,
+      "AssemblyID": 75,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6572": {
+      "ID": 6572,
+      "AssemblyID": 76,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6573": {
+      "ID": 6573,
+      "AssemblyID": 77,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6574": {
+      "ID": 6574,
+      "AssemblyID": 78,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6575": {
+      "ID": 6575,
+      "AssemblyID": 79,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6576": {
+      "ID": 6576,
+      "AssemblyID": 80,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6577": {
+      "ID": 6577,
+      "AssemblyID": 81,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6578": {
+      "ID": 6578,
+      "AssemblyID": 82,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6579": {
+      "ID": 6579,
+      "AssemblyID": 83,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6580": {
+      "ID": 6580,
+      "AssemblyID": 84,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6581": {
+      "ID": 6581,
+      "AssemblyID": 85,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6582": {
+      "ID": 6582,
+      "AssemblyID": 86,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6583": {
+      "ID": 6583,
+      "AssemblyID": 87,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6584": {
+      "ID": 6584,
+      "AssemblyID": 88,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6585": {
+      "ID": 6585,
+      "AssemblyID": 89,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6586": {
+      "ID": 6586,
+      "AssemblyID": 90,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6587": {
+      "ID": 6587,
+      "AssemblyID": 91,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6588": {
+      "ID": 6588,
+      "AssemblyID": 92,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6589": {
+      "ID": 6589,
+      "AssemblyID": 93,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6590": {
+      "ID": 6590,
+      "AssemblyID": 94,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6591": {
+      "ID": 6591,
+      "AssemblyID": 95,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6592": {
+      "ID": 6592,
+      "AssemblyID": 96,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6593": {
+      "ID": 6593,
+      "AssemblyID": 97,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6594": {
+      "ID": 6594,
+      "AssemblyID": 98,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6595": {
+      "ID": 6595,
+      "AssemblyID": 99,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6596": {
+      "ID": 6596,
+      "AssemblyID": 100,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6597": {
+      "ID": 6597,
+      "AssemblyID": 101,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6598": {
+      "ID": 6598,
+      "AssemblyID": 102,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6599": {
+      "ID": 6599,
+      "AssemblyID": 103,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6600": {
+      "ID": 6600,
+      "AssemblyID": 104,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6601": {
+      "ID": 6601,
+      "AssemblyID": 105,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6602": {
+      "ID": 6602,
+      "AssemblyID": 106,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6603": {
+      "ID": 6603,
+      "AssemblyID": 107,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6604": {
+      "ID": 6604,
+      "AssemblyID": 108,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6605": {
+      "ID": 6605,
+      "AssemblyID": 109,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6606": {
+      "ID": 6606,
+      "AssemblyID": 110,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6607": {
+      "ID": 6607,
+      "AssemblyID": 111,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6608": {
+      "ID": 6608,
+      "AssemblyID": 112,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6609": {
+      "ID": 6609,
+      "AssemblyID": 113,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6610": {
+      "ID": 6610,
+      "AssemblyID": 114,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6611": {
+      "ID": 6611,
+      "AssemblyID": 115,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6612": {
+      "ID": 6612,
+      "AssemblyID": 116,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6613": {
+      "ID": 6613,
+      "AssemblyID": 117,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6614": {
+      "ID": 6614,
+      "AssemblyID": 118,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6615": {
+      "ID": 6615,
+      "AssemblyID": 119,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6616": {
+      "ID": 6616,
+      "AssemblyID": 120,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6617": {
+      "ID": 6617,
+      "AssemblyID": 121,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6618": {
+      "ID": 6618,
+      "AssemblyID": 122,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6619": {
+      "ID": 6619,
+      "AssemblyID": 123,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6620": {
+      "ID": 6620,
+      "AssemblyID": 124,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6621": {
+      "ID": 6621,
+      "AssemblyID": 125,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6622": {
+      "ID": 6622,
+      "AssemblyID": 126,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6623": {
+      "ID": 6623,
+      "AssemblyID": 127,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6624": {
+      "ID": 6624,
+      "AssemblyID": 128,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6625": {
+      "ID": 6625,
+      "AssemblyID": 129,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6626": {
+      "ID": 6626,
+      "AssemblyID": 130,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6627": {
+      "ID": 6627,
+      "AssemblyID": 131,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6628": {
+      "ID": 6628,
+      "AssemblyID": 132,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6629": {
+      "ID": 6629,
+      "AssemblyID": 133,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6630": {
+      "ID": 6630,
+      "AssemblyID": 134,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6631": {
+      "ID": 6631,
+      "AssemblyID": 135,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6632": {
+      "ID": 6632,
+      "AssemblyID": 136,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6633": {
+      "ID": 6633,
+      "AssemblyID": 137,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6634": {
+      "ID": 6634,
+      "AssemblyID": 138,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6635": {
+      "ID": 6635,
+      "AssemblyID": 139,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6636": {
+      "ID": 6636,
+      "AssemblyID": 140,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6637": {
+      "ID": 6637,
+      "AssemblyID": 141,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6638": {
+      "ID": 6638,
+      "AssemblyID": 142,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6639": {
+      "ID": 6639,
+      "AssemblyID": 143,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6640": {
+      "ID": 6640,
+      "AssemblyID": 144,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6641": {
+      "ID": 6641,
+      "AssemblyID": 145,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6642": {
+      "ID": 6642,
+      "AssemblyID": 146,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6643": {
+      "ID": 6643,
+      "AssemblyID": 147,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6644": {
+      "ID": 6644,
+      "AssemblyID": 148,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6645": {
+      "ID": 6645,
+      "AssemblyID": 149,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6646": {
+      "ID": 6646,
+      "AssemblyID": 150,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6647": {
+      "ID": 6647,
+      "AssemblyID": 151,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6648": {
+      "ID": 6648,
+      "AssemblyID": 152,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6649": {
+      "ID": 6649,
+      "AssemblyID": 153,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6650": {
+      "ID": 6650,
+      "AssemblyID": 154,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6651": {
+      "ID": 6651,
+      "AssemblyID": 155,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6652": {
+      "ID": 6652,
+      "AssemblyID": 156,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6653": {
+      "ID": 6653,
+      "AssemblyID": 157,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6654": {
+      "ID": 6654,
+      "AssemblyID": 158,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6655": {
+      "ID": 6655,
+      "AssemblyID": 159,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6656": {
+      "ID": 6656,
+      "AssemblyID": 160,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6657": {
+      "ID": 6657,
+      "AssemblyID": 161,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6658": {
+      "ID": 6658,
+      "AssemblyID": 162,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6659": {
+      "ID": 6659,
+      "AssemblyID": 163,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6660": {
+      "ID": 6660,
+      "AssemblyID": 164,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6661": {
+      "ID": 6661,
+      "AssemblyID": 165,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6662": {
+      "ID": 6662,
+      "AssemblyID": 166,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6663": {
+      "ID": 6663,
+      "AssemblyID": 167,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6664": {
+      "ID": 6664,
+      "AssemblyID": 168,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6665": {
+      "ID": 6665,
+      "AssemblyID": 169,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6666": {
+      "ID": 6666,
+      "AssemblyID": 170,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6667": {
+      "ID": 6667,
+      "AssemblyID": 171,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6668": {
+      "ID": 6668,
+      "AssemblyID": 172,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6669": {
+      "ID": 6669,
+      "AssemblyID": 173,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6670": {
+      "ID": 6670,
+      "AssemblyID": 174,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6671": {
+      "ID": 6671,
+      "AssemblyID": 175,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6672": {
+      "ID": 6672,
+      "AssemblyID": 176,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6673": {
+      "ID": 6673,
+      "AssemblyID": 177,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6674": {
+      "ID": 6674,
+      "AssemblyID": 178,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6675": {
+      "ID": 6675,
+      "AssemblyID": 179,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6676": {
+      "ID": 6676,
+      "AssemblyID": 180,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6677": {
+      "ID": 6677,
+      "AssemblyID": 181,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6678": {
+      "ID": 6678,
+      "AssemblyID": 182,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6679": {
+      "ID": 6679,
+      "AssemblyID": 183,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6680": {
+      "ID": 6680,
+      "AssemblyID": 184,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6681": {
+      "ID": 6681,
+      "AssemblyID": 185,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6682": {
+      "ID": 6682,
+      "AssemblyID": 186,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6683": {
+      "ID": 6683,
+      "AssemblyID": 187,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6684": {
+      "ID": 6684,
+      "AssemblyID": 188,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6685": {
+      "ID": 6685,
+      "AssemblyID": 189,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6686": {
+      "ID": 6686,
+      "AssemblyID": 190,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6687": {
+      "ID": 6687,
+      "AssemblyID": 191,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6688": {
+      "ID": 6688,
+      "AssemblyID": 192,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6689": {
+      "ID": 6689,
+      "AssemblyID": 193,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6690": {
+      "ID": 6690,
+      "AssemblyID": 194,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6691": {
+      "ID": 6691,
+      "AssemblyID": 195,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6692": {
+      "ID": 6692,
+      "AssemblyID": 196,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6693": {
+      "ID": 6693,
+      "AssemblyID": 197,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6694": {
+      "ID": 6694,
+      "AssemblyID": 198,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6695": {
+      "ID": 6695,
+      "AssemblyID": 199,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6696": {
+      "ID": 6696,
+      "AssemblyID": 200,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6697": {
+      "ID": 6697,
+      "AssemblyID": 201,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6698": {
+      "ID": 6698,
+      "AssemblyID": 202,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6699": {
+      "ID": 6699,
+      "AssemblyID": 203,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6700": {
+      "ID": 6700,
+      "AssemblyID": 204,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6701": {
+      "ID": 6701,
+      "AssemblyID": 205,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6702": {
+      "ID": 6702,
+      "AssemblyID": 206,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6703": {
+      "ID": 6703,
+      "AssemblyID": 207,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6704": {
+      "ID": 6704,
+      "AssemblyID": 208,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6705": {
+      "ID": 6705,
+      "AssemblyID": 209,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6706": {
+      "ID": 6706,
+      "AssemblyID": 210,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6707": {
+      "ID": 6707,
+      "AssemblyID": 211,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6708": {
+      "ID": 6708,
+      "AssemblyID": 212,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6709": {
+      "ID": 6709,
+      "AssemblyID": 213,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6710": {
+      "ID": 6710,
+      "AssemblyID": 214,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6711": {
+      "ID": 6711,
+      "AssemblyID": 215,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6712": {
+      "ID": 6712,
+      "AssemblyID": 216,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6713": {
+      "ID": 6713,
+      "AssemblyID": 217,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6714": {
+      "ID": 6714,
+      "AssemblyID": 218,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6715": {
+      "ID": 6715,
+      "AssemblyID": 219,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6716": {
+      "ID": 6716,
+      "AssemblyID": 220,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6717": {
+      "ID": 6717,
+      "AssemblyID": 221,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6718": {
+      "ID": 6718,
+      "AssemblyID": 222,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6719": {
+      "ID": 6719,
+      "AssemblyID": 223,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6720": {
+      "ID": 6720,
+      "AssemblyID": 224,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6721": {
+      "ID": 6721,
+      "AssemblyID": 225,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6722": {
+      "ID": 6722,
+      "AssemblyID": 226,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6723": {
+      "ID": 6723,
+      "AssemblyID": 227,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6724": {
+      "ID": 6724,
+      "AssemblyID": 228,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6725": {
+      "ID": 6725,
+      "AssemblyID": 229,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6726": {
+      "ID": 6726,
+      "AssemblyID": 230,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6727": {
+      "ID": 6727,
+      "AssemblyID": 231,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6728": {
+      "ID": 6728,
+      "AssemblyID": 232,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6729": {
+      "ID": 6729,
+      "AssemblyID": 233,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6730": {
+      "ID": 6730,
+      "AssemblyID": 234,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6731": {
+      "ID": 6731,
+      "AssemblyID": 235,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6732": {
+      "ID": 6732,
+      "AssemblyID": 236,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6733": {
+      "ID": 6733,
+      "AssemblyID": 237,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6734": {
+      "ID": 6734,
+      "AssemblyID": 238,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6735": {
+      "ID": 6735,
+      "AssemblyID": 239,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6736": {
+      "ID": 6736,
+      "AssemblyID": 240,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6737": {
+      "ID": 6737,
+      "AssemblyID": 241,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6738": {
+      "ID": 6738,
+      "AssemblyID": 242,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6739": {
+      "ID": 6739,
+      "AssemblyID": 243,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6740": {
+      "ID": 6740,
+      "AssemblyID": 244,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6741": {
+      "ID": 6741,
+      "AssemblyID": 245,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6742": {
+      "ID": 6742,
+      "AssemblyID": 246,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6743": {
+      "ID": 6743,
+      "AssemblyID": 247,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6744": {
+      "ID": 6744,
+      "AssemblyID": 248,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6745": {
+      "ID": 6745,
+      "AssemblyID": 249,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6746": {
+      "ID": 6746,
+      "AssemblyID": 250,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6747": {
+      "ID": 6747,
+      "AssemblyID": 251,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6748": {
+      "ID": 6748,
+      "AssemblyID": 252,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6749": {
+      "ID": 6749,
+      "AssemblyID": 253,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6750": {
+      "ID": 6750,
+      "AssemblyID": 254,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6751": {
+      "ID": 6751,
+      "AssemblyID": 255,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6752": {
+      "ID": 6752,
+      "AssemblyID": 256,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6753": {
+      "ID": 6753,
+      "AssemblyID": 257,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6754": {
+      "ID": 6754,
+      "AssemblyID": 258,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6755": {
+      "ID": 6755,
+      "AssemblyID": 259,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6756": {
+      "ID": 6756,
+      "AssemblyID": 260,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6757": {
+      "ID": 6757,
+      "AssemblyID": 261,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6758": {
+      "ID": 6758,
+      "AssemblyID": 262,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6759": {
+      "ID": 6759,
+      "AssemblyID": 263,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6760": {
+      "ID": 6760,
+      "AssemblyID": 264,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6761": {
+      "ID": 6761,
+      "AssemblyID": 265,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6762": {
+      "ID": 6762,
+      "AssemblyID": 266,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6763": {
+      "ID": 6763,
+      "AssemblyID": 267,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6764": {
+      "ID": 6764,
+      "AssemblyID": 268,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6765": {
+      "ID": 6765,
+      "AssemblyID": 269,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6766": {
+      "ID": 6766,
+      "AssemblyID": 270,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6767": {
+      "ID": 6767,
+      "AssemblyID": 271,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6768": {
+      "ID": 6768,
+      "AssemblyID": 272,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6769": {
+      "ID": 6769,
+      "AssemblyID": 273,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6770": {
+      "ID": 6770,
+      "AssemblyID": 274,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6771": {
+      "ID": 6771,
+      "AssemblyID": 275,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6772": {
+      "ID": 6772,
+      "AssemblyID": 276,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6773": {
+      "ID": 6773,
+      "AssemblyID": 277,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6774": {
+      "ID": 6774,
+      "AssemblyID": 278,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6775": {
+      "ID": 6775,
+      "AssemblyID": 279,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6776": {
+      "ID": 6776,
+      "AssemblyID": 280,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6777": {
+      "ID": 6777,
+      "AssemblyID": 281,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6778": {
+      "ID": 6778,
+      "AssemblyID": 282,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6779": {
+      "ID": 6779,
+      "AssemblyID": 283,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6780": {
+      "ID": 6780,
+      "AssemblyID": 284,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6781": {
+      "ID": 6781,
+      "AssemblyID": 285,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6782": {
+      "ID": 6782,
+      "AssemblyID": 286,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6783": {
+      "ID": 6783,
+      "AssemblyID": 287,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6784": {
+      "ID": 6784,
+      "AssemblyID": 288,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6785": {
+      "ID": 6785,
+      "AssemblyID": 289,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6786": {
+      "ID": 6786,
+      "AssemblyID": 290,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6787": {
+      "ID": 6787,
+      "AssemblyID": 291,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6788": {
+      "ID": 6788,
+      "AssemblyID": 292,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6789": {
+      "ID": 6789,
+      "AssemblyID": 293,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6790": {
+      "ID": 6790,
+      "AssemblyID": 294,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6791": {
+      "ID": 6791,
+      "AssemblyID": 295,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6792": {
+      "ID": 6792,
+      "AssemblyID": 296,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6793": {
+      "ID": 6793,
+      "AssemblyID": 297,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6794": {
+      "ID": 6794,
+      "AssemblyID": 298,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6795": {
+      "ID": 6795,
+      "AssemblyID": 299,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6796": {
+      "ID": 6796,
+      "AssemblyID": 300,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6797": {
+      "ID": 6797,
+      "AssemblyID": 301,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6798": {
+      "ID": 6798,
+      "AssemblyID": 302,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6799": {
+      "ID": 6799,
+      "AssemblyID": 303,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6800": {
+      "ID": 6800,
+      "AssemblyID": 304,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6801": {
+      "ID": 6801,
+      "AssemblyID": 305,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 10
+    },
+    "6802": {
+      "ID": 6802,
+      "AssemblyID": 306,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6803": {
+      "ID": 6803,
+      "AssemblyID": 307,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6804": {
+      "ID": 6804,
+      "AssemblyID": 308,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 9
+    },
+    "6805": {
+      "ID": 6805,
+      "AssemblyID": 309,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6806": {
+      "ID": 6806,
+      "AssemblyID": 310,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6807": {
+      "ID": 6807,
+      "AssemblyID": 311,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6808": {
+      "ID": 6808,
+      "AssemblyID": 312,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6809": {
+      "ID": 6809,
+      "AssemblyID": 313,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6810": {
+      "ID": 6810,
+      "AssemblyID": 314,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6811": {
+      "ID": 6811,
+      "AssemblyID": 315,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6812": {
+      "ID": 6812,
+      "AssemblyID": 316,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6813": {
+      "ID": 6813,
+      "AssemblyID": 317,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6814": {
+      "ID": 6814,
+      "AssemblyID": 318,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6815": {
+      "ID": 6815,
+      "AssemblyID": 319,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6816": {
+      "ID": 6816,
+      "AssemblyID": 320,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6817": {
+      "ID": 6817,
+      "AssemblyID": 321,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6818": {
+      "ID": 6818,
+      "AssemblyID": 322,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6819": {
+      "ID": 6819,
+      "AssemblyID": 323,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6820": {
+      "ID": 6820,
+      "AssemblyID": 324,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6821": {
+      "ID": 6821,
+      "AssemblyID": 325,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6822": {
+      "ID": 6822,
+      "AssemblyID": 326,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6823": {
+      "ID": 6823,
+      "AssemblyID": 327,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6824": {
+      "ID": 6824,
+      "AssemblyID": 328,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6825": {
+      "ID": 6825,
+      "AssemblyID": 329,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6826": {
+      "ID": 6826,
+      "AssemblyID": 330,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6827": {
+      "ID": 6827,
+      "AssemblyID": 331,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6828": {
+      "ID": 6828,
+      "AssemblyID": 332,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6829": {
+      "ID": 6829,
+      "AssemblyID": 333,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6830": {
+      "ID": 6830,
+      "AssemblyID": 334,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6831": {
+      "ID": 6831,
+      "AssemblyID": 335,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6832": {
+      "ID": 6832,
+      "AssemblyID": 336,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6833": {
+      "ID": 6833,
+      "AssemblyID": 337,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6834": {
+      "ID": 6834,
+      "AssemblyID": 338,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6835": {
+      "ID": 6835,
+      "AssemblyID": 339,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6836": {
+      "ID": 6836,
+      "AssemblyID": 340,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6837": {
+      "ID": 6837,
+      "AssemblyID": 341,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6838": {
+      "ID": 6838,
+      "AssemblyID": 342,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6839": {
+      "ID": 6839,
+      "AssemblyID": 343,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6840": {
+      "ID": 6840,
+      "AssemblyID": 344,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6841": {
+      "ID": 6841,
+      "AssemblyID": 345,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6842": {
+      "ID": 6842,
+      "AssemblyID": 346,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6843": {
+      "ID": 6843,
+      "AssemblyID": 347,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6844": {
+      "ID": 6844,
+      "AssemblyID": 348,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6845": {
+      "ID": 6845,
+      "AssemblyID": 349,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6846": {
+      "ID": 6846,
+      "AssemblyID": 350,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6847": {
+      "ID": 6847,
+      "AssemblyID": 351,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6848": {
+      "ID": 6848,
+      "AssemblyID": 352,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6849": {
+      "ID": 6849,
+      "AssemblyID": 353,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 10
+    },
+    "6850": {
+      "ID": 6850,
+      "AssemblyID": 354,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6851": {
+      "ID": 6851,
+      "AssemblyID": 355,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6852": {
+      "ID": 6852,
+      "AssemblyID": 356,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6853": {
+      "ID": 6853,
+      "AssemblyID": 357,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6854": {
+      "ID": 6854,
+      "AssemblyID": 358,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6855": {
+      "ID": 6855,
+      "AssemblyID": 359,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6856": {
+      "ID": 6856,
+      "AssemblyID": 360,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6857": {
+      "ID": 6857,
+      "AssemblyID": 361,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 9
+    },
+    "6858": {
+      "ID": 6858,
+      "AssemblyID": 362,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6859": {
+      "ID": 6859,
+      "AssemblyID": 363,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6860": {
+      "ID": 6860,
+      "AssemblyID": 364,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6861": {
+      "ID": 6861,
+      "AssemblyID": 365,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6862": {
+      "ID": 6862,
+      "AssemblyID": 366,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6863": {
+      "ID": 6863,
+      "AssemblyID": 367,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6864": {
+      "ID": 6864,
+      "AssemblyID": 368,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6865": {
+      "ID": 6865,
+      "AssemblyID": 369,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6866": {
+      "ID": 6866,
+      "AssemblyID": 370,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6867": {
+      "ID": 6867,
+      "AssemblyID": 371,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6868": {
+      "ID": 6868,
+      "AssemblyID": 372,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6869": {
+      "ID": 6869,
+      "AssemblyID": 373,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6870": {
+      "ID": 6870,
+      "AssemblyID": 374,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6871": {
+      "ID": 6871,
+      "AssemblyID": 375,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6872": {
+      "ID": 6872,
+      "AssemblyID": 376,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 8
+    },
+    "6873": {
+      "ID": 6873,
+      "AssemblyID": 377,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6874": {
+      "ID": 6874,
+      "AssemblyID": 378,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6875": {
+      "ID": 6875,
+      "AssemblyID": 379,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6876": {
+      "ID": 6876,
+      "AssemblyID": 380,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6877": {
+      "ID": 6877,
+      "AssemblyID": 381,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 9
+    },
+    "6878": {
+      "ID": 6878,
+      "AssemblyID": 382,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6879": {
+      "ID": 6879,
+      "AssemblyID": 383,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6880": {
+      "ID": 6880,
+      "AssemblyID": 384,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6881": {
+      "ID": 6881,
+      "AssemblyID": 385,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6882": {
+      "ID": 6882,
+      "AssemblyID": 386,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6883": {
+      "ID": 6883,
+      "AssemblyID": 387,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6884": {
+      "ID": 6884,
+      "AssemblyID": 388,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6885": {
+      "ID": 6885,
+      "AssemblyID": 389,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6886": {
+      "ID": 6886,
+      "AssemblyID": 390,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6887": {
+      "ID": 6887,
+      "AssemblyID": 391,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6888": {
+      "ID": 6888,
+      "AssemblyID": 392,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6889": {
+      "ID": 6889,
+      "AssemblyID": 393,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6890": {
+      "ID": 6890,
+      "AssemblyID": 394,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6891": {
+      "ID": 6891,
+      "AssemblyID": 395,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6892": {
+      "ID": 6892,
+      "AssemblyID": 396,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6893": {
+      "ID": 6893,
+      "AssemblyID": 397,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 9
+    },
+    "6894": {
+      "ID": 6894,
+      "AssemblyID": 398,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6895": {
+      "ID": 6895,
+      "AssemblyID": 399,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6896": {
+      "ID": 6896,
+      "AssemblyID": 400,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6897": {
+      "ID": 6897,
+      "AssemblyID": 401,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6898": {
+      "ID": 6898,
+      "AssemblyID": 402,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6899": {
+      "ID": 6899,
+      "AssemblyID": 403,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6900": {
+      "ID": 6900,
+      "AssemblyID": 404,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6901": {
+      "ID": 6901,
+      "AssemblyID": 405,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6902": {
+      "ID": 6902,
+      "AssemblyID": 406,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6903": {
+      "ID": 6903,
+      "AssemblyID": 407,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 8
+    },
+    "6904": {
+      "ID": 6904,
+      "AssemblyID": 408,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6905": {
+      "ID": 6905,
+      "AssemblyID": 409,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6906": {
+      "ID": 6906,
+      "AssemblyID": 410,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6907": {
+      "ID": 6907,
+      "AssemblyID": 411,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 10
+    },
+    "6908": {
+      "ID": 6908,
+      "AssemblyID": 412,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6909": {
+      "ID": 6909,
+      "AssemblyID": 413,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6910": {
+      "ID": 6910,
+      "AssemblyID": 414,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6911": {
+      "ID": 6911,
+      "AssemblyID": 415,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6912": {
+      "ID": 6912,
+      "AssemblyID": 416,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6913": {
+      "ID": 6913,
+      "AssemblyID": 417,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6914": {
+      "ID": 6914,
+      "AssemblyID": 418,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6915": {
+      "ID": 6915,
+      "AssemblyID": 419,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6916": {
+      "ID": 6916,
+      "AssemblyID": 420,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6917": {
+      "ID": 6917,
+      "AssemblyID": 421,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 10
+    },
+    "6918": {
+      "ID": 6918,
+      "AssemblyID": 422,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6919": {
+      "ID": 6919,
+      "AssemblyID": 423,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6920": {
+      "ID": 6920,
+      "AssemblyID": 424,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6921": {
+      "ID": 6921,
+      "AssemblyID": 425,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6922": {
+      "ID": 6922,
+      "AssemblyID": 426,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6923": {
+      "ID": 6923,
+      "AssemblyID": 427,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6924": {
+      "ID": 6924,
+      "AssemblyID": 428,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6925": {
+      "ID": 6925,
+      "AssemblyID": 429,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6926": {
+      "ID": 6926,
+      "AssemblyID": 430,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6927": {
+      "ID": 6927,
+      "AssemblyID": 431,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 1
+    },
+    "6928": {
+      "ID": 6928,
+      "AssemblyID": 432,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6929": {
+      "ID": 6929,
+      "AssemblyID": 433,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6930": {
+      "ID": 6930,
+      "AssemblyID": 434,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6931": {
+      "ID": 6931,
+      "AssemblyID": 435,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6932": {
+      "ID": 6932,
+      "AssemblyID": 436,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6933": {
+      "ID": 6933,
+      "AssemblyID": 437,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6934": {
+      "ID": 6934,
+      "AssemblyID": 438,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6935": {
+      "ID": 6935,
+      "AssemblyID": 439,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6936": {
+      "ID": 6936,
+      "AssemblyID": 440,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6937": {
+      "ID": 6937,
+      "AssemblyID": 441,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6938": {
+      "ID": 6938,
+      "AssemblyID": 442,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6939": {
+      "ID": 6939,
+      "AssemblyID": 443,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6940": {
+      "ID": 6940,
+      "AssemblyID": 444,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6941": {
+      "ID": 6941,
+      "AssemblyID": 445,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6942": {
+      "ID": 6942,
+      "AssemblyID": 446,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 6
+    },
+    "6943": {
+      "ID": 6943,
+      "AssemblyID": 447,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6944": {
+      "ID": 6944,
+      "AssemblyID": 448,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6945": {
+      "ID": 6945,
+      "AssemblyID": 449,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6946": {
+      "ID": 6946,
+      "AssemblyID": 450,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6947": {
+      "ID": 6947,
+      "AssemblyID": 451,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 10
+    },
+    "6948": {
+      "ID": 6948,
+      "AssemblyID": 452,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6949": {
+      "ID": 6949,
+      "AssemblyID": 453,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6950": {
+      "ID": 6950,
+      "AssemblyID": 454,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6951": {
+      "ID": 6951,
+      "AssemblyID": 455,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6952": {
+      "ID": 6952,
+      "AssemblyID": 456,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6953": {
+      "ID": 6953,
+      "AssemblyID": 457,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 7
+    },
+    "6954": {
+      "ID": 6954,
+      "AssemblyID": 458,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 3
+    },
+    "6955": {
+      "ID": 6955,
+      "AssemblyID": 459,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 5
+    },
+    "6956": {
+      "ID": 6956,
+      "AssemblyID": 460,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6957": {
+      "ID": 6957,
+      "AssemblyID": 461,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 2
+    },
+    "6958": {
+      "ID": 6958,
+      "AssemblyID": 462,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 4
+    },
+    "6959": {
+      "ID": 6959,
+      "AssemblyID": 463,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
+      "Count": 8
+    },
+    "6960": {
+      "ID": 6960,
+      "AssemblyID": 464,
+      "Title": "LightRocketLauncher",
+      "EquipmentItemModelID": 28,
       "Count": 4
     }
   }

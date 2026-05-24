@@ -178,7 +178,9 @@ describe("GameScene", () => {
     const fillStyle = vi.fn();
     const fillCircle = vi.fn();
     const lineStyle = vi.fn();
-    const graphics = createProjectileGraphics({ fillStyle, fillCircle, lineStyle });
+    const fillPath = vi.fn();
+    const closePath = vi.fn();
+    const graphics = createProjectileGraphics({ fillStyle, fillCircle, lineStyle, fillPath, closePath });
     const scene = Object.create(GameScene.prototype) as {
       referenceData: unknown;
       projectileGraphics: ProjectileGraphics;
@@ -206,6 +208,50 @@ describe("GameScene", () => {
     expect(fillStyle).toHaveBeenCalledWith(0xd9ffff, expect.any(Number));
     expect(fillCircle).toHaveBeenCalled();
     expect(lineStyle).toHaveBeenCalledWith(expect.any(Number), 0x9ffcff, expect.any(Number));
+  });
+
+  // Проверяет, что ракетный снаряд рисуется металлическим корпусом с бело-оранжевым огненным следом.
+  it("renders missile projectiles as metal rockets with layered flame", async () => {
+    const { GameScene } = await import("./GameScene");
+    const fillStyle = vi.fn();
+    const fillCircle = vi.fn();
+    const lineStyle = vi.fn();
+    const closePath = vi.fn();
+    const fillPath = vi.fn();
+    const graphics = createProjectileGraphics({ fillStyle, fillCircle, lineStyle, closePath, fillPath });
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      projectileGraphics: ProjectileGraphics;
+      zoomScale: number;
+      renderProjectiles: (objects: CosmicObject[], camera: TestCamera, selfRotation: number, timeMs: number) => void;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "904": testModel({ ID: 904, Acronym: "Missile", CosmicObjectTypeID: 8, BodyWidth: 18, BodyLength: 55 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "8": { Acronym: "Rocket", IsProjectile: true },
+        },
+      },
+    };
+    scene.projectileGraphics = graphics;
+    scene.zoomScale = 1;
+
+    scene.renderProjectiles([testCosmicObject({ ID: -1, CosmicObjectModelID: 904, Rotation: 0.25 })], testCamera({}), 0, 1000);
+
+    expect(fillStyle).toHaveBeenCalledWith(0xd9e5ee, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0x2d3842, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0xff7a00, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0xffa000, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0xffd08a, expect.any(Number));
+    expect(fillStyle).toHaveBeenCalledWith(0xffffff, expect.any(Number));
+    expect(fillCircle).toHaveBeenCalled();
+    expect(closePath).toHaveBeenCalledTimes(4);
+    expect(fillPath).toHaveBeenCalledTimes(4);
+    expect(lineStyle).toHaveBeenCalledWith(expect.any(Number), 0x8f9ead, expect.any(Number));
   });
 
   it("does not render drill beam end cap without object hit", async () => {
@@ -737,6 +783,10 @@ type ProjectileGraphics = {
   moveTo: ReturnType<typeof vi.fn>;
   // Добавляет прямой участок пути.
   lineTo: ReturnType<typeof vi.fn>;
+  // Замыкает текущий векторный путь.
+  closePath: ReturnType<typeof vi.fn>;
+  // Заливает текущий векторный путь.
+  fillPath: ReturnType<typeof vi.fn>;
   // Обводит текущий путь.
   strokePath: ReturnType<typeof vi.fn>;
 };
@@ -767,6 +817,8 @@ const createProjectileGraphics = (overrides: Partial<ProjectileGraphics> = {}): 
   beginPath: vi.fn(),
   moveTo: vi.fn(),
   lineTo: vi.fn(),
+  closePath: vi.fn(),
+  fillPath: vi.fn(),
   strokePath: vi.fn(),
   ...overrides,
 });

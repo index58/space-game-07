@@ -18,17 +18,19 @@ import (
 )
 
 const (
-	defaultAccountEmailDomain = "auto.local"
-	defaultAccountPassword    = "auto"
-	defaultStarterShipAcronym = "ship_bat"
-	dockingDurationSeconds    = 10
-	dockingProbeDistance      = 10
-	miningNotificationSeconds = 1
-	pilotToolSlotCount        = 10
-	simpleDrillAcronym        = "SimpleDrill"
-	drillRayAcronym           = "DrillRay"
-	laserRayAcronym           = "LaserRay"
-	weaponItemTypeAcronym     = "Weapon"
+	defaultAccountEmailDomain    = "auto.local"
+	defaultAccountPassword       = "auto"
+	defaultStarterShipAcronym    = "ship_bat"
+	dockingDurationSeconds       = 10
+	dockingProbeDistance         = 10
+	miningNotificationSeconds    = 1
+	pilotToolSlotCount           = 10
+	simpleDrillAcronym           = "SimpleDrill"
+	drillRayAcronym              = "DrillRay"
+	laserRayAcronym              = "LaserRay"
+	rocketProjectileTypeAcronym  = "Rocket"
+	rocketProjectileAcceleration = 350
+	weaponItemTypeAcronym        = "Weapon"
 )
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
@@ -70,15 +72,21 @@ type weaponAttackGroup struct {
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
 type activeProjectile struct {
-	ID              int64             // Временный отрицательный идентификатор для снимков мира.
-	SourceObjectID  int64             // Объект, выпустивший боеприпас.
-	CosmicObject    data.CosmicObject // Видимое положение и модель в снимке мира.
-	Damage          float64           // Урон броне при попадании.
-	VelocityX       float64           // Горизонтальная часть скорости в метрах за секунду.
-	VelocityY       float64           // Вертикальная часть скорости в метрах за секунду.
-	AngularSpeed    float64           // Скорость вращения снаряда в радианах за секунду.
-	ProjectileSpeed float64           // Собственная скорость снаряда относительно выпустившего корабля.
-	RemainingRange  float64           // Оставшаяся дальность полета в метрах.
+	ID                     int64             // Временный отрицательный идентификатор для снимков мира.
+	SourceObjectID         int64             // Объект, выпустивший боеприпас.
+	CosmicObject           data.CosmicObject // Видимое положение и модель в снимке мира.
+	Damage                 float64           // Урон броне при попадании.
+	VelocityX              float64           // Горизонтальная часть скорости в метрах за секунду.
+	VelocityY              float64           // Вертикальная часть скорости в метрах за секунду.
+	BaseVelocityX          float64           // Горизонтальная часть скорости корабля в момент запуска.
+	BaseVelocityY          float64           // Вертикальная часть скорости корабля в момент запуска.
+	ForwardX               float64           // Горизонтальная часть направления полета.
+	ForwardY               float64           // Вертикальная часть направления полета.
+	AngularSpeed           float64           // Скорость вращения снаряда в радианах за секунду.
+	ProjectileSpeed        float64           // Собственная скорость снаряда относительно выпустившего корабля.
+	MaxProjectileSpeed     float64           // Предельная собственная скорость снаряда.
+	ProjectileAcceleration float64           // Разгон собственной скорости в метрах за секунду в квадрате.
+	RemainingRange         float64           // Оставшаяся дальность полета в метрах.
 }
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.
@@ -2872,13 +2880,23 @@ func (world *World) spawnWeaponProjectilesLocked(source data.CosmicObject, param
 	forward := physics.ForwardVector(source.Rotation)
 	right := physics.RightVector(source.Rotation)
 	startDistance := modelVisualForwardOffsetMeters(*sourceModel)
+	projectileAcceleration := world.projectileAccelerationForModelLocked(projectileModel)
 	for index := 0; index < shotCount; index++ {
 		barrelIndex := barrelStartIndex + int64(index)%groupBarrelCount
 		sideOffset := weaponBarrelLateralOffsetMeters(*sourceModel, barrelIndex, totalBarrelCount)
 		projectileID := world.nextProjectileID
 		world.nextProjectileID--
-		velocityX := source.VelocityX + forward.X*parameters.ProjectileSpeed
-		velocityY := source.VelocityY + forward.Y*parameters.ProjectileSpeed
+		projectileSpeed := parameters.ProjectileSpeed
+		if projectileAcceleration > 0 {
+			projectileSpeed = 0
+		}
+		baseVelocityX := source.VelocityX
+		baseVelocityY := source.VelocityY
+		if projectileAcceleration > 0 {
+			baseVelocityX = 0
+		}
+		velocityX := baseVelocityX + forward.X*projectileSpeed
+		velocityY := baseVelocityY + forward.Y*projectileSpeed
 		speed := math.Hypot(velocityX, velocityY)
 		angularSpeed := projectileModel.MaxAngularSpeed
 		cosmicObject := data.CosmicObject{
@@ -2896,15 +2914,21 @@ func (world *World) spawnWeaponProjectilesLocked(source data.CosmicObject, param
 			Enabled:             true,
 		}
 		world.projectiles = append(world.projectiles, activeProjectile{
-			ID:              projectileID,
-			SourceObjectID:  source.ID,
-			CosmicObject:    cosmicObject,
-			Damage:          parameters.Damage,
-			VelocityX:       velocityX,
-			VelocityY:       velocityY,
-			AngularSpeed:    angularSpeed,
-			ProjectileSpeed: parameters.ProjectileSpeed,
-			RemainingRange:  parameters.Range,
+			ID:                     projectileID,
+			SourceObjectID:         source.ID,
+			CosmicObject:           cosmicObject,
+			Damage:                 parameters.Damage,
+			VelocityX:              velocityX,
+			VelocityY:              velocityY,
+			BaseVelocityX:          baseVelocityX,
+			BaseVelocityY:          baseVelocityY,
+			ForwardX:               forward.X,
+			ForwardY:               forward.Y,
+			AngularSpeed:           angularSpeed,
+			ProjectileSpeed:        projectileSpeed,
+			MaxProjectileSpeed:     parameters.ProjectileSpeed,
+			ProjectileAcceleration: projectileAcceleration,
+			RemainingRange:         parameters.Range,
 		})
 	}
 }
@@ -2928,16 +2952,37 @@ func (world *World) stepProjectilesLocked(dtSeconds float64) {
 
 	remaining := world.projectiles[:0]
 	for _, projectile := range world.projectiles {
-		speed := math.Hypot(projectile.VelocityX, projectile.VelocityY)
-		if projectile.ProjectileSpeed <= physics.Epsilon || projectile.RemainingRange <= physics.Epsilon {
+		if projectile.RemainingRange <= physics.Epsilon {
 			continue
 		}
-		moveDistance := math.Min(projectile.ProjectileSpeed*dtSeconds, projectile.RemainingRange)
-		moveSeconds := moveDistance / projectile.ProjectileSpeed
+		if projectile.ProjectileSpeed <= physics.Epsilon {
+			if projectile.ProjectileAcceleration <= physics.Epsilon {
+				continue
+			}
+			if projectile.MaxProjectileSpeed <= physics.Epsilon {
+				continue
+			}
+		}
+		oldProjectileSpeed := projectile.ProjectileSpeed
+		newProjectileSpeed := oldProjectileSpeed
+		if projectile.ProjectileAcceleration > physics.Epsilon && projectile.MaxProjectileSpeed > oldProjectileSpeed {
+			newProjectileSpeed = math.Min(projectile.MaxProjectileSpeed, oldProjectileSpeed+projectile.ProjectileAcceleration*dtSeconds)
+		}
+		averageProjectileSpeed := (oldProjectileSpeed + newProjectileSpeed) / 2
+		if averageProjectileSpeed <= physics.Epsilon {
+			continue
+		}
+		moveDistance := math.Min(averageProjectileSpeed*dtSeconds, projectile.RemainingRange)
+		moveSeconds := moveDistance / averageProjectileSpeed
+		moveVelocityX := projectile.BaseVelocityX + projectile.ForwardX*averageProjectileSpeed
+		moveVelocityY := projectile.BaseVelocityY + projectile.ForwardY*averageProjectileSpeed
+		velocityX := projectile.BaseVelocityX + projectile.ForwardX*newProjectileSpeed
+		velocityY := projectile.BaseVelocityY + projectile.ForwardY*newProjectileSpeed
+		speed := math.Hypot(velocityX, velocityY)
 		startX := projectile.CosmicObject.X
 		startY := projectile.CosmicObject.Y
-		endX := startX + projectile.VelocityX*moveSeconds
-		endY := startY + projectile.VelocityY*moveSeconds
+		endX := startX + moveVelocityX*moveSeconds
+		endY := startY + moveVelocityY*moveSeconds
 
 		hitObject, hitModel, ok := world.nearestProjectileHitObjectLocked(projectile, startX, startY, endX, endY)
 		if ok {
@@ -2952,9 +2997,12 @@ func (world *World) stepProjectilesLocked(dtSeconds float64) {
 		projectile.CosmicObject.Rotation += projectile.AngularSpeed * moveSeconds
 		projectile.CosmicObject.TargetRotation = projectile.CosmicObject.Rotation
 		projectile.CosmicObject.Speed = speed
-		projectile.CosmicObject.VelocityX = projectile.VelocityX
-		projectile.CosmicObject.VelocityY = projectile.VelocityY
+		projectile.CosmicObject.VelocityX = velocityX
+		projectile.CosmicObject.VelocityY = velocityY
 		projectile.CosmicObject.AngularSpeed = projectile.AngularSpeed
+		projectile.VelocityX = velocityX
+		projectile.VelocityY = velocityY
+		projectile.ProjectileSpeed = newProjectileSpeed
 		projectile.RemainingRange -= moveDistance
 		if projectile.RemainingRange > physics.Epsilon {
 			remaining = append(remaining, projectile)
@@ -3143,6 +3191,14 @@ func (world *World) cosmicObjectModelHasProjectileTypeLocked(model *data.CosmicO
 	}
 	cosmicObjectType, ok := world.data.CosmicObjectTypes.Get(model.CosmicObjectTypeID)
 	return ok && cosmicObjectType.IsProjectile
+}
+
+// Возвращает разгон для снарядов, которые не должны сразу лететь с полной скоростью.
+func (world *World) projectileAccelerationForModelLocked(model *data.CosmicObjectModel) float64 {
+	if world.cosmicObjectModelHasTypeAcronymLocked(model, rocketProjectileTypeAcronym) {
+		return rocketProjectileAcceleration
+	}
+	return 0
 }
 
 // cross2D считает псевдоскалярное произведение двух плоских векторов.

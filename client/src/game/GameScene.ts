@@ -838,6 +838,10 @@ export class GameScene extends Phaser.Scene {
         this.renderPlasmaProjectile(center, rotation, model, timeMs);
         continue;
       }
+      if (model.Acronym === "Missile") {
+        this.renderMissileProjectile(center, rotation, model, timeMs);
+        continue;
+      }
       const direction = {
         x: Math.sin(rotation),
         y: -Math.cos(rotation),
@@ -860,6 +864,80 @@ export class GameScene extends Phaser.Scene {
       graphics.lineTo(end.x, end.y);
       graphics.strokePath();
     }
+  }
+
+  // Рисует ракетный снаряд как металлический корпус с бело-оранжевым огненным следом.
+  private renderMissileProjectile(
+    center: { x: number; y: number },
+    rotation: number,
+    model: CosmicObjectModelReference,
+    timeMs: number,
+  ): void {
+    const graphics = this.projectileGraphics;
+    const direction = {
+      x: Math.sin(rotation),
+      y: -Math.cos(rotation),
+    };
+    const length = clamp(model.BodyLength * this.zoomScale * 0.78, 14, 58);
+    const width = clamp(model.BodyWidth * this.zoomScale * 0.42, 3.5, 9);
+    const flameLength = clamp(model.BodyLength * this.zoomScale * 1.05, 20, 86);
+    const flameWidth = clamp(model.BodyWidth * this.zoomScale * 0.62, 5, 13);
+    const nose = {
+      x: center.x + direction.x * length * 0.45,
+      y: center.y + direction.y * length * 0.45,
+    };
+    const tail = {
+      x: center.x - direction.x * length * 0.34,
+      y: center.y - direction.y * length * 0.34,
+    };
+    const normal = {
+      x: -direction.y,
+      y: direction.x,
+    };
+    const flamePulse = 0.75 + Math.sin(timeMs * 0.04) * 0.2;
+    const drawFlameLayer = (color: number, alpha: number, layerLength: number, baseWidth: number, neckOffset: number): void => {
+      const base = {
+        x: tail.x - direction.x * neckOffset,
+        y: tail.y - direction.y * neckOffset,
+      };
+      const tip = {
+        x: tail.x - direction.x * layerLength,
+        y: tail.y - direction.y * layerLength,
+      };
+      const waist = {
+        x: tail.x - direction.x * layerLength * 0.46,
+        y: tail.y - direction.y * layerLength * 0.46,
+      };
+      graphics.fillStyle(color, alpha);
+      graphics.beginPath();
+      graphics.moveTo(base.x + normal.x * baseWidth * 0.5, base.y + normal.y * baseWidth * 0.5);
+      graphics.lineTo(waist.x + normal.x * baseWidth * 0.26, waist.y + normal.y * baseWidth * 0.26);
+      graphics.lineTo(tip.x, tip.y);
+      graphics.lineTo(waist.x - normal.x * baseWidth * 0.26, waist.y - normal.y * baseWidth * 0.26);
+      graphics.lineTo(base.x - normal.x * baseWidth * 0.5, base.y - normal.y * baseWidth * 0.5);
+      graphics.closePath();
+      graphics.fillPath();
+    };
+
+    drawFlameLayer(0xff7a00, 0.78, flameLength * (0.46 + flamePulse * 0.15), flameWidth * 0.92, flameWidth * 0.12);
+    drawFlameLayer(0xffa000, 1, flameLength * (0.4 + flamePulse * 0.13), flameWidth * 0.72, flameWidth * 0.1);
+    drawFlameLayer(0xffd08a, 1, flameLength * (0.3 + flamePulse * 0.1), flameWidth * 0.46, flameWidth * 0.04);
+    drawFlameLayer(0xffffff, 1, flameLength * (0.22 + flamePulse * 0.07), flameWidth * 0.22, 0);
+
+    graphics.lineStyle(width, 0x8f9ead, 0.96);
+    graphics.beginPath();
+    graphics.moveTo(tail.x, tail.y);
+    graphics.lineTo(nose.x, nose.y);
+    graphics.strokePath();
+    graphics.lineStyle(width * 0.42, 0xd9e5ee, 0.9);
+    graphics.beginPath();
+    graphics.moveTo(center.x - direction.x * length * 0.12, center.y - direction.y * length * 0.12);
+    graphics.lineTo(nose.x, nose.y);
+    graphics.strokePath();
+    graphics.fillStyle(0xd9e5ee, 0.95);
+    graphics.fillCircle(nose.x, nose.y, width * 0.42);
+    graphics.fillStyle(0x2d3842, 0.92);
+    graphics.fillCircle(tail.x, tail.y, width * 0.52);
   }
 
   // Рисует один световой отрезок бура по готовой экранной геометрии.

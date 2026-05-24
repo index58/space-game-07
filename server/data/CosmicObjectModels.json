@@ -13694,12 +13694,12 @@
       "Mass": 6,
       "Capacity": 0,
       "MaxArmor": 0,
-      "MaxSpeed": 0,
+      "MaxSpeed": 700,
       "MaxAngularSpeed": 0,
       "Complexity": 0,
       "BodyLength": 55.099999999999994,
       "BodyWidth": 17.099999999999998,
-      "Damage": 0
+      "Damage": 260
     }
   }
 }
