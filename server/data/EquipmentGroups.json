@@ -1,5 +1,5 @@
 {
-  "MaxID": 3240,
+  "MaxID": 3420,
   "Items": {
     "603": {
       "ID": 603,
@@ -1381,13 +1381,13 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3226": {
-      "ID": 3226,
+    "3406": {
+      "ID": 3406,
       "CosmicObjectID": 11,
       "Title": "SimpleThruster",
       "EquipmentItemModelID": 1,
-      "Count": 65,
-      "EnabledCount": 65,
+      "Count": 66,
+      "EnabledCount": 66,
       "Enabled": true,
       "Active": false,
       "MagazineCount": 0,
@@ -1396,13 +1396,13 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3227": {
-      "ID": 3227,
+    "3407": {
+      "ID": 3407,
       "CosmicObjectID": 11,
       "Title": "SimpleTorquer",
       "EquipmentItemModelID": 2,
-      "Count": 47,
-      "EnabledCount": 47,
+      "Count": 53,
+      "EnabledCount": 53,
       "Enabled": true,
       "Active": false,
       "MagazineCount": 0,
@@ -1411,8 +1411,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3228": {
-      "ID": 3228,
+    "3408": {
+      "ID": 3408,
       "CosmicObjectID": 11,
       "Title": "LightCannon120mm",
       "EquipmentItemModelID": 3,
@@ -1420,19 +1420,19 @@
       "EnabledCount": 3,
       "Enabled": true,
       "Active": false,
-      "MagazineCount": 15,
+      "MagazineCount": 21,
       "LastRechargeStartTime": 0,
       "SourceEquipmentGroupID": 0,
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3229": {
-      "ID": 3229,
+    "3409": {
+      "ID": 3409,
       "CosmicObjectID": 11,
       "Title": "CompactGenerator",
       "EquipmentItemModelID": 4,
-      "Count": 22,
-      "EnabledCount": 22,
+      "Count": 23,
+      "EnabledCount": 23,
       "Enabled": true,
       "Active": false,
       "MagazineCount": 0,
@@ -1441,13 +1441,13 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3230": {
-      "ID": 3230,
+    "3410": {
+      "ID": 3410,
       "CosmicObjectID": 11,
       "Title": "SmallMelitFuelTank",
       "EquipmentItemModelID": 5,
-      "Count": 78,
-      "EnabledCount": 78,
+      "Count": 82,
+      "EnabledCount": 82,
       "Enabled": true,
       "Active": false,
       "MagazineCount": 0,
@@ -1456,8 +1456,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3231": {
-      "ID": 3231,
+    "3411": {
+      "ID": 3411,
       "CosmicObjectID": 11,
       "Title": "SmallCargoContainer",
       "EquipmentItemModelID": 6,
@@ -1471,8 +1471,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3232": {
-      "ID": 3232,
+    "3412": {
+      "ID": 3412,
       "CosmicObjectID": 11,
       "Title": "ReserveCargoContainer",
       "EquipmentItemModelID": 6,
@@ -1486,8 +1486,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3233": {
-      "ID": 3233,
+    "3413": {
+      "ID": 3413,
       "CosmicObjectID": 11,
       "Title": "AuxiliaryCargoContainer",
       "EquipmentItemModelID": 6,
@@ -1501,8 +1501,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3234": {
-      "ID": 3234,
+    "3414": {
+      "ID": 3414,
       "CosmicObjectID": 11,
       "Title": "SmallConstructor",
       "EquipmentItemModelID": 13,
@@ -1516,8 +1516,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3235": {
-      "ID": 3235,
+    "3415": {
+      "ID": 3415,
       "CosmicObjectID": 11,
       "Title": "SmallDeconstructor",
       "EquipmentItemModelID": 14,
@@ -1531,8 +1531,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3236": {
-      "ID": 3236,
+    "3416": {
+      "ID": 3416,
       "CosmicObjectID": 11,
       "Title": "UniversalRobot",
       "EquipmentItemModelID": 21,
@@ -1546,8 +1546,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3237": {
-      "ID": 3237,
+    "3417": {
+      "ID": 3417,
       "CosmicObjectID": 11,
       "Title": "SimpleDrill",
       "EquipmentItemModelID": 22,
@@ -1561,8 +1561,8 @@
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3238": {
-      "ID": 3238,
+    "3418": {
+      "ID": 3418,
       "CosmicObjectID": 11,
       "Title": "LightLaser",
       "EquipmentItemModelID": 23,
@@ -1570,14 +1570,14 @@
       "EnabledCount": 3,
       "Enabled": true,
       "Active": false,
-      "MagazineCount": 39,
+      "MagazineCount": 33,
       "LastRechargeStartTime": 0,
       "SourceEquipmentGroupID": 0,
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3239": {
-      "ID": 3239,
+    "3419": {
+      "ID": 3419,
       "CosmicObjectID": 11,
       "Title": "LightPlasmaGun",
       "EquipmentItemModelID": 26,
@@ -1585,14 +1585,14 @@
       "EnabledCount": 3,
       "Enabled": true,
       "Active": false,
-      "MagazineCount": 15,
+      "MagazineCount": 12,
       "LastRechargeStartTime": 0,
       "SourceEquipmentGroupID": 0,
       "DestinationEquipmentGroupID": 0,
       "OppositeEquipmentGroupID": 0
     },
-    "3240": {
-      "ID": 3240,
+    "3420": {
+      "ID": 3420,
       "CosmicObjectID": 11,
       "Title": "LightRocketLauncher",
       "EquipmentItemModelID": 28,
@@ -1600,7 +1600,7 @@
       "EnabledCount": 3,
       "Enabled": true,
       "Active": false,
-      "MagazineCount": 9,
+      "MagazineCount": 6,
       "LastRechargeStartTime": 0,
       "SourceEquipmentGroupID": 0,
       "DestinationEquipmentGroupID": 0,

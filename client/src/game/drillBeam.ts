@@ -2,6 +2,8 @@ export const DRILL_RAY_ACRONYM = "DrillRay";
 export const LASER_RAY_ACRONYM = "LaserRay";
 
 const INTERSECTION_EPSILON = 0.000000001;
+// Делает видимый луч уже без изменения его игровой длины.
+const BEAM_VISUAL_WIDTH_SCALE = 0.5;
 
 export type DrillBeamPoint = {
   // Горизонтальная координата в пикселях экрана.
@@ -57,7 +59,7 @@ export const getDrillBeamGeometry = (input: DrillBeamInput): DrillBeamGeometry |
       y: input.center.y + forward.y * halfLength,
     },
     lengthPx,
-    widthPx: input.zoomScale * 3,
+    widthPx: input.zoomScale * 3 * BEAM_VISUAL_WIDTH_SCALE,
     hitObject: false,
   };
 };

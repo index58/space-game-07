@@ -171,6 +171,143 @@ describe("GameScene", () => {
     expect(graphics.strokePath).toHaveBeenCalled();
   });
 
+  // Проверяет, что экранные размеры всех видимых видов снарядов меняются вместе с кораблями при зуме.
+  it("scales projectile visuals proportionally to pilot zoom", async () => {
+    const { GameScene } = await import("./GameScene");
+    const lineStyle = vi.fn();
+    const fillCircle = vi.fn();
+    const moveTo = vi.fn();
+    const lineTo = vi.fn();
+    const graphics = createProjectileGraphics({ lineStyle, fillCircle, moveTo, lineTo });
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      projectileGraphics: ProjectileGraphics;
+      zoomScale: number;
+      renderProjectiles: (objects: CosmicObject[], camera: TestCamera, selfRotation: number, timeMs: number) => void;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "901": testModel({ ID: 901, Acronym: "BallisticProjectile", CosmicObjectTypeID: 5, BodyWidth: 10, BodyLength: 40 }),
+          "903": testModel({ ID: 903, Acronym: "PlasmaProjectile", CosmicObjectTypeID: 7, BodyWidth: 20, BodyLength: 30 }),
+          "904": testModel({ ID: 904, Acronym: "Missile", CosmicObjectTypeID: 8, BodyWidth: 20, BodyLength: 60 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "5": { Acronym: "Bullet", IsProjectile: true },
+          "7": { Acronym: "Plasma", IsProjectile: true },
+          "8": { Acronym: "Rocket", IsProjectile: true },
+        },
+      },
+    };
+    scene.projectileGraphics = graphics;
+    const lowZoom = 0.1;
+    const highZoom = 1.25;
+    const expectedRatio = highZoom / lowZoom;
+
+    const drawBallistic = (zoomScale: number): { length: number; width: number } => {
+      lineStyle.mockClear();
+      moveTo.mockClear();
+      lineTo.mockClear();
+      scene.zoomScale = zoomScale;
+      scene.renderProjectiles([testCosmicObject({ ID: -1, CosmicObjectModelID: 901 })], testCamera({}), 0, 1000);
+      const start = { x: Number(moveTo.mock.calls[0][0]), y: Number(moveTo.mock.calls[0][1]) };
+      const end = { x: Number(lineTo.mock.calls[0][0]), y: Number(lineTo.mock.calls[0][1]) };
+
+      return {
+        length: Math.hypot(end.x - start.x, end.y - start.y),
+        width: Number(lineStyle.mock.calls[0][0]),
+      };
+    };
+
+    const drawPlasma = (zoomScale: number): { glowRadius: number } => {
+      fillCircle.mockClear();
+      scene.zoomScale = zoomScale;
+      scene.renderProjectiles([testCosmicObject({ ID: -2, CosmicObjectModelID: 903, Rotation: 0.5 })], testCamera({}), 0, 1000);
+
+      return {
+        glowRadius: Number(fillCircle.mock.calls[0][2]),
+      };
+    };
+
+    const drawMissile = (zoomScale: number): { bodyWidth: number } => {
+      lineStyle.mockClear();
+      scene.zoomScale = zoomScale;
+      scene.renderProjectiles([testCosmicObject({ ID: -3, CosmicObjectModelID: 904, Rotation: 0.25 })], testCamera({}), 0, 1000);
+      const bodyLine = lineStyle.mock.calls.find((call) => call[1] === 0x8f9ead);
+
+      return {
+        bodyWidth: Number(bodyLine?.[0]),
+      };
+    };
+
+    const lowBallistic = drawBallistic(lowZoom);
+    const highBallistic = drawBallistic(highZoom);
+    const lowPlasma = drawPlasma(lowZoom);
+    const highPlasma = drawPlasma(highZoom);
+    const lowMissile = drawMissile(lowZoom);
+    const highMissile = drawMissile(highZoom);
+
+    expect(highBallistic.length / lowBallistic.length).toBeCloseTo(expectedRatio);
+    expect(highBallistic.width / lowBallistic.width).toBeCloseTo(expectedRatio);
+    expect(highPlasma.glowRadius / lowPlasma.glowRadius).toBeCloseTo(expectedRatio);
+    expect(highMissile.bodyWidth / lowMissile.bodyWidth).toBeCloseTo(expectedRatio);
+  });
+
+  // Проверяет, что видимый размер всех летящих снарядов вдвое меньше размера их модели на экране.
+  it("renders flying projectiles at half visual size", async () => {
+    const { GameScene } = await import("./GameScene");
+    const lineStyle = vi.fn();
+    const fillCircle = vi.fn();
+    const moveTo = vi.fn();
+    const lineTo = vi.fn();
+    const graphics = createProjectileGraphics({ lineStyle, fillCircle, moveTo, lineTo });
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      projectileGraphics: ProjectileGraphics;
+      zoomScale: number;
+      renderProjectiles: (objects: CosmicObject[], camera: TestCamera, selfRotation: number, timeMs: number) => void;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "901": testModel({ ID: 901, Acronym: "BallisticProjectile", CosmicObjectTypeID: 5, BodyWidth: 10, BodyLength: 40 }),
+          "903": testModel({ ID: 903, Acronym: "PlasmaProjectile", CosmicObjectTypeID: 7, BodyWidth: 20, BodyLength: 30 }),
+          "904": testModel({ ID: 904, Acronym: "Missile", CosmicObjectTypeID: 8, BodyWidth: 20, BodyLength: 60 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "5": { Acronym: "Bullet", IsProjectile: true },
+          "7": { Acronym: "Plasma", IsProjectile: true },
+          "8": { Acronym: "Rocket", IsProjectile: true },
+        },
+      },
+    };
+    scene.projectileGraphics = graphics;
+    scene.zoomScale = 1;
+
+    scene.renderProjectiles([testCosmicObject({ ID: -1, CosmicObjectModelID: 901 })], testCamera({}), 0, 1000);
+    const ballisticStart = { x: Number(moveTo.mock.calls[0][0]), y: Number(moveTo.mock.calls[0][1]) };
+    const ballisticEnd = { x: Number(lineTo.mock.calls[0][0]), y: Number(lineTo.mock.calls[0][1]) };
+    const ballisticLength = Math.hypot(ballisticEnd.x - ballisticStart.x, ballisticEnd.y - ballisticStart.y);
+    const ballisticWidth = Number(lineStyle.mock.calls[0][0]);
+
+    fillCircle.mockClear();
+    scene.renderProjectiles([testCosmicObject({ ID: -2, CosmicObjectModelID: 903, Rotation: 0.5 })], testCamera({}), 0, 1000);
+    const plasmaOuterGlowRadius = Number(fillCircle.mock.calls[0][2]);
+
+    lineStyle.mockClear();
+    scene.renderProjectiles([testCosmicObject({ ID: -3, CosmicObjectModelID: 904, Rotation: 0.25 })], testCamera({}), 0, 1000);
+    const missileBodyLine = lineStyle.mock.calls.find((call) => call[1] === 0x8f9ead);
+
+    expect(ballisticLength).toBeCloseTo(20);
+    expect(ballisticWidth).toBeCloseTo(2.25);
+    expect(plasmaOuterGlowRadius).toBeCloseTo(11.55);
+    expect(Number(missileBodyLine?.[0])).toBeCloseTo(4.2);
+  });
+
   // Проверяет, что свободный луч получает полукруглое окончание слоёв без отдельного светового пятна.
   // Проверяет, что плазменный снаряд рисуется синим светящимся телом и вращающимися штрихами.
   it("renders plasma projectiles as blue rotating energy orbs", async () => {
@@ -317,6 +454,49 @@ describe("GameScene", () => {
     expect(fillStyle).toHaveBeenCalledWith(0xff3b30, expect.any(Number));
     expect(fillStyle).toHaveBeenCalledWith(0xff9a8c, 0.58);
     expect(fillStyle).toHaveBeenCalledWith(0xffffff, 0.95);
+  });
+
+  // Проверяет, что лазерный луч не обрезается по корпусу корабля, который его выпустил.
+  it("does not clip laser beam by source ship body", async () => {
+    const { GameScene } = await import("./GameScene");
+    const renderLaserBeamGeometry = vi.fn();
+    const graphics = createDrillBeamGraphics();
+    const scene = Object.create(GameScene.prototype) as {
+      referenceData: unknown;
+      pilotToolEffectGraphics: DrillBeamGraphics;
+      zoomScale: number;
+      renderDrillBeams: (objects: CosmicObject[], camera: TestCamera, selfRotation: number, timeMs: number) => void;
+      renderLaserBeamGeometry: typeof renderLaserBeamGeometry;
+      renderDrillBeamGeometry: (geometry: DrillBeamGeometry, timeMs: number) => void;
+    };
+    scene.referenceData = {
+      CosmicObjectModel: {
+        Items: {
+          "1": testModel({ ID: 1, Acronym: "Ship", CosmicObjectTypeID: 1, BodyWidth: 40, BodyLength: 100 }),
+          "902": testModel({ ID: 902, Acronym: "LaserRay", CosmicObjectTypeID: 6, BodyWidth: 4, BodyLength: 200 }),
+        },
+      },
+      CosmicObjectType: {
+        Items: {
+          "1": { Acronym: "Ship" },
+          "6": { Acronym: "Ray" },
+        },
+      },
+    };
+    scene.pilotToolEffectGraphics = graphics;
+    scene.zoomScale = 1;
+    scene.renderLaserBeamGeometry = renderLaserBeamGeometry;
+    scene.renderDrillBeamGeometry = vi.fn();
+
+    scene.renderDrillBeams([
+      testCosmicObject({ ID: 11, CosmicObjectModelID: 1, X: 0, Y: 0, Rotation: 0 }),
+      testCosmicObject({ ID: -1100001, CosmicObjectModelID: 902, X: 0, Y: 140, Rotation: 0 }),
+    ], testCamera({}), 0, 1000);
+
+    const geometry = renderLaserBeamGeometry.mock.calls[0][0] as DrillBeamGeometry;
+    expect(geometry.start).toEqual({ x: 400, y: 410 });
+    expect(geometry.end).toEqual({ x: 400, y: 210 });
+    expect(geometry.hitObject).toBe(false);
   });
 
   // Проверяет, что конец луча получает световое пятно только при попадании в объект.
@@ -742,6 +922,8 @@ describe("GameScene", () => {
 });
 
 type DrillBeamGraphics = {
+  // Очищает предыдущий кадр слоя лучей.
+  clear: ReturnType<typeof vi.fn>;
   // Выбирает цвет и прозрачность следующей заливки.
   fillStyle: ReturnType<typeof vi.fn>;
   // Начинает новый векторный путь.
@@ -794,6 +976,7 @@ type ProjectileGraphics = {
 type TestCamera = ReturnType<typeof testCamera>;
 
 const createDrillBeamGraphics = (overrides: Partial<DrillBeamGraphics> = {}): DrillBeamGraphics => ({
+  clear: vi.fn(),
   fillStyle: vi.fn(),
   beginPath: vi.fn(),
   moveTo: vi.fn(),

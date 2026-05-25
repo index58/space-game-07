@@ -55,6 +55,19 @@ describe("getDrillBeamGeometry", () => {
     expect(wide?.widthPx).toBe((narrow?.widthPx ?? 0) * 3);
   });
 
+  // Проверяет, что луч сохраняет экранную длину и получает вдвое меньшую ширину.
+  it("делает луч вдвое уже без сокращения длины", () => {
+    const geometry = getDrillBeamGeometry({
+      center: { x: 400, y: 300 },
+      rotation: 0,
+      lengthMeters: 100,
+      zoomScale: 2,
+    });
+
+    expect(geometry?.lengthPx).toBe(200);
+    expect(geometry?.widthPx).toBe(3);
+  });
+
   // Проверяет, что видимый след останавливается на первой границе физического тела перед кораблем.
   it("обрезает отрезок по ближайшему пересеченному телу", () => {
     const geometry = getDrillBeamGeometry({

@@ -60,6 +60,10 @@ const PROJECTILE_PLASMA_COLOR = 0x55f7ff;
 const PROJECTILE_MISSILE_COLOR = 0xff8a3d;
 // Цвет остальных боеприпасов без текстуры.
 const PROJECTILE_DEFAULT_COLOR = 0xf6f8ff;
+// Делает видимую геометрию летящих снарядов меньше без изменения данных модели.
+const PROJECTILE_VISUAL_SCALE = 0.5;
+// Повторяет серверный множитель, через который временный ID лазерного луча хранит ID корабля-источника.
+const INSTANT_WEAPON_RAY_SOURCE_ID_FACTOR = 100000;
 // Высота экранной полоски брони над чужим боевым объектом.
 const ARMOR_BAR_HEIGHT_PX = 4;
 // Минимальная ширина полоски, чтобы маленькие цели оставались читаемыми.
@@ -796,7 +800,7 @@ export class GameScene extends Phaser.Scene {
         zoomScale: this.zoomScale,
       });
       if (geometry) {
-        const sourceObjectId = -object.ID;
+        const sourceObjectId = this.sourceObjectIdForRayObject(object);
         const obstaclePolygons = objects.flatMap((obstacle) => {
           if (obstacle.ID === object.ID || obstacle.ID === sourceObjectId || this.isDrillRayObject(obstacle) || this.isLaserRayObject(obstacle)) {
             return [];
@@ -846,8 +850,8 @@ export class GameScene extends Phaser.Scene {
         x: Math.sin(rotation),
         y: -Math.cos(rotation),
       };
-      const length = clamp(model.BodyLength * this.zoomScale, 8, 72);
-      const width = clamp(model.BodyWidth * this.zoomScale * 0.45, 2, 7);
+      const length = model.BodyLength * this.zoomScale * PROJECTILE_VISUAL_SCALE;
+      const width = model.BodyWidth * this.zoomScale * 0.45 * PROJECTILE_VISUAL_SCALE;
       const start = {
         x: center.x - direction.x * length * 0.5,
         y: center.y - direction.y * length * 0.5,
@@ -878,10 +882,10 @@ export class GameScene extends Phaser.Scene {
       x: Math.sin(rotation),
       y: -Math.cos(rotation),
     };
-    const length = clamp(model.BodyLength * this.zoomScale * 0.78, 14, 58);
-    const width = clamp(model.BodyWidth * this.zoomScale * 0.42, 3.5, 9);
-    const flameLength = clamp(model.BodyLength * this.zoomScale * 1.05, 20, 86);
-    const flameWidth = clamp(model.BodyWidth * this.zoomScale * 0.62, 5, 13);
+    const length = model.BodyLength * this.zoomScale * 0.78 * PROJECTILE_VISUAL_SCALE;
+    const width = model.BodyWidth * this.zoomScale * 0.42 * PROJECTILE_VISUAL_SCALE;
+    const flameLength = model.BodyLength * this.zoomScale * 1.05 * PROJECTILE_VISUAL_SCALE;
+    const flameWidth = model.BodyWidth * this.zoomScale * 0.62 * PROJECTILE_VISUAL_SCALE;
     const nose = {
       x: center.x + direction.x * length * 0.45,
       y: center.y + direction.y * length * 0.45,
@@ -949,7 +953,7 @@ export class GameScene extends Phaser.Scene {
     timeMs: number,
   ): void {
     const graphics = this.projectileGraphics;
-    const radius = clamp(model.BodyWidth * this.zoomScale * 0.55, 5, 18);
+    const radius = model.BodyWidth * this.zoomScale * 0.55 * PROJECTILE_VISUAL_SCALE;
     const pulse = 0.78 + Math.sin(timeMs * 0.025) * 0.18;
     graphics.fillStyle(0x55f7ff, 0.18 * pulse);
     graphics.fillCircle(center.x, center.y, radius * 2.1);
@@ -969,7 +973,7 @@ export class GameScene extends Phaser.Scene {
         x: center.x + Math.cos(angle) * radius * 1.75,
         y: center.y + Math.sin(angle) * radius * 1.75,
       };
-      graphics.lineStyle(clamp(radius * 0.22, 1.5, 4), 0x9ffcff, 0.64);
+      graphics.lineStyle(radius * 0.22, 0x9ffcff, 0.64);
       graphics.beginPath();
       graphics.moveTo(start.x, start.y);
       graphics.lineTo(end.x, end.y);
@@ -1181,6 +1185,20 @@ export class GameScene extends Phaser.Scene {
     }
     const objectType = this.referenceData?.CosmicObjectType.Items[String(model.CosmicObjectTypeID)];
     return objectType?.Acronym === "Ray";
+  }
+
+  // Возвращает ID корабля, который создал временный объект луча.
+  private sourceObjectIdForRayObject(object: CosmicObject): number | null {
+    if (object.ID >= 0) {
+      return null;
+    }
+    if (this.isDrillRayObject(object)) {
+      return -object.ID;
+    }
+    if (this.isLaserRayObject(object)) {
+      return Math.floor((-object.ID - 1) / INSTANT_WEAPON_RAY_SOURCE_ID_FACTOR);
+    }
+    return null;
   }
 
   // Проверяет, что объект является летящим снарядом.
