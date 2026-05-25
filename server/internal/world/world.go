@@ -2893,7 +2893,10 @@ func (world *World) spawnWeaponProjectilesLocked(source data.CosmicObject, param
 		baseVelocityX := source.VelocityX
 		baseVelocityY := source.VelocityY
 		if projectileAcceleration > 0 {
-			baseVelocityX = 0
+			// Для ракет сохраняем только продольную часть скорости корабля без бокового сноса.
+			sourceForwardVelocity := source.VelocityX*forward.X + source.VelocityY*forward.Y
+			baseVelocityX = forward.X * sourceForwardVelocity
+			baseVelocityY = forward.Y * sourceForwardVelocity
 		}
 		velocityX := baseVelocityX + forward.X*projectileSpeed
 		velocityY := baseVelocityY + forward.Y*projectileSpeed

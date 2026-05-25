@@ -1359,6 +1359,35 @@ func TestSelectedRocketWeaponProjectileDoesNotInheritSourceHorizontalVelocity(t 
 	}
 }
 
+// Проверяет, что ракета наследует скорость вдоль повернутого корабля и не наследует скорость поперек него.
+func TestSelectedRocketWeaponProjectileInheritsOnlyForwardVelocityAfterRotation(t *testing.T) {
+	serverData := testWorldData(t)
+	addRocketWeaponTestData(t, &serverData)
+	serverData.CosmicObjects.Items[1].X = 0
+	serverData.CosmicObjects.Items[1].Y = 0
+	serverData.CosmicObjects.Items[1].Rotation = math.Pi / 2
+	serverData.CosmicObjects.Items[1].VelocityX = 50
+	serverData.CosmicObjects.Items[1].VelocityY = 20
+	serverData.CosmicObjects.Items[1].Speed = math.Hypot(50, 20)
+	serverData.CosmicObjects.Items[1].Anchored = true
+	gameWorld := world.New(1, serverData)
+	if _, ok := gameWorld.ConnectAccount(1); !ok {
+		t.Fatal("account was not connected")
+	}
+
+	gameWorld.SetInput(1, game.ShipInput{SelectedPilotToolIndex: 0, PrimaryPointerAction: true})
+	snapshot := gameWorld.Tick(0.1)
+
+	projectile, ok := findCosmicObjectModelInSnapshot(snapshot, 904)
+	if !ok {
+		t.Fatalf("rocket projectile was not found: %+v", snapshot.Objects)
+	}
+	if projectile.VelocityX <= serverData.CosmicObjects.Items[1].VelocityX {
+		t.Fatalf("rocket forward velocity = %v, want inherited source velocity plus own acceleration", projectile.VelocityX)
+	}
+	closeWorldFloat(t, projectile.VelocityY, 0)
+}
+
 func TestSelectedWeaponProjectileLifetimeUsesWeaponRangeAndProjectileModelMaxSpeed(t *testing.T) {
 	serverData := testWorldData(t)
 	addWeaponTestData(t, &serverData)
